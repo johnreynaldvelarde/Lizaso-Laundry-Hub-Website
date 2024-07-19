@@ -1,0 +1,14 @@
+// installing react + vite
+npm create vite@latest .
+npm install
+npm run dev
+
+// install react only
+
+
+// for uninstall the nodes 
+npm uninstall -g create-vite
+
+
+//server side
+npm init -y
