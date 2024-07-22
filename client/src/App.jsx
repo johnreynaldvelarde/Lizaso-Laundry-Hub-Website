@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import React from 'react'
+import './index.css'
+import Navbar from './components/Navbar'
+import Hero from './components/Hero'
 
-
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
-    <div>
-      App
+    <div className='overflow-x-hidden'>
+      <Navbar/>
+      <Hero/>
     </div>
   )
 }

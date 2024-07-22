@@ -12,3 +12,10 @@ npm uninstall -g create-vite
 
 //server side
 npm init -y
+
+// tailwindcss
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+// for icons
+npm install react-icons --save
