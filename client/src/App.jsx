@@ -1,13 +1,13 @@
 import React from 'react'
 import './index.css'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
+import LandingNavbar from './components/Landing_Page/LandingNavbar'
+import LandingHero from './components/Landing_Page/LandingHero'
 
 const App = () => {
   return (
     <div className='overflow-x-hidden'>
-      <Navbar/>
-      <Hero/>
+      <LandingNavbar/>
+      <LandingHero/>
     </div>
   )
 }
