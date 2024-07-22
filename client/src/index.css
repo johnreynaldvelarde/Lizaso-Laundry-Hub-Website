@@ -6,6 +6,13 @@
 
 :root {
   font-family: "Poppins", sans-serif;
+}
+
+
+
+/*
+:root {
+  font-family: "Poppins", sans-serif;
   color-scheme: #5787C8;
   --black-gradient: linear-gradient(
     144.39deg,
@@ -141,3 +148,5 @@
   background: rgba(255, 255, 255, 0.6);
   filter: blur(750px);
 }
+
+*/

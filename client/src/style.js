@@ -13,6 +13,19 @@ const styles = {
 
   marginX: "sm:mx-16 mx-6",
   marginY: "sm:my-16 my-6",
+
+   /*  Text Color or Button Color */
+  textColor1: "#5787C8",
+  textColor2: "#595959",
+
+  /*  Font and Typography */
+  biggestFontSize: "2.5rem",
+  h1FontSize: "1.5rem",
+  h2FontSize: "1.25rem",
+  h3FontSize: "1rem",
+  normalFontSize: ".938 rem",
+  smallFontSize: ".813rem",
+  smallestFontSize: ".75rem",
 };
 
 export const layout = {

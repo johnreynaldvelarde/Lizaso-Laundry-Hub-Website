@@ -23,3 +23,6 @@ npm install react-icons --save
 // material ui icons
 npm install @mui/icons-material @mui/material @emotion/styled @emotion/react
 npm install @mui/icons-material
+
+// prettier 
+npm install --save-dev prettier
