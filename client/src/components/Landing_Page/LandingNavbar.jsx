@@ -1,5 +1,6 @@
 import { useState } from "react";
 import logo from "../../assets/images/Logo.png";
+import m_1 from "../../assets/images/m_1.png";
 import { navItems } from "../../constants/index";
 
 import MenuIcon from "@mui/icons-material/Menu";
@@ -66,7 +67,15 @@ const LandingNavbar = () => {
           </div>
         </div>
         {mobileDrawerOpen && (
-          <div className="fixed right-0 z-20 bg-neutral-900 w-full p-10 flex flex-col justify-center items-center lg:hidden">
+          <div
+            className="fixed right-0 z-10 w-full p-10 flex flex-col justify-center items-center lg:hidden mt-3"
+            style={{
+              backgroundImage: `url(${m_1})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundColor: "#5787C8",
+            }}
+          >
             <ul className="text-white" style={{ fontSize: styles.h3FontSize }}>
               {navItems.map((item, index) => (
                 <li key={index} className="py-4">
@@ -75,12 +84,17 @@ const LandingNavbar = () => {
               ))}
             </ul>
             <div className="flex space-x-6 mt-5">
-              <a href="#" className="py-2 px-3 border rounded-md">
+              <a
+                href="#"
+                className="py-2 px-5 border rounded-3xl text-white"
+                style={{ borderColor: styles.buttonColor1 }}
+              >
                 Sign In
               </a>
               <a
                 href="#"
-                className="text-white bg-gradient-to-r from-blue-500 to-blue-600 py-2 px-5 rounded-2xl"
+                className="text-white  py-2 px-5 rounded-3xl shadow-md"
+                style={{ background: styles.buttonColor1 }}
               >
                 Create Account
               </a>
