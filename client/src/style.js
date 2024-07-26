@@ -18,6 +18,8 @@ const styles = {
   textColor1: "#5787C8",
   textColor2: "#595959",
 
+  buttonColor1: "#5787C8",
+
   /*  Font and Typography */
   biggestFontSize: "2.5rem",
   h1FontSize: "1.5rem",
