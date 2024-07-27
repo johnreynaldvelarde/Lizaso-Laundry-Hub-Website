@@ -7,7 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import X from "@mui/icons-material/Close";
 import styles from "../../style";
 
-const LandingNavbar = () => {
+const LandingNavbar = ({ HandlePopup }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
@@ -45,13 +45,13 @@ const LandingNavbar = () => {
             className="hidden lg:flex justify-center space-x-6 items-center"
             style={{ color: styles.textColor1 }}
           >
-            <a
-              href="#"
+            <button
+              onClick={HandlePopup}
               className="py-2 px-5 border rounded-3xl"
               style={{ borderColor: styles.buttonColor1 }}
             >
               Sign In
-            </a>
+            </button>
             <a
               href="#"
               className="text-white  py-2 px-5 rounded-3xl shadow-md"
