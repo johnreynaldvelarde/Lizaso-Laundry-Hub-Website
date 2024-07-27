@@ -7,7 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import X from "@mui/icons-material/Close";
 import styles from "../../style";
 
-const LandingNavbar = ({ HandlePopup }) => {
+const LandingNavbar = ({ HandleLoginPopup, HandleCreateAccountPopup }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
@@ -46,19 +46,19 @@ const LandingNavbar = ({ HandlePopup }) => {
             style={{ color: styles.textColor1 }}
           >
             <button
-              onClick={HandlePopup}
+              onClick={HandleLoginPopup}
               className="py-2 px-5 border rounded-3xl"
               style={{ borderColor: styles.buttonColor1 }}
             >
               Sign In
             </button>
-            <a
-              href="#"
+            <button
+              onClick={HandleCreateAccountPopup}
               className="text-white  py-2 px-5 rounded-3xl shadow-md"
               style={{ background: styles.buttonColor1 }}
             >
               Create Account
-            </a>
+            </button>
           </div>
           <div className="lg:hidden md:flex flex-col justify-end">
             <button onClick={toggleNavbar}>
