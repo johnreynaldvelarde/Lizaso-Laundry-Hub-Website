@@ -18,6 +18,10 @@ const styles = {
   textColor1: "#5787C8",
   textColor2: "#595959",
 
+  /* Input Box Focus Color */
+  inputBorderColor1: "#5787C8",
+
+
   buttonColor1: "#5787C8",
 
   /*  Font and Typography */

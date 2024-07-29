@@ -26,3 +26,6 @@ npm install @mui/icons-material
 
 // prettier 
 npm install --save-dev prettier
+
+// 
+ctrl + / to comment a certain code
