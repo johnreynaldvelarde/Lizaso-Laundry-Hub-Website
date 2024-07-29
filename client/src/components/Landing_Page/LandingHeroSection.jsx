@@ -13,7 +13,7 @@ const LandingHeroSection = () => {
         <img
           src={m_1}
           alt="background-image"
-          className="h-full w-full object-cover opacity-30 dark:opacity-70"
+          className="h-full w-full object-cover opacity-30 dark:opacity-50"
         />
         {/* SVG Wave */}
         <Wave />
