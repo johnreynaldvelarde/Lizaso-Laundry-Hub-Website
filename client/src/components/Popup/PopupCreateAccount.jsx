@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../style";
 
 import w_1 from "../../assets/images/w_1.jpg";
@@ -14,11 +14,22 @@ const PopupCreateAccount = ({
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
+  const [isVisible, setIsVisible] = useState(showCreateAccountPopup);
+
+  useEffect(() => {
+    setIsVisible(showCreateAccountPopup);
+  }, [showCreateAccountPopup]);
+
   return (
     <>
       {showCreateAccountPopup && (
         <div>
-          <div className="h-screen w-screen fixed top-0 left-0 bg-black/50 z-50 backdrop-blur-sm">
+          {/*h-screen w-screen fixed top-0 left-0 bg-black/50 z-50 backdrop-blur-sm*/}
+          <div
+            className={`fixed inset-0 bg-black/50 z-50 backdrop-blur-sm transition-opacity duration-300 ${
+              isVisible ? "opacity-100" : "opacity-0"
+            }`}
+          >
             <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 shadow-md bg-white rounded-md duration-200 w-[600px]">
               {/* Header Section */}
               <div className="flex items-center justify-between mb-4">
@@ -38,18 +49,72 @@ const PopupCreateAccount = ({
               <div className="py-1 p-2">
                 <form>
                   {/* Fullname */}
+                  <div className="mb-6 flex gap-4">
+                    <div className="w-full">
+                      <label
+                        htmlFor="first-name"
+                        className="block mb-2 text-base font-medium text-gray-900 ms-1"
+                        style={{ color: styles.textColor2 }}
+                      >
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        id="first-name"
+                        placeholder="John"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        required
+                        style={{ outlineColor: styles.inputBorderColor1 }}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <label
+                        htmlFor="middle-name"
+                        className="block mb-2 text-base font-medium text-gray-900 ms-1"
+                        style={{ color: styles.textColor2 }}
+                      >
+                        Middle Name
+                      </label>
+                      <input
+                        type="text"
+                        id="middle-name"
+                        placeholder="Doe"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        style={{ outlineColor: styles.inputBorderColor1 }}
+                      />
+                    </div>
+                    <div className="w-full">
+                      <label
+                        htmlFor="last-name"
+                        className="block mb-2 text-base font-medium text-gray-900 ms-1"
+                        style={{ color: styles.textColor2 }}
+                      >
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        id="last-name"
+                        placeholder="Smith"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        required
+                        style={{ outlineColor: styles.inputBorderColor1 }}
+                      />
+                    </div>
+                  </div>
+
+                  {/*Username*/}
                   <div className="mb-6">
                     <label
-                      htmlFor="fullname"
-                      className="block mb-2 text-base font-medium text-gray-900 ms-1"
+                      htmlFor="usename"
+                      className="block mb-2 text-base font-medium text-gray-900 ms-1 "
                       style={{ color: styles.textColor2 }}
                     >
-                      Full name
+                      Username
                     </label>
                     <input
                       type="text"
-                      id="fullname"
-                      placeholder="Enter your full name"
+                      id="username"
+                      placeholder="@johnSmith16"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       required
                       style={{ outlineColor: styles.inputBorderColor1 }}
@@ -57,7 +122,7 @@ const PopupCreateAccount = ({
                   </div>
 
                   {/* Phone Number */}
-                  <div className="mb-6">
+                  {/* <div className="mb-6">
                     <label
                       htmlFor="phone-input"
                       className="block mb-2 text-base font-medium text-gray-900 ms-1"
@@ -80,7 +145,7 @@ const PopupCreateAccount = ({
                     >
                       Enter a phone number in the format +63 912 345 6789.
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* Password */}
                   <div className="mb-6">
