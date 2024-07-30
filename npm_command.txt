@@ -29,3 +29,12 @@ npm install --save-dev prettier
 
 // 
 ctrl + / to comment a certain code
+
+// backend
+npm install express mysql cors nodemon
+
+// api to connect in server
+npm install axios
+
+// password hashing
+npm install bcrypt --save

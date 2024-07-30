@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import styles from "../../style";
 
 import w_1 from "../../assets/images/w_1.jpg";
@@ -19,6 +20,63 @@ const PopupCreateAccount = ({
   useEffect(() => {
     setIsVisible(showCreateAccountPopup);
   }, [showCreateAccountPopup]);
+
+  // UseState to hold our inputs
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isAgreement, setIsAgreement] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Password validation
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    // Data to be sent in the POST request
+    const data = {
+      firstName,
+      middleName,
+      lastName,
+      userName,
+      password,
+      isAgreement,
+    };
+
+    try {
+      // Sending POST request using axios
+      const response = await axios.post(
+        "http://localhost:3002/User_Account",
+        data
+      );
+
+      // Handle the response (e.g., show a success message, redirect, etc.)
+      console.log(response.data);
+      alert("Account created successfully!");
+
+      // Optionally, reset form fields
+      setFirstName("");
+      setMiddleName("");
+      setLastName("");
+      setUserName("");
+      setPassword("");
+      setConfirmPassword("");
+      setIsAgreement(false);
+
+      // Optionally, close the popup
+      setShowCreateAccountPopup(false);
+    } catch (error) {
+      // Handle errors (e.g., show an error message)
+      console.error("There was an error creating the account:", error);
+      alert("There was an error creating the account. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -47,7 +105,7 @@ const PopupCreateAccount = ({
                 />
               </div>
               <div className="py-1 p-2">
-                <form>
+                <form onSubmit={handleSubmit}>
                   {/* Fullname */}
                   <div className="mb-6 flex gap-4">
                     <div className="w-full">
@@ -62,6 +120,8 @@ const PopupCreateAccount = ({
                         type="text"
                         id="first-name"
                         placeholder="John"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                         required
                         style={{ outlineColor: styles.inputBorderColor1 }}
@@ -79,6 +139,8 @@ const PopupCreateAccount = ({
                         type="text"
                         id="middle-name"
                         placeholder="Doe"
+                        value={middleName}
+                        onChange={(e) => setMiddleName(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                         style={{ outlineColor: styles.inputBorderColor1 }}
                       />
@@ -95,6 +157,8 @@ const PopupCreateAccount = ({
                         type="text"
                         id="last-name"
                         placeholder="Smith"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                         required
                         style={{ outlineColor: styles.inputBorderColor1 }}
@@ -115,6 +179,8 @@ const PopupCreateAccount = ({
                       type="text"
                       id="username"
                       placeholder="@johnSmith16"
+                      value={userName}
+                      onChange={(e) => setUserName(e.target.value)}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       required
                       style={{ outlineColor: styles.inputBorderColor1 }}
@@ -161,6 +227,8 @@ const PopupCreateAccount = ({
                         type={passwordVisible ? "text" : "password"}
                         id="password-input"
                         placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                         required
                         style={{ outlineColor: styles.inputBorderColor1 }}
@@ -193,6 +261,8 @@ const PopupCreateAccount = ({
                         type={confirmPasswordVisible ? "text" : "password"}
                         id="confirm-password"
                         placeholder="Re-enter your password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                         required
                         style={{ outlineColor: styles.inputBorderColor1 }}
@@ -217,15 +287,16 @@ const PopupCreateAccount = ({
                   <div className="flex items-start mb-6 ms-1">
                     <div className="flex items-center h-5">
                       <input
-                        id="remember"
+                        id="agreement"
                         type="checkbox"
-                        value=""
+                        checked={isAgreement}
+                        onChange={(e) => setIsAgreement(e.target.checked)}
                         className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300"
                         required
                       />
                     </div>
                     <label
-                      htmlFor="remember"
+                      htmlFor="agreement"
                       className="ms-2 text-sm font-medium text-gray-900"
                     >
                       I agree with the{" "}
