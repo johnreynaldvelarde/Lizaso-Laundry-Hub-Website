@@ -34,6 +34,8 @@ app.get('/', (req, res) => {
   res.json("From backend side");
 });
 
+
+
 app.get('/User_Account', (req, res) => {
   const sql = "SELECT * FROM User_Account";
   db.query(sql, (err, data) => {
@@ -44,6 +46,10 @@ app.get('/User_Account', (req, res) => {
     res.json(data);
   });
 });
+
+
+
+
 
 app.post('/Users_Account', (req, res) => {
   const { firstName, middleName, lastName, userName, password, isAgreement } = req.body;
@@ -87,6 +93,7 @@ app.post('/Users_Account', (req, res) => {
     });
   });
 });
+
 
 // Gracefully close the connection when exiting the application
 process.on('SIGINT', () => {
