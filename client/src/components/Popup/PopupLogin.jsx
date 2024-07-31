@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "../../style";
 
 import X from "@mui/icons-material/Close";
@@ -7,6 +8,11 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 
 const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
   const [isVisible, setIsVisible] = useState(showLoginPopup);
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/admin");
+  };
 
   useEffect(() => {
     setIsVisible(showLoginPopup);
@@ -58,7 +64,7 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
                   <button
                     className="w-full text-white p-2 rounded-md font-semibold"
                     style={{ background: styles.buttonColor1 }}
-                    //onClick={() => setShowPopup(false)}
+                    onClick={handleLogin}
                   >
                     Login
                   </button>

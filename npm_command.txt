@@ -38,3 +38,7 @@ npm install axios
 
 // password hashing
 npm install bcrypt --save
+
+// install router dom
+npm install react-router-dom
+
