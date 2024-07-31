@@ -52,7 +52,7 @@ const PopupCreateAccount = ({
     try {
       // Sending POST request using axios
       const response = await axios.post(
-        "http://localhost:3002/User_Account",
+        "http://localhost:3002/Users_Account",
         data
       );
 

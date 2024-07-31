@@ -45,7 +45,7 @@ app.get('/User_Account', (req, res) => {
   });
 });
 
-app.post('/User_Account', (req, res) => {
+app.post('/Users_Account', (req, res) => {
   const { firstName, middleName, lastName, userName, password, isAgreement } = req.body;
 
   // Validate request data
@@ -62,7 +62,7 @@ app.post('/User_Account', (req, res) => {
 
     // Insert data into the database
     const sql = `
-      INSERT INTO User_Account (first_name, middle_name, last_name, username, password, isAgreement, user_type, isOnline, isArchive, date_created)
+      INSERT INTO Users_Account (first_name, middle_name, last_name, username, password, isAgreement, user_type, isOnline, isArchive, date_created)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     `;
 
