@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../../index.css";
 
 import LandingNavbar from "../../components/landing-page/LandingNavbar";
 import LandingHeroSection from "../../components/landing-page/LandingHeroSection";

@@ -32,6 +32,11 @@ const styles = {
   normalFontSize: ".938 rem",
   smallFontSize: ".813rem",
   smallestFontSize: ".75rem",
+
+
+  // Admin Color
+  backgroundColor1: "#f1f1f1",
+
 };
 
 export const layout = {
