@@ -1,32 +1,28 @@
 import React, { createContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import AdminDashboard from "./AdminDashboard";
+import Settings from "./AdminSettings";
 import AdminSidebar from "../../components/admin-components/AdminSidebar";
 import styles from "../../style";
+import AdminSidebar1 from "./AdminSidebar1";
+
+import AdminHeader from "../../components/admin-components/AdminHeader";
 const MyContext = createContext();
 
 const AdminLayout = () => {
   const values = {};
-
-  // useEffect(() => {
-  //   // Apply the class to the body when the component mounts
-  //   document.body.classList.add("body-admin");
-
-  //   // Remove the class from the body when the component unmounts
-  //   return () => {
-  //     document.body.classList.remove("body-admin");
-  //   };
-  // }, []);
-
   return (
     <MyContext.Provider value={values}>
       <section className="main flex">
         <div className="sidebarWrapper w-[15%]">
-          <AdminSidebar />
+          <AdminSidebar1 />
         </div>
         <div className="content-right w-[85%] px-3">
+          <AdminHeader />
+          <div className="space"></div>
           <Routes>
             <Route path="/" element={<AdminDashboard />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </div>
       </section>

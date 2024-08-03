@@ -42,3 +42,6 @@ npm install bcrypt --save
 // install router dom
 npm install react-router-dom
 
+// icons 
+npm install react-icons --save
+

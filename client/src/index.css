@@ -11,9 +11,24 @@
 body{
   background: #f1f1f1;
 }
+
 .main .sidebarWrapper{height: 100vh;}
 .main .sidebarWrapper .sidebar{height: 100vh; background: #fff;}
-.main .sidebarWrapper .sidebar .sidebarTabs button{justify-content: flex-start !important;}
+.main .sidebarWrapper .sidebar .sidebarTabs button{justify-content: flex-start !important; color: #5e5d72; text-transform: capitalize; font-size: 15px; font-weight: 600; border-radius: 0px !important;}
+.main .sidebarWrapper .sidebar .sidebarTabs button svg{font-size: 20px;}
+
+
+/* header{height: 60px; width: 83%;} */
+.space{margin-top: 70px;}
+
+header .part2 button{min-width: 40px !important; height: 40px !important; width: 40px !important; border-radius: 100% !important; background: #f0f5ff !important; color: #000;}
+header .part2 button svg{font-size: 18px; color: #292929;}
+
+
+
+
+.userImage {overflow: hidden; border-radius: 100%;}
+
 
 
 /*
