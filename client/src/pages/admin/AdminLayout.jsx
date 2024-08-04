@@ -7,6 +7,7 @@ import styles from "../../style";
 import AdminSidebar1 from "./AdminSidebar1";
 
 import AdminHeader from "../../components/admin-components/AdminHeader";
+import Navbar from "../../components/common/Navbar";
 const MyContext = createContext();
 
 const AdminLayout = () => {
@@ -15,7 +16,7 @@ const AdminLayout = () => {
     <MyContext.Provider value={values}>
       <section className="main flex">
         <div className="sidebarWrapper w-[15%]">
-          <AdminSidebar1 />
+          <Navbar />
         </div>
         <div className="content-right w-[85%] px-3">
           <AdminHeader />

@@ -11,7 +11,8 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate("/admin");
+    // navigate("/admin");
+    navigate("/main");
   };
 
   useEffect(() => {

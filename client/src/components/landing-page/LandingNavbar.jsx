@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../../assets/images/Logo.png";
+import logo from "../../assets/images/logo.png";
 import m_1 from "../../assets/images/m_1.png";
 import { navItems } from "../../constants/index";
 
