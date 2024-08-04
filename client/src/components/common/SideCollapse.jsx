@@ -10,6 +10,7 @@ import React from "react";
 import { useEffect } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { NavLink, useLocation } from "react-router-dom";
+import styles from "../../styles/style";
 
 const SideCollapse = ({ name, icon, url, subLinks }) => {
   const [open, setOpen] = React.useState(false);
@@ -32,7 +33,7 @@ const SideCollapse = ({ name, icon, url, subLinks }) => {
       width: "10px",
       height: "10px",
       borderRadius: "50%",
-      border: "2px solid #027edd",
+      border: `2px solid ${styles.IconColor1}`,
       top: "50%",
       left: "-20px",
       transform: "translateY(-50%)",

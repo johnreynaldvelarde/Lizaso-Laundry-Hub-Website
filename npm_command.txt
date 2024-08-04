@@ -45,3 +45,7 @@ npm install react-router-dom
 // icons 
 npm install react-icons --save
 
+// table
+npm install material-react-table
+
+

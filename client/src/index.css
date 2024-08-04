@@ -24,10 +24,22 @@ body{
 header .part2 button{min-width: 40px !important; height: 40px !important; width: 40px !important; border-radius: 100% !important; background: #f0f5ff !important; color: #000;}
 header .part2 button svg{font-size: 18px; color: #292929;}
 
-
-
-
 .userImage {overflow: hidden; border-radius: 100%;}
+
+a.active > .linkBtn {
+  background-color: #e6e8ee !important;
+  position: relative;
+}
+
+a.active > .linkBtn::before {
+  position: absolute;
+  content: "";
+  height: 100%;
+  width: 5px;
+  left: 0;
+  top: 0;
+  background-color: #5787C8;
+}
 
 
 

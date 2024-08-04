@@ -20,17 +20,17 @@ export const links = [
   {
     name: "Dashboard",
     icon: React.createElement(LuLayoutDashboard),
-    url: "/",
+    url: "/main/dashboard",
   },
   {
     name: "Monitored Units",
     icon: React.createElement(MdLocalLaundryService),
-    url: "/",
+    url: "/main/unit-monitor",
   },
   {
     name: "Manage Schedules",
     icon: React.createElement(AiOutlineSchedule),
-    url: "/",
+    url: "/main/settings",
   },
   {
     name: "Branch Operations",
@@ -38,15 +38,15 @@ export const links = [
     subLinks: [
       {
         name: "All Branch Store",
-        url: "/products",
+        url: "/",
       },
       {
         name: "Add Branch",
-        url: "/products/add",
+        url: "/",  
       },
       {
         name: "Branch Statistic",
-        url: "/products/categories",
+        url: "/",
       },
     ],
   },
@@ -71,7 +71,7 @@ export const links = [
   {
     name: "Customers",
     icon: React.createElement(FiUsers),
-    url: "/customers",
+    url: "/main/customers",
   },
   {
     name: "Sales",
