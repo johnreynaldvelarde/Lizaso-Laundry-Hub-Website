@@ -4,7 +4,17 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "../../components/common/Navbar";
 import Sidebar from "../../components/common/Sidebar";
 
-import { Customers, Dashboard, Settings, UnitMonitor } from "../../pages";
+import {
+  Dashboard,
+  UnitMonitor,
+  Customers,
+  Inventory,
+  Settings,
+  AddItem,
+  ItemCategory,
+  Schedule,
+  Branch,
+} from "../../pages";
 
 // const sideBarWidth = 250;
 const sideBarWidth = 300;
@@ -43,6 +53,13 @@ const Main = () => {
           <Route path="unit-monitor" element={<UnitMonitor />} />
           <Route path="customers" element={<Customers />} />
           <Route path="settings" element={<Settings />} />
+
+          <Route path="schedule" element={<Schedule />} />
+          <Route path="branch" element={<Branch />} />
+          {/* Redirect for Inventory */}
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="add-item" element={<AddItem />} />
+          <Route path="item-category" element={<ItemCategory />} />
         </Routes>
       </Box>
     </Box>

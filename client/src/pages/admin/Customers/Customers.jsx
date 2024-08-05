@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import Table from "../../components/Table";
-import { customers, customersColumns } from "../../data/customers";
+import Table from "../../../components/Table";
+import { customers, customersColumns } from "../../../data/customers";
 
 const Customers = () => {
   return (
@@ -9,7 +9,7 @@ const Customers = () => {
       <Typography variant="h6" sx={{ marginBottom: "14px" }}>
         Customers
       </Typography>
-      <Table
+      {/* <Table
         data={customers}
         fields={customersColumns}
         numberOfRows={customers.length}
@@ -22,7 +22,7 @@ const Customers = () => {
         enableColumnDragging={true}
         showPreview
         routeLink="customers"
-      />
+      /> */}
     </Box>
   );
 };

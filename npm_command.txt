@@ -49,3 +49,10 @@ npm install react-icons --save
 npm install material-react-table
 
 
+// default code
+    <Box sx={{ pt: "80px", pb: "20px" }}>
+      <Typography variant="h6" sx={{ marginBottom: "14px" }}>
+        Add Product
+      </Typography>
+    </Box>
+

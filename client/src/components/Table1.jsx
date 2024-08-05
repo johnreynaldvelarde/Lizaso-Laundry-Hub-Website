@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { MaterialReactTable } from "material-react-table";
+// import MaterialReactTable from "material-react-table";
 import { Button, IconButton, Tooltip } from "@mui/material";
 import { FiEye, FiTrash } from "react-icons/fi";
 import { Box } from "@mui/system";
@@ -19,17 +19,19 @@ export const Table = ({
   showPreview,
   routeLink,
 }) => {
-  const columns = useMemo(() => fields, []);
+  const columns = useMemo(() => fields, [fields]);
 
   const [tableData, setTableData] = useState(() => data);
 
   const handleDeleteRow = useCallback(
     (row) => {
-      if (!confirm("Are you sure you want to delete")) {
+      if (!window.confirm("Are you sure you want to delete")) {
         return;
       }
-      data.splice(row.index, 1);
-      setTableData([...tableData]);
+      const updatedData = tableData.filter(
+        (item) => item.id !== row.original.id
+      );
+      setTableData(updatedData);
     },
     [tableData]
   );
@@ -56,7 +58,7 @@ export const Table = ({
           </Tooltip>
           {showPreview && routeLink && (
             <Tooltip arrow placement="right" title="View">
-              <Link to={`/${routeLink}/${row.id}`}>
+              <Link to={`/${routeLink}/${row.original.id}`}>
                 <IconButton>
                   <FiEye />
                 </IconButton>
@@ -66,13 +68,7 @@ export const Table = ({
         </Box>
       )}
       renderTopToolbarCustomActions={({ table }) => (
-        <Button
-          disableElevation
-          color="error"
-          // disabled={!table.getIsSomeRowsSelected()}
-          variant="contained"
-          // onClick={handleDelete}
-        >
+        <Button disableElevation color="error" variant="contained">
           Delete Selected
         </Button>
       )}

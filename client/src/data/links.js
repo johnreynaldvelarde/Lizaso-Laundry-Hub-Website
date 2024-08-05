@@ -14,6 +14,7 @@ import {
   FiShoppingBag,
   FiShoppingCart,
   FiUsers,
+  FiUser,
 } from "react-icons/fi";
 
 export const links = [
@@ -30,7 +31,7 @@ export const links = [
   {
     name: "Manage Schedules",
     icon: React.createElement(AiOutlineSchedule),
-    url: "/main/settings",
+    url: "/main/schedule",
   },
   {
     name: "Branch Operations",
@@ -38,7 +39,7 @@ export const links = [
     subLinks: [
       {
         name: "All Branch Store",
-        url: "/",
+        url: "/main/branch",
       },
       {
         name: "Add Branch",
@@ -56,15 +57,29 @@ export const links = [
     subLinks: [
       {
         name: "All Items",
-        url: "/products",
+        url: "/main/inventory",
       },
       {
         name: "Add Item",
-        url: "/products/add",
+        url: "/main/add-item",
       },
       {
         name: "Item Category",
-        url: "/products/categories",
+        url: "/main/item-category",
+      },
+    ],
+  },
+  {
+    name: "User Manage",
+    icon: React.createElement(FiUser ),
+    subLinks: [
+      {
+        name: "All Users",
+        url: "/",
+      },
+      {
+        name: "Add Users",
+        url: "/",
       },
     ],
   },
@@ -124,7 +139,7 @@ export const links = [
   {
     name: "Settings",
     icon: React.createElement(FiSettings),
-    url: "/settings",
+    url: "/main/settings",
   },
   {
     name: "Inbox",
