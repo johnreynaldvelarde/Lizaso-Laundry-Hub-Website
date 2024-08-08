@@ -1,6 +1,12 @@
 import styled from "@emotion/styled";
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import React from "react";
+import BarChart from "../../../components/sales/charts/BarChart";
+import Stats from "../../../components/sales/stats/Stats";
+import TopCountries from "../../../components/sales/stats/TopCountries";
+import TransactionCustomer from "../../../components/sales/stats/TransactionCustomer";
+import Table from "../../../components/Table";
+import { orders, ordersColumns } from "../../../data/orders";
 
 const Dashboard = () => {
   const ComponentWrapper = styled(Box)({
@@ -13,269 +19,51 @@ const Dashboard = () => {
       <Typography variant="h6" sx={{ marginBottom: "14px" }}>
         Dashboard
       </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
+      <ComponentWrapper>
+        <Stats />
+      </ComponentWrapper>
+      <ComponentWrapper>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6} lg={8}>
+            <BarChart />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <Paper
+              sx={{
+                boxShadow: "none !important",
+                borderRadius: "12px",
+                borderStyle: "solid",
+                borderWidth: "1px",
+                borderColor: "divider",
+                height: "100%",
+              }}
+            >
+              <TopCountries />
+            </Paper>
+          </Grid>
         </Grid>
+      </ComponentWrapper>
+      <ComponentWrapper>
+        <TransactionCustomer />
+      </ComponentWrapper>
 
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Sales Overview
-            </Typography>
-            <Typography variant="body1">
-              Display your sales data here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <ComponentWrapper component={Paper} elevation={3}>
-            <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-              Latest Orders
-            </Typography>
-            <Typography variant="body1">
-              Display your latest orders here.
-            </Typography>
-          </ComponentWrapper>
-        </Grid>
-      </Grid>
+      <ComponentWrapper>
+        <Typography variant="h5" sx={{ my: 3 }}>
+          Latest Orders
+        </Typography>
+        <Table
+          data={orders}
+          fields={ordersColumns}
+          numberOfRows={5}
+          enableTopToolBar={false}
+          enableBottomToolBar={false}
+          enablePagination={false}
+          enableRowSelection={false}
+          enableColumnFilters={false}
+          enableEditing={false}
+          enableColumnDragging={false}
+        />
+      </ComponentWrapper>
     </Box>
   );
 };

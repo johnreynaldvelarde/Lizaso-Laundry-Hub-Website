@@ -56,3 +56,6 @@ npm install material-react-table
       </Typography>
     </Box>
 
+// charts
+npm install react-apexcharts apexcharts    
+

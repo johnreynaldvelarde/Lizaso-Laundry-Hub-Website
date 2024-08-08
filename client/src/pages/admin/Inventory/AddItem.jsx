@@ -47,7 +47,7 @@ const AddItem = () => {
     // </div>
     <Box sx={{ pt: "80px", pb: "20px" }}>
       <Typography variant="h6" sx={{ marginBottom: "14px" }}>
-        Add Product
+        Add new item
       </Typography>
       <Paper
         sx={{

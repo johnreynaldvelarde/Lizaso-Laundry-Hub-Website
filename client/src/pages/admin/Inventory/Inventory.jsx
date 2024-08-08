@@ -18,7 +18,7 @@ const Inventory = () => {
         }}
       >
         <Typography variant="h6">All Items</Typography>
-        <Link to="/products/add" style={{ textDecoration: "none" }}>
+        <Link to="/main/add-item" style={{ textDecoration: "none" }}>
           <Button
             variant="contained"
             color="primary"

@@ -85,9 +85,33 @@ const UnitMonitor = () => {
               />
               <Button
                 variant="contained"
-                sx={{ borderRadius: "20px", position: "absolute", bottom: 25 }}
+                sx={{
+                  borderRadius: "20px",
+                  position: "absolute",
+                  bottom: 25,
+                  width: { xs: "80%", sm: "70%", md: "60%", lg: "50%" },
+                  backgroundColor:
+                    unit.status === "Available"
+                      ? "#4690FF"
+                      : unit.status === "Occupied"
+                      ? "#B4162C"
+                      : "yellow",
+                  color: unit.status === "Reserved" ? "black" : "white",
+                  "&:hover": {
+                    backgroundColor:
+                      unit.status === "Available"
+                        ? "#3576CC"
+                        : unit.status === "Occupied"
+                        ? "#8B1A2C"
+                        : "gold",
+                  },
+                }}
               >
-                Select
+                {unit.status === "Available"
+                  ? "Select"
+                  : unit.status === "Occupied"
+                  ? "In Use"
+                  : "Reserved"}
               </Button>
             </Box>
           </Grid>
