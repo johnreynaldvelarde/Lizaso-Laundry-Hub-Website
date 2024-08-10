@@ -177,13 +177,12 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    // Example of error handling: Simulate checking for account existence
     if (username === "" || password === "") {
       setErrorMessage("Username and password are required.");
-    } else if (username !== "validUser") {
+    } else if (username !== "admin") {
       setErrorMessage("Account does not exist.");
     } else {
-      setErrorMessage(""); // Clear error message
+      setErrorMessage("");
       navigate("/main");
     }
   };

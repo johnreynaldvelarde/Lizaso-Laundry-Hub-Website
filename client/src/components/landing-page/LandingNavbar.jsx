@@ -13,7 +13,7 @@ const LandingNavbar = ({ HandleLoginPopup, HandleCreateAccountPopup }) => {
     setMobileDrawerOpen(!mobileDrawerOpen);
   };
   return (
-    <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b border-neutral-700/80">
+    <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg bg-white bg-opacity-80 border-b border-neutral-700/40">
       <div className="container px-4 mx-auto relative text-sm">
         <div className="flex justify-between items-center">
           <div className="flex items-center flex-shrink-0">
@@ -32,7 +32,7 @@ const LandingNavbar = ({ HandleLoginPopup, HandleCreateAccountPopup }) => {
             </span>
           </div>
           <ul
-            className="hidden lg:flex ml-14 space-x-12"
+            className="hidden lg:flex ml-14 space-x-12 font-medium"
             style={{ color: styles.textColor2, fontSize: styles.h3FontSize }}
           >
             {navItems.map((item, index) => (
