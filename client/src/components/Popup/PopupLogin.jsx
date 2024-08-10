@@ -1,91 +1,337 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from "../../style";
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import X from "@mui/icons-material/Close";
+// import GoogleIcon from "@mui/icons-material/Google";
+// import FacebookIcon from "@mui/icons-material/Facebook";
+// import VisibilityIcon from "@mui/icons-material/Visibility";
+// import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
+// const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
+//   const [passwordVisible, setPasswordVisible] = useState(false);
+//   const [isVisible, setIsVisible] = useState(showLoginPopup);
+//   const [username, setUsername] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [rememberMe, setRememberMe] = useState(false);
+//   const navigate = useNavigate();
+
+//   const handleLogin = () => {
+//     // Add your login logic here
+//     navigate("/main");
+//   };
+
+//   const handleForgotPassword = () => {
+//     // Add your forgot password logic here
+//     console.log("Forgot Password");
+//   };
+
+//   useEffect(() => {
+//     setIsVisible(showLoginPopup);
+//   }, [showLoginPopup]);
+
+//   return (
+//     <>
+//       {showLoginPopup && (
+//         <div className="fixed inset-0 flex items-center justify-center z-50">
+//           {/* Backdrop */}
+//           <div
+//             className={`fixed inset-0 bg-black/50 z-40 backdrop-blur-sm transition-opacity duration-300 ${
+//               isVisible ? "opacity-100" : "opacity-0"
+//             }`}
+//             onClick={() => setLoginShowPopup(false)}
+//           ></div>
+
+//           {/* Login Popup */}
+//           <div
+//             className={`relative bg-white p-8 rounded-lg shadow-lg z-50 transition-transform duration-300 ${
+//               isVisible ? "scale-100" : "scale-90 opacity-0"
+//             } w-[80%] max-w-md`}
+//           >
+//             <button
+//               onClick={() => setLoginShowPopup(false)}
+//               className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+//             >
+//               <X />
+//             </button>
+//             <h1 className="text-2xl font-semibold mb-4">Sign in</h1>
+//             <p className="text-sm text-gray-600 mb-6">
+//               Welcome back, you've been missed
+//             </p>
+//             <form
+//               onSubmit={(e) => {
+//                 e.preventDefault();
+//                 handleLogin();
+//               }}
+//             >
+//               <div className="mb-4">
+//                 <label
+//                   htmlFor="username"
+//                   className="block text-sm font-medium text-gray-700"
+//                 >
+//                   Username
+//                 </label>
+//                 <input
+//                   type="text"
+//                   id="username"
+//                   value={username}
+//                   onChange={(e) => setUsername(e.target.value)}
+//                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+//                   required
+//                 />
+//               </div>
+//               <div className="mb-4 relative">
+//                 <label
+//                   htmlFor="password"
+//                   className="block text-sm font-medium text-gray-700"
+//                 >
+//                   Password
+//                 </label>
+//                 <div className="relative">
+//                   <input
+//                     type={passwordVisible ? "text" : "password"}
+//                     id="password"
+//                     value={password}
+//                     onChange={(e) => setPassword(e.target.value)}
+//                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-10"
+//                     required
+//                   />
+//                   <button
+//                     type="button"
+//                     onClick={() => setPasswordVisible(!passwordVisible)}
+//                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+//                   >
+//                     {passwordVisible ? (
+//                       <VisibilityIcon />
+//                     ) : (
+//                       <VisibilityOffIcon />
+//                     )}
+//                   </button>
+//                 </div>
+//               </div>
+//               <div className="flex items-center mb-4">
+//                 <input
+//                   type="checkbox"
+//                   id="rememberMe"
+//                   checked={rememberMe}
+//                   onChange={() => setRememberMe(!rememberMe)}
+//                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+//                 />
+//                 <label
+//                   htmlFor="rememberMe"
+//                   className="ml-2 block text-sm text-gray-900"
+//                 >
+//                   Remember me for 30 days
+//                 </label>
+//               </div>
+//               <button
+//                 type="submit"
+//                 className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center justify-center mb-4"
+//               >
+//                 Sign in
+//               </button>
+//             </form>
+//             <div className="text-center mb-4">
+//               <button
+//                 onClick={handleForgotPassword}
+//                 className="text-sm text-blue-500 hover:underline"
+//               >
+//                 Forgot Password?
+//               </button>
+//             </div>
+//             <button
+//               onClick={handleLogin}
+//               className="w-full mb-4 py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center justify-center"
+//             >
+//               <GoogleIcon className="mr-2" /> Sign in with Google
+//             </button>
+//             <button
+//               onClick={handleLogin}
+//               className="w-full py-2 px-4 bg-blue-700 text-white rounded-lg flex items-center justify-center"
+//             >
+//               <FacebookIcon className="mr-2" /> Sign in with Facebook
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+// export default PopupLogin;
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import styles from "../../style";
+import { useNavigate } from "react-router-dom";
 import X from "@mui/icons-material/Close";
 import GoogleIcon from "@mui/icons-material/Google";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(showLoginPopup);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // State for error message
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    // navigate("/admin");
-    navigate("/main");
+    // Example of error handling: Simulate checking for account existence
+    if (username === "" || password === "") {
+      setErrorMessage("Username and password are required.");
+    } else if (username !== "validUser") {
+      setErrorMessage("Account does not exist.");
+    } else {
+      setErrorMessage(""); // Clear error message
+      navigate("/main");
+    }
+  };
+
+  const handleForgotPassword = () => {
+    // Add your forgot password logic here
+    console.log("Forgot Password");
   };
 
   useEffect(() => {
     setIsVisible(showLoginPopup);
   }, [showLoginPopup]);
 
+  // Function to clear error message on input change
+  const handleInputChange = (setter) => (e) => {
+    setter(e.target.value);
+    setErrorMessage(""); // Clear error message on input change
+  };
+
   return (
     <>
       {showLoginPopup && (
-        <div>
-          {/*className="h-screen w-screen fixed top-0 left-0 bg-black/50 z-50 backdrop-blur-sm"*/}
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          {/* Backdrop */}
           <div
-            className={`fixed inset-0 bg-black/50 z-50 backdrop-blur-sm transition-opacity duration-300 ${
+            className={`fixed inset-0 bg-black/50 z-40 backdrop-blur-sm transition-opacity duration-300 ${
               isVisible ? "opacity-100" : "opacity-0"
             }`}
+            onClick={() => setLoginShowPopup(false)}
+          ></div>
+
+          {/* Login Popup */}
+          <div
+            className={`relative bg-white p-8 rounded-lg shadow-lg z-50 transition-transform duration-300 ${
+              isVisible ? "scale-100" : "scale-90 opacity-0"
+            } w-[80%] max-w-md`}
           >
-            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 shadow-md bg-white rounded-md duration-200 w-[300px]">
-              {/* Header Section*/}
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1
-                    className="text-2xl font-bold"
-                    style={{ color: styles.textColor2 }}
-                  >
-                    Login
-                  </h1>
+            <button
+              onClick={() => setLoginShowPopup(false)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+            >
+              <X />
+            </button>
+            <h1 className="text-2xl font-semibold mb-4">Sign in</h1>
+            <p className="text-sm text-gray-600 mb-6">
+              Welcome back, you've been missed
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+            >
+              {errorMessage && (
+                <div className="mb-4 p-2 bg-red-100 text-red-600 border border-red-400 rounded font-light">
+                  {errorMessage}
                 </div>
-                <div>
-                  <X
-                    className="text-2xl cursor-pointer"
-                    onClick={() => setLoginShowPopup(false)}
-                  />
-                </div>
-              </div>
-              {/* Login form section*/}
-              <div className="mt-4">
+              )}
+              <div className="mb-4">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium mb-2 ms-1"
+                  style={{ color: styles.textColor2 }}
+                >
+                  Username
+                </label>
                 <input
                   type="text"
-                  placeholder="Enter your username"
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-500 px-2 py-1 mb-4"
+                  id="username"
+                  value={username}
+                  onChange={handleInputChange(setUsername)}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none sm:text-sm custom-focus-ring"
+                  required
                 />
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-500 px-2 py-1 mb-4"
-                />
-
-                {/* Login button section*/}
-                <div>
+              </div>
+              <div className="mb-4 relative">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium mb-2 ms-1"
+                  style={{ color: styles.textColor2 }}
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={passwordVisible ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={handleInputChange(setPassword)}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none sm:text-sm pr-10 custom-focus-ring"
+                    required
+                  />
                   <button
-                    className="w-full text-white p-2 rounded-md font-semibold"
-                    style={{ background: styles.buttonColor1 }}
-                    onClick={handleLogin}
+                    type="button"
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
                   >
-                    Login
+                    {passwordVisible ? (
+                      <VisibilityOffIcon />
+                    ) : (
+                      <VisibilityIcon />
+                    )}
                   </button>
                 </div>
-
-                {/* Login Social*/}
-                <div className="mt-4">
-                  <p
-                    className="text-center"
-                    style={{ color: styles.textColor2 }}
-                  >
-                    or login with
-                  </p>
-                  <div className="flex justify-center gap-2 mt-2">
-                    <GoogleIcon className="text-3xl hover:text-red-500 duration-200 cursor-pointer" />
-                    <FacebookIcon className="text-3xl hover:text-blue-500 duration-200 cursor-pointer" />
-                  </div>
-                </div>
               </div>
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={() => setRememberMe(!rememberMe)}
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label
+                  htmlFor="rememberMe"
+                  className="ml-2 block text-sm text-gray-900"
+                >
+                  Remember me for 30 days
+                </label>
+              </div>
+              <button
+                type="submit"
+                className="w-full py-2 px-4 text-white font-semibold rounded-lg flex items-center justify-center mb-4"
+                style={{ background: styles.buttonColor1 }}
+              >
+                Sign in
+              </button>
+            </form>
+            <div className="text-center mb-4">
+              <button
+                onClick={handleForgotPassword}
+                className="text-sm text-blue-500 hover:underline"
+              >
+                Forgot Password?
+              </button>
             </div>
+            <button
+              onClick={handleLogin}
+              className="w-full mb-4 py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center justify-center"
+            >
+              <GoogleIcon className="mr-2" /> Sign in with Google
+            </button>
+            <button
+              onClick={handleLogin}
+              className="w-full py-2 px-4 bg-blue-700 text-white rounded-lg flex items-center justify-center"
+            >
+              <FacebookIcon className="mr-2" /> Sign in with Facebook
+            </button>
           </div>
         </div>
       )}
