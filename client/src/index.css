@@ -46,6 +46,20 @@ a.active > .linkBtn::before {
   background-color: #5787C8;
 }
 
+.rounded-circle{
+  min-width: 45px !important; 
+  height: 45px !important; 
+  width: 45px !important; 
+  border-radius: 100% !important; 
+  background: #f0f5ff !important; 
+  color: #292929;
+}
+
+.rounded-circle svg{
+  font-size: 20px; 
+  color: #292929;
+}
+
 
 
 /*
