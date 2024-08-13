@@ -50,7 +50,7 @@ app.get('/User_Account', (req, res) => {
 
 
 
-
+// for creating an account
 app.post('/Users_Account', (req, res) => {
   const { firstName, middleName, lastName, userName, password, isAgreement } = req.body;
 
@@ -68,7 +68,7 @@ app.post('/Users_Account', (req, res) => {
 
     // Insert data into the database
     const sql = `
-      INSERT INTO Users_Account (first_name, middle_name, last_name, username, password, isAgreement, user_type, isOnline, isArchive, date_created)
+      INSERT INTO User_Account (first_name, middle_name, last_name, username, password, isAgreement, user_type, isOnline, isArchive, date_created)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     `;
 
@@ -94,6 +94,39 @@ app.post('/Users_Account', (req, res) => {
   });
 });
 
+// Login route
+app.post('/User_Account', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required.' });
+  }
+
+  try {
+    const [user] = await db.query('SELECT * FROM User_Account WHERE username = ?', [username]);
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+
+    const token = jwt.sign({ id: user.id, username: user.username }, 'your_jwt_secret', { expiresIn: '1h' });
+
+    res.json({ message: 'Login successful!', token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+// Login
+// app.post('/Users_Account', (req, res) =>{
+
+//   const { username, password } = req.body;
+
+// })
 
 // Gracefully close the connection when exiting the application
 process.on('SIGINT', () => {
