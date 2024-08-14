@@ -1,0 +1,69 @@
+
+lizaso-laundry-hub/
+│
+├── client/                     
+│   ├── public/                
+│   ├── src/
+│   │   ├── assets/             
+│   │   ├── components/         
+│   │   ├── contexts/           
+│   │   ├── hooks/              
+│   │   ├── pages/             
+│   │   ├── services/           
+│   │   ├── styles/             
+│   │   ├── utils/              
+│   │   ├── App.jsx            
+│   │   ├── index.jsx           
+│   │   └── main.jsx            
+│   ├── .gitignore              
+│   ├── package.json           
+│   ├── postcss.config.js      
+│   ├── tailwind.config.js     
+│   └── vite.config.js         
+│
+├── server/                     
+│   ├── config/           
+│   ├── node_modules/                
+│   ├── src/                
+│   ├── server.js               
+│   ├── .gitignore
+│   ├── package-lock.json                
+│   └── package.json
+
+
+
+
+
+
+lizaso-laundry-hub/
+│
+├── client/                     # Frontend (React + Vite + Tailwind CSS)
+│   ├── public/                 # Static files for the client
+│   ├── src/
+│   │   ├── assets/             # Assets like images, fonts, etc.
+│   │   ├── components/         # Reusable components
+│   │   ├── contexts/           # Context providers
+│   │   ├── hooks/              # Custom hooks
+│   │   ├── pages/              # Page components
+│   │   ├── services/           # API calls and services
+│   │   ├── styles/             # Global styles, Tailwind overrides
+│   │   ├── utils/              # Utility functions
+│   │   ├── App.jsx             # Main app component
+│   │   ├── index.jsx           # Entry point for React
+│   │   └── main.jsx            # Entry point for Vite
+│   ├── .gitignore              # Git ignore file for the client
+│   ├── package.json            # NPM dependencies and scripts for the client
+│   ├── postcss.config.js       # PostCSS configuration (for Tailwind CSS)
+│   ├── tailwind.config.js      # Tailwind CSS configuration
+│   └── vite.config.js          # Vite configuration
+│
+├── server/                     # Backend (Node.js, Express, etc.)
+│   ├── controllers/            # Request handlers
+│   ├── models/                 # Database models
+│   ├── routes/                 # API routes
+│   ├── services/               # Business logic and database interactions
+│   ├── utils/                  # Utility functions specific to the server
+│   ├── config/                 # Configuration files (e.g., database, environment variables)
+│   ├── server.js               # Main server file
+│   ├── .gitignore              # Git ignore file for the server
+│   └── package.json

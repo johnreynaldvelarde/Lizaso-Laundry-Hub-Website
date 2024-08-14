@@ -1,4 +1,5 @@
 User_Account
+store_id (Foregin Key)
 id
 username
 email
@@ -39,3 +40,17 @@ isAgreement
 isOnline
 isArchive
 date_created
+
+
+
+Stores
+id
+store_id
+store_name
+store_address
+store_contact
+is_main_store
+updated_at
+date_created
+isStatus
+isArchive

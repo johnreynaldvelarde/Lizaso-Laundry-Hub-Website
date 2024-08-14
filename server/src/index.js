@@ -3,8 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt'); // For hashing passwords
-const { createDefaultAdmin, handleLogin } = require('./services/authService');
-const { ensureMainStoreExists } = require('./services/storeService');
+const { createDefaultAdmin, handleLogin } = require('../services/authService');
+const { ensureMainStoreExists } = require('../services/storeService');
 
 const app = express();
 const port = process.env.PORT || 3002;
@@ -14,7 +14,7 @@ app.use(cors()); // Enable CORS
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 // Initialize Database Connection
-const { connectToDatabase } = require('./config/dbConfig');
+const { connectToDatabase } = require('./db/dbConfig');
 const db = connectToDatabase();
 
 // Ensure the main store exists and create default admin if necessary

@@ -57,5 +57,8 @@ npm install material-react-table
     </Box>
 
 // charts
-npm install react-apexcharts apexcharts    
+npm install react-apexcharts apexcharts
+
+//
+// "start": "nodemon server.js"
 
