@@ -14,6 +14,7 @@ import {
   ItemCategory,
   Schedule,
   Branch,
+  AddBranch,
 } from "../../pages";
 
 // const sideBarWidth = 250;
@@ -56,6 +57,7 @@ const Main = () => {
 
           <Route path="schedule" element={<Schedule />} />
           <Route path="branch" element={<Branch />} />
+          <Route path="add-branch" element={<AddBranch />} />
           {/* Redirect for Inventory */}
           <Route path="inventory" element={<Inventory />} />
           <Route path="add-item" element={<AddItem />} />

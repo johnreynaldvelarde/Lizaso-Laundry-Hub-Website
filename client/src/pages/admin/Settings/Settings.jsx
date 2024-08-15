@@ -70,6 +70,7 @@ const Settings = () => {
               <Tab label="Profile" {...a11yProps(0)} />
               <Tab label="Password" {...a11yProps(1)} />
               <Tab label="Notifications" {...a11yProps(2)} />
+              <Tab label="Dashboard" {...a11yProps(3)} />
             </Tabs>
           </Box>
           <TabPanel value={value} index={0}>

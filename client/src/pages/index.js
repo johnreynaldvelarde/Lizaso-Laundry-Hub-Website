@@ -19,6 +19,7 @@ export { default as Schedule } from "./admin/Schedule/Schedule";
 
 // Section Branch
 export { default as Branch } from "./admin/Branch/Branch";
+export { default as AddBranch } from "./admin/Branch/AddBranch";
 
 // Section Inventory
 export { default as Inventory } from "./admin/Inventory/Inventory";

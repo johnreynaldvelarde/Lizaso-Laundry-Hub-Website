@@ -18,6 +18,7 @@ import {
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
+import { ArrowDropDown } from "@mui/icons-material";
 
 import React, { useState } from "react";
 import { FiMenu } from "react-icons/fi";
@@ -58,7 +59,8 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
     setNotificationAnchorEl(null);
   };
 
-  const userName = "Rose Oriana";
+  const fullname = "Rose Oriana";
+  const username = "roseoriana16";
 
   return (
     <AppBar
@@ -178,13 +180,45 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
             <div>
               <UserImage />
             </div>
-            <Typography
-              variant="body1"
-              sx={{ fontWeight: "500", cursor: "pointer" }}
-              onClick={handleClick}
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                textAlign: "right",
+              }}
             >
-              {userName}
-            </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: "500",
+                    textAlign: "right",
+                  }}
+                >
+                  {fullname}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: "400",
+                    color: "text.secondary",
+                    textAlign: "right",
+                  }}
+                >
+                  {username}
+                </Typography>
+              </Box>
+              <IconButton sx={{ ml: 1 }} onClick={handleClick}>
+                <ArrowDropDown />
+              </IconButton>
+            </Box>
             <Menu
               anchorEl={anchorEl}
               id="account-menu"

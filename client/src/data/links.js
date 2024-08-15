@@ -43,7 +43,7 @@ export const links = [
       },
       {
         name: "Add Branch",
-        url: "/",  
+        url: "/main/add-branch",  
       },
       {
         name: "Branch Statistic",

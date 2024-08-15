@@ -1,6 +1,6 @@
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography, TextField } from "@mui/material";
 import styles from "../../../styles/style";
-import React from "react";
+import React, { useState } from "react";
 
 // images
 import Available from "../../../assets/images/Available.png";
@@ -21,14 +21,8 @@ const UnitMonitor = () => {
     { id: 10, name: "Unit 10", status: "Available" },
   ];
 
-  const customers = [
-    { id: 1, name: "Customer A" },
-    { id: 2, name: "Customer B" },
-    { id: 3, name: "Customer C" },
-    { id: 4, name: "Customer D" },
-    { id: 5, name: "Customer E" },
-    // Add more customers as needed
-  ];
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUnits, setFilteredUnits] = useState(laundryUnits);
 
   const getImage = (status) => {
     switch (status) {
@@ -43,12 +37,48 @@ const UnitMonitor = () => {
     }
   };
 
+  const handleSearchChange = (event) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    setFilteredUnits(
+      laundryUnits.filter((unit) =>
+        unit.name.toLowerCase().includes(value.toLowerCase())
+      )
+    );
+  };
+
   return (
-    <Box sx={{ pt: "80px", pb: "20px" }}>
-      <Grid container spacing={2}>
-        {laundryUnits.map((unit) => (
-          // Grid item xs={12} sm={6} md={4} lg={2} key={unit.id} dont delete
-          <Grid item xs={12} sm={6} md={4} lg={2} key={unit.id}>
+    <Box sx={{ pt: "90px", pb: "20px", px: { xs: 1, md: 2 } }}>
+      <Box
+        sx={{
+          mb: 3,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TextField
+          variant="outlined"
+          placeholder="Search units..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          sx={{ width: "100%", maxWidth: "400px" }}
+        />
+        <Button
+          variant="contained"
+          sx={{
+            ml: 2,
+            backgroundColor: "#28a745",
+            "&:hover": { backgroundColor: "#218838" },
+          }}
+        >
+          Add
+        </Button>
+      </Box>
+
+      <Grid container spacing={1}>
+        {filteredUnits.map((unit) => (
+          <Grid item key={unit.id}>
             <Box
               sx={{
                 display: "flex",
@@ -60,9 +90,11 @@ const UnitMonitor = () => {
                 borderRadius: "20px",
                 p: 2,
                 textAlign: "center",
-                width: "100%", // Set width to 249px
-                height: "341px", // Set height to 341px
+                width: "249px",
+                height: "341px",
                 position: "relative",
+                boxSizing: "border-box",
+                overflow: "hidden",
               }}
             >
               <Typography
@@ -80,8 +112,13 @@ const UnitMonitor = () => {
               <img
                 src={getImage(unit.status)}
                 alt={unit.name}
-                width={170} // Adjust the image size as needed
-                style={{ marginTop: "-15px" }} // Adjust margin to fit the new dimensions
+                style={{
+                  width: "170px",
+                  height: "auto",
+                  maxHeight: "calc(341px - 80px)",
+                  objectFit: "contain",
+                  marginTop: "20px",
+                }}
               />
               <Button
                 variant="contained"
@@ -89,7 +126,7 @@ const UnitMonitor = () => {
                   borderRadius: "20px",
                   position: "absolute",
                   bottom: 25,
-                  width: { xs: "80%", sm: "70%", md: "60%", lg: "50%" },
+                  width: "80%",
                   backgroundColor:
                     unit.status === "Available"
                       ? "#4690FF"

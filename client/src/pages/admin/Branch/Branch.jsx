@@ -5,8 +5,12 @@ import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 import { products, productsColumns } from "../../../data/products";
+import { store, storeColumns } from "../../../data/branchData";
 
-const Inventory = () => {
+const Branch = () => {
+  const handleEdit = (row) => {
+    console.log("Editing row:", row);
+  };
   return (
     <Box sx={{ pt: "80px", pb: "20px" }}>
       <Box
@@ -18,20 +22,20 @@ const Inventory = () => {
         }}
       >
         <Typography variant="h6">Branch Store</Typography>
-        <Link to="/products/add" style={{ textDecoration: "none" }}>
+        <Link to="/main/add-branch" style={{ textDecoration: "none" }}>
           <Button
             variant="contained"
             color="primary"
             startIcon={<FiPlus />}
             sx={{ borderRadius: "20px" }}
           >
-            Add Items
+            Add new store
           </Button>
         </Link>
       </Box>
       <Table
-        data={products}
-        fields={productsColumns}
+        data={store}
+        fields={storeColumns}
         numberOfRows={products.length}
         enableTopToolBar={true}
         enableBottomToolBar={true}
@@ -41,10 +45,11 @@ const Inventory = () => {
         enableEditing={true}
         enableColumnDragging={true}
         showPreview={true}
+        onEdit={handleEdit}
         routeLink="products"
       />
     </Box>
   );
 };
 
-export default Inventory;
+export default Branch;
