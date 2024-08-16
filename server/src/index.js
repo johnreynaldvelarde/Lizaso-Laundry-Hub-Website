@@ -31,14 +31,17 @@
 // Dependencies
 const express = require('express');
 const cors = require('cors');
+const dotnev = require('dotenv');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt'); // For hashing passwords
 const { createDefaultAdmin, handleLogin } = require('./services/authService');
 const { ensureMainStoreExists } = require('./services/storeService');
 const authenticateToken = require('./middleware/authMiddleware'); // Import JWT middleware
 
+
+dotnev.config({path: './.env'})
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT;
 
 // Middleware
 app.use(cors()); // Enable CORS

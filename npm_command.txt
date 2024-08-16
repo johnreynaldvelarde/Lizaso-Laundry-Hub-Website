@@ -63,4 +63,6 @@ npm install react-apexcharts apexcharts
 // "start": "nodemon server.js"
 
 // npm install jsonwebtoken body-parser
+// npm install dotenv
+
 
