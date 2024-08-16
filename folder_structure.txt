@@ -25,7 +25,6 @@ lizaso-laundry-hub/
 │   ├── config/           
 │   ├── node_modules/                
 │   ├── src/                
-│   ├── server.js               
 │   ├── .gitignore
 │   ├── package-lock.json                
 │   └── package.json

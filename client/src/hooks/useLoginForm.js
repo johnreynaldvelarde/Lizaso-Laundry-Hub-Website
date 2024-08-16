@@ -15,34 +15,73 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     setIsVisible(showLoginPopup);
   }, [showLoginPopup]);
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+
+  //   if (loginUsername === "" || loginPassword === "") {
+  //     setErrorMessage("Username and password are required.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const { success, userType, message } = await loginService.login({
+  //       username: loginUsername,
+  //       password: loginPassword,
+  //     });
+
+  //     if (success) {
+  //       alert("Login successful!");
+  //       setLoginUsername("");
+  //       setLoginPassword("");
+  //       setLoginShowPopup(false);
+  //       navigate(userType === "Customer" ? "/customer-page" : "/main");
+  //     } else {
+  //       setErrorMessage(message || "Invalid username or password.");
+  //     }
+  //   } catch (error) {
+  //     console.error("There was an error logging in:", error);
+  //     alert("There was an error logging in. Please try again.");
+  //   }
+  // };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     if (loginUsername === "" || loginPassword === "") {
       setErrorMessage("Username and password are required.");
       return;
     }
-
+  
     try {
-      const { success, userType, message } = await loginService.login({
+      const { success, token, userType, message } = await loginService.login({
         username: loginUsername,
         password: loginPassword,
       });
-
+  
       if (success) {
+        // Store the JWT token in localStorage or sessionStorage
+        if (rememberMe) {
+          localStorage.setItem('token', token);
+           // Store in localStorage for persistent sessions
+        } else {
+          sessionStorage.setItem('token', token); // Store in sessionStorage for non-persistent sessions
+        }
+  
         alert("Login successful!");
         setLoginUsername("");
         setLoginPassword("");
         setLoginShowPopup(false);
         navigate(userType === "Customer" ? "/customer-page" : "/main");
       } else {
-        setErrorMessage(message || "Invalid username or password.");
+        setErrorMessage(message);
+        // setErrorMessage(message || "Invalid username or password.");
       }
     } catch (error) {
       console.error("There was an error logging in:", error);
       alert("There was an error logging in. Please try again.");
     }
   };
+  
 
   const handleForgotPassword = () => {
     console.log("Forgot Password");
