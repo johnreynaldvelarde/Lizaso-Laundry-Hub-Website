@@ -7,11 +7,19 @@ lizaso-laundry-hub/
 │   │   ├── assets/             
 │   │   ├── components/
 │   │   │     ├──common/
-│   │   │     └──common/          
+│   │   │     └──landing-page/          
 │   │   ├── contexts/           
-│   │   ├── hooks/              
-│   │   ├── pages/             
-│   │   ├── services/           
+│   │   ├── hooks/
+│   │   │     ├──useLoginForm.jsx/ 
+│   │   │     └──useRegisterForm.jsx/              
+│   │   ├── pages/
+│   │   │     ├──admin/                          # After login if account is admin its going to this admin page
+│   │   │     │     └──main.jsx/               
+│   │   │     └──customer/                       # After login if account is customer its going to this customer page               
+│   │   │           └──mainCustomer.jsx/                          
+│   │   ├── services/
+│   │   │     └──api/
+│   │   │          └──authClient.jsx/              
 │   │   ├── styles/             
 │   │   ├── utils/              
 │   │   ├── App.jsx            

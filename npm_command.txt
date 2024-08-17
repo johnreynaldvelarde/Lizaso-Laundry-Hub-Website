@@ -68,3 +68,4 @@ npm install react-apexcharts apexcharts
 //npm install mysql2
 
 
+// install express cors mysql2

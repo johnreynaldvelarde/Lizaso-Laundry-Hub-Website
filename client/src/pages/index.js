@@ -32,3 +32,7 @@ export { default as Settings } from "./admin/Settings/Settings";
 
 
 // Section Delivery Man
+
+
+// Customer => Page
+export {default as MainCustomer} from "./customer/mainCustomer"

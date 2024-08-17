@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "../../components/common/Navbar";
 import Sidebar from "../../components/common/Sidebar";
+import NotFound from "../../pages/NotFound";
 
 import {
   Dashboard,

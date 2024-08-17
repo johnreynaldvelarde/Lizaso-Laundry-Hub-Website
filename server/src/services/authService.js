@@ -1,61 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-// import { JWT_SECRET } from '../config/config.js';
-// export const handleLogin = async (req, res, db) => {
-
-//   const { username, password } = req.body;
-//   const userAccountQuery = 'SELECT * FROM User_Account WHERE username = ?';
-//   db.query(userAccountQuery, [username], async (err, userAccountResults) => {
-//     if (err) return res.status(500).json({ success: false, message: 'Database error' });
-
-//     if (userAccountResults.length > 0) {
-//       const user = userAccountResults[0];
-
-//       const userSecurityQuery = 'SELECT * FROM User_Security WHERE user_id = ?';
-//       db.query(userSecurityQuery, [user.id], async (err, secResults) => {
-//         if (err) return res.status(500).json({ success: false, message: 'Database error' });
-
-//         if (secResults.length > 0) {
-//           const userSecurity = secResults[0];
-//           const passwordMatch = await bcrypt.compare(password, userSecurity.password);
-
-//           if (passwordMatch) {
-//             // Generate JWT token
-//             const token = jwt.sign({ id: user.id, username: user.username, role: user.isRole }, JWT_SECRET, { expiresIn: '1h' });
-
-//             const userType = user.isRole === 0 ? 'Admin' : (user.isRole === 1 ? 'User' : 'Delivery');
-//             res.json({ success: true, userType, token }); // Send token in response
-//           } else {
-//             res.json({ success: false, message: 'Invalid username or password.' });
-//           }
-//         } else {
-//           res.json({ success: false, message: 'User not found1.' });
-//         }
-//       });
-//     } else {
-//       const customerQuery = 'SELECT * FROM Customers WHERE c_username = ?';
-//       db.query(customerQuery, [username], async (err, customerResults) => {
-//         if (err) return res.status(500).json({ success: false, message: 'Database error' });
-
-//         if (customerResults.length > 0) {
-//           const customer = customerResults[0];
-//           const passwordMatch = await bcrypt.compare(password, customer.c_password);
-
-//           if (passwordMatch) {
-//             // Generate JWT token for customer
-//             const token = jwt.sign({ id: customer.id, username: customer.c_username, role: 'Customer' }, JWT_SECRET, { expiresIn: '1h' });
-
-//             res.json({ success: true, userType: 'Customer', token }); // Send token in response
-//           } else {
-//             res.json({ success: false, message: 'Invalid username or password.' });
-//           }
-//         } else {
-//           res.json({ success: false, message: 'User not found.' });
-//         }
-//       });
-//     }
-//   });
-// };
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export const handleLogin = async (req, res, db) => {
   const { username, password } = req.body;
@@ -83,11 +28,17 @@ export const handleLogin = async (req, res, db) => {
               fullName: fullName,  // Include full name in the token payload
               role: user.isRole 
             }, 
-            "jwt-secret-key", 
+            JWT_SECRET, 
             { expiresIn: '1h' }
           );
           const userType = user.isRole === 0 ? 'Admin' : (user.isRole === 1 ? 'User' : 'Delivery');
-          res.cookie('token', token);
+          res.cookie('auth_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
+            maxAge: 86400000 // 24 hours in milliseconds
+            // maxAge: 3600000 // 1 hour
+          })
+          // res.cookie('token', token);
           return res.json({ success: true, userType, token });
         } else {
           return res.status(401).json({ success: false, message: 'Invalid username or password.' });
@@ -106,6 +57,7 @@ export const handleLogin = async (req, res, db) => {
         if (passwordMatch) {
           // Generate JWT token for customer
           const token = jwt.sign({ id: customer.id, username: customer.c_username, role: 'Customer' }, JWT_SECRET, { expiresIn: '1h' });
+          res.cookie('token', token);
           return res.json({ success: true, userType: 'Customer', token });
         } else {
           return res.status(401).json({ success: false, message: 'Invalid username or password.' });

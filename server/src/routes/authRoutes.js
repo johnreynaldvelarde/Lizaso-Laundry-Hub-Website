@@ -6,9 +6,10 @@ const router = express.Router();
 
 
 // for login
-router.post('/login', async (req, res) => {
+router.get('/login', async (req, res) => {
   const pool = await getPool();
   const connection = await pool.getConnection();
+  res.send("Hello World");
   try {
     await handleLogin(req, res, connection);
   } catch (error) {
@@ -18,18 +19,6 @@ router.post('/login', async (req, res) => {
     connection.release();
   }
 });
-
-const veriftyUser = (req, res, next) => {
-  const token = req.coookies.token
-}
-
-// for verfiying the user
-router.get('/', veriftyUser, async (req, res) => {
-  // return res.json({Status: "Success", name: req.name});
- 
-});
-
-
 
 // for register
 router.post('/register', async (req, res) => {
@@ -45,7 +34,15 @@ router.post('/register', async (req, res) => {
   }
 });
 
+const veriftyUser = (req, res, next) => {
+  const token = req.coookies.token
+}
 
+// for verfiying the user
+router.get('/', veriftyUser, async (req, res) => {
+  // return res.json({Status: "Success", name: req.name});
+ 
+});
 
 // admin side
 
