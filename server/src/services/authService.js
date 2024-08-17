@@ -95,10 +95,15 @@
 // };
 
 // module.exports = { createDefaultAdmin, handleLogin };
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { getMainStoreId } = require('./storeService');
-const { JWT_SECRET } = require('../config/config'); // Import JWT secret
+// const bcrypt = require('bcrypt');
+// const jwt = require('jsonwebtoken');
+// const { getMainStoreId } = require('./storeService');
+// const { JWT_SECRET } = require('../config/config');
+
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { getMainStoreId } from './storeService'
+import {JWT_SECRET} from '../config/config'
 
 const createDefaultAdmin = async (db) => {
   const query = 'SELECT COUNT(*) AS count FROM User_Account';
@@ -198,6 +203,6 @@ const handleLogin = async (req, res, db) => {
     }
   });
 };
-
-module.exports = { createDefaultAdmin, handleLogin };
+export { createDefaultAdmin, handleLogin };
+// module.exports = { createDefaultAdmin, handleLogin };
 

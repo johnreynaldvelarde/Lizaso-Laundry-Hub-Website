@@ -64,5 +64,7 @@ npm install react-apexcharts apexcharts
 
 // npm install jsonwebtoken body-parser
 // npm install dotenv
+//npm install cookie-parser
+//npm install mysql2
 
 

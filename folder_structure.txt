@@ -5,7 +5,9 @@ lizaso-laundry-hub/
 │   ├── public/                
 │   ├── src/
 │   │   ├── assets/             
-│   │   ├── components/         
+│   │   ├── components/
+│   │   │     ├──common/
+│   │   │     └──common/          
 │   │   ├── contexts/           
 │   │   ├── hooks/              
 │   │   ├── pages/             
@@ -22,9 +24,19 @@ lizaso-laundry-hub/
 │   └── vite.config.js         
 │
 ├── server/                     
-│   ├── config/           
 │   ├── node_modules/                
-│   ├── src/                
+│   ├── src/
+│   │     ├── config/
+│   │     │     └── config.js
+│   │     ├── db/
+│   │     │     └── dbConfig.js
+│   │     ├── middleware/
+│   │     │     └── authMiddleware.js
+│   │     ├── services/
+│   │     │     ├── authService.js
+│   │     │     └── storeService.js
+│   │     ├── app.js
+│   │     └── index.js                           
 │   ├── .gitignore
 │   ├── package-lock.json                
 │   └── package.json

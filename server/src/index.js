@@ -36,7 +36,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt'); // For hashing passwords
 const { createDefaultAdmin, handleLogin } = require('./services/authService');
 const { ensureMainStoreExists } = require('./services/storeService');
-const authenticateToken = require('./middleware/authMiddleware'); // Import JWT middleware
+const authenticateToken = require('./middleware/authMiddleware'); 
 
 
 dotnev.config({path: './.env'})
