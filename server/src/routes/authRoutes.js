@@ -25,16 +25,8 @@ const veriftyUser = (req, res, next) => {
 
 // for verfiying the user
 router.get('/', veriftyUser, async (req, res) => {
-  const pool = await getPool();
-  const connection = await pool.getConnection();
-  try {
-    await handleLogin(req, res, connection);
-  } catch (error) {
-    console.error('Error handling login:', error);
-    res.status(500).send('Internal Server Error');
-  } finally {
-    connection.release();
-  }
+  // return res.json({Status: "Success", name: req.name});
+ 
 });
 
 
