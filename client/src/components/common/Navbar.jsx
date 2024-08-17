@@ -59,8 +59,8 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
     setNotificationAnchorEl(null);
   };
 
-  const fullname = "Rose Oriana";
-  const username = "roseoriana16";
+  const [fullname, setFullName] = useState("");
+  const [username, setUsername] = useState("");
 
   return (
     <AppBar

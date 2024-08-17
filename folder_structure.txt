@@ -32,11 +32,12 @@ lizaso-laundry-hub/
 │   │     │     └── dbConfig.js
 │   │     ├── middleware/
 │   │     │     └── authMiddleware.js
+│   │     ├── routes/
+│   │     │     └── authService.js
 │   │     ├── services/
 │   │     │     ├── authService.js
 │   │     │     └── storeService.js
-│   │     ├── app.js
-│   │     └── index.js                           
+│   │     └── server.js                           
 │   ├── .gitignore
 │   ├── package-lock.json                
 │   └── package.json

@@ -47,7 +47,7 @@ import axios from "axios";
 const loginService = {
   login: async (data) => {
     try {
-      const response = await axios.post("http://localhost:3002/login", data);
+      const response = await axios.post("http://localhost:3002/api/login", data);
         const token = response.data.token;
         localStorage.setItem('token', token); // Store token in localStorage
         return response.data;

@@ -1,33 +1,50 @@
 import express from 'express';
-import mysql from 'mysql';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
 
-// Import File Function 
-import { createDefaultAdmin, handleLogin } from './services/authService.js';
+// Import routes
+import authRoutes from './routes/authRoutes.js';
+
+// Import File Function
+import { ensureMainStoreExists, createDefaultAdmin } from './services/default.js'; 
+
 
 // Database Connection
-import { connectToDatabase } from './db/dbConfig.js';
-const db = connectToDatabase();
-
-// Ensure the main store exists and create default admin if necessary
-// ensureMainStoreExists(db);
-// createDefaultAdmin(db);
-
-
-
-
+import { getPool } from './db/dbConfig.js';
 
 const app = express();
+const port = process.env.PORT;
+
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(cookieParser());
 
+// Use routes
+app.use('/api', authRoutes);
 
-
-app.listen(3002, () =>{
-    console.log("Runnin.....")
-})
+// Ensure main store exists and start the server
+const initServer = async () => {
+    try {
+      const pool = await getPool();
+      const connection = await pool.getConnection();
+      try {
+        await ensureMainStoreExists(connection);
+        await createDefaultAdmin(connection);
+        app.listen(port, () => {
+          console.log(`Server is running on port ${port}`);
+        });
+      } finally {
+        connection.release();
+      }
+    } catch (err) {
+      console.error('Failed to initialize server:', err);
+      process.exit(1);
+    }
+  };
+  
+initServer();

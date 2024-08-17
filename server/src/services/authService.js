@@ -1,52 +1,9 @@
-// const bcrypt = require('bcrypt');
-// const { getMainStoreId } = require('./storeService');
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+// import { JWT_SECRET } from '../config/config.js';
+// export const handleLogin = async (req, res, db) => {
 
-// const createDefaultAdmin = async (db) => {
-//   const query = 'SELECT COUNT(*) AS count FROM User_Account';
-//   db.query(query, async (err, results) => {
-//     if (err) throw err;
-
-//     const userCount = results[0].count;
-//     if (userCount === 0) {
-//       const username = 'admin';
-//       const firstName = 'Admin';
-//       const lastName = 'User';
-//       const email = 'admin@example.com';
-//       const password = 'admin123';
-//       const hashedPassword = await bcrypt.hash(password, 10);
-//       const passwordSalt = await bcrypt.genSalt(10);
-
-//       getMainStoreId(db, (storeId) => {
-//         if (storeId) {
-//           const insertAccountQuery = `INSERT INTO User_Account 
-//             (username, first_name, last_name, email, isRole, isOnline, isStatus, date_created, store_id) 
-//             VALUES (?, ?, ?, ?, 0, FALSE, TRUE, NOW(), ?)`;
-
-//           db.query(insertAccountQuery, [username, firstName, lastName, email, storeId], (err, accountResults) => {
-//             if (err) throw err;
-
-//             const userId = accountResults.insertId;
-
-//             const insertSecurityQuery = `INSERT INTO User_Security 
-//               (user_id, password, password_salt, mfa_enabled, failed_login_attempts, account_locked) 
-//               VALUES (?, ?, ?, FALSE, 0, FALSE)`;
-
-//             db.query(insertSecurityQuery, [userId, hashedPassword, passwordSalt], (err) => {
-//               if (err) throw err;
-//               console.log('Default admin account created.');
-//             });
-//           });
-//         } else {
-//           console.log('No main store found, cannot create default admin.');
-//         }
-//       });
-//     }
-//   });
-// };
-
-// const handleLogin = async (req, res, db) => {
 //   const { username, password } = req.body;
-
 //   const userAccountQuery = 'SELECT * FROM User_Account WHERE username = ?';
 //   db.query(userAccountQuery, [username], async (err, userAccountResults) => {
 //     if (err) return res.status(500).json({ success: false, message: 'Database error' });
@@ -63,13 +20,16 @@
 //           const passwordMatch = await bcrypt.compare(password, userSecurity.password);
 
 //           if (passwordMatch) {
+//             // Generate JWT token
+//             const token = jwt.sign({ id: user.id, username: user.username, role: user.isRole }, JWT_SECRET, { expiresIn: '1h' });
+
 //             const userType = user.isRole === 0 ? 'Admin' : (user.isRole === 1 ? 'User' : 'Delivery');
-//             res.json({ success: true, userType });
+//             res.json({ success: true, userType, token }); // Send token in response
 //           } else {
 //             res.json({ success: false, message: 'Invalid username or password.' });
 //           }
 //         } else {
-//           res.json({ success: false, message: 'User not found.' });
+//           res.json({ success: false, message: 'User not found1.' });
 //         }
 //       });
 //     } else {
@@ -82,7 +42,10 @@
 //           const passwordMatch = await bcrypt.compare(password, customer.c_password);
 
 //           if (passwordMatch) {
-//             res.json({ success: true, userType: 'Customer' });
+//             // Generate JWT token for customer
+//             const token = jwt.sign({ id: customer.id, username: customer.c_username, role: 'Customer' }, JWT_SECRET, { expiresIn: '1h' });
+
+//             res.json({ success: true, userType: 'Customer', token }); // Send token in response
 //           } else {
 //             res.json({ success: false, message: 'Invalid username or password.' });
 //           }
@@ -94,115 +57,92 @@
 //   });
 // };
 
-// module.exports = { createDefaultAdmin, handleLogin };
-// const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
-// const { getMainStoreId } = require('./storeService');
-// const { JWT_SECRET } = require('../config/config');
-
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { getMainStoreId } from './storeService'
-import {JWT_SECRET} from '../config/config'
-
-const createDefaultAdmin = async (db) => {
-  const query = 'SELECT COUNT(*) AS count FROM User_Account';
-  db.query(query, async (err, results) => {
-    if (err) throw err;
-
-    const userCount = results[0].count;
-    if (userCount === 0) {
-      const username = 'admin';
-      const firstName = 'Admin';
-      const lastName = 'User';
-      const email = 'admin@example.com';
-      const password = 'admin123';
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const passwordSalt = await bcrypt.genSalt(10);
-
-      getMainStoreId(db, (storeId) => {
-        if (storeId) {
-          const insertAccountQuery = `INSERT INTO User_Account 
-            (username, first_name, last_name, email, isRole, isOnline, isStatus, date_created, store_id) 
-            VALUES (?, ?, ?, ?, 0, FALSE, TRUE, NOW(), ?)`;
-
-          db.query(insertAccountQuery, [username, firstName, lastName, email, storeId], (err, accountResults) => {
-            if (err) throw err;
-
-            const userId = accountResults.insertId;
-
-            const insertSecurityQuery = `INSERT INTO User_Security 
-              (user_id, password, password_salt, mfa_enabled, failed_login_attempts, account_locked) 
-              VALUES (?, ?, ?, FALSE, 0, FALSE)`;
-
-            db.query(insertSecurityQuery, [userId, hashedPassword, passwordSalt], (err) => {
-              if (err) throw err;
-              console.log('Default admin account created.');
-            });
-          });
-        } else {
-          console.log('No main store found, cannot create default admin.');
-        }
-      });
-    }
-  });
-};
-
-const handleLogin = async (req, res, db) => {
+export const handleLogin = async (req, res, db) => {
   const { username, password } = req.body;
-
-  const userAccountQuery = 'SELECT * FROM User_Account WHERE username = ?';
-  db.query(userAccountQuery, [username], async (err, userAccountResults) => {
-    if (err) return res.status(500).json({ success: false, message: 'Database error' });
+  try {
+    // Check User_Account table
+    const [userAccountResults] = await db.query('SELECT * FROM User_Account WHERE username = ?', [username]);
 
     if (userAccountResults.length > 0) {
       const user = userAccountResults[0];
+      const [secResults] = await db.query('SELECT * FROM User_Security WHERE user_id = ?', [user.id]);
 
-      const userSecurityQuery = 'SELECT * FROM User_Security WHERE user_id = ?';
-      db.query(userSecurityQuery, [user.id], async (err, secResults) => {
-        if (err) return res.status(500).json({ success: false, message: 'Database error' });
+      if (secResults.length > 0) {
+        const userSecurity = secResults[0];
+        const passwordMatch = await bcrypt.compare(password, userSecurity.password);
 
-        if (secResults.length > 0) {
-          const userSecurity = secResults[0];
-          const passwordMatch = await bcrypt.compare(password, userSecurity.password);
+        if (passwordMatch) {
 
-          if (passwordMatch) {
-            // Generate JWT token
-            const token = jwt.sign({ id: user.id, username: user.username, role: user.isRole }, JWT_SECRET, { expiresIn: '1h' });
+          const fullName = `${user.first_name} ${user.last_name}`;
 
-            const userType = user.isRole === 0 ? 'Admin' : (user.isRole === 1 ? 'User' : 'Delivery');
-            res.json({ success: true, userType, token }); // Send token in response
-          } else {
-            res.json({ success: false, message: 'Invalid username or password.' });
-          }
+          // Generate JWT token
+          const token = jwt.sign(
+            { 
+              id: user.id, 
+              username: user.username, 
+              fullName: fullName,  // Include full name in the token payload
+              role: user.isRole 
+            }, 
+            "jwt-secret-key", 
+            { expiresIn: '1h' }
+          );
+          const userType = user.isRole === 0 ? 'Admin' : (user.isRole === 1 ? 'User' : 'Delivery');
+          res.cookie('token', token);
+          return res.json({ success: true, userType, token });
         } else {
-          res.json({ success: false, message: 'User not found1.' });
+          return res.status(401).json({ success: false, message: 'Invalid username or password.' });
         }
-      });
+      } else {
+        return res.status(404).json({ success: false, message: 'User not found in security table.' });
+      }
     } else {
-      const customerQuery = 'SELECT * FROM Customers WHERE c_username = ?';
-      db.query(customerQuery, [username], async (err, customerResults) => {
-        if (err) return res.status(500).json({ success: false, message: 'Database error' });
+      // Check Customers table
+      const [customerResults] = await db.query('SELECT * FROM Customers WHERE c_username = ?', [username]);
 
-        if (customerResults.length > 0) {
-          const customer = customerResults[0];
-          const passwordMatch = await bcrypt.compare(password, customer.c_password);
+      if (customerResults.length > 0) {
+        const customer = customerResults[0];
+        const passwordMatch = await bcrypt.compare(password, customer.c_password);
 
-          if (passwordMatch) {
-            // Generate JWT token for customer
-            const token = jwt.sign({ id: customer.id, username: customer.c_username, role: 'Customer' }, JWT_SECRET, { expiresIn: '1h' });
-
-            res.json({ success: true, userType: 'Customer', token }); // Send token in response
-          } else {
-            res.json({ success: false, message: 'Invalid username or password.' });
-          }
+        if (passwordMatch) {
+          // Generate JWT token for customer
+          const token = jwt.sign({ id: customer.id, username: customer.c_username, role: 'Customer' }, JWT_SECRET, { expiresIn: '1h' });
+          return res.json({ success: true, userType: 'Customer', token });
         } else {
-          res.json({ success: false, message: 'User not found.' });
+          return res.status(401).json({ success: false, message: 'Invalid username or password.' });
         }
-      });
+      } else {
+        return res.status(404).json({ success: false, message: 'User not found.' });
+      }
     }
-  });
+  } catch (err) {
+    console.error('Error handling login:', err);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
 };
-export { createDefaultAdmin, handleLogin };
-// module.exports = { createDefaultAdmin, handleLogin };
 
+
+export const handleRegister = async (req, res, db) => {
+  try {
+    const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement } = req.body;
+
+    // Check if username already exists
+    const [existingUser] = await db.query('SELECT * FROM Customers WHERE c_username = ?', [c_username]);
+    if (existingUser.length > 0) {
+      return res.status(400).json({ success: false, message: 'Username already exists' });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(c_password, 10);
+
+    // Insert new customer into the database
+    await db.query(
+      'INSERT INTO Customers (c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement, date_created) VALUES (?, ?, ?, ?, ?, ?, NOW() )',
+      [c_firstname, c_middlename, c_lastname, c_username, hashedPassword, isAgreement]
+    );
+
+    res.status(201).json({ success: true, message: 'Customer registered successfully' });
+  } catch (error) {
+    console.error('Error registering customer:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+}

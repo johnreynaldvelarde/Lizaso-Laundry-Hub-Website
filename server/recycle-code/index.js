@@ -34,9 +34,9 @@ const cors = require('cors');
 const dotnev = require('dotenv');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt'); // For hashing passwords
-const { createDefaultAdmin, handleLogin } = require('./services/authService');
+const { createDefaultAdmin, handleLogin } = require('../src/services/authService');
 const { ensureMainStoreExists } = require('./services/storeService');
-const authenticateToken = require('./middleware/authMiddleware'); 
+const authenticateToken = require('../src/middleware/authMiddleware'); 
 
 
 dotnev.config({path: './.env'})
@@ -48,7 +48,7 @@ app.use(cors()); // Enable CORS
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 // Initialize Database Connection
-const { connectToDatabase } = require('./db/dbConfig');
+const { connectToDatabase } = require('../src/db/dbConfig');
 const db = connectToDatabase();
 
 // Ensure the main store exists and create default admin if necessary
