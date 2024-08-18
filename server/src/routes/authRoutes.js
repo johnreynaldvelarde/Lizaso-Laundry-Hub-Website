@@ -4,12 +4,10 @@ import { handleRegister, handleLogin } from '../services/authService.js';
 
 const router = express.Router();
 
-
 // for login
-router.get('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   const pool = await getPool();
   const connection = await pool.getConnection();
-  res.send("Hello World");
   try {
     await handleLogin(req, res, connection);
   } catch (error) {
@@ -34,47 +32,32 @@ router.post('/register', async (req, res) => {
   }
 });
 
-const veriftyUser = (req, res, next) => {
-  const token = req.coookies.token
-}
+export default router;
 
-// for verfiying the user
-router.get('/', veriftyUser, async (req, res) => {
-  // return res.json({Status: "Success", name: req.name});
+// const veriftyUser = (req, res, next) => {
+//   const token = req.coookies.token
+// }
+
+// // for verfiying the user
+// router.get('/', veriftyUser, async (req, res) => {
+//   // return res.json({Status: "Success", name: req.name});
  
-});
+// });
 
 // admin side
 
 // customer side
 
 // update customer information
-router.post('/update-customer', async (req, res) => {
-  const pool = await getPool();
-  const connection = await pool.getConnection();
-  try {
+// router.post('/update-customer', async (req, res) => {
+//   const pool = await getPool();
+//   const connection = await pool.getConnection();
+//   try {
     
-  } catch (error) {
-    console.error('Error handling update customer information:', error);
-    res.status(500).send('Internal Server Error');
-  } finally {
-    connection.release();
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export default router;
+//   } catch (error) {
+//     console.error('Error handling update customer information:', error);
+//     res.status(500).send('Internal Server Error');
+//   } finally {
+//     connection.release();
+//   }
+// });

@@ -6,6 +6,7 @@ lizaso-laundry-hub/
 │   ├── src/
 │   │   ├── assets/             
 │   │   ├── components/
+│   │   │     ├──ProtectedRoute/jsx
 │   │   │     ├──common/
 │   │   │     └──landing-page/          
 │   │   ├── contexts/           

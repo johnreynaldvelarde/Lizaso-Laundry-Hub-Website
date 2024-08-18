@@ -16,21 +16,28 @@
 // app.use('/api/protected-route', authenticateToken, (req, res) => {
 //   res.json({ message: 'You have access to this route.', user: req.user });
 // });
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
-const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token;
-  if (token) {
-    jwt.verify(token, 'jwt-secret-key', (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-      req.user = decoded;
-      next();
-    });
-  } else {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-};
+// const authMiddleware = (req, res, next) => {
+//   const token = req.cookies.token;
+//   if (token) {
+//     jwt.verify(token, 'jwt-secret-key', (err, decoded) => {
+//       if (err) {
+//         return res.status(401).json({ message: 'Unauthorized' });
+//       }
+//       req.user = decoded;
+//       next();
+//     });
+//   } else {
+//     return res.status(401).json({ message: 'Unauthorized' });
+//   }
+// };
 
-module.exports = authMiddleware;
+
+// const veriftyUser = (req, res, next) = {
+//   const token = req.cookies.token;
+
+// }
+
+// module.exports = authMiddleware;
+

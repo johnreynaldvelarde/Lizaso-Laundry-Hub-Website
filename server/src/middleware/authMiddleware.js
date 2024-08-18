@@ -1,40 +1,33 @@
-// const jwt = require('jsonwebtoken');
-// const { JWT_SECRET } = require('../config/config'); // Import JWT secret
+// import jwt from 'jsonwebtoken';
 
-// const authenticateToken = (req, res, next) => {
-//   const authHeader = req.headers['authorization'];
-//   const token = authHeader && authHeader.split(' ')[1];
+// const verifyToken = (req, res, next) => {
+//   const token = req.cookies.auth_token || req.headers['authorization'];
+//   if (!token) return res.status(401).send('Access Denied');
 
-//   if (!token) {
-//     return res.status(401).json({ success: false, message: 'Access denied. No token provided.' });
+//   try {
+//     const verified = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = verified;
+//     next(); // Proceed to the next middleware or route handler
+//   } catch (err) {
+//     res.status(400).send('Invalid Token');
 //   }
-
-//   jwt.verify(token, JWT_SECRET, (err, user) => {
-//     if (err) {
-//       return res.status(403).json({ success: false, message: 'Invalid token.' });
-//     }
-//     req.user = user; // Attach user info to the request
-//     next(); // Pass control to the next middleware or route handler
-//   });
 // };
 
-// module.exports = authenticateToken;
-// src/middlewares/authenticateToken.js
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../config/config');
+// export default verifyToken;
+import jwt from 'jsonwebtoken';
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  
-  if (token == null) return res.status(401).json({ message: 'No token provided' });
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.auth_token || req.headers['authorization'];
+  if (!token) return res.status(401).send('Access Denied');
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ message: 'Invalid or expired token' });
-    req.user = user;
+  try {
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = verified;
     next();
-  });
+  } catch (err) {
+    res.status(400).send('Invalid Token');
+  }
 };
 
-module.exports = authenticateToken;
+export default verifyToken;
 
