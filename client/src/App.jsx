@@ -157,11 +157,15 @@ import NotFound from "./pages/NotFound";
 
 // Import the AuthProvider
 import { AuthProvider } from "./contexts/AuthContext";
-
-// Import ProtectedRoute
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 import RequireAuth from "./components/common/RequireAuth";
+import PersistLogin from "./components/common/PersistLogin";
+
+const ROLES = {
+  Admin: 0,
+  Customer: 1,
+};
 
 const App = () => {
   return (
@@ -170,15 +174,12 @@ const App = () => {
         <Routes>
           <Route path="/" element={<StartingPage />} />
 
-          <Route element={<RequireAuth />}>
-            <Route path="/main/*" element={<Main />} />
-            <Route path="/customer-page/*" element={<MainCustomer />} />
-          </Route>
-          {/* <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
+          {/* This is protected route */}
+          <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
           <Route
             path="/customer-page/*"
             element={<ProtectedRoute component={MainCustomer} />}
-          /> */}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
@@ -187,3 +188,35 @@ const App = () => {
 };
 
 export default App;
+
+{
+  /* <Route element={<PersistLogin />}>
+            <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+              <Route path="/main/*" element={<Main />} />
+            </Route>
+            <Route element={<RequireAuth allowedRoles={[ROLES.Customer]} />}>
+              <Route path="/customer-page/*" element={<MainCustomer />} />
+            </Route>
+          </Route> */
+}
+
+{
+  /* <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
+          <Route
+            path="/customer-page/*"
+            element={<ProtectedRoute component={MainCustomer} />}
+          />
+          <Route path="*" element={<NotFound />} /> */
+}
+
+{
+  // Import ProtectedRoute
+  // import ProtectedRoute from "./components/common/ProtectedRoute";
+  /* <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
+          <Route
+            path="/customer-page/*"
+            element={<ProtectedRoute component={MainCustomer} />}
+
+            // import ProtectedRoute from "./components/common/ProtectedRoute";
+          /> */
+}
