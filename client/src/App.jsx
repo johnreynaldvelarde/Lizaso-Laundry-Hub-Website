@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import ProtectedAuth from "./hooks/ProtectedAuth";
+// import React, { useEffect, useState } from "react";
+// import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// import ProtectedAuth from "./hooks/ProtectedAuth";
 
-// Pages and components
-import { StartingPage, Main, MainCustomer } from "./pages";
-import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/common/ProtectedRoute";
+// // Pages and components
+// import { StartingPage, Main, MainCustomer } from "./pages";
+// import NotFound from "./pages/NotFound";
+// import ProtectedRoute from "./components/common/ProtectedRoute";
 
-const App = () => {
-  const { auth, setAuth } = ProtectedAuth();
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<StartingPage />} />
-        <Route
-          path="/main/*"
-          element={<ProtectedRoute element={<Main />} isAuthenticated={auth} />}
-        />
-        <Route
-          path="/customer-page/*"
-          element={
-            <ProtectedRoute element={<MainCustomer />} isAuthenticated={auth} />
-          }
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
-  );
-};
+// const App = () => {
+//   const { auth, setAuth } = ProtectedAuth();
+//   return (
+//     <Router>
+//       <Routes>
+//         <Route path="/" element={<StartingPage />} />
+//         <Route
+//           path="/main/*"
+//           element={<ProtectedRoute element={<Main />} isAuthenticated={auth} />}
+//         />
+//         <Route
+//           path="/customer-page/*"
+//           element={
+//             <ProtectedRoute element={<MainCustomer />} isAuthenticated={auth} />
+//           }
+//         />
+//         <Route path="*" element={<NotFound />} />
+//       </Routes>
+//     </Router>
+//   );
+// };
 
-export default App;
+// export default App;
 
 // import React, { useEffect, useState } from "react";
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -73,40 +73,23 @@ export default App;
 
 // export default App;
 
-// import React, { useEffect } from "react";
+// import React from "react";
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-// import Cookies from "js-cookie";
 
 // // pages routes
 // import { StartingPage, Main, MainCustomer } from "./pages";
 // import NotFound from "./pages/NotFound";
-// import ProtectedRoute from "./components/common/ProtectedRoute";
+
+// // Import the AuthProvider
+// import { AuthProvider } from "./contexts/AuthContext";
 
 // const App = () => {
-//   const [auth, setAuth] = React.useState(false);
-//   useEffect(() => {
-//     const token = Cookies.get("auth_token");
-//     if (token) {
-//       setAuth(true);
-//     }
-//   }, []);
-
-//   useEffect(() => {});
-
 //   return (
 //     <Router>
 //       <Routes>
 //         <Route path="/" element={<StartingPage />} />
-//         <Route
-//           path="/main/*"
-//           element={<ProtectedRoute element={<Main />} isAuthenticated={auth} />}
-//         />
-//         <Route
-//           path="/customer-page/*"
-//           element={
-//             <ProtectedRoute element={<MainCustomer />} isAuthenticated={auth} />
-//           }
-//         />
+//         <Route path="/main/*" element={<Main />} />
+//         <Route path="/customer-page/*" element={<MainCustomer />} />
 //         <Route path="*" element={<NotFound />} />{" "}
 //       </Routes>
 //     </Router>
@@ -135,3 +118,65 @@ export default App;
 {
   /* <Route path="/main/*" element={auth ? <Main /> : <Navigate to="/" />} /> */
 }
+
+// src/App.jsx
+// import React from "react";
+// import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
+// // Import pages
+// import { StartingPage, Main, MainCustomer } from "./pages";
+// import NotFound from "./pages/NotFound";
+
+// // Import the AuthProvider
+// import AuthProvider from "./contexts/AuthContext";
+// import ProtectedRoute from "./components/common/ProtectedRoute";
+
+// const App = () => {
+//   return (
+//     <AuthProvider>
+//       <Router>
+//         <Routes>
+//           <Route path="/" element={<StartingPage />} />
+//           <Route path="/main/*" element={<Main />} />
+//           <Route path="/customer-page/*" element={<MainCustomer />} />
+//           <Route path="*" element={<NotFound />} />
+//         </Routes>
+//       </Router>
+//     </AuthProvider>
+//   );
+// };
+
+// export default App;
+
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Import pages
+import { StartingPage, Main, MainCustomer } from "./pages";
+import NotFound from "./pages/NotFound";
+
+// Import the AuthProvider
+import { AuthProvider } from "./contexts/AuthContext";
+
+// Import ProtectedRoute
+import ProtectedRoute from "./components/common/ProtectedRoute";
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<StartingPage />} />
+          <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
+          <Route
+            path="/customer-page/*"
+            element={<ProtectedRoute component={MainCustomer} />}
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+};
+
+export default App;

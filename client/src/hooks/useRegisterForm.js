@@ -8,6 +8,16 @@ const useRegisterForm = ( showCreateAccountPopup, setShowCreateAccountPopup,) =>
     const [isVisible, setIsVisible] = useState(showCreateAccountPopup);
 
     // Hold Inputs
+    const [data, setData] = useState({
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      userName: '',
+      password: '',
+      confirmPassword: '',
+      isAgreement: '',
+    })
+
     const [firstName, setFirstName] = useState("");
     const [middleName, setMiddleName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -79,6 +89,7 @@ const useRegisterForm = ( showCreateAccountPopup, setShowCreateAccountPopup,) =>
         isAgreement,
         setIsAgreement,
         handleRegister,
+        setData,
     };
 };
 

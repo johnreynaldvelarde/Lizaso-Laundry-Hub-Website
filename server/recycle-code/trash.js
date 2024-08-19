@@ -3,15 +3,15 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 // Import routes
-import authRoutes from './routes/authRoutes.js';
+import authRoutes from '../src/routes/authRoutes.js';
 
 // Import File Function 
-import {} from './services/default.js'
-import { createDefaultAdmin, handleLogin, handleRegister } from './services/authService.js';
+import {} from '../src/services/default.js'
+import { createDefaultAdmin, handleLogin, handleRegister } from '../src/services/authService.js';
 import { ensureMainStoreExists } from './services/storeService.js';
 
 // Database Connection
-import { getPool } from './db/dbConfig.js';
+import { getPool } from '../src/db/dbConfig.js';
 
 const app = express();
 const port = process.env.PORT;

@@ -8,8 +8,10 @@ lizaso-laundry-hub/
 │   │   ├── components/
 │   │   │     ├──ProtectedRoute/jsx
 │   │   │     ├──common/
+│   │   │     │    └── Navbar.jsx   
 │   │   │     └──landing-page/          
-│   │   ├── contexts/           
+│   │   ├── contexts/
+│   │   │     └──UserContext.jsx/           
 │   │   ├── hooks/
 │   │   │     ├──useLoginForm.jsx/ 
 │   │   │     └──useRegisterForm.jsx/              
@@ -46,7 +48,8 @@ lizaso-laundry-hub/
 │   │     ├── services/
 │   │     │     ├── authService.js
 │   │     │     └── storeService.js
-│   │     └── server.js                           
+│   │     └── server.js
+│   ├── .env                           
 │   ├── .gitignore
 │   ├── package-lock.json                
 │   └── package.json

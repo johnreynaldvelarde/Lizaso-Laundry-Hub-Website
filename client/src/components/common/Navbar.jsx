@@ -14,13 +14,15 @@ import {
   ListItemIcon,
 } from "@mui/material";
 
+import { useAuth } from "../../contexts/AuthContext";
+
 // icons
 import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import { ArrowDropDown } from "@mui/icons-material";
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { FiMenu } from "react-icons/fi";
 import UserImage from "../admin-components/UserImage";
 import { MdOutlineMailOutline } from "react-icons/md";
@@ -30,6 +32,7 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [messageAnchorEl, setMessageAnchorEl] = useState(null);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+  const { userDetails } = useAuth();
 
   const open = Boolean(anchorEl);
   const openMessages = Boolean(messageAnchorEl);
@@ -58,9 +61,6 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
   const handleNotificationsClose = () => {
     setNotificationAnchorEl(null);
   };
-
-  const [fullname, setFullName] = useState("");
-  const [username, setUsername] = useState("");
 
   return (
     <AppBar
@@ -202,7 +202,7 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
                     textAlign: "right",
                   }}
                 >
-                  {fullname}
+                  {userDetails.fullName}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -212,7 +212,7 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
                     textAlign: "right",
                   }}
                 >
-                  {username}
+                  {userDetails.username}
                 </Typography>
               </Box>
               <IconButton sx={{ ml: 1 }} onClick={handleClick}>

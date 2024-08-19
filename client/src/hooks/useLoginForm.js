@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {loginService} from "../services/api/authClient";
+import { loginService } from "../services/api/authClient";
+import { useAuth } from "../contexts/AuthContext"; // Assuming you have this context
 
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -9,6 +10,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
+  const { setAccessToken } = useAuth(); // Use the context to set the token
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,31 +21,38 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     e.preventDefault();
 
     if (loginUsername === "" || loginPassword === "") {
-        setErrorMessage("Username and password are required.");
-        return;
+      setErrorMessage("Username and password are required.");
+      return;
     }
 
     try {
-        const { success, token, userType } = await loginService.login({
-            username: loginUsername,
-            password: loginPassword,
-        });
+      const { success, userType, accessToken, refreshToken } = await loginService.login({
+        username: loginUsername,
+        password: loginPassword,
+      });
 
-        if (success) {
-            alert("Login successful!");
-            setLoginUsername("");
-            setLoginPassword("");
-            setLoginShowPopup(false);
-            navigate(userType === "Customer" ? "/customer-page" : "/main");
-        } else {
-            setErrorMessage("Unexpected error occurred.");
+      if (success) {
+        if (accessToken) {
+          // Store the access token in context or local storage
+          setAccessToken(accessToken);
         }
+        alert("Login successful!");
+        setLoginUsername("");
+        setLoginPassword("");
+        setLoginShowPopup(false);
+
+        console.log("Here the access token: " + accessToken)
+        
+        navigate(userType === "Customer" ? "/customer-page" : "/main");
+      } else {
+        setErrorMessage("Unexpected error occurred.");
+      }
     } catch (error) {
-        setErrorMessage(error.message); // Display the error message from loginService
-        // console.error("There was an error logging in:", error);
+      setErrorMessage(error.message); // Display the error message from loginService
+      // console.error("There was an error logging in:", error);
     }
-};
- 
+  };
+
   const handleForgotPassword = () => {
     console.log("Forgot Password");
   };
@@ -71,9 +80,3 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
 };
 
 export default useLoginForm;
-
- // if (rememberMe) {
-            //     // localStorage.setItem('token', token); // Store in localStorage for persistent sessions
-            // } else {
-            //     // sessionStorage.setItem('token', token); // Store in sessionStorage for non-persistent sessions
-            // }

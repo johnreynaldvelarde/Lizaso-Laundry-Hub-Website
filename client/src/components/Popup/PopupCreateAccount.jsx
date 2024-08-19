@@ -31,6 +31,7 @@ const PopupCreateAccount = ({
     isAgreement,
     setIsAgreement,
     handleRegister,
+    setData,
   } = useRegisterForm(showCreateAccountPopup, setShowCreateAccountPopup);
 
   return (

@@ -71,3 +71,5 @@ npm install react-apexcharts apexcharts
 // install express cors mysql2
 // npm install formik
 //npm install js-cookie
+
+npm react-hot-toast
