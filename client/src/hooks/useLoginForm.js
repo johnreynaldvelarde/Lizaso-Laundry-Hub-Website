@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { loginService } from "../services/api/authClient";
-import { useAuth } from "../contexts/AuthContext"; // Assuming you have this context
+// import { useAuth } from "../contexts/AuthContext"; // Assuming you have this context
+import useAuth from "./useAuth";
 
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -11,7 +12,10 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const { setAccessToken } = useAuth(); // Use the context to set the token
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pahtname || "/";
 
   useEffect(() => {
     setIsVisible(showLoginPopup);
@@ -26,7 +30,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     }
 
     try {
-      const { success, userType, accessToken, refreshToken } = await loginService.login({
+      const { success, userType, accessToken } = await loginService.login({
         username: loginUsername,
         password: loginPassword,
       });
@@ -41,9 +45,10 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
         setLoginPassword("");
         setLoginShowPopup(false);
 
-        console.log("Here the access token: " + accessToken)
-        
-        navigate(userType === "Customer" ? "/customer-page" : "/main");
+        console.log("Here the access token: " + accessToken);
+        navigate(from, { replace: true });
+
+        // navigate(userType === "Customer" ? "/customer-page" : "/main");
       } else {
         setErrorMessage("Unexpected error occurred.");
       }
@@ -75,7 +80,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     handleLogin,
     handleForgotPassword,
     handleInputChange,
-    isVisible
+    isVisible,
   };
 };
 

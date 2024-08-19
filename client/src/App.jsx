@@ -161,17 +161,24 @@ import { AuthProvider } from "./contexts/AuthContext";
 // Import ProtectedRoute
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
+import RequireAuth from "./components/common/RequireAuth";
+
 const App = () => {
   return (
     <AuthProvider>
       <Router>
         <Routes>
           <Route path="/" element={<StartingPage />} />
-          <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
+
+          <Route element={<RequireAuth />}>
+            <Route path="/main/*" element={<Main />} />
+            <Route path="/customer-page/*" element={<MainCustomer />} />
+          </Route>
+          {/* <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
           <Route
             path="/customer-page/*"
             element={<ProtectedRoute component={MainCustomer} />}
-          />
+          /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
