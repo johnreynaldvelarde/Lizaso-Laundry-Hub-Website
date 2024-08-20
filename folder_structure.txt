@@ -8,10 +8,11 @@ lizaso-laundry-hub/
 │   │   ├── components/
 │   │   │     ├──ProtectedRoute/jsx
 │   │   │     ├──common/
+│   │   │     │    ├── ProtectedRoute.jsx   
 │   │   │     │    └── Navbar.jsx   
 │   │   │     └──landing-page/          
 │   │   ├── contexts/
-│   │   │     └──UserContext.jsx/           
+│   │   │     └──AuthContext.jsx/           
 │   │   ├── hooks/
 │   │   │     ├──useLoginForm.jsx/ 
 │   │   │     └──useRegisterForm.jsx/              
@@ -32,7 +33,7 @@ lizaso-laundry-hub/
 │   ├── package.json           
 │   ├── postcss.config.js      
 │   ├── tailwind.config.js     
-│   └── vite.config.js         
+│   └── vite.config.js        
 │
 ├── server/                     
 │   ├── node_modules/                

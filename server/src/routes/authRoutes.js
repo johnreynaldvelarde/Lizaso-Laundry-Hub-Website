@@ -1,6 +1,7 @@
 import express from 'express';
 import { getPool } from '../db/dbConfig.js';
-import { handleRegister, handleLogin,  handleRefreshToken, getUserDetails  } from '../services/authService.js';
+import { handleRegister, handleLogin,  getUserDetails  } from '../services/authService.js';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -34,9 +35,70 @@ router.get('/user/me', withDatabaseConnection(async (req, res, connection) => {
 }));
 
 // Refresh token route
-router.post('/refresh-token', (req, res) => {
+router.get('/refresh-token', (req, res) => {
   handleRefreshToken(req, res);
 });
+
+
+function handleRefreshToken(req, res) {
+
+  const refreshToken = req.cookies.refreshToken; // Assuming the refresh token is stored in HttpOnly cookie
+
+  // Log the refresh token value
+  console.log('Refresh token from cookies:', refreshToken);
+
+  if (!refreshToken) {
+    console.log('No refresh token provided');
+    return res.status(403).json({ success: false, message: "No refresh token provided" });
+  }
+
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) {
+      console.log('Invalid refresh token:', err.message);
+      return res.status(403).json({ success: false, message: "Invalid refresh token" });
+    }
+
+    // Log user information extracted from the refresh token
+    console.log('Valid refresh token, user info:', user);
+
+    const accessToken = jwt.sign(
+      { userId: user.userId, storeId: user.storeId, username: user.username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '15m' } // Adjust expiration as needed
+    );
+
+    // Log the generated access token
+    console.log('Generated new access token:', accessToken);
+
+    res.json({ success: true, accessToken });
+  });
+}
+
+const tokenBlacklist = new Set();
+
+// Middleware to check if a token is blacklisted
+const isTokenBlacklisted = (token) => {
+  return tokenBlacklist.has(token);
+};
+
+
+// Logout route
+router.post('/logout', (req, res) => {
+  console.log("Logout na")
+  const refreshToken = req.cookies.refreshToken;
+
+  // Handle JWT invalidation
+  if (refreshToken) {
+    // Add the refresh token to the blacklist
+    tokenBlacklist.add(refreshToken);
+
+    // Clear the refresh token cookie
+    res.clearCookie('refreshToken');
+  }
+
+  res.status(200).json({ success: true, message: 'Logged out successfully' });
+});
+
 
 
 

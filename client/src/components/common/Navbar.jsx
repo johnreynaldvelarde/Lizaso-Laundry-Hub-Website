@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import useAuth from "../../contexts/AuthContext";
+import useLogout from "../../hooks/useLogout";
 
 // icons
 import PersonAdd from "@mui/icons-material/PersonAdd";
@@ -37,6 +38,8 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
   const open = Boolean(anchorEl);
   const openMessages = Boolean(messageAnchorEl);
   const openNotifications = Boolean(notificationAnchorEl);
+
+  const logout = useLogout();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -273,7 +276,7 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
                 </ListItemIcon>
                 Settings
               </MenuItem>
-              <MenuItem onClick={handleClose}>
+              <MenuItem onClick={logout}>
                 <ListItemIcon>
                   <Logout fontSize="small" />
                 </ListItemIcon>

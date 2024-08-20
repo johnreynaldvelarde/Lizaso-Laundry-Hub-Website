@@ -20,14 +20,38 @@ export const AuthProvider = ({ children }) => {
     fullName: "",
     username: "",
   });
+  const [isLoading, setIsLoading] = useState(true); // Add a loading state
 
-  // Fetch user details function
-  const fetchUserDetails = async () => {
-    if (accessToken) {
+  const refreshAccessToken = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/refresh-token`, {
+        withCredentials: true, // This will send cookies, including the refresh token
+      });
+
+      if (response.data.success) {
+        const newAccessToken = response.data.accessToken;
+        setAccessToken(newAccessToken);
+
+        // Log the receipt of the new access token
+        console.log("New access token received:", newAccessToken);
+
+        return newAccessToken;
+      } else {
+        console.error("Error refreshing access token:", response.data.message);
+        // Optionally handle redirect to login if refresh fails
+      }
+    } catch (error) {
+      //console.error("Error refreshing access token:", error);
+    }
+    return null;
+  };
+
+  const fetchUserDetails = async (token) => {
+    if (token) {
       try {
         const response = await axios.get(`${API_URL}/user/me`, {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -40,24 +64,54 @@ export const AuthProvider = ({ children }) => {
             username: user.username,
           });
         } else {
-          console.error("Error:", response.data.message);
+          console.error("Error fetching user details:", response.data.message);
+          // Optionally handle logout if fetching user details fails
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
       }
-    } else {
     }
   };
 
   useEffect(() => {
-    fetchUserDetails();
-  }, [accessToken]);
+    const checkAccessToken = async () => {
+      if (!accessToken) {
+        const token = await refreshAccessToken();
+        if (token) {
+          await fetchUserDetails(token);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkAccessToken();
+  }, [accessToken]); // This should ideally only run when `accessToken` changes
+
+  // useEffect(() => {
+  //   const checkAccessToken = async () => {
+  //     let token = accessToken;
+
+  //     if (!token) {
+  //       token = await refreshAccessToken();
+  //     }
+
+  //     if (token) {
+  //       await fetchUserDetails(token);
+  //     }
+
+  //     setIsLoading(false); // Set loading to false after the token is checked
+  //   };
+
+  //   checkAccessToken();
+  // }, [accessToken]); // Depend on accessToken so it checks whenever it changes
 
   const value = {
     accessToken,
     setAccessToken,
     userDetails,
-    setUser: (user) => setUserDetails(user),
+    setUser: setUserDetails,
+    isLoading,
+    setIsLoading, // Provide setIsLoading to the context if needed
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
