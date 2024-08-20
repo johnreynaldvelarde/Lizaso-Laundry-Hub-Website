@@ -14,7 +14,7 @@ import {
   ListItemIcon,
 } from "@mui/material";
 
-import { useAuth } from "../../contexts/AuthContext";
+import useAuth from "../../contexts/AuthContext";
 
 // icons
 import PersonAdd from "@mui/icons-material/PersonAdd";
