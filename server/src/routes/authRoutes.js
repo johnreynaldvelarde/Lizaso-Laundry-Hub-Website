@@ -49,7 +49,8 @@ function handleRefreshToken(req, res) {
 
   if (!refreshToken) {
     console.log('No refresh token provided');
-    return res.status(403).json({ success: false, message: "No refresh token provided" });
+    // return res.status(403).json({ success: false, message: "No refresh token provided" });
+    return res.json({ success: false, message: "No refresh token provided" });
   }
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {

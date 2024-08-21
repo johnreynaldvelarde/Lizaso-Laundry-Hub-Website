@@ -37,11 +37,10 @@ export const AuthProvider = ({ children }) => {
 
         return newAccessToken;
       } else {
-        console.error("Error refreshing access token:", response.data.message);
-        // Optionally handle redirect to login if refresh fails
+        // console.error("Error refreshing access token:", response.data.message);
       }
     } catch (error) {
-      //console.error("Error refreshing access token:", error);
+      console.error("Error refreshing access token:", error);
     }
     return null;
   };
