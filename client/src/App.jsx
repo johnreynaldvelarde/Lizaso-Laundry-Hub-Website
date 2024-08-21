@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "react-hot-toast";
 
 // Import pages
 import { StartingPage, Main, MainCustomer } from "./pages";
@@ -25,6 +28,7 @@ const App = () => {
             element={<ProtectedRoute component={MainCustomer} />}
           />
         </Routes>
+        <Toaster position="bottom-right" />
       </Router>
     </AuthProvider>
   );

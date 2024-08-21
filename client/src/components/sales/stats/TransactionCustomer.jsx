@@ -4,7 +4,7 @@ import { FaEllipsisH } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { customers } from "../../../data/customers";
 import { transactions, transactionsColumns } from "../../../data/transactions";
-import Table from "../../../components/Table";
+import Table from "../../../components/common/Table";
 
 const TransactionCustomer = () => {
   return (

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-hot-toast";
+import CustomToast from "../../components/common/CustomToast";
 import useAuth from "../../contexts/AuthContext";
-import { createBranch } from "../../services/api/admin/branchApi";
+import { createStore } from "../../services/api/admin/branchApi";
 
 const useAddBranch = () => {
   const [storeNo, setStoreNo] = useState("");
@@ -35,7 +36,7 @@ const useAddBranch = () => {
     // Proceed only if there are no validation errors
     if (Object.keys(newErrors).length === 0) {
       try {
-        const response = await createBranch.setBranch({
+        const response = await createStore.setStore({
           store_id: storeNo,
           store_name: storeName,
           store_address: location,
@@ -43,14 +44,26 @@ const useAddBranch = () => {
         });
 
         if (!response.success) {
-          alert(response.message || "Cannot Proceed");
+          // alert(response.message || "Cannot Proceed");
+          <CustomToast
+            t={t}
+            type="error"
+            message={response.message || "Cannot Proceed"}
+          />;
         } else {
           alert("Submission Successful!");
+          // <CustomToast t={t} type="success" message="Submission Successful!" />;
+          handleClear();
         }
       } catch (error) {
-        alert(error.message || "Cannot Proceed");
-      } finally {
-        handleClear(); 
+        // alert(error.message || "Cannot Proceed");
+        toast.custom((t) => (
+          <CustomToast
+            t={t}
+            type="error"
+            message={error.message || "Cannot Proceed"}
+          />
+        ));
       }
     }
   };

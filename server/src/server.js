@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 // Import routes and middleware
 import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js'
+import getRoutes from './routes/getRoutes.js'
 import { authenticateToken } from './middleware/authMiddleware.js';
 
 // Import File Function
@@ -28,7 +29,7 @@ app.use(cors({
 app.use(cookieParser());
 
 // Public routes
-app.use('/api', authRoutes, postRoutes);
+app.use('/api', authRoutes, postRoutes, getRoutes);
 
 // Protected routes
 app.use('/api/protected', authenticateToken, (req, res) => {

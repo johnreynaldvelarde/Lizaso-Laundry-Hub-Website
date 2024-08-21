@@ -1,6 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
-import Table from "../../../components/Table";
+import Table from "../../../components/common/Table";
 import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 

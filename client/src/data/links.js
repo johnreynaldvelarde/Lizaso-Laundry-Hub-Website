@@ -34,20 +34,20 @@ export const links = [
     url: "/main/schedule",
   },
   {
-    name: "Branch Operations",
+    name: "Store Operations",
     icon: React.createElement(IoStorefrontOutline),
     subLinks: [
       {
         name: "All Branch Store",
-        url: "/main/branch",
+        url: "/main/store",
       },
       {
-        name: "Add Branch",
-        url: "/main/add-branch",  
+        name: "Add new store",
+        url: "/main/add-store",  
       },
       {
         name: "Branch Statistic",
-        url: "/",
+        url: "",
       },
     ],
   },
@@ -75,11 +75,11 @@ export const links = [
     subLinks: [
       {
         name: "All Users",
-        url: "/",
+        url: "",
       },
       {
         name: "Add Users",
-        url: "/",
+        url: "",
       },
     ],
   },
@@ -94,11 +94,11 @@ export const links = [
     subLinks: [
       {
         name: "Sales Analytics",
-        url: "/sales/analysis",
+        url: "",
       },
       {
         name: "Product Sales",
-        url: "/sales",
+        url: "",
       },
     ],
   },
@@ -108,33 +108,33 @@ export const links = [
     subLinks: [
       {
         name: "All Orders",
-        url: "/orders",
+        url: "",
       },
       {
         name: "Order Template",
-        url: "/orders/template",
+        url: "",
       },
     ],
   },
   {
     name: "Suppliers",
     icon: React.createElement(FaShare),
-    url: "/suppliers",
+    url: "",
   },
   {
     name: "Transactions",
     icon: React.createElement(FaHandshake),
-    url: "/transactions",
+    url: "/",
   },
   {
-    name: "Brands",
+    name: "Configuration",
     icon: React.createElement(FiLayers),
-    url: "/brands",
+    url: "",
   },
   {
     name: "Reviews",
     icon: React.createElement(FiMessageCircle),
-    url: "/reviews",
+    url: "",
   },
   {
     name: "Settings",
@@ -144,7 +144,7 @@ export const links = [
   {
     name: "Inbox",
     icon: React.createElement(FiMail),
-    url: "/inbox",
+    url: "",
   },
 ];
 

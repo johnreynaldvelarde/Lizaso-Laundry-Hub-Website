@@ -97,11 +97,11 @@ const ItemCategory = lazy(() =>
 const Schedule = lazy(() =>
   import("../../pages").then((module) => ({ default: module.Schedule }))
 );
-const Branch = lazy(() =>
-  import("../../pages").then((module) => ({ default: module.Branch }))
+const Store = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.Store }))
 );
-const AddBranch = lazy(() =>
-  import("../../pages").then((module) => ({ default: module.AddBranch }))
+const AddStore = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.AddStore }))
 );
 
 const sideBarWidth = 300;
@@ -140,8 +140,8 @@ const Main = () => {
             <Route path="customers" element={<Customers />} />
             <Route path="settings" element={<Settings />} />
             <Route path="schedule" element={<Schedule />} />
-            <Route path="branch" element={<Branch />} />
-            <Route path="add-branch" element={<AddBranch />} />
+            <Route path="store" element={<Store />} />
+            <Route path="add-store" element={<AddStore />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="add-item" element={<AddItem />} />
             <Route path="item-category" element={<ItemCategory />} />

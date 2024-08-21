@@ -75,3 +75,5 @@ npm install react-apexcharts apexcharts
 npm react-hot-toast
 
 npm install --save react-toastify
+npm install react-hot-toast
+npm install framer-motion

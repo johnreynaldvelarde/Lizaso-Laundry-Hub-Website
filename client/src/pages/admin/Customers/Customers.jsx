@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import Table from "../../../components/Table";
+import Table from "../../../components/common/Table";
 import { customers, customersColumns } from "../../../data/customers";
 
 const Customers = () => {

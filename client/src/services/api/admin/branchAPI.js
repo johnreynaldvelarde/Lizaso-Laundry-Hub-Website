@@ -7,8 +7,8 @@ const handleError = (error) => {
 };
 
 // Create new branch
-const createBranch = {
-  setBranch: async (data) => {
+const createStore = {
+  setStore: async (data) => {
     try {
       const response = await axiosPrivate.post("/create-store", data);
       const { success, message } = response.data;
@@ -29,14 +29,14 @@ const createBranch = {
 };
 
 // Get branch list
-const viewBranch = {
-  getBranch: async (data) => {
+const viewStore = {
+  getStoreList: async (data) => {
     try {
-      const response = await axiosPublic.post("/view-branch", data);
-      const { success, message } = response.data;
+      const response = await axiosPrivate.get("/view-store", data);
+      const { success, message, data: storeData } = response.data;
 
       if (success) {
-        return { success, message };
+        return { success, message, data: storeData };
       } else {
         throw new Error(message || "Login failed.");
       }
@@ -46,4 +46,4 @@ const viewBranch = {
   },
 };
 
-export { createBranch, viewBranch };
+export { createStore, viewStore };

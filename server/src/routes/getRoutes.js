@@ -1,5 +1,5 @@
 import express from 'express';
-import { handleCreateStore } from '../services/useStore.js';
+import {handleViewStore } from '../services/useStore.js';
 import { getPool } from '../db/dbConfig.js';
 
 
@@ -19,8 +19,8 @@ const withDatabaseConnection = (handler) => async (req, res) => {
   };
 
 // Store Section
-router.post('/create-store', withDatabaseConnection(async (req, res, connection) => {
-    await handleCreateStore(req, res, connection);
+router.get('/view-store', withDatabaseConnection(async (req, res, connection) => {
+    await handleViewStore(req, res, connection);
 }));
 
 

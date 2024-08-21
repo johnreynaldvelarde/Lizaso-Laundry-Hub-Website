@@ -2,7 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { FiPlus } from "react-icons/fi";
 import AddCategory from "../../../components/Popup/AddItemCategory";
-import Table from "../../../components/Table";
+import Table from "../../../components/common/Table";
 import { categories, categoriesColumns } from "../../../data/categories";
 
 const ProductCategories = () => {

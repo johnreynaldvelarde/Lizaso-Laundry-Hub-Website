@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(newAccessToken);
 
         // Log the receipt of the new access token
-        console.log("New access token received:", newAccessToken);
+        // console.log("New access token received:", newAccessToken);
 
         return newAccessToken;
       } else {

@@ -5,7 +5,7 @@ import BarChart from "../../../components/sales/charts/BarChart";
 import Stats from "../../../components/sales/stats/Stats";
 import TopCountries from "../../../components/sales/stats/TopCountries";
 import TransactionCustomer from "../../../components/sales/stats/TransactionCustomer";
-import Table from "../../../components/Table";
+import Table from "../../../components/common/Table";
 import { orders, ordersColumns } from "../../../data/orders";
 
 const Dashboard = () => {
