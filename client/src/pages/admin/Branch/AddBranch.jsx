@@ -7,7 +7,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import React from "react";
-import userAddBranch from "../../../hooks/branch-hook/userAddBranch";
+import userAddBranch from "../../../hooks/admin/userAddBranch";
 
 const AddBranch = () => {
   const {
