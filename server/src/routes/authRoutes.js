@@ -45,7 +45,7 @@ function handleRefreshToken(req, res) {
   const refreshToken = req.cookies.refreshToken; // Assuming the refresh token is stored in HttpOnly cookie
 
   // Log the refresh token value
-  console.log('Refresh token from cookies:', refreshToken);
+  // console.log('Refresh token from cookies:', refreshToken);
 
   if (!refreshToken) {
     console.log('No refresh token provided');
@@ -60,7 +60,7 @@ function handleRefreshToken(req, res) {
     }
 
     // Log user information extracted from the refresh token
-    console.log('Valid refresh token, user info:', user);
+    // console.log('Valid refresh token, user info:', user);
 
     const accessToken = jwt.sign(
       { userId: user.userId, storeId: user.storeId, username: user.username },
@@ -69,7 +69,7 @@ function handleRefreshToken(req, res) {
     );
 
     // Log the generated access token
-    console.log('Generated new access token:', accessToken);
+    // console.log('Generated new access token:', accessToken);
 
     res.json({ success: true, accessToken });
   });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loginService } from "../services/api/authClient";
-import useAuth  from "../contexts/AuthContext";
+import useAuth from "../contexts/AuthContext";
 // import useAuth from "../hooks/useAuth";
 
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
@@ -12,7 +12,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const { setAccessToken } = useAuth();
-  
+
   // Destructure `setAuth` from `useAuth`
   const { setAuth, persist, setPersist } = useAuth();
 
@@ -40,12 +40,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
 
       if (success) {
         if (accessToken) {
-          console.log(accessToken);
-          console.log(userType);
           setAccessToken(accessToken);
-
-          // Correctly use `setAuth` to set userType and accessToken
-          // setAuth({ userType, accessToken });
         }
 
         alert("Login successful!");
@@ -54,14 +49,12 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
         setLoginPassword("");
         setLoginShowPopup(false);
 
-        // navigate(from, { replace: true });
-
         navigate(userType === "Customer" ? "/customer-page" : "/main");
       } else {
         setErrorMessage("Unexpected error occurred.");
       }
     } catch (error) {
-      setErrorMessage(error.message); // Display the error message from loginService
+      setErrorMessage(error.message);
     }
   };
 
@@ -93,7 +86,6 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
 
 export default useLoginForm;
 
-
 // const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
 //   const [passwordVisible, setPasswordVisible] = useState(false);
 //   const [loginUsername, setLoginUsername] = useState("");
@@ -103,10 +95,7 @@ export default useLoginForm;
 //   const [isVisible, setIsVisible] = useState(false);
 //   // const { setAccessToken } = useAuth(); // Use the context to set the token
 
-
-
 //   const { setAuth, persist, setPersist  } = useAuth();
-
 
 //   const navigate = useNavigate();
 //   const location = useLocation();
@@ -138,7 +127,7 @@ export default useLoginForm;
 
 //           setAuth({userType, accessToken});
 //         }
-        
+
 //         alert("Login successful!");
 
 //         setLoginUsername("");
@@ -184,6 +173,5 @@ export default useLoginForm;
 // };
 
 // export default useLoginForm;
-
 
 // // import { useAuth } from "../contexts/AuthContext"; // Assuming you have this context

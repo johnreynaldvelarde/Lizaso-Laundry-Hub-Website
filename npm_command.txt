@@ -73,3 +73,5 @@ npm install react-apexcharts apexcharts
 //npm install js-cookie
 
 npm react-hot-toast
+
+npm install --save react-toastify

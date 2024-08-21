@@ -7,7 +7,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import React from "react";
-import userAddBranch from "../../../hooks/admin/userAddBranch";
+import useAddBranch from "../../../hooks/admin/useAddBranch";
 
 const AddBranch = () => {
   const {
@@ -20,7 +20,7 @@ const AddBranch = () => {
     handleSubmit,
     handleInputChange,
     handleClear,
-  } = userAddBranch();
+  } = useAddBranch();
 
   return (
     <Box sx={{ pt: "80px", pb: "20px" }}>

@@ -1,12 +1,14 @@
 import { useState } from "react";
+import { toast } from 'react-toastify';
+import useAuth from "../../contexts/AuthContext";
+import { createBranch } from "../../services/api/admin/branchApi";
 
-const userAddBranch = () => {
+const useAddBranch = () => {
   const [storeNo, setStoreNo] = useState("");
   const [storeName, setStoreName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [location, setLocation] = useState("");
   const [errors, setErrors] = useState({});
-
 
   const handleClear = () => {
     setStoreName("");
@@ -21,7 +23,8 @@ const userAddBranch = () => {
     setStoreNo(generatedStoreNo);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const newErrors = {};
     if (!storeName) newErrors.storeName = "Store Name is required";
     if (!storeNo) newErrors.storeNo = "Store No is required";
@@ -29,35 +32,51 @@ const userAddBranch = () => {
     if (!location) newErrors.location = "Location is required";
     setErrors(newErrors);
 
-    
+    // Proceed only if there are no validation errors
     if (Object.keys(newErrors).length === 0) {
-        alert("Submission Successful!");
-        handleClear();
+      try {
+        const response = await createBranch.setBranch({
+          store_id: storeNo,
+          store_name: storeName,
+          store_address: location,
+          store_contact: contactNumber,
+        });
+
+        if (!response.success) {
+          alert(response.message || "Cannot Proceed");
+        } else {
+          alert("Submission Successful!");
+        }
+      } catch (error) {
+        alert(error.message || "Cannot Proceed");
+      } finally {
+        handleClear(); 
+      }
     }
   };
 
   const handleInputChange = (field) => (e) => {
     const value = e.target.value;
     switch (field) {
-      case 'storeNo':
+      case "storeNo":
         setStoreNo(value);
         break;
-      case 'storeName':
+      case "storeName":
         setStoreName(value);
         break;
-      case 'contactNumber':
+      case "contactNumber":
         setContactNumber(value);
         break;
-      case 'location':
+      case "location":
         setLocation(value);
         break;
       default:
         break;
     }
     // Clear the specific error for the field being edited
-    setErrors(prevErrors => ({
+    setErrors((prevErrors) => ({
       ...prevErrors,
-      [field]: ""
+      [field]: "",
     }));
   };
 
@@ -79,4 +98,4 @@ const userAddBranch = () => {
   };
 };
 
-export default userAddBranch;
+export default useAddBranch;

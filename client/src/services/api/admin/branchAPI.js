@@ -1,7 +1,6 @@
-import { axiosPublic } from "../axios";
+import { axiosPrivate } from "../axios";
 
 const handleError = (error) => {
-  console.error("API Error:", error);
   const message =
     error.response?.data?.message || "An unexpected error occurred.";
   return new Error(message);
@@ -9,25 +8,29 @@ const handleError = (error) => {
 
 // Create new branch
 const createBranch = {
-  login: async (data) => {
+  setBranch: async (data) => {
     try {
-      const response = await axiosPublic.post("/create-branch", data);
+      const response = await axiosPrivate.post("/create-store", data);
       const { success, message } = response.data;
 
       if (success) {
         return { success, message };
+        
       } else {
-        throw new Error(message || "Create Branch is failed.");
+        throw new Error(message || "Failed to create branch");
       }
     } catch (error) {
-      throw handleError(error);
+      // Log the error message before throwing the error
+      const errorMessage = error.response?.data?.message || 'Cannot Get the message for the server';
+      console.log(errorMessage); // Log the message
+      throw new Error(errorMessage); // Re-throw the error with the message
     }
   },
 };
 
 // Get branch list
 const viewBranch = {
-  login: async (data) => {
+  getBranch: async (data) => {
     try {
       const response = await axiosPublic.post("/view-branch", data);
       const { success, message } = response.data;
