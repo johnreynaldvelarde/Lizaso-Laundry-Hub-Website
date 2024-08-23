@@ -26,7 +26,20 @@ export const links = [
   {
     name: "Monitored Units",
     icon: React.createElement(MdLocalLaundryService),
-    url: "/main/unit-monitor",
+    subLinks: [
+      {
+        name: "All Laundry Units",
+        url: "/main/unit-monitor",
+      },
+      {
+        name: "Add new laundry units",
+        url: "/main/add-unit",  
+      },
+      {
+        name: "Units Statistic",
+        url: "",
+      },
+    ],
   },
   {
     name: "Manage Schedules",

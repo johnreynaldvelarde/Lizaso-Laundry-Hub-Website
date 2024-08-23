@@ -100,6 +100,14 @@ const Schedule = lazy(() =>
 const Store = lazy(() =>
   import("../../pages").then((module) => ({ default: module.Store }))
 );
+
+// Add Section
+// --> Laundry Units <--
+
+const AddUnits = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.AddUnits }))
+);
+
 const AddStore = lazy(() =>
   import("../../pages").then((module) => ({ default: module.AddStore }))
 );
@@ -144,6 +152,7 @@ const Main = () => {
             <Route path="add-store" element={<AddStore />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="add-item" element={<AddItem />} />
+            <Route path="add-unit" element={<AddUnits />} />
             <Route path="item-category" element={<ItemCategory />} />
 
             {/* Catch all undefined routes and redirect to dashboard */}

@@ -1,5 +1,6 @@
 import express from 'express';
 import { handleCreateStore } from '../services/useStore.js';
+import { handleCreateUnits } from '../services/useUnits.js';
 import { getPool } from '../db/dbConfig.js';
 
 
@@ -22,6 +23,15 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 router.post('/create-store', withDatabaseConnection(async (req, res, connection) => {
     await handleCreateStore(req, res, connection);
 }));
+
+
+// Laundry Unit Section
+router.post('/create-units', withDatabaseConnection(async (req, res, connection) => {
+  await handleCreateUnits(req, res, connection);
+}));
+
+
+
 
 
 export default router;

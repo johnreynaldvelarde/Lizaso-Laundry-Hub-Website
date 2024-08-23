@@ -24,5 +24,11 @@ router.get('/view-store', withDatabaseConnection(async (req, res, connection) =>
 }));
 
 
+// Laundry Unit Section
+router.get('/view-units', withDatabaseConnection(async (req, res, connection) => {
+  await handleViewUnits(req, res, connection);
+}));
+
+
 export default router;
   
