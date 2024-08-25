@@ -22,7 +22,7 @@ export const ensureMainStoreExists = async (db) => {
       const storeId = 'LIZASO-' + new Date().getTime(); // Unique store ID starting with LIZASO
 
       const insertStoreQuery = `INSERT INTO Stores 
-        (store_id, store_name, store_address, store_contact, is_main_store, date_created) 
+        (store_no, store_name, store_address, store_contact, is_main_store, date_created) 
         VALUES (?, 'Main Store', 'Main Address', 'Main Contact', TRUE, NOW())`;
 
       await db.query(insertStoreQuery, [storeId]);
