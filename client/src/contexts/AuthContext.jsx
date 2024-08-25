@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         const newAccessToken = response.data.accessToken;
+        console.log(newAccessToken);
         setAccessToken(newAccessToken);
 
         // Log the receipt of the new access token
@@ -74,35 +75,21 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkAccessToken = async () => {
-      if (!accessToken) {
-        const token = await refreshAccessToken();
-        if (token) {
-          await fetchUserDetails(token);
-        }
+      let token = accessToken;
+
+      if (!token) {
+        token = await refreshAccessToken();
       }
-      setIsLoading(false);
+
+      if (token) {
+        await fetchUserDetails(token);
+      }
+
+      setIsLoading(false); // Set loading to false after the token is checked
     };
 
     checkAccessToken();
-  }, [accessToken]); // This should ideally only run when `accessToken` changes
-
-  // useEffect(() => {
-  //   const checkAccessToken = async () => {
-  //     let token = accessToken;
-
-  //     if (!token) {
-  //       token = await refreshAccessToken();
-  //     }
-
-  //     if (token) {
-  //       await fetchUserDetails(token);
-  //     }
-
-  //     setIsLoading(false); // Set loading to false after the token is checked
-  //   };
-
-  //   checkAccessToken();
-  // }, [accessToken]); // Depend on accessToken so it checks whenever it changes
+  }, [accessToken]); // Depend on accessToken so it checks whenever it changes
 
   const value = {
     accessToken,
