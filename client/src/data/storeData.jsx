@@ -115,7 +115,7 @@ export const storeColumns = [
     header: "Store Name",
   },
   {
-    accessorKey: "store_id",
+    accessorKey: "store_no",
     header: "Store No",
   },
   {

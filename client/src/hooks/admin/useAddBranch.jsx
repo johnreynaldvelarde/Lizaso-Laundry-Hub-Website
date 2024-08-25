@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import CustomToast from "../../components/common/CustomToast";
-import useAuth from "../../contexts/AuthContext";
-import { createStore } from "../../services/api/admin/branchApi";
+
+import { createStore } from "../../services/api/postApi";
 
 const useAddBranch = () => {
   const [storeNo, setStoreNo] = useState("");
@@ -37,7 +37,7 @@ const useAddBranch = () => {
     if (Object.keys(newErrors).length === 0) {
       try {
         const response = await createStore.setStore({
-          store_id: storeNo,
+          store_no: storeNo,
           store_name: storeName,
           store_address: location,
           store_contact: contactNumber,

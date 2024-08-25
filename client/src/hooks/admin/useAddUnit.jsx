@@ -1,5 +1,14 @@
-import { useState, useRef } from "react";
-import { unitStatus } from "../../data/unit_status";
+import { useEffect, useState, useRef } from "react";
+import useAuth from "../../contexts/AuthContext";
+import { createUnit } from "../../services/api/postApi";
+import { getUnitName } from "../../services/api/getApi";
+
+const STATUS_MAP = {
+  Available: 0,
+  Occupied: 1,
+  Reserved: 2,
+  "In Maintenance": 3,
+};
 
 const useAddUnit = () => {
   const [unitName, setUnitName] = useState("");
@@ -7,9 +16,33 @@ const useAddUnit = () => {
   const [image, setImage] = useState("");
   const [errors, setErrors] = useState({});
   const imageInput = useRef(null);
+  const { userDetails } = useAuth();
+
+  // Function to fetch suggested unit name
+  const fetchSuggestedUnitName = async () => {
+    if (userDetails?.storeId) {
+      try {
+        const response = await getUnitName.getSuggestedUnitName(
+          userDetails.storeId
+        );
+        if (response.success) {
+          setUnitName(response.unit_name);
+        } else {
+          console.error("Failed to fetch suggested unit name");
+        }
+      } catch (error) {
+        console.error("Error fetching suggested unit name:", error);
+      }
+    } else {
+      console.error("Store ID is undefined.");
+    }
+  };
+
+  useEffect(() => {
+    fetchSuggestedUnitName();
+  }, [userDetails?.storeId]);
 
   const handleClear = () => {
-    setUnitName("");
     setUnitStatus("");
     setImage("");
     setErrors({});
@@ -33,7 +66,6 @@ const useAddUnit = () => {
 
   const validateFields = () => {
     const newErrors = {};
-    if (!unitName) newErrors.unitName = "Unit Name is required";
     if (!isUnitStatus) newErrors.unitStatus = "Unit Status is required";
     return newErrors;
   };
@@ -46,12 +78,23 @@ const useAddUnit = () => {
     // Proceed only if there are no validation errors
     if (Object.keys(newErrors).length === 0) {
       try {
-        // Proceed with form submission or further processing
-        console.log("Form submitted successfully", {
-          unitName,
-          isUnitStatus,
-          image,
+        // Convert the unit status to its corresponding numeric value
+        const numericStatus = STATUS_MAP[isUnitStatus];
+
+        const response = await createUnit.setUnit({
+          store_id: userDetails.storeId,
+          unit_name: unitName,
+          isUnitStatus: numericStatus,
         });
+
+        if (response.success) {
+          alert("Submission Successful!");
+          handleClear();
+          // Refresh the unit name suggestion
+          fetchSuggestedUnitName();
+        } else {
+          alert("Cannot Proceed");
+        }
       } catch (error) {
         console.error("Error submitting the form", error);
       }
@@ -75,73 +118,3 @@ const useAddUnit = () => {
 };
 
 export default useAddUnit;
-
-// import { useState, useRef } from "react";
-// import { unitStatus } from "../../data/unit_status";
-
-// const useAddUnit = () => {
-//   const [isUnitStatus, setUnitStatus] = useState("");
-//   const [unitName, setUnitName] = useState("");
-//   const imageInput = useRef(null);
-//   const [image, setImage] = useState("");
-//   const [errors, setErrors] = useState({});
-
-//   const handleClear = () => {
-//     setUnitName("");
-//     setErrors({});
-//   };
-
-//   const handleInputChange = (field) => (e) => {
-//     const value = e.target.value;
-//     switch (field) {
-//       case "unitName":
-//         setUnitName(value);
-//         break;
-//       case "unitStatus":
-//         setUnitStatus(value);
-//         break;
-//       default:
-//         break;
-//     }
-//     // Clear the specific error for the field being edited
-//     setErrors((prevErrors) => ({
-//       ...prevErrors,
-//       [field]: "",
-//     }));
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     const newErrors = {};
-//     if (!unitName) newErrors.unitName = "Unit Name is required";
-//     if (!unitStatus) newErrors.isUnitStatus = "Unit Status is required";
-//     setErrors(newErrors);
-
-//     // Proceed only if there are no validation errors
-//     if (Object.keys(newErrors).length === 0) {
-//       try {
-//       } catch (error) {}
-//     }
-//   };
-
-//   return {
-//     isUnitStatus,
-//     setUnitStatus,
-//     unitName,
-//     setUnitName,
-//     errors,
-//     setErrors,
-//     image,
-//     setImage,
-//     handleInputChange,
-//     handleClear,
-//     handleSubmit,
-//   };
-// };
-
-// export default useAddUnit;
-
-// const handleChange = (event) => {
-//   setUnitStatus(event.target.value);
-//   console.log(isUnitStatus);
-// };

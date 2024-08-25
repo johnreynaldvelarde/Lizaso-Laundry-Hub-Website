@@ -1,13 +1,13 @@
 export const handleCreateStore = async (req, res, db) => {
-  const { store_id, store_name, store_address, store_contact } = req.body;
+  const { store_no, store_name, store_address, store_contact } = req.body;
 
   try {
     // Check if store_id already exists
-    const [existingStoreId] = await db.query(
-      "SELECT * FROM Stores WHERE store_id = ?",
-      [store_id]
+    const [existingStoreNo] = await db.query(
+      "SELECT * FROM Stores WHERE store_no = ?",
+      [store_no]
     );
-    if (existingStoreId.length > 0) {
+    if (existingStoreNo.length > 0) {
       return res
         .status(400)
         .json({ success: false, message: "Store No already exists" });
@@ -27,14 +27,13 @@ export const handleCreateStore = async (req, res, db) => {
 
     // Insert the new store
     const result = await db.query(
-      "INSERT INTO Stores (store_id, store_name, store_address, store_contact, is_main_store, updated_at, date_created, isStatus, isArchive) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)",
-      [store_id, store_name, store_address, store_contact, false, false, false]
+      "INSERT INTO Stores (store_no, store_name, store_address, store_contact, is_main_store, updated_at, date_created, isStatus, isArchive) VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?, ?)",
+      [store_no, store_name, store_address, store_contact, false, false, false]
     );
 
     res.status(201).json({
       success: true,
       message: "Store created successfully",
-      storeId: store_id,
     });
   } catch (error) {
     console.error("Error creating new store:", error);
@@ -46,7 +45,7 @@ export const handleViewStore = async (req, res, db) => {
   try {
     // Query the database to get the list of stores
     const [rows] = await db.query(
-      `SELECT id, store_id, store_name, store_address, store_contact, 
+      `SELECT id, store_no, store_name, store_address, store_contact, 
               is_main_store, updated_at, date_created, isStatus, isArchive
        FROM Stores`
     );

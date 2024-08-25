@@ -26,7 +26,7 @@ router.post('/create-store', withDatabaseConnection(async (req, res, connection)
 
 
 // Laundry Unit Section
-router.post('/create-units', withDatabaseConnection(async (req, res, connection) => {
+router.post('/create-unit', withDatabaseConnection(async (req, res, connection) => {
   await handleCreateUnits(req, res, connection);
 }));
 

@@ -1,4 +1,4 @@
-import { axiosPublic, axiosPrivate } from './axios';
+import { axiosPrivate } from "../api/axios";
 
 // Utility function to handle errors
 const handleError = (error) => {
@@ -13,7 +13,7 @@ const handleError = (error) => {
 const loginService = {
   login: async (data) => {
     try {
-      const response = await axiosPublic.post('/login', data);
+      const response = await axiosPrivate.post('/login', data);
       const { success, userType, accessToken, message } = response.data;
 
       if (success) {
@@ -31,7 +31,7 @@ const loginService = {
 const registerService = {
   register: async (data) => {
     try {
-      const response = await axiosPublic.post('/register', data);
+      const response = await axiosPrivate.post('/register', data);
       const { success, message, redirectUrl } = response.data;
 
       if (success) {
