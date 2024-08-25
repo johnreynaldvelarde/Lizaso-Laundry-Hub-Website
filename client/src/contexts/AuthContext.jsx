@@ -1,18 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import axios from "axios";
+import { axiosPublic, axiosPrivate } from "../api/axios";
 
-// Define the API base URL
-const API_URL = "http://localhost:3002/api";
-
-// Create the AuthContext
 const AuthContext = createContext();
 
-// Custom hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);
 
-// AuthProvider component to wrap around your app
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({});
   const [accessToken, setAccessToken] = useState(null);
   const [userDetails, setUserDetails] = useState({
     userId: "",
@@ -20,25 +13,21 @@ export const AuthProvider = ({ children }) => {
     fullName: "",
     username: "",
   });
-  const [isLoading, setIsLoading] = useState(true); // Add a loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   const refreshAccessToken = async () => {
     try {
-      const response = await axios.get(`${API_URL}/refresh-token`, {
-        withCredentials: true, // This will send cookies, including the refresh token
+      const response = await axiosPublic.get(`/refresh-token`, {
+        withCredentials: true,
       });
 
       if (response.data.success) {
         const newAccessToken = response.data.accessToken;
-        console.log(newAccessToken);
         setAccessToken(newAccessToken);
-
-        // Log the receipt of the new access token
-        // console.log("New access token received:", newAccessToken);
 
         return newAccessToken;
       } else {
-        // console.error("Error refreshing access token:", response.data.message);
+        console.error("Error refreshing access token:", response.data.message);
       }
     } catch (error) {
       console.error("Error refreshing access token:", error);
@@ -49,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   const fetchUserDetails = async (token) => {
     if (token) {
       try {
-        const response = await axios.get(`${API_URL}/user/me`, {
+        const response = await axiosPrivate(`/user/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -65,7 +54,6 @@ export const AuthProvider = ({ children }) => {
           });
         } else {
           console.error("Error fetching user details:", response.data.message);
-          // Optionally handle logout if fetching user details fails
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -85,11 +73,11 @@ export const AuthProvider = ({ children }) => {
         await fetchUserDetails(token);
       }
 
-      setIsLoading(false); // Set loading to false after the token is checked
+      setIsLoading(false);
     };
 
     checkAccessToken();
-  }, [accessToken]); // Depend on accessToken so it checks whenever it changes
+  }, [accessToken]);
 
   const value = {
     accessToken,
@@ -97,7 +85,7 @@ export const AuthProvider = ({ children }) => {
     userDetails,
     setUser: setUserDetails,
     isLoading,
-    setIsLoading, // Provide setIsLoading to the context if needed
+    setIsLoading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
