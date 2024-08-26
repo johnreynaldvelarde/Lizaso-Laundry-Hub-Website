@@ -86,7 +86,6 @@ export const handleViewInventory = async (req, res, db) => {
   }
 };
 
-
 export const handleCreateItemCategory = async (req, res, db) => {
   const { category_name } = req.body;
 
@@ -116,16 +115,6 @@ export const handleCreateItemCategory = async (req, res, db) => {
   }
 };
 
-export const handleGetListCategory = async (req, res, db) => {
-  try {
-  } catch (error) {}
-};
-
-export const handleGetViewCategory = async (req, res, db) => {
-  try {
-  } catch (error) {}
-};
-
 export const handleGetCategory = async (req, res, db) => {
   try {
     const query = `
@@ -141,3 +130,166 @@ export const handleGetCategory = async (req, res, db) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const handleViewListCategory = async (req, res, db) => {
+  const { store_id } = req.query;
+  try {
+    if (!store_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Store ID is required",
+      });
+    }
+
+    const sqlQuery = `
+      SELECT 
+          c.id AS category_id,
+          c.category_name,
+          c.date_created,
+          COUNT(i.id) AS number_of_items
+      FROM 
+          Item_Category c
+      LEFT JOIN 
+          Item i ON c.id = i.category_id
+      LEFT JOIN 
+          Inventory inv ON i.id = inv.item_id AND inv.store_id = ?
+      WHERE 
+          c.isArchive = 0
+      GROUP BY 
+          c.id, c.category_name, c.date_created;
+    `;
+
+    const [rows] = await db.query(sqlQuery, [store_id]);
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// export const handleViewListCategory = async (req, res, db) => {
+//   const { store_id } = req.query;
+
+//   try {
+//     if (!store_id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Store ID is required",
+//       });
+//     }
+
+//     const sqlQuery = `
+//       SELECT
+//           c.id AS category_id,
+//           c.category_name,
+//           c.date_created,
+//           COUNT(i.id) AS number_of_items
+//       FROM
+//           Item_Category c
+//       LEFT JOIN
+//           Item i ON c.id = i.category_id
+//       LEFT JOIN
+//           Inventory inv ON i.id = inv.item_id AND inv.store_id = ?
+//       WHERE
+//           c.isArchive = 0
+//       GROUP BY
+//           c.id, c.category_name, c.date_created;
+//   `;
+
+//   const [rows] = await db.query(query, [store_id]);
+//   res.status(200).json({
+//     success: true,
+//     data: rows,
+//   });
+
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// export const handleViewListCategory = async (req, res, db) => {
+//   const { store_id } = req.query;
+
+//   if (!store_id) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Store ID is required",
+//     });
+//   }
+
+//   const sqlQuery = `
+//       SELECT
+//           c.category_name,
+//           c.id AS category_id,
+//           c.date_created,
+//           COUNT(i.id) AS number_of_items
+//       FROM
+//           Item_Category c
+//       JOIN
+//           Item i ON c.id = i.category_id
+//       JOIN
+//           Inventory inv ON i.id = inv.item_id
+//       WHERE
+//           inv.store_id = ?
+//       GROUP BY
+//           c.category_name;
+//   `;
+
+//   try {
+//     db.query(sqlQuery, [store_id], (error, results) => {
+//       if (error) {
+//         console.error("Error executing query:", error);
+//         return res.status(500).json({ error: "Internal Server Error" });
+//       }
+
+//       res.status(200).json(results);
+//     });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
+// export const handleViewListCategory = async (req, res, db) => {
+//   const { store_id } = req.query;
+//   try {
+//     if (!store_id) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Store ID is required",
+//       });
+//     }
+
+//     const query = `
+//       SELECT
+//         Inventory.id AS inventory_id,
+//         Inventory.item_id,
+//         Inventory.price,
+//         Inventory.quantity,
+//         Inventory.isStatus,
+//         Item.item_code,
+//         Item.item_name,
+//         Item_Category.category_name
+//       FROM Inventory
+//       JOIN Item ON Inventory.item_id = Item.id
+//       JOIN Item_Category ON Item.category_id = Item_Category.id
+//       WHERE Inventory.store_id = ? AND Item.isArchive = 0
+//     `;
+
+//     const [rows] = await db.query(query, [store_id]);
+//     res.status(200).json({
+//       success: true,
+//       data: rows,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching inventory data:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error",
+//     });
+//   }
+// };

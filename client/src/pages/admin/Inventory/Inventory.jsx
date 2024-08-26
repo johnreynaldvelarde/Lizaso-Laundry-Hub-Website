@@ -3,12 +3,17 @@ import React from "react";
 import Table from "../../../components/common/Table";
 import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { PlusCircle } from "@phosphor-icons/react";
 
 import { inventoryColumns } from "../../../data/columns/inventory";
 import useInventory from "../../../hooks/admin/useInventory";
 
 const Inventory = () => {
-  const { inventoryData, loading, error } = useInventory();
+  const { inventoryData, loading, error, fetchInventoryData } = useInventory();
+
+  React.useEffect(() => {
+    fetchInventoryData();
+  }, []);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -27,9 +32,21 @@ const Inventory = () => {
         <Link to="/main/add-item" style={{ textDecoration: "none" }}>
           <Button
             variant="contained"
-            color="primary"
-            startIcon={<FiPlus />}
-            sx={{ borderRadius: "20px" }}
+            startIcon={
+              <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
+            }
+            sx={{
+              backgroundColor: "#5787C8",
+              borderRadius: "5px",
+              fontWeight: 600,
+              textTransform: "none",
+              paddingLeft: "23px",
+              paddingRight: "23px",
+              fontSize: "16px",
+              "&:hover": {
+                backgroundColor: "#3b5c9f",
+              },
+            }}
           >
             Add Items
           </Button>

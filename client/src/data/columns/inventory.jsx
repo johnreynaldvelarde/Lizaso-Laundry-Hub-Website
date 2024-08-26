@@ -1,6 +1,6 @@
 export const categoriesItemColumns = [
   {
-    accessorKey: "id",
+    accessorKey: "category_id",
     header: "ID",
     show: false,
   },
@@ -9,7 +9,7 @@ export const categoriesItemColumns = [
     header: "Name",
   },
   {
-    accessorKey: "numberItemRelated",
+    accessorKey: "number_of_items",
     header: "Number of Items",
   },
   {
@@ -75,39 +75,5 @@ export const inventoryColumns = [
         )}
       </div>
     ),
-  },
-];
-
-// Sample data for categories
-export const categoriesData = [
-  {
-    id: 1,
-    category_name: "Laundry Detergents",
-    numberItemRelated: 10,
-    date_created: "2023-08-25T12:34:56Z",
-  },
-  {
-    id: 2,
-    category_name: "Fabric Softeners",
-    numberItemRelated: 5,
-    date_created: "2023-08-20T11:30:00Z",
-  },
-  {
-    id: 3,
-    category_name: "Stain Removers",
-    numberItemRelated: 7,
-    date_created: "2023-08-18T09:45:20Z",
-  },
-  {
-    id: 4,
-    category_name: "Bleach",
-    numberItemRelated: 3,
-    date_created: "2023-08-22T15:15:10Z",
-  },
-  {
-    id: 5,
-    category_name: "Eco-friendly Products",
-    numberItemRelated: 8,
-    date_created: "2023-08-19T10:25:35Z",
   },
 ];

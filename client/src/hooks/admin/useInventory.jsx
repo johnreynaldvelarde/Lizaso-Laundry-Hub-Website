@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import useAuth from "../../contexts/AuthContext";
 import { createItem, createItemCategory } from "../../services/api/postApi";
-import { getCategoryItem, viewInventory } from "../../services/api/getApi";
+import {
+  getCategoryItem,
+  viewInventory,
+  viewCategory,
+} from "../../services/api/getApi";
 
 const useInventory = () => {
   const [inventoryData, setInventoryData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
   // For add new category section
   const [categoryName, setCategoryName] = useState("");
@@ -19,24 +24,6 @@ const useInventory = () => {
   const [errors, setErrors] = useState({});
   const [error, setError] = useState(null);
   const { userDetails } = useAuth();
-
-  // For View Inventory
-  const fetchInventoryData = async () => {
-    if (userDetails?.storeId) {
-      try {
-        const response = await viewInventory.getViewInventoryList(
-          userDetails.storeId
-        );
-        setInventoryData(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-    } else {
-      console.error("Store ID is undefined.");
-    }
-  };
 
   // For View Category
   const handleItemClear = () => {
@@ -110,6 +97,41 @@ const useInventory = () => {
   };
 
   // Fetch Section
+  const fetchInventoryData = async () => {
+    if (userDetails?.storeId) {
+      try {
+        const response = await viewInventory.getViewInventoryList(
+          userDetails.storeId
+        );
+        setInventoryData(response.data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    } else {
+      console.error("Store ID is undefined.");
+    }
+  };
+
+  const fetchCategoryData = async () => {
+    if (userDetails?.storeId) {
+      try {
+        const response = await viewCategory.getViewCategoryList(
+          userDetails.storeId
+        );
+
+        setCategoryData(response.data);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    } else {
+      console.error("Store ID is undefined.");
+    }
+  };
+
   const fetchCategories = async () => {
     try {
       const result = await getCategoryItem.getCategory();
@@ -122,14 +144,6 @@ const useInventory = () => {
       console.error("Fetch failed:", error);
     }
   };
-
-  useEffect(() => {
-    fetchInventoryData();
-  }, []);
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
   // Overall
   const handleInputChange = (field) => (e) => {
@@ -178,8 +192,12 @@ const useInventory = () => {
     handleSubmitItem,
     handleSubmitCategory,
     inventoryData,
+    categoryData,
     loading,
     error,
+    fetchCategories,
+    fetchInventoryData,
+    fetchCategoryData,
   };
 };
 

@@ -85,6 +85,27 @@ export const viewInventory = {
   },
 };
 
+
+export const viewCategory = {
+  getViewCategoryList: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get("/view-category", {
+        params: { store_id: storeId }
+      });
+      const { success, data } = response.data;
+
+      if (success) {
+        return { success, data };
+      } else {
+        throw new Error("Failed to fetch category list.");
+      }
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+};
+
+
 // Store Section
 export const viewStore = {
   getStoreList: async (data) => {

@@ -11,7 +11,7 @@ import {
   Typography,
   FormHelperText,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { CheckCircle, Backspace } from "@phosphor-icons/react";
 import useInventory from "../../../hooks/admin/useInventory";
 import backGroundImage from "../../../assets/images/b_2.jpg";
@@ -27,7 +27,12 @@ const AddItem = () => {
     handleItemClear,
     handleInputChange,
     handleSubmitItem,
+    fetchCategories,
   } = useInventory();
+
+  React.useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <Box
