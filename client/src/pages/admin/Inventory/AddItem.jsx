@@ -44,7 +44,7 @@ const AddItem = () => {
       <Typography
         variant="h6"
         sx={{
-          marginBottom: "90px",
+          marginBottom: "14px",
           fontWeight: 600,
           color: "#717171",
           fontSize: "24px",
