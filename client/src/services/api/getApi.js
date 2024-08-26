@@ -6,6 +6,8 @@ const handleError = (error) => {
   return new Error(message);
 };
 
+// Laundry Units
+
 export const getUnitName = {
   getSuggestedUnitName: async (storeId) => {
     try {
@@ -24,6 +26,7 @@ export const getUnitName = {
   },
 };
 
+
 export const viewUnits = {
   getUnitsList: async (storeId) => {
     try {
@@ -36,6 +39,24 @@ export const viewUnits = {
         return { success, data };
       } else {
         throw new Error("Failed to fetch units list.");
+      }
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+};
+
+// Store
+export const viewStore = {
+  getStoreList: async (data) => {
+    try {
+      const response = await axiosPrivate.get("/view-store", data);
+      const { success, message, data: storeData } = response.data;
+
+      if (success) {
+        return { success, message, data: storeData };
+      } else {
+        throw new Error(message || "Failed.");
       }
     } catch (error) {
       throw handleError(error);

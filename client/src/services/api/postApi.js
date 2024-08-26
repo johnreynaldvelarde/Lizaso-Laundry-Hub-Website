@@ -23,7 +23,6 @@ export const createUnit = {
   },
 };
 
-
 // Create new branch
 export const createStore = {
   setStore: async (data) => {
@@ -33,15 +32,58 @@ export const createStore = {
 
       if (success) {
         return { success, message };
-        
       } else {
         throw new Error(message || "Failed to create branch");
       }
     } catch (error) {
       // Log the error message before throwing the error
-      const errorMessage = error.response?.data?.message || 'Cannot Get the message for the server';
+      const errorMessage =
+        error.response?.data?.message ||
+        "Cannot Get the message for the server";
       console.log(errorMessage); // Log the message
       throw new Error(errorMessage); // Re-throw the error with the message
+    }
+  },
+};
+
+// Inventory Section
+export const createItem = {
+  setItem: async (data) => {
+    try {
+      const response = await axiosPrivate.post("/create-item", data);
+      const { success, message } = response.data;
+      if (success) {
+        return { success, message };
+      } else {
+        throw new Error(message || "Failed");
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Cannot Get the message for the server";
+      console.log(errorMessage); 
+      throw new Error(errorMessage); 
+    }
+  },
+};
+
+export const createItemCategory = {
+  setCategoryItem: async (data) => {
+    try {
+      const response = await axiosPrivate.post("/create-category-item", data);
+      const { success, message } = response.data;
+
+      if (success) {
+        return { success, message };
+      } else {
+        throw new Error(message || "Failed");
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Cannot Get the message for the server";
+      console.log(errorMessage); 
+      throw new Error(errorMessage); 
     }
   },
 };

@@ -15,8 +15,11 @@ import {
 import React, { useRef, useState } from "react";
 import { categories } from "../../../data/categories";
 import { BiImageAdd } from "react-icons/bi";
+import useInventory from "../../../hooks/admin/useInventory";
 
 const AddItem = () => {
+  const { itemName, handleClear, handleInputChange } = useInventory();
+
   const [category, setCategory] = useState("");
   const imageInput = useRef(null);
   const [image, setImage] = useState("");
@@ -40,11 +43,6 @@ const AddItem = () => {
   });
 
   return (
-    // <div className="pt-20 pb-20">
-    //   <Typography variant="h6" sx={{ marginBottom: "14px" }}>
-    //     Add Item
-    //   </Typography>
-    // </div>
     <Box sx={{ pt: "80px", pb: "20px" }}>
       <Typography variant="h6" sx={{ marginBottom: "14px" }}>
         Add new item
@@ -67,7 +65,7 @@ const AddItem = () => {
           <TextField
             label="Item Name"
             variant="outlined"
-            size="small"
+            size="medium"
             fullWidth
           />
         </Box>
@@ -80,8 +78,9 @@ const AddItem = () => {
             multiline
           />
         </Box>
+
         <Box sx={{ mt: 4 }}>
-          <FormControl fullWidth size="small">
+          <FormControl fullWidth size="medium">
             <InputLabel id="demo-simple-select-label">Category</InputLabel>
             <Select
               labelId="demo-simple-select-label"
@@ -99,60 +98,21 @@ const AddItem = () => {
           </FormControl>
         </Box>
 
-        <Box>
-          <Autocomplete
-            sx={{ mt: 4 }}
-            multiple
-            id="tags-filled"
-            options={categories.map((option) => option.name)}
-            defaultValue={[categories[0].name, categories[3].name]}
-            freeSolo
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  variant="standard"
-                  label={option}
-                  {...getTagProps({ index })}
-                />
-              ))
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                helperText="Select a tag or type any tag and press enter"
-                variant="outlined"
-                label="Item Tags"
-                placeholder="Item Tags"
-              />
-            )}
-          />
-        </Box>
-
-        <Box sx={{ mt: 4 }}>
-          <TextField
-            label="Brand"
-            variant="outlined"
-            rows={4}
-            size="small"
-            fullWidth
-          />
-        </Box>
-
         <Box sx={{ mt: 4, display: "flex", alignItems: "center", gap: 4 }}>
           <TextField
             label="Price"
             variant="outlined"
             rows={4}
             fullWidth
-            size="small"
-            defaultValue={"$234.24"}
+            size="medium"
+            defaultValue={"₱234.24"}
           />
           <TextField
             label="Discount"
             variant="outlined"
             rows={4}
             fullWidth
-            size="small"
+            size="medium"
             defaultValue={"20%"}
           />
         </Box>
@@ -202,3 +162,34 @@ const AddItem = () => {
 };
 
 export default AddItem;
+
+{
+  /* <Box>
+          <Autocomplete
+            sx={{ mt: 4 }}
+            multiple
+            id="tags-filled"
+            options={categories.map((option) => option.name)}
+            defaultValue={[categories[0].name, categories[3].name]}
+            freeSolo
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip
+                  variant="standard"
+                  label={option}
+                  {...getTagProps({ index })}
+                />
+              ))
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                helperText="Select a tag or type any tag and press enter"
+                variant="outlined"
+                label="Item Tags"
+                placeholder="Item Tags"
+              />
+            )}
+          />
+        </Box> */
+}

@@ -9,7 +9,7 @@ import {
 import React from "react";
 import useAddBranch from "../../../hooks/admin/useAddBranch";
 
-const AddBranch = () => {
+const AddStore = () => {
   const {
     storeNo,
     storeName,
@@ -160,4 +160,4 @@ const AddBranch = () => {
   );
 };
 
-export default AddBranch;
+export default AddStore;

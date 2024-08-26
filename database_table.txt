@@ -65,3 +65,27 @@ isArchive
 
 
 
+--> Item Category <--
+id (Primary Key)
+category_name
+isArchive
+updated_at
+date_created
+
+--> Item <--
+id (Primary Key)
+category_id (Foregin Key)
+item_code
+item_name
+isArchive
+updated_at
+date_created
+
+--> Inventory <--
+id (Primary Key)
+item_id (Foregin Key)
+store_id (Foregin Key)
+price
+discount
+quantity
+isStatus

@@ -19,8 +19,8 @@ export { default as Schedule } from "./admin/Schedule/Schedule";
 
 
 // Section Branch
-export { default as Store } from "./admin/Store/Branch";
-export { default as AddStore } from "./admin/Store/AddBranch";
+export { default as Store } from "./admin/Store/Store";
+export { default as AddStore } from "./admin/Store/AddStore";
 
 // Section Inventory
 export { default as Inventory } from "./admin/Inventory/Inventory";
@@ -36,4 +36,4 @@ export { default as Settings } from "./admin/Settings/Settings";
 
 
 // Customer => Page
-export {default as MainCustomer} from "./customer/mainCustomer"
+export {default as MainCustomer} from "./default_customer/mainCustomer"
