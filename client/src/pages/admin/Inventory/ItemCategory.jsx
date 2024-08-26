@@ -1,23 +1,26 @@
 import { Box, Button, Typography } from "@mui/material";
-import React from "react";
-import { FiPlus } from "react-icons/fi";
-import AddCategory from "../../../components/Popup/AddItemCategory";
+import React, { useState } from "react";
+import PopupAddCategory from "./PopupAddCategory";
 import Table from "../../../components/common/Table";
-import { categories, categoriesColumns } from "../../../data/categories";
+import { PlusCircle } from "@phosphor-icons/react";
+import {
+  categoriesData,
+  categoriesItemColumns,
+} from "../../../data/columns/inventory";
 
 const ProductCategories = () => {
-  const [open, setOpen] = React.useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleOpen = () => {
+    setOpenPopup(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenPopup(false);
   };
 
   return (
-    <Box sx={{ pt: "80px", pb: "20px" }}>
+    <Box sx={{ pt: "100px", pb: "20px", pr: "10px", pl: "10px" }}>
       <Box
         sx={{
           display: "flex",
@@ -30,19 +33,29 @@ const ProductCategories = () => {
 
         <Button
           variant="contained"
-          color="primary"
-          startIcon={<FiPlus />}
-          sx={{ borderRadius: "20px" }}
-          onClick={handleClickOpen}
+          startIcon={<PlusCircle size={24} color="#fcfcfc" weight="duotone" />}
+          sx={{
+            backgroundColor: "#5787C8",
+            borderRadius: "5px",
+            fontWeight: 600,
+            textTransform: "none",
+            paddingLeft: "23px",
+            paddingRight: "23px",
+            fontSize: "16px",
+            "&:hover": {
+              backgroundColor: "#3b5c9f",
+            },
+          }}
+          onClick={handleOpen}
         >
           Add Category
         </Button>
       </Box>
-      <AddCategory open={open} handleClose={handleClose} />
+      <PopupAddCategory open={openPopup} onClose={handleClose} />
       <Table
-        data={categories}
-        fields={categoriesColumns}
-        numberOfRows={categories.length}
+        data={categoriesData}
+        fields={categoriesItemColumns}
+        numberOfRows={categoriesData.length}
         enableTopToolBar={true}
         enableBottomToolBar={true}
         enablePagination={true}

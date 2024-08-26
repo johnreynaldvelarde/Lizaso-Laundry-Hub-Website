@@ -48,8 +48,8 @@ const useInventory = () => {
   const handleSubmitCategory = async (e) => {
     e.preventDefault();
     const newErrors = {};
-
     if (!categoryName) newErrors.categoryName = "Category name is required";
+    setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       try {
@@ -59,13 +59,9 @@ const useInventory = () => {
 
         if (!response.success) {
           alert("Error submission!");
-          //   <CustomToast
-          //     t={t}
-          //     type="error"
-          //     message={response.message || "Cannot Proceed"}
-          //   />;
         } else {
           alert("Submission Successful!");
+          handleCategoryClear();
         }
       } catch (error) {
         console.error("Error submitting the form", error);
@@ -112,12 +108,15 @@ const useInventory = () => {
   };
 
   return {
+    errors,
+    setErrors,
     itemName,
     setItemName,
     categoryName,
     setCategoryName,
-    handleClear,
+    handleItemClear,
     handleInputChange,
+    handleSubmitCategory,
   };
 };
 

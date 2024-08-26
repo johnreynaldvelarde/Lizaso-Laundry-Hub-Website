@@ -18,7 +18,7 @@ import { BiImageAdd } from "react-icons/bi";
 import useInventory from "../../../hooks/admin/useInventory";
 
 const AddItem = () => {
-  const { itemName, handleClear, handleInputChange } = useInventory();
+  const { itemName, handleItemClear, handleInputChange } = useInventory();
 
   const [category, setCategory] = useState("");
   const imageInput = useRef(null);
