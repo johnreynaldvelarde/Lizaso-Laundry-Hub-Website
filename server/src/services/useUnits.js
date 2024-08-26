@@ -54,9 +54,8 @@ export const handleCreateUnits = async (req, res, db) => {
 };
 
 export const handleViewUnits = async (req, res, db) => {
+  const { store_id } = req.query;
   try {
-    const { store_id } = req.query;
-
     if (!store_id) {
       return res.status(400).json({
         success: false,

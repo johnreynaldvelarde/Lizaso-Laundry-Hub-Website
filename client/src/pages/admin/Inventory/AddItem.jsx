@@ -1,9 +1,7 @@
 import styled from "@emotion/styled";
 import {
-  Autocomplete,
   Box,
   Button,
-  Chip,
   FormControl,
   InputLabel,
   MenuItem,
@@ -11,40 +9,47 @@ import {
   Select,
   TextField,
   Typography,
+  FormHelperText,
 } from "@mui/material";
 import React, { useRef, useState } from "react";
-import { categories } from "../../../data/categories";
-import { BiImageAdd } from "react-icons/bi";
+import { CheckCircle, Backspace } from "@phosphor-icons/react";
 import useInventory from "../../../hooks/admin/useInventory";
+import backGroundImage from "../../../assets/images/b_2.jpg";
 
 const AddItem = () => {
-  const { itemName, handleItemClear, handleInputChange } = useInventory();
-
-  const [category, setCategory] = useState("");
-  const imageInput = useRef(null);
-  const [image, setImage] = useState("");
-
-  const handleChange = (event) => {
-    setCategory(event.target.value);
-    console.log(category);
-  };
-
-  const UploadBox = styled(Box)({
-    marginTop: 30,
-    height: 200,
-    borderRadius: "10px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    borderStyle: "dashed",
-    borderWidth: "2px",
-    borderColor: "divider",
-  });
+  const {
+    errors,
+    itemName,
+    itemCode,
+    itemCategory,
+    itemPrice,
+    categories,
+    handleItemClear,
+    handleInputChange,
+    handleSubmitItem,
+  } = useInventory();
 
   return (
-    <Box sx={{ pt: "80px", pb: "20px" }}>
-      <Typography variant="h6" sx={{ marginBottom: "14px" }}>
+    <Box
+      sx={{
+        pt: "80px",
+        pb: "20px",
+        // backgroundImage: `url(${backGroundImage})`,
+        // backgroundSize: "cover",
+        // backgroundPosition: "center",
+        // height: "100vh",
+        // width: "100%",
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          marginBottom: "90px",
+          fontWeight: 600,
+          color: "#717171",
+          fontSize: "24px",
+        }}
+      >
         Add new item
       </Typography>
       <Paper
@@ -67,83 +72,94 @@ const AddItem = () => {
             variant="outlined"
             size="medium"
             fullWidth
+            value={itemName}
+            onChange={handleInputChange("itemName")}
+            error={Boolean(errors.itemName)}
+            helperText={errors.itemName}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-error": {
+                  borderColor: "red",
+                },
+              },
+            }}
           />
         </Box>
-        <Box sx={{ mt: 4 }}>
+
+        <Box sx={{ my: 4 }}>
           <TextField
-            label="Item Description"
+            label="Item Code"
             variant="outlined"
-            rows={4}
+            size="medium"
             fullWidth
-            multiline
+            value={itemCode}
+            onChange={handleInputChange("itemCode")}
+            error={Boolean(errors.itemCode)}
+            helperText={errors.itemCode}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-error": {
+                  borderColor: "red",
+                },
+              },
+            }}
           />
         </Box>
 
         <Box sx={{ mt: 4 }}>
-          <FormControl fullWidth size="medium">
-            <InputLabel id="demo-simple-select-label">Category</InputLabel>
+          <FormControl
+            fullWidth
+            size="medium"
+            error={Boolean(errors.itemCategory)}
+          >
+            <InputLabel id="category-select-label">Category</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              labelId="category-select-label"
+              id="category-select"
               label="Category"
-              value={category}
-              onChange={handleChange}
+              value={itemCategory}
+              onChange={handleInputChange("itemCategory")}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "red",
+                  },
+                },
+              }}
             >
-              {categories?.map(({ category_id, name }) => (
-                <MenuItem value={name} key={category_id}>
-                  {name}
+              {categories.map(({ id, category_name }) => (
+                <MenuItem value={id} key={id}>
+                  {category_name}
                 </MenuItem>
               ))}
             </Select>
+            {errors.itemCategory && (
+              <FormHelperText>{errors.itemCategory}</FormHelperText>
+            )}
           </FormControl>
         </Box>
 
-        <Box sx={{ mt: 4, display: "flex", alignItems: "center", gap: 4 }}>
+        <Box sx={{ mt: 4 }}>
           <TextField
             label="Price"
             variant="outlined"
             rows={4}
             fullWidth
             size="medium"
-            defaultValue={"₱234.24"}
-          />
-          <TextField
-            label="Discount"
-            variant="outlined"
-            rows={4}
-            fullWidth
-            size="medium"
-            defaultValue={"20%"}
+            value={itemPrice}
+            onChange={handleInputChange("itemPrice")}
+            error={Boolean(errors.itemPrice)}
+            helperText={errors.itemPrice}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-error": {
+                  borderColor: "red",
+                },
+              },
+            }}
           />
         </Box>
-        <input
-          type="file"
-          hidden
-          ref={imageInput}
-          onChange={(e) => setImage(e.target.files[0])}
-        />
-        <UploadBox onClick={() => imageInput.current.click()}>
-          {image ? (
-            <img
-              src={image && URL.createObjectURL(image)}
-              alt=""
-              style={{ width: "100%", height: "100%", objectFit: "contain" }}
-            />
-          ) : (
-            <Box sx={{ textAlign: "center" }}>
-              <BiImageAdd style={{ fontSize: "50px", color: "#027edd" }} />
-              <Typography>
-                Drop your image here or{" "}
-                <span style={{ color: "#027edd", cursor: "pointer" }}>
-                  browse
-                </span>
-              </Typography>
-              <Typography sx={{ fontSize: "12px" }}>
-                JPG, PNG and GIF images are allowed
-              </Typography>
-            </Box>
-          )}
-        </UploadBox>
+
         <Box
           sx={{
             display: "flex",
@@ -152,8 +168,42 @@ const AddItem = () => {
             mt: "30px",
           }}
         >
-          <Button variant="contained" sx={{ borderRadius: "20px" }}>
+          <Button
+            startIcon={
+              <CheckCircle size={24} color="#fcfcfc" weight="duotone" />
+            }
+            variant="contained"
+            sx={{
+              backgroundColor: "#5787C8",
+              fontWeight: 600,
+              textTransform: "none",
+              paddingLeft: "25px",
+              paddingRight: "25px",
+              fontSize: "16px",
+              borderRadius: "5px",
+              marginRight: 2,
+              "&:hover": {
+                backgroundColor: "#3b5c9f",
+              },
+            }}
+            onClick={handleSubmitItem}
+          >
             Submit
+          </Button>
+          <Button
+            startIcon={<Backspace size={24} color="#5787C8" weight="regular" />}
+            variant="outlined"
+            sx={{
+              fontWeight: 500,
+              textTransform: "none",
+              paddingLeft: "25px",
+              paddingRight: "25px",
+              fontSize: "16px",
+              borderRadius: "5x",
+            }}
+            onClick={handleItemClear}
+          >
+            Clear
           </Button>
         </Box>
       </Paper>
@@ -162,34 +212,3 @@ const AddItem = () => {
 };
 
 export default AddItem;
-
-{
-  /* <Box>
-          <Autocomplete
-            sx={{ mt: 4 }}
-            multiple
-            id="tags-filled"
-            options={categories.map((option) => option.name)}
-            defaultValue={[categories[0].name, categories[3].name]}
-            freeSolo
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  variant="standard"
-                  label={option}
-                  {...getTagProps({ index })}
-                />
-              ))
-            }
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                helperText="Select a tag or type any tag and press enter"
-                variant="outlined"
-                label="Item Tags"
-                placeholder="Item Tags"
-              />
-            )}
-          />
-        </Box> */
-}

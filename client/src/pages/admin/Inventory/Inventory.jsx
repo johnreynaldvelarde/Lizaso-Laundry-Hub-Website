@@ -4,9 +4,15 @@ import Table from "../../../components/common/Table";
 import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
-import { products, productsColumns } from "../../../data/products";
+import { inventoryColumns } from "../../../data/columns/inventory";
+import useInventory from "../../../hooks/admin/useInventory";
 
 const Inventory = () => {
+  const { inventoryData, loading, error } = useInventory();
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
   return (
     <Box sx={{ pt: "80px", pb: "20px" }}>
       <Box
@@ -30,9 +36,9 @@ const Inventory = () => {
         </Link>
       </Box>
       <Table
-        data={products}
-        fields={productsColumns}
-        numberOfRows={products.length}
+        data={inventoryData}
+        fields={inventoryColumns}
+        numberOfRows={inventoryData.length}
         enableTopToolBar={true}
         enableBottomToolBar={true}
         enablePagination={true}

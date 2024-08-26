@@ -6,7 +6,7 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// Laundry Units
+// Laundry Units Section
 
 export const getUnitName = {
   getSuggestedUnitName: async (storeId) => {
@@ -46,7 +46,46 @@ export const viewUnits = {
   },
 };
 
-// Store
+
+
+// Inventory Section
+
+export const getCategoryItem = {
+  getCategory: async () => {
+    try {
+      const response = await axiosPrivate.get("/get-category");
+
+      if (response.status === 200) {
+        return { success: true, data: response.data };
+      } else {
+        throw new Error("Failed to fetch category items.");
+      }
+    } catch (error) {
+      return handleError(error); 
+    }
+  },
+};
+
+export const viewInventory = {
+  getViewInventoryList: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get("/view-inventory", {
+        params: { store_id: storeId }
+      });
+      const { success, data } = response.data;
+
+      if (success) {
+        return { success, data };
+      } else {
+        throw new Error("Failed to fetch inventory list.");
+      }
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
+};
+
+// Store Section
 export const viewStore = {
   getStoreList: async (data) => {
     try {

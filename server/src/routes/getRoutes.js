@@ -2,6 +2,7 @@ import express from 'express';
 import {handleViewStore } from '../services/useStore.js';
 import { handleViewUnits } from '../services/useUnits.js';
 import { handleGenerateUnitName } from '../services/checkService.js';
+import { handleGetCategory, handleViewInventory } from '../services/useInventory.js';
 import { getPool } from '../db/dbConfig.js';
 
 
@@ -34,6 +35,17 @@ router.get('/view-units', withDatabaseConnection(async (req, res, connection) =>
 router.get('/get-unitname', withDatabaseConnection(async (req, res, connection) => {
   await handleGenerateUnitName(req, res, connection);
 }));
+
+// Inventory Section
+router.get('/get-category', withDatabaseConnection(async (req, res, connection) => {
+  await handleGetCategory(req, res, connection);
+}));
+
+router.get('/view-inventory', withDatabaseConnection(async (req, res, connection) => {
+   await handleViewInventory(req, res, connection);
+}));
+
+// User management Section
 
 
 

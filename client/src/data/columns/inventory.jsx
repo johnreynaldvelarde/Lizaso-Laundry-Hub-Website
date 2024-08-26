@@ -27,15 +27,15 @@ export const categoriesItemColumns = [
   },
 ];
 
-export const itemColumns = [
+export const inventoryColumns = [
   {
-    accessorKey: "id",
+    accessorKey: "inventory_id",
     header: "ID",
     show: false,
   },
   {
-    accessorKey: "category_id",
-    header: "Category_ID",
+    accessorKey: "item_id",
+    header: "Item ID",
     show: false,
   },
   {
@@ -47,6 +47,10 @@ export const itemColumns = [
     header: "Name",
   },
   {
+    accessorKey: "category_name",
+    header: "Category",
+  },
+  {
     accessorKey: "price",
     header: "Price",
   },
@@ -55,21 +59,22 @@ export const itemColumns = [
     header: "Quantity",
   },
   {
-    accessorKey: "discount",
-    header: "Discount",
-  },
-  {
-    accessorKey: "date_created",
-    header: "Date Created",
-    Cell: ({ cell, row }) => {
-      const date = new Date(row.original.date_created);
-      const formattedDate = new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "2-digit",
-      }).format(date);
-      return <span>{formattedDate}</span>;
-    },
+    accessorKey: "isStatus",
+    header: "Status",
+    //or in the component override callbacks like this
+    Cell: ({ cell, row }) => (
+      <div>
+        {row.original.isStatus ? (
+          <span style={{ color: "#388b84", textTransform: "capitalize" }}>
+            In Stock
+          </span>
+        ) : (
+          <span style={{ color: "#fd4332", textTransform: "capitalize" }}>
+            Out of Stock
+          </span>
+        )}
+      </div>
+    ),
   },
 ];
 

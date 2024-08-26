@@ -4,7 +4,9 @@ lizaso-laundry-hub/
 ├── client/                     
 │   ├── public/                
 │   ├── src/
-│   │   ├── assets/             
+│   │   ├── assets/
+│   │   │     ├── image/
+│   │   │     └── upload/               
 │   │   ├── components/
 │   │   │     ├──ProtectedRoute/jsx
 │   │   │     ├──common/

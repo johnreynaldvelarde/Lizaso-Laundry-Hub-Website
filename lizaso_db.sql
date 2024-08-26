@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 25, 2024 at 12:15 PM
+-- Generation Time: Aug 26, 2024 at 10:36 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,6 +42,82 @@ CREATE TABLE `customers` (
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_password`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
+(1, 'Rose', '', 'Oriana', 'roseoriana16', '$2b$12$M3QkPqHAnZmpg6JnIyssa.AtLlTe6V4auEX.WsNYu6mQWDazK0MR2', '', '', 1, 1, 0, '2024-08-26 06:00:54');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory`
+--
+
+CREATE TABLE `inventory` (
+  `id` bigint(20) NOT NULL,
+  `store_id` bigint(20) NOT NULL,
+  `item_id` bigint(20) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `isStatus` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory`
+--
+
+INSERT INTO `inventory` (`id`, `store_id`, `item_id`, `price`, `quantity`, `isStatus`) VALUES
+(7, 1, 12, 50.00, 0, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `item`
+--
+
+CREATE TABLE `item` (
+  `id` bigint(20) NOT NULL,
+  `category_id` bigint(20) NOT NULL,
+  `item_code` varchar(255) NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `isArchive` tinyint(1) NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `date_created` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `item`
+--
+
+INSERT INTO `item` (`id`, `category_id`, `item_code`, `item_name`, `isArchive`, `updated_at`, `date_created`) VALUES
+(12, 16, 'ITM001', 'Surf Powder', 0, '2024-08-26 16:35:11', '2024-08-26 16:35:11');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `item_category`
+--
+
+CREATE TABLE `item_category` (
+  `id` bigint(20) NOT NULL,
+  `category_name` varchar(255) NOT NULL,
+  `isArchive` tinyint(1) NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `date_created` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `item_category`
+--
+
+INSERT INTO `item_category` (`id`, `category_name`, `isArchive`, `updated_at`, `date_created`) VALUES
+(16, 'Laundry Detergents', 0, '2024-08-26 11:09:25', '2024-08-26 11:09:25'),
+(17, 'Fabric Softeners', 0, '2024-08-26 11:09:33', '2024-08-26 11:09:33'),
+(18, 'Stain Removers', 0, '2024-08-26 11:09:39', '2024-08-26 11:09:39'),
+(19, 'Bleach', 0, '2024-08-26 11:09:45', '2024-08-26 11:09:45');
+
 -- --------------------------------------------------------
 
 --
@@ -56,6 +132,18 @@ CREATE TABLE `laundry_unit` (
   `isUnitStatus` tinyint(4) NOT NULL,
   `isArchive` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `laundry_unit`
+--
+
+INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
+(1, 1, 'Unit 1', '2024-08-26 06:14:45', 0, 0),
+(2, 1, 'Unit 2', '2024-08-26 15:02:08', 0, 0),
+(3, 1, 'Unit 3', '2024-08-26 15:02:16', 0, 0),
+(4, 1, 'Unit 4', '2024-08-26 15:14:08', 0, 0),
+(5, 1, 'Unit 5', '2024-08-26 15:14:14', 1, 0),
+(6, 1, 'Unit 6', '2024-08-26 16:18:59', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -151,6 +239,27 @@ ALTER TABLE `customers`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `inventory`
+--
+ALTER TABLE `inventory`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Inventory_Stores` (`store_id`),
+  ADD KEY `Inventory_Item` (`item_id`);
+
+--
+-- Indexes for table `item`
+--
+ALTER TABLE `item`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Item_Item_Category` (`category_id`);
+
+--
+-- Indexes for table `item_category`
+--
+ALTER TABLE `item_category`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
@@ -185,13 +294,31 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `inventory`
+--
+ALTER TABLE `inventory`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `item`
+--
+ALTER TABLE `item`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `item_category`
+--
+ALTER TABLE `item_category`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `stores`
@@ -214,6 +341,19 @@ ALTER TABLE `user_security`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `inventory`
+--
+ALTER TABLE `inventory`
+  ADD CONSTRAINT `Inventory_Item` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  ADD CONSTRAINT `Inventory_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `item`
+--
+ALTER TABLE `item`
+  ADD CONSTRAINT `Item_Item_Category` FOREIGN KEY (`category_id`) REFERENCES `item_category` (`id`);
 
 --
 -- Constraints for table `laundry_unit`

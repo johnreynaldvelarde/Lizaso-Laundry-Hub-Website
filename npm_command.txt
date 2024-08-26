@@ -81,3 +81,5 @@ npm install framer-motion
 // icons
 npm install phosphor-react
 
+store_id: userDetails.storeId,
+
