@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js'
 import getRoutes from './routes/getRoutes.js'
 import  putRoutes from './routes/postRoutes.js'
+import checkRoutes from './routes/checkRoutes.js'
 import { authenticateToken } from './middleware/authMiddleware.js';
 
 // Import File Function
@@ -30,7 +31,7 @@ app.use(cors({
 app.use(cookieParser());
 
 // Public routes
-app.use('/api', authRoutes, postRoutes, getRoutes, putRoutes);
+app.use('/api', authRoutes, postRoutes, getRoutes, putRoutes, checkRoutes);
 
 // Protected routes
 app.use('/api/protected', authenticateToken, (req, res) => {

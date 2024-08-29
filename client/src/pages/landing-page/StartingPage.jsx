@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import LandingNavbar from "../../components/landing-page/LandingNavbar";
 import LandingHeroSection from "../../components/landing-page/LandingHeroSection";
 import LandingFeatures from "../../components/landing-page/LandingFeatures";
-import PopupCreateAccount from "../../components/Popup/PopupCreateAccount";
-import PopupLogin from "../../components/Popup/PopupLogin";
+import PopupCreateAccount from "../../components/common/PopupCreateAccount";
+import PopupLogin from "../../components/common/PopupLogin";
 
 const StartingPage = () => {
   const [showLoginPopup, setLoginShowPopup] = useState(false);

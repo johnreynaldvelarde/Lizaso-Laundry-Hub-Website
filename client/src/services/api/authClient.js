@@ -1,16 +1,14 @@
 import { axiosPrivate } from "../api/axios";
 
-// Utility function to handle errors
 const handleError = (error) => {
-  console.error('API Error:', error); // Log the error for debugging
+  console.error('API Error:', error); 
 
-  // Extract and return a user-friendly error message
   const message = error.response?.data?.message || 'An unexpected error occurred.';
   return new Error(message);
 };
 
 // Login Service
-const loginService = {
+export const loginService = {
   login: async (data) => {
     try {
       const response = await axiosPrivate.post('/login', data);
@@ -28,7 +26,7 @@ const loginService = {
 };
 
 // Register Service
-const registerService = {
+export const registerService = {
   register: async (data) => {
     try {
       const response = await axiosPrivate.post('/register', data);
@@ -45,5 +43,16 @@ const registerService = {
   },
 };
 
-export { loginService, registerService };
+
+export const checkUsername = {
+  getCheckUsername: async (data) => {
+    try {
+      const response = await axiosPrivate.post('/check-username', data);
+      return response.data; 
+    } catch (error) {
+      console.error("Error checking username:", error);
+      throw error; 
+    }
+  },
+};
 

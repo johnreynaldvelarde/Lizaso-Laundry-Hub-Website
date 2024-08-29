@@ -6,88 +6,6 @@ const createToken = (payload, secret, expiresIn) => {
   return jwt.sign(payload, secret, { expiresIn });
 };
 
-// export const handleLogin = async (req, res, db) => {
-//   const { username, password } = req.body;
-
-//   try {
-//     // Check User_Account table
-//     const [userAccountResults] = await db.query('SELECT * FROM User_Account WHERE username = ?', [username]);
-//     if (userAccountResults.length > 0) {
-//       const user = userAccountResults[0];
-//       const [secResults] = await db.query('SELECT * FROM User_Security WHERE user_id = ?', [user.id]);
-
-//       if (secResults.length > 0) {
-//         const userSecurity = secResults[0];
-//         const passwordMatch = await comparePassword(password, userSecurity.password);
-
-//         if (passwordMatch) {
-//           const fullName = `${user.first_name} ${user.last_name}`;
-//           const userType = user.isRole === 0 ? 'Admin' :
-//                            (user.isRole === 1 ? 'Manager' : 
-//                            (user.isRole === 2 ? 'Staff' : 'Delivery Staff'));
-
-//           // Generate JWT tokens
-//           const accessToken = createToken({ userId: user.id, fullName, username, userType }, process.env.ACCESS_TOKEN_SECRET, process.env.JWT_EXPIRES_IN);
-//           const refreshToken = createToken({ userId: user.id }, process.env.REFRESH_TOKEN_SECRET, process.env.JWT_REFRESH_EXPIRES_IN);
-
-//           // Set the refresh token in an HTTP-only cookie
-//           res.cookie('refreshToken', refreshToken, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
-//             sameSite: 'Strict', // Adjust as needed
-//           });
-
-//           // Respond with access token and user type
-//           return res.status(200).json({ 
-//             success: true, 
-//             userType, 
-//             accessToken
-//           });
-//         } else {
-//           return res.status(401).json({ success: false, message: 'Invalid username or password.' });
-//         }
-//       } else {
-//         return res.status(404).json({ success: false, message: 'User not found in security table.' });
-//       }
-//     } else {
-//       // Check Customers table
-//       const [customerResults] = await db.query('SELECT * FROM Customers WHERE c_username = ?', [username]);
-
-//       if (customerResults.length > 0) {
-//         const customer = customerResults[0];
-//         const passwordMatch = await comparePassword(password, customer.c_password);
-
-//         if (passwordMatch) {
-//           // Generate JWT tokens
-//           const accessToken = createToken({ userId: customer.id, userType: 'Customer' }, process.env.ACCESS_TOKEN_SECRET, process.env.JWT_EXPIRES_IN);
-//           const refreshToken = createToken({ userId: customer.id }, process.env.REFRESH_TOKEN_SECRET, process.env.JWT_REFRESH_EXPIRES_IN);
-
-//           // Set the refresh token in an HTTP-only cookie
-//           res.cookie('refreshToken', refreshToken, {
-//             httpOnly: true,
-//             secure: process.env.NODE_ENV === 'production',
-//             sameSite: 'Strict',
-//           });
-
-//           // Respond with access token and user type
-//           return res.status(200).json({ 
-//             success: true, 
-//             userType: 'Customer', 
-//             accessToken
-//           });
-//         } else {
-//           return res.status(401).json({ success: false, message: 'Invalid username or password.' });
-//         }
-//       } else {
-//         return res.status(404).json({ success: false, message: 'User not found.' });
-//       }
-//     }
-//   } catch (err) {
-//     console.error('Error handling login:', err);
-//     return res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// };
-
 export const handleLogin = async (req, res, db) => {
   const { username, password } = req.body;
 
@@ -188,12 +106,7 @@ export const handleRegister = async (req, res, db) => {
   const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement } = req.body;
 
   try {
-    // Check if username already exists
-    const [existingUser] = await db.query('SELECT * FROM Customers WHERE c_username = ?', [c_username]);
-    if (existingUser.length > 0) {
-      return res.status(400).json({ success: false, message: 'Username already exists' });
-    }
-
+    
     // Hash the password
     const hashedPassword = await hashPassword(c_password);
 
