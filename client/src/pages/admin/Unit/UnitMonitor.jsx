@@ -445,7 +445,7 @@ const UnitMonitor = () => {
           </Grid>
         ) : (
           filteredUnits.map((unit) => (
-            <Grid item key={unit.id} xs={12} sm={6} md={4} lg={3}>
+            <Grid item key={unit.id} xs={12} sm={6} md={4} lg={3} xl={2}>
               <Box
                 sx={{
                   display: "flex",
@@ -458,7 +458,7 @@ const UnitMonitor = () => {
                   p: 2,
                   textAlign: "center",
                   width: "100%",
-                  maxWidth: "249px",
+                  // maxWidth: "249px",
                   height: "341px",
                   position: "relative",
                   boxSizing: "border-box",
