@@ -9,9 +9,13 @@ import {
   useTheme,
 } from "@mui/material";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+
+// popup page
 import PopupSelectUnit from "./PopupSelectUnit";
 import PopupCustomerRequest from "./PopupCustomerRequest";
 import PopupInProgress from "./PopupInProgress";
+
+// image
 import Available from "../../../assets/images/Available.png";
 import Occupied from "../../../assets/images/Occupied.png";
 import Reserved from "../../../assets/images/Reserved.png";
@@ -19,49 +23,23 @@ import In_Maintaince from "../../../assets/images/Not_Available.png";
 import noData from "../../../assets/images/no_data.png";
 
 const UnitMonitor = () => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedUnit, setSelectedUnit] = useState(null);
-  const [openCustomerRequest, setOpenCustomerRequest] = useState(false);
-  const [openInProgress, setOpenInProgress] = useState(false);
-
-  const handleOpenDialog = (unit) => {
-    setSelectedUnit(unit);
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedUnit(null);
-  };
-
-  const handleOpenCustomerRequest = () => {
-    setOpenCustomerRequest(true);
-  };
-
-  const handleCloseCustomerRequest = () => {
-    setOpenCustomerRequest(false);
-  };
-
-  const handleOpenInProgress = () => {
-    setOpenInProgress(true);
-  };
-
-  const handleCloseInProgress = () => {
-    setOpenInProgress(false);
-  };
-
-  const { unitsData, loading, error } = useUnitMonitor();
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredUnits, setFilteredUnits] = useState([]);
-
-  useEffect(() => {
-    setFilteredUnits(
-      unitsData.filter((unit) =>
-        unit.unit_name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [searchTerm, unitsData]);
+  const {
+    openDialog,
+    selectedUnit,
+    openCustomerRequest,
+    openInProgress,
+    searchTerm,
+    filteredUnits,
+    loading,
+    error,
+    handleOpenDialog,
+    handleCloseDialog,
+    handleOpenCustomerRequest,
+    handleCloseCustomerRequest,
+    handleOpenInProgress,
+    handleCloseInProgress,
+    handleSearchChange,
+  } = useUnitMonitor();
 
   const getImage = (status) => {
     switch (status) {
@@ -76,10 +54,6 @@ const UnitMonitor = () => {
       default:
         return Available;
     }
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
   };
 
   const theme = useTheme();
