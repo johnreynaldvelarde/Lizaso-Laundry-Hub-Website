@@ -3,7 +3,7 @@ export const handleCheckUsername = async (req, res, db) => {
 
   try {
     // Query the database to find the username
-    const query = "SELECT * FROM Customers WHERE c_username = ?";
+    const query = "SELECT * FROM Customer WHERE c_username = ?";
     const [rows] = await db.execute(query, [username]);
 
     // Check if any rows are returned, which means the username exists

@@ -1,6 +1,9 @@
-import jwt from 'jsonwebtoken';
-import { hashPassword, comparePassword } from '../helpers/auth.js';
-
+import jwt from "jsonwebtoken";
+import {
+  hashPassword,
+  comparePassword,
+  generatePasswordSalt,
+} from "../helpers/auth.js";
 
 const createToken = (payload, secret, expiresIn) => {
   return jwt.sign(payload, secret, { expiresIn });
@@ -13,134 +16,230 @@ export const handleLogin = async (req, res, db) => {
     let user, userType;
 
     // Check User_Account table first
-    const [userAccountResults] = await db.query('SELECT * FROM User_Account WHERE username = ?', [username]);
+    const [userAccountResults] = await db.query(
+      "SELECT * FROM User_Account WHERE username = ?",
+      [username]
+    );
 
     if (userAccountResults.length > 0) {
       user = userAccountResults[0];
-      const [secResults] = await db.query('SELECT * FROM User_Security WHERE user_id = ?', [user.id]);
+      const [secResults] = await db.query(
+        "SELECT * FROM User_Security WHERE user_id = ?",
+        [user.id]
+      );
 
       if (secResults.length === 0) {
-        return res.status(404).json({ success: false, message: 'User security details not found.' });
+        return res
+          .status(404)
+          .json({
+            success: false,
+            message: "User security details not found.",
+          });
       }
 
       const userSecurity = secResults[0];
-      const passwordMatch = await comparePassword(password, userSecurity.password);
+      const passwordMatch = await comparePassword(
+        password,
+        userSecurity.password
+      );
 
       if (!passwordMatch) {
-        return res.status(401).json({ success: false, message: 'Invalid username or password.' });
+        return res
+          .status(401)
+          .json({ success: false, message: "Invalid username or password." });
       }
 
-      userType = user.isRole === 0 ? 'Admin' :
-                (user.isRole === 1 ? 'Manager' :
-                (user.isRole === 2 ? 'Staff' : 'Delivery Staff'));
+      userType =
+        user.isRole === 0
+          ? "Admin"
+          : user.isRole === 1
+          ? "Manager"
+          : user.isRole === 2
+          ? "Staff"
+          : "Delivery Staff";
 
       // Update isOnline status to 1
-      await db.query('UPDATE User_Account SET isOnline = 1 WHERE id = ?', [user.id]);
-
+      await db.query("UPDATE User_Account SET isOnline = 1 WHERE id = ?", [
+        user.id,
+      ]);
     } else {
       // If not in User_Account, check Customers table
-      const [customerResults] = await db.query('SELECT * FROM Customers WHERE c_username = ?', [username]);
+      const [customerAccountResults] = await db.query(
+        "SELECT * FROM Customer WHERE c_username = ?",
+        [username]
+      );
 
-      if (customerResults.length === 0) {
-        return res.status(404).json({ success: false, message: 'User not found.' });
+      if (customerAccountResults.length === 0) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found." });
       }
 
-      user = customerResults[0];
-      const passwordMatch = await comparePassword(password, user.c_password);
+      user = customerAccountResults[0];
+      const [secCustomerResults] = await db.query(
+        "SELECT * FROM Customer_Security WHERE customer_id = ?",
+        [user.id]
+      );
+
+      if (secCustomerResults.length === 0) {
+        return res
+          .status(404)
+          .json({
+            success: false,
+            message: "Customer security details not found.",
+          });
+      }
+
+      const customerSecuirty = secCustomerResults[0];
+      const passwordMatch = await comparePassword(
+        password,
+        customerSecuirty.c_password
+      );
 
       if (!passwordMatch) {
-        return res.status(401).json({ success: false, message: 'Invalid username or password.' });
+        return res
+          .status(401)
+          .json({ success: false, message: "Invalid username or password." });
       }
 
-      userType = 'Customer';
+      userType = "Customer";
 
       // Update isOnline status to 1
-      await db.query('UPDATE Customers SET isOnline = 1 WHERE id = ?', [user.id]);
+      await db.query("UPDATE Customer SET isOnline = 1 WHERE id = ?", [
+        user.id,
+      ]);
     }
 
     // Generate JWT tokens
-    const accessToken = createToken({ userId: user.id, username, userType }, process.env.ACCESS_TOKEN_SECRET, process.env.JWT_EXPIRES_IN);
-    const refreshToken = createToken({ userId: user.id }, process.env.REFRESH_TOKEN_SECRET, process.env.JWT_REFRESH_EXPIRES_IN);
+    const accessToken = createToken(
+      { userId: user.id, username, userType },
+      process.env.ACCESS_TOKEN_SECRET,
+      process.env.JWT_EXPIRES_IN
+    );
+    const refreshToken = createToken(
+      { userId: user.id },
+      process.env.REFRESH_TOKEN_SECRET,
+      process.env.JWT_REFRESH_EXPIRES_IN
+    );
 
     // Set the refresh token in an HTTP-only cookie
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set to true if using HTTPS
-      sameSite: 'Strict', // Adjust as needed
+      secure: process.env.NODE_ENV === "production", // Set to true if using HTTPS
+      sameSite: "Strict", // Adjust as needed
     });
 
     // Respond with access token and user type
     return res.status(200).json({
       success: true,
       userType,
-      accessToken
+      accessToken,
     });
-
   } catch (err) {
-    console.error('Error handling login:', err);
-    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error handling login:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
 
+export const handleRegister = async (req, res, db) => {
+  const {
+    c_firstname,
+    c_middlename,
+    c_lastname,
+    c_username,
+    c_password,
+    isAgreement,
+    c_email,
+    c_number,
+  } = req.body;
+
+  try {
+    // Hash the customer's password
+    const hashedPassword = await hashPassword(c_password);
+
+    // Generate password salt (if needed)
+    const passwordSalt = await generatePasswordSalt();
+
+    // Begin transaction
+    await db.beginTransaction();
+
+    // Insert customer into Customers table
+    const [customerResult] = await db.query(
+      `INSERT INTO Customer (c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
+       VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [
+        c_firstname,
+        c_middlename,
+        c_lastname,
+        c_username,
+        c_number,
+        c_email,
+        isAgreement,
+      ]
+    );
+
+    const customerId = customerResult.insertId;
+
+    // Insert customer security data into Customer_Security table
+    await db.query(
+      `INSERT INTO Customer_Security (customer_id, c_password, c_password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        customerId,
+        hashedPassword,
+        passwordSalt,
+        false,
+        0,
+        false,
+        null,
+        null,
+        null,
+      ]
+    );
+
+    // Commit transaction
+    await db.commit();
+
+    // Respond with success
+    res
+      .status(201)
+      .json({ success: true, message: "Customer registered successfully" });
+  } catch (error) {
+    // Rollback transaction in case of error
+    await db.rollback();
+
+    console.error("Error registering customer:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 export const handleRefreshToken = async (req, res) => {
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) {
-    return res.status(401).json({ success: false, message: 'No refresh token provided.' });
+    return res
+      .status(401)
+      .json({ success: false, message: "No refresh token provided." });
   }
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const newAccessToken = createToken({ userId: decoded.userId }, process.env.ACCESS_TOKEN_SECRET, process.env.JWT_EXPIRES_IN);
+    const newAccessToken = createToken(
+      { userId: decoded.userId },
+      process.env.ACCESS_TOKEN_SECRET,
+      process.env.JWT_EXPIRES_IN
+    );
 
     return res.status(200).json({ success: true, accessToken: newAccessToken });
   } catch (err) {
-    console.error('Error verifying refresh token:', err);
-    return res.status(403).json({ success: false, message: 'Invalid refresh token.' });
+    console.error("Error verifying refresh token:", err);
+    return res
+      .status(403)
+      .json({ success: false, message: "Invalid refresh token." });
   }
 };
-
-
-export const handleRegister = async (req, res, db) => {
-  const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement } = req.body;
-
-  try {
-    
-    // Hash the password
-    const hashedPassword = await hashPassword(c_password);
-
-    // Insert new customer into the database
-    const [result] = await db.query(
-      'INSERT INTO Customers (c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement, date_created) VALUES (?, ?, ?, ?, ?, ?, NOW())',
-      [c_firstname, c_middlename, c_lastname, c_username, hashedPassword, isAgreement]
-    );
-
-    // Create a new customer object
-    const newCustomer = {
-      id: result.insertId,
-      c_username,
-      c_firstname,
-      c_lastname
-    };
-
-    // // Generate access token
-    // const accessToken = generateAccessToken(newCustomer);
-
-    // // Set access token as HTTP-only cookie
-    // res.cookie('auth_token', accessToken, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production',
-    // });
-
-    // Respond with success and redirection URL
-    res.status(201).json({ success: true, message: 'Customer registered successfully'});
-  } catch (error) {
-    console.error('Error registering customer:', error);
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-};
-
 
 // Utility function to decode the token
 const decodeToken = (token) => {
@@ -155,50 +254,174 @@ const decodeToken = (token) => {
 export const getUserDetails = async (req, res, db) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
   }
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.split(" ")[1];
   const decoded = decodeToken(token);
 
   if (!decoded) {
-    return res.status(401).json({ success: false, message: 'Invalid token' });
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
 
-  // Fetch user details from database
-  const userId = decoded.userId;
-  const [userAccountResults] = await db.query('SELECT * FROM User_Account WHERE id = ?', [userId]);
+  console.log("Decoded Token:", decoded);
 
-  if (userAccountResults.length > 0) {
-    const user = userAccountResults[0];
-    return res.status(200).json({
-      success: true,
-      user: {
-        userId: user.id,
-        storeId: user.store_id,
-        fullName: `${user.first_name} ${user.last_name}`,
-        username: user.username,
+  const userId = decoded.userId;
+  const username = decoded.username;
+
+  try {
+    // Check if the user exists in the User_Account table
+    const [userAccountResults] = await db.query(
+      "SELECT * FROM User_Account WHERE id = ? AND username = ?",
+      [userId, username]
+    );
+
+    if (userAccountResults.length > 0) {
+      const user = userAccountResults[0];
+      return res.status(200).json({
+        success: true,
+        user: {
+          userId: user.id,
+          storeId: user.store_id,
+          fullName: `${user.first_name} ${user.last_name}`,
+          username: user.username,
+        },
+      });
+    } else {
+      // Check if the customer exists in the Customer table
+      const [customerResults] = await db.query(
+        "SELECT * FROM Customer WHERE id = ?",
+        [userId]
+      );
+
+      if (customerResults.length > 0) {
+        const customer = customerResults[0];
+        return res.status(200).json({
+          success: true,
+          user: {
+            customerId: customer.id,
+            storeId: customer.store_id,
+            fullName: `${customer.c_firstname} ${customer.c_lastname}`,
+            username: customer.c_username,
+          },
+        });
+      } else {
+        return res
+          .status(404)
+          .json({ success: false, message: "User or Customer not found" });
       }
-    });
-  } else {
-    return res.status(404).json({ success: false, message: 'User not found' });
+    }
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+// export const getUserDetails = async (req, res, db) => {
+//   const authHeader = req.headers.authorization;
 
+//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//     return res.status(401).json({ success: false, message: 'Unauthorized' });
+//   }
 
-// export const handleRefreshToken = async (req, res, refreshToken) => {
+//   const token = authHeader.split(' ')[1];
+//   const decoded = decodeToken(token);
+
+//   if (!decoded) {
+//     return res.status(401).json({ success: false, message: 'Invalid token' });
+//   }
+
+//   console.log('Decoded Token:', decoded);
+
+//   // Fetch user details from database
+//   const userId = decoded.userId;
+//   const customerUsername = decoded.username;
+
+//   const [userAccountResults] = await db.query('SELECT * FROM User_Account WHERE id = ?', [userId]);
+
+//   if (userAccountResults.length > 0) {
+//     const user = userAccountResults[0];
+//     return res.status(200).json({
+//       success: true,
+//       user: {
+//         userId: user.id,
+//         storeId: user.store_id,
+//         fullName: `${user.first_name} ${user.last_name}`,
+//         username: user.username,
+//       }
+//     });
+//   } else {
+//     return res.status(404).json({ success: false, message: 'User not found' });
+//   }
+// };
+
+// export const handleRegister = async (req, res, db) => {
+//   const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement } = req.body;
+
 //   try {
-//     const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
-//     const userId = decoded.userId;
 
-//     // Generate a new access token
-//     const accessToken = createToken({ userId }, JWT_SECRET, JWT_EXPIRES_IN);
+//     const hashedPassword = await hashPassword(c_password);
 
-//     return res.status(200).json({ success: true, accessToken });
-//   } catch (err) {
-//     console.error('Error handling refresh token:', err);
-//     return res.status(401).json({ success: false, message: 'Invalid or expired refresh token.' });
+//     const [result] = await db.query(
+//       'INSERT INTO Customers (c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement, date_created) VALUES (?, ?, ?, ?, ?, ?, NOW())',
+//       [c_firstname, c_middlename, c_lastname, c_username, hashedPassword, isAgreement]
+//     );
+
+//     const newCustomer = {
+//       id: result.insertId,
+//       c_username,
+//       c_firstname,
+//       c_lastname
+//     };
+
+//     // // Generate access token
+//     // const accessToken = generateAccessToken(newCustomer);
+
+//     // Respond with success and redirection URL
+//     res.status(201).json({ success: true, message: 'Customer registered successfully'});
+//   } catch (error) {
+//     console.error('Error registering customer:', error);
+//     res.status(500).json({ success: false, message: 'Server error' });
+//   }
+// };
+
+// export const handleRegister = async (req, res, db) => {
+//   const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement, c_email, c_number, store_id } = req.body;
+
+//   try {
+//     // Hash the customer's password
+//     // const salt = await passwordSalt();
+//     const hashedPassword =  await hashPassword(c_password);
+//     // Begin transaction
+//     await db.beginTransaction();
+
+//     // Insert customer into Customers table
+//     const [customerResult] = await db.query(
+//       `INSERT INTO Customer (c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
+//        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+//       [c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement]
+//     );
+
+//     const customerId = customerResult.insertId;
+
+//     // Insert customer security data into Customer_Security table
+//     await db.query(
+//       `INSERT INTO Customer_Security (customer_id, c_password, c_password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
+//        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//       [customerId, hashedPassword, passwordSalt, false, 0, false, null, null, null]
+//     );
+
+//     // Commit transaction
+//     await db.commit();
+
+//     // Respond with success
+//     res.status(201).json({ success: true, message: 'Customer registered successfully' });
+//   } catch (error) {
+//     // Rollback transaction in case of error
+//     await db.rollback();
+
+//     console.error('Error registering customer:', error);
+//     res.status(500).json({ success: false, message: 'Server error' });
 //   }
 // };

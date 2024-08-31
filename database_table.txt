@@ -27,19 +27,33 @@ last_login
 last_logout
 last_password_change
 
-Customers
-id
+Customer
+id (Primary Key)
+store_id (Foregin Key) can be default in first 
 c_firstname
 c_middlename
 c_lastname
 c_username
-c_password
 c_number
 c_email
 isAgreement
 isOnline
 isArchive
 date_created
+
+Customer_Securty
+id (Primary Key)
+customer_id (Foregin Key)
+c_password
+c_password_salt
+mfa_enabled
+mfa_secret
+failed_login_attempts
+account_locked
+lockout_time
+last_login
+last_logout
+last_password_change
 
 
 

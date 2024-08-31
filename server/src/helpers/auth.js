@@ -16,6 +16,11 @@ export const hashPassword = (password) =>{
     })
 }
 
+// Function to generate a password salt
+export const generatePasswordSalt = () => {
+    return bcrypt.genSalt(12);
+};
+
 export const comparePassword = (password, hashed) =>{
     return bcrypt.compare(password, hashed)
 }
