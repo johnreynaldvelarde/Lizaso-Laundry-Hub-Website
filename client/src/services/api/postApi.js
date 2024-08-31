@@ -61,8 +61,8 @@ export const createItem = {
       const errorMessage =
         error.response?.data?.message ||
         "Cannot Get the message for the server";
-      console.log(errorMessage); 
-      throw new Error(errorMessage); 
+      console.log(errorMessage);
+      throw new Error(errorMessage);
     }
   },
 };
@@ -82,8 +82,8 @@ export const createItemCategory = {
       const errorMessage =
         error.response?.data?.message ||
         "Cannot Get the message for the server";
-      console.log(errorMessage); 
-      throw new Error(errorMessage); 
+      console.log(errorMessage);
+      throw new Error(errorMessage);
     }
   },
 };

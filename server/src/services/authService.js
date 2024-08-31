@@ -318,6 +318,8 @@ export const getUserDetails = async (req, res, db) => {
   }
 };
 
+ 
+
 // export const getUserDetails = async (req, res, db) => {
 //   const authHeader = req.headers.authorization;
 

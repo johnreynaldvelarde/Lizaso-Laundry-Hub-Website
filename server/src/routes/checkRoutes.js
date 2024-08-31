@@ -1,5 +1,5 @@
 import express from "express"
-import { handleCheckUsername } from "../services/useCheck.js";
+import { handleCheckUsername, handleCheckCustomerDetails } from "../services/useCheck.js";
 import { getPool } from "../db/dbConfig.js";
 
 const router = express.Router();
@@ -20,6 +20,11 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 router.post('/check-username', withDatabaseConnection(async (req, res, connection) => {
   await handleCheckUsername(req, res, connection);
 }));
+
+router.post('/check-customer-details', withDatabaseConnection(async (req, res, connection) => {
+  await handleCheckCustomerDetails(req, res, connection);
+}));
+
 
 
 
