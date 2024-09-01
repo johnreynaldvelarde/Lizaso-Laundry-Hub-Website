@@ -36,5 +36,5 @@ export { default as Settings } from "./admin/Settings/Settings";
 
 
 // Customer => Page
-export {default as CheckDetails} from "./default_customer/checkDetails"
+export {default as CheckStartingPoint} from "./default_customer/checkStartingPoint"
 export {default as MainCustomer} from "./default_customer/mainCustomer"

@@ -1,4 +1,10 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { axiosPublic, axiosPrivate } from "../api/axios";
 
 const AuthContext = createContext();
@@ -7,6 +13,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
+  const isFetchingRef = useRef(false);
   const [userDetails, setUserDetails] = useState({
     userId: "",
     storeId: "",
@@ -36,28 +43,31 @@ export const AuthProvider = ({ children }) => {
   };
 
   const fetchUserDetails = async (token) => {
-    if (token) {
-      try {
-        const response = await axiosPrivate(`/user/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    if (!token || isFetchingRef.current) return; // Prevent duplicate fetches
 
-        if (response.data.success) {
-          const user = response.data.user;
-          setUserDetails({
-            userId: user.userId,
-            storeId: user.storeId,
-            fullName: user.fullName,
-            username: user.username,
-          });
-        } else {
-          console.error("Error fetching user details:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
+    isFetchingRef.current = true; // Mark fetch as ongoing
+    try {
+      const response = await axiosPrivate(`/user/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        const user = response.data.user;
+        setUserDetails({
+          userId: user.userId,
+          storeId: user.storeId,
+          fullName: user.fullName,
+          username: user.username,
+        });
+      } else {
+        console.error("Error fetching user details:", response.data.message);
       }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    } finally {
+      isFetchingRef.current = false; // Mark fetch as completed
     }
   };
 
@@ -92,3 +102,29 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default useAuth;
+
+// const fetchUserDetails = async (token) => {
+//   if (token) {
+//     try {
+//       const response = await axiosPrivate(`/user/me`, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+
+//       if (response.data.success) {
+//         const user = response.data.user;
+//         setUserDetails({
+//           userId: user.userId,
+//           storeId: user.storeId,
+//           fullName: user.fullName,
+//           username: user.username,
+//         });
+//       } else {
+//         console.error("Error fetching user details:", response.data.message);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching user details:", error);
+//     }
+//   }
+// };

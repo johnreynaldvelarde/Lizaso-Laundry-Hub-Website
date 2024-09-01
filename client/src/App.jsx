@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Import pages
-import { StartingPage, Main, MainCustomer } from "./pages";
+import { StartingPage, Main, CheckStartingPoint, MainCustomer } from "./pages";
 import NotFound from "./pages/NotFound";
 
 // Import the AuthProvider
@@ -20,6 +20,10 @@ const App = () => {
 
           {/* This is protected route */}
           <Route path="/main/*" element={<ProtectedRoute component={Main} />} />
+          <Route
+            path="/complete-details/*"
+            element={<ProtectedRoute component={CheckStartingPoint} />}
+          />
           <Route
             path="/customer-page/*"
             element={<ProtectedRoute component={MainCustomer} />}

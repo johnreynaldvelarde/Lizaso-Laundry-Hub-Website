@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerService, checkUsername } from "../services/api/authClient";
-import toast from 'react-hot-toast'; 
+import useAuth from "../contexts/AuthContext";
+import { checkCustomerDetails } from "../services/api/checkApi";
+import {
+  registerService,
+  checkUsername,
+  loginService,
+} from "../services/api/authClient";
+import toast from "react-hot-toast";
 
 const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(showCreateAccountPopup);
+  const { setAccessToken } = useAuth();
+  const navigate = useNavigate();
 
   // Hold Inputs
   const [data, setData] = useState({
@@ -75,7 +83,58 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
 
       if (response.success) {
         toast.success("Registration successful!");
-        setShowCreateAccountPopup(false); 
+        // setShowCreateAccountPopup(false);
+
+        // Automatically login the user after successful registration
+        const loginResponse = await loginService.login({
+          username: userName,
+          password: password,
+        });
+
+        setAccessToken(loginResponse.accessToken);
+
+        // Check customer details and navigate accordingly
+        const userType = loginResponse.userType;
+
+        setTimeout(async () => {
+          if (userType === "Customer") {
+            const customerDetails =
+              await checkCustomerDetails.getCheckCustomerDetails(userName);
+
+            if (customerDetails.success !== false) {
+              // Navigate based on customer details
+              if (
+                customerDetails.storeIdIsNull ||
+                customerDetails.cNumberIsNull ||
+                customerDetails.cEmailIsNull
+              ) {
+                navigate("/complete-details");
+              } else {
+                navigate("/customer-page");
+              }
+            } else {
+              // Handle the case where checking customer details fails
+              toast.error("Failed to check customer details.");
+            }
+          } else {
+            // Redirect to main page for non-customer users
+            navigate("/main");
+          }
+        }, 1000);
+
+        // if (loginResponse.success) {
+        //   setAccessToken(loginResponse.accessToken); // Store the access token
+        //   toast.success("Login successful!");
+
+        //   // Navigate the user to the appropriate page
+        //   if (loginResponse.userType === "Customer") {
+        //     navigate("/customer-page");
+        //   } else {
+        //     navigate("/main");
+        //   }
+        // } else {
+        //   toast.error("Auto-login failed. Please login manually.");
+        // }
 
         // Clear form inputs
         setFirstName("");
@@ -86,7 +145,9 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
         setConfirmPassword("");
         setIsAgreement("");
       } else {
-        toast.error(response.message || "Registration failed. Please try again.");
+        toast.error(
+          response.message || "Registration failed. Please try again."
+        );
       }
     } catch (error) {
       console.error("There was an error registering:", error);

@@ -9,8 +9,6 @@ const handleError = (error) => {
 export const checkCustomerDetails = {
   getCheckCustomerDetails: async (c_username) => {
 
-    console.log('Checking details for username:', c_username);
-
     try {
       const response = await axiosPrivate.post("/check-customer-details", {
         c_username

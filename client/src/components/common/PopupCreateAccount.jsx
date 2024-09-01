@@ -15,7 +15,6 @@ const PopupCreateAccount = ({
     confirmPasswordVisible,
     setConfirmPasswordVisible,
     isVisible,
-    setIsVisible,
     firstName,
     setFirstName,
     middleName,
@@ -31,7 +30,6 @@ const PopupCreateAccount = ({
     isAgreement,
     setIsAgreement,
     handleRegister,
-    setData,
   } = useRegisterForm(showCreateAccountPopup, setShowCreateAccountPopup);
 
   return (

@@ -112,12 +112,12 @@ export const handleLogin = async (req, res, db) => {
 
     // Generate JWT tokens
     const accessToken = createToken(
-      { userId: user.id, username, userType },
+      { userId: user.id, username, userType,},
       process.env.ACCESS_TOKEN_SECRET,
       process.env.JWT_EXPIRES_IN
     );
     const refreshToken = createToken(
-      { userId: user.id },
+      { userId: user.id, username},
       process.env.REFRESH_TOKEN_SECRET,
       process.env.JWT_REFRESH_EXPIRES_IN
     );
@@ -334,8 +334,6 @@ export const getUserDetails = async (req, res, db) => {
 //     return res.status(401).json({ success: false, message: 'Invalid token' });
 //   }
 
-//   console.log('Decoded Token:', decoded);
-
 //   // Fetch user details from database
 //   const userId = decoded.userId;
 //   const customerUsername = decoded.username;
@@ -357,6 +355,22 @@ export const getUserDetails = async (req, res, db) => {
 //     return res.status(404).json({ success: false, message: 'User not found' });
 //   }
 // };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // export const handleRegister = async (req, res, db) => {
 //   const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement } = req.body;
