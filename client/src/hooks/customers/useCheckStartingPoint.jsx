@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { viewStore } from "../../services/api/getApi";
 import { useNavigate } from "react-router-dom";
 
 const useCheckStartingPoint = () => {
+  const [storeData, setStoreData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [step, setStep] = useState(1);
+  const hasFetchedRef = useRef(false);
+
   // Step 1
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [country, setCountry] = useState("PH");
-  const [state, setState] = useState("");
+  const [region, setRegion] = useState("");
+  const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
 
   // Set 2
-  const [storeData, setStoreData] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const [selectedStore, setSelectedStore] = useState(null);
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
@@ -26,34 +34,54 @@ const useCheckStartingPoint = () => {
       const response = await viewStore.getStoreList({});
       setStoreData(response.data);
       setLoading(false);
+
+      // Log the store details to console
+      response.data.forEach((store) => {
+        console.log(`Store Name: ${store.store_name}`);
+        console.log(
+          `Store Address: ${store.address_line1}, ${store.address_line2}, ${store.city}, ${store.province}, ${store.postal_code}, ${store.country}`
+        );
+        console.log(`Latitude: ${store.latitude}`);
+        console.log(`Longitude: ${store.longitude}`);
+      });
     } catch (error) {
-      setError(error.message);
+      console.error("Error fetching store data:", error);
       setLoading(false);
     }
   };
 
   return {
+    storeData,
+    loading,
+    step,
+    setStep,
+    hasFetchedRef,
+
     // Step 1
     addressLine1,
-    setAddressLine1,
     addressLine2,
-    setAddressLine2,
     country,
-    setCountry,
-    state,
-    setState,
+    region,
+    province,
     city,
-    setCity,
     postalCode,
+    setAddressLine1,
+    setAddressLine2,
+    setCountry,
+    setRegion,
+    setProvince,
+    setCity,
     setPostalCode,
 
     // Step 2
-    storeData,
-    loading,
+    selectedStore,
     email,
-    setEmail,
     phoneNumber,
+    setSelectedStore,
+    setEmail,
     setPhoneNumber,
+
+    //
     handleSubmitDetails,
     fetchStoreData,
 

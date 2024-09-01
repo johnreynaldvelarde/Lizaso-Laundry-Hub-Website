@@ -4,27 +4,15 @@ import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 import Table from "../../../components/common/Table";
-import { storeColumns } from "../../../data/storeData";
-import { viewStore } from "../../../services/api/getApi";
+import { storeColumns } from "../../../data/columns/stores";
+
+import useStore from "../../../hooks/admin/useStore";
 
 const Store = () => {
-  const [storeData, setStoreData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { storeData, loading, error, fetchStoreData } = useStore();
 
   // Fetch store data when the component mounts
   useEffect(() => {
-    const fetchStoreData = async () => {
-      try {
-        const response = await viewStore.getStoreList({});
-        setStoreData(response.data); // Adjust if the data structure is different
-        setLoading(false);
-      } catch (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-    };
-
     fetchStoreData();
   }, []);
 

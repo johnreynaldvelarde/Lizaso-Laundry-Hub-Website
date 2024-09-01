@@ -1,57 +1,54 @@
 import React, { useState, useEffect } from "react";
+import {
+  countries,
+  regions,
+  provinces,
+  cities,
+} from "../../data/countrySelection";
 import useCheckStartingPoint from "../../hooks/customers/useCheckStartingPoint";
-
-const countries = [
-  { code: "PH", name: "Philippines" },
-  { code: "TH", name: "Thailand" },
-  { code: "MY", name: "Malaysia" },
-  { code: "ID", name: "Indonesia" },
-  // Add more countries as needed
-];
-
-const states = {
-  PH: ["Metro Manila", "Cebu", "Davao", "Iloilo"],
-  TH: ["Bangkok", "Chiang Mai", "Phuket"],
-  MY: ["Kuala Lumpur", "Penang", "Johor"],
-  ID: ["Jakarta", "Bali", "Surabaya"],
-  // Add more states as needed
-};
-
-const cities = {
-  "Metro Manila": ["Manila", "Quezon City", "Makati"],
-  Cebu: ["Cebu City", "Mandaue", "Lapu-Lapu"],
-  Davao: ["Davao City", "Panabo", "Tagum"],
-  Iloilo: ["Iloilo City", "Passi", "Leganes"],
-  Bangkok: ["Bangkok City"],
-  "Chiang Mai": ["Chiang Mai City"],
-  Phuket: ["Phuket City"],
-  "Kuala Lumpur": ["Kuala Lumpur City"],
-  Penang: ["George Town"],
-  Johor: ["Johor Bahru"],
-  Jakarta: ["Jakarta City"],
-  Bali: ["Denpasar"],
-  Surabaya: ["Surabaya City"],
-  // Add more cities as needed
-};
 
 const CheckStartingPoint = () => {
   const {
+    storeData,
+    loading,
+    step,
+    setStep,
+    hasFetchedRef,
+
     // Step 1
     addressLine1,
-    setAddressLine1,
     addressLine2,
-    setAddressLine2,
     country,
-    setCountry,
-    state,
-    setState,
+    region,
+    province,
     city,
-    setCity,
     postalCode,
     setPostalCode,
+    setAddressLine1,
+    setAddressLine2,
+    setCountry,
+    setRegion,
+    setProvince,
+    setCity,
 
     // Step 2
+    selectedStore,
+    email,
+    phoneNumber,
+    setSelectedStore,
+    setEmail,
+    setPhoneNumber,
+
+    // Fetch
+    fetchStoreData,
   } = useCheckStartingPoint();
+
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      fetchStoreData();
+      hasFetchedRef.current = true;
+    }
+  }, [fetchStoreData]);
 
   const allStores = [
     { id: 1, name: "Store A", distance: "2 km" },
@@ -61,28 +58,35 @@ const CheckStartingPoint = () => {
     { id: 5, name: "Store E", distance: "2.5 km" },
   ];
 
-  // Function to parse distance string to number
-  const parseDistance = (distance) => parseFloat(distance.replace(" km", ""));
+  // const parseDistance = (distance) => {
+  //   if (typeof distance === "string") {
+  //     return parseFloat(distance.replace(" km", ""));
+  //   }
+  //   console.warn("Expected a string for distance, got:", distance);
+  //   return NaN;
+  // };
 
-  // Sort and limit stores
-  const sortedStores = allStores
-    .sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance))
-    .slice(0, 20);
+  // const parseDistance = (distance) => parseFloat(distance.replace(" km", ""));
 
-  const [selectedStore, setSelectedStore] = useState(null);
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [step, setStep] = useState(1);
+  const sortedStores = storeData;
+  // .sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance))
+  // .slice(0, 20);
 
   const handleCountryChange = (e) => {
     const selectedCountry = e.target.value;
     setCountry(selectedCountry);
-    setState("");
+    setRegion("");
     setCity("");
   };
 
-  const handleStateChange = (e) => {
-    setState(e.target.value);
+  const handleRegionChange = (e) => {
+    setRegion(e.target.value);
+    setProvince("");
+    setCity("");
+  };
+
+  const handleProvinceChange = (e) => {
+    setProvince(e.target.value);
     setCity("");
   };
 
@@ -90,9 +94,17 @@ const CheckStartingPoint = () => {
     setCity(e.target.value);
   };
 
+  // Submit Section
   const handleAddressSubmit = (e) => {
     e.preventDefault();
-    if (!addressLine1 || !country || !state || !city || !postalCode) {
+    if (
+      !addressLine1 ||
+      !country ||
+      !region ||
+      !province ||
+      !city ||
+      !postalCode
+    ) {
       alert("Please complete all address fields.");
       return;
     }
@@ -112,8 +124,8 @@ const CheckStartingPoint = () => {
     }
     // Process the form submission here
     alert(
-      `Address: ${addressLine1}, ${addressLine2}, ${city}, ${state}, ${postalCode}, ${country}\n` +
-        `Selected Store: ${selectedStore.name}\nEmail: ${email}\nPhone: ${phoneNumber}`
+      `Address: ${addressLine1}, ${addressLine2}, ${city}, ${province}, ${postalCode}, ${country}\n` +
+        `Selected Store: ${selectedStore.store_name}\nEmail: ${email}\nPhone: ${phoneNumber}`
     );
   };
 
@@ -177,26 +189,51 @@ const CheckStartingPoint = () => {
             {country && (
               <>
                 <div className="mb-4">
-                  <label className="block text-gray-700 mb-2" htmlFor="state">
-                    State
+                  <label className="block text-gray-700 mb-2" htmlFor="region">
+                    Region
                   </label>
                   <select
-                    id="state"
+                    id="region"
                     className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={state}
-                    onChange={handleStateChange}
+                    value={region}
+                    onChange={handleRegionChange}
                     disabled={!country}
                     required
                   >
-                    <option value="">Select State</option>
-                    {states[country]?.map((stateOption) => (
-                      <option key={stateOption} value={stateOption}>
-                        {stateOption}
+                    <option value="">Select Region</option>
+                    {regions[country]?.map((regionOption) => (
+                      <option key={regionOption} value={regionOption}>
+                        {regionOption}
                       </option>
                     ))}
                   </select>
                 </div>
-                {state && (
+                {region && (
+                  <div className="mb-4">
+                    <label
+                      className="block text-gray-700 mb-2"
+                      htmlFor="province"
+                    >
+                      Province
+                    </label>
+                    <select
+                      id="province"
+                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={province}
+                      onChange={handleProvinceChange}
+                      disabled={!region}
+                      required
+                    >
+                      <option value="">Select Province</option>
+                      {provinces[region]?.map((provinceOption) => (
+                        <option key={provinceOption} value={provinceOption}>
+                          {provinceOption}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {province && (
                   <div className="mb-4">
                     <label className="block text-gray-700 mb-2" htmlFor="city">
                       City
@@ -206,11 +243,11 @@ const CheckStartingPoint = () => {
                       className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={city}
                       onChange={handleCityChange}
-                      disabled={!state}
+                      disabled={!province}
                       required
                     >
                       <option value="">Select City</option>
-                      {cities[state]?.map((cityOption) => (
+                      {cities[province]?.map((cityOption) => (
                         <option key={cityOption} value={cityOption}>
                           {cityOption}
                         </option>
@@ -241,7 +278,6 @@ const CheckStartingPoint = () => {
             </button>
           </form>
         )}
-
         {step === 2 && (
           <>
             <h1 className="text-xl font-semibold text-gray-800 mb-4">
@@ -259,12 +295,22 @@ const CheckStartingPoint = () => {
                     }`}
                     onClick={() => handleStoreSelection(store)}
                   >
-                    <h2 className="text-lg font-semibold">{store.name}</h2>
-                    <p>{store.distance} away</p>
+                    <h2 className="text-lg font-semibold">
+                      {store.store_name}
+                    </h2>
+                    <p className="text-sm">
+                      {store.province &&
+                        store.city &&
+                        `${store.province}, ${store.city}`}
+                      {store.province && !store.city && store.province}
+                      {!store.province && store.city && store.city}
+                    </p>
+                    <p className="text-xs mt-1">{store.address_line1}</p>
                   </li>
                 ))}
               </ul>
             </div>
+
             <form onSubmit={handleDetailsSubmit}>
               <div className="mb-4 mt-5">
                 <label className="block text-gray-700 mb-2" htmlFor="email">
@@ -310,6 +356,27 @@ const CheckStartingPoint = () => {
 };
 
 export default CheckStartingPoint;
+
+{
+  /* <div className="overflow-y-auto max-h-96 scrollable p-1">
+              <ul className="mb-6">
+                {sortedStores.map((store) => (
+                  <li
+                    key={store.id}
+                    className={`p-4 mb-2 rounded-lg cursor-pointer hover:bg-blue-100 ${
+                      selectedStore?.id === store.id
+                        ? "bg-blue-200"
+                        : "bg-gray-200"
+                    }`}
+                    onClick={() => handleStoreSelection(store)}
+                  >
+                    <h2 className="text-lg font-semibold">{store.name}</h2>
+                    <p>{store.distance} away</p>
+                  </li>
+                ))}
+              </ul>
+            </div> */
+}
 
 // import React, { useState, useEffect } from "react";
 

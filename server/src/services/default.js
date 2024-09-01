@@ -24,16 +24,16 @@ export const ensureMainStoreExists = async (db) => {
 
       // Step 1: Insert the address into the Addresses table
       const insertAddressQuery = `
-        INSERT INTO Addresses (address_line1, address_line2, city, state, postal_code, country, latitude, longitude, updated_at) 
+        INSERT INTO Addresses (address_line1, address_line2, country,  province, city, postal_code, latitude, longitude, updated_at) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
       
       const addressValues = [
         'Balagtas',          // address_line1
         'Bulacan',           // address_line2
-        'Balagtas',          // city
-        'Bulacan',           // state
-        '3016',              // postal_code
         'Philippines',       // country
+        'Bulacan',           // province
+        'Balagtas',          // city
+        '3016',              // postal_code
         '14.814820876765298', // latitude
         '120.91126972957287' // longitude
       ];
@@ -58,24 +58,6 @@ export const ensureMainStoreExists = async (db) => {
   }
 };
 
-// export const ensureMainStoreExists = async (db) => {
-//   try {
-//     const [[{ count }]] = await db.query('SELECT COUNT(*) AS count FROM Stores WHERE is_main_store = TRUE');
-//     if (count === 0) {
-//       const storeNo = 'LIZASO-' + new Date().getTime(); // Unique store ID starting with LIZASO
-
-//       const insertStoreQuery = `INSERT INTO Stores 
-//         (store_no, store_name, store_address, store_location, store_contact, is_main_store, date_created) 
-//         VALUES (?, 'Lizaso Laundry Hub', 'Balagtas, Bulacan', '14.814820876765298, 120.91126972957287', 'Main Contact', TRUE, NOW())`;
-
-//       await db.query(insertStoreQuery, [storeNo]);
-//       console.log('Main store created.');
-//     }
-//   } catch (err) {
-//     throw new Error(`Error ensuring main store exists: ${err.message}`);
-//   }
-// };
-
 // Function to create a default admin account
 export const createDefaultAdmin = async (db) => {
   try {
@@ -94,7 +76,7 @@ export const createDefaultAdmin = async (db) => {
       if (storeId) {
         await db.query(`INSERT INTO User_Account 
           (username, first_name, last_name, email, isRole, isOnline, isStatus, date_created, store_id) 
-          VALUES (?, ?, ?, ?, 0, FALSE, TRUE, NOW(), ?)`, 
+          VALUES (?, ?, ?, ?, 0, FALSE, FALSE, NOW(), ?)`, 
           [username, firstName, lastName, email, storeId]
         );
 

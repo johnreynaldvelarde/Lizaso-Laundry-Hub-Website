@@ -29,7 +29,8 @@ last_password_change
 
 Customer
 id (Primary Key)
-store_id (Foregin Key) 
+store_id (Foregin Key)
+address_id (Foregin Key)  
 c_firstname
 c_middlename
 c_lastname
@@ -73,10 +74,10 @@ isArchive
 id (Primary Key)
 address_line1
 address_line2
-city
-state
-postal_code
 country
+province
+city
+postal_code
 latitude
 longitude
 updated_at

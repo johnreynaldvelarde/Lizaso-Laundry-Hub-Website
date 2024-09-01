@@ -43,20 +43,23 @@ export const handleCreateStore = async (req, res, db) => {
 
 export const handleViewStore = async (req, res, db) => {
   try {
-    // Query the database to get the list of stores
-    const [rows] = await db.query(
-      `SELECT id, address_id, store_no, store_name, store_contact, 
-              is_main_store, updated_at, date_created, isStatus, isArchive
-       FROM Stores`
-    );
 
-    // Send a success response with the list of stores
+    const [rows] = await db.query(
+      `SELECT s.id, s.address_id, s.store_no, s.store_name, s.store_contact, 
+              s.store_email, s.is_main_store, s.updated_at AS store_updated_at, 
+              s.date_created, s.isStatus, s.isArchive, 
+              a.address_line1, a.address_line2, a.country, a.province, a.city, a.postal_code, 
+              a.latitude, a.longitude, a.updated_at AS address_updated_at
+       FROM Stores s
+       LEFT JOIN Addresses a ON s.address_id = a.id
+       WHERE s.isArchive = 0`
+    );
+  
     res.status(200).json({
       success: true,
       data: rows,
     });
   } catch (error) {
-    // Handle any errors that occurred during the query
     console.error("Error retrieving store list:", error);
     res.status(500).json({
       success: false,
@@ -64,3 +67,9 @@ export const handleViewStore = async (req, res, db) => {
     });
   }
 };
+
+  // const [rows] = await db.query(
+    //   `SELECT id, address_id, store_no, store_name, store_contact, 
+    //           is_main_store, updated_at, date_created, isStatus, isArchive
+    //    FROM Stores`
+    // );
