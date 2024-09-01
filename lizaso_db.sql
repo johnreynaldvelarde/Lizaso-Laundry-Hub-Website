@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 26, 2024 at 10:36 AM
+-- Generation Time: Sep 01, 2024 at 08:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,30 +24,70 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `customers`
+-- Table structure for table `addresses`
 --
 
-CREATE TABLE `customers` (
+CREATE TABLE `addresses` (
   `id` bigint(20) NOT NULL,
-  `c_firstname` varchar(100) NOT NULL,
-  `c_middlename` varchar(100) NOT NULL,
-  `c_lastname` varchar(100) NOT NULL,
-  `c_username` varchar(100) NOT NULL,
-  `c_password` varchar(255) NOT NULL,
-  `c_number` varchar(29) NOT NULL,
-  `c_email` varchar(255) NOT NULL,
-  `isAgreement` tinyint(1) NOT NULL,
-  `isOnline` tinyint(1) NOT NULL,
-  `isArchive` tinyint(4) NOT NULL,
-  `date_created` datetime NOT NULL
+  `address_line1` varchar(255) NOT NULL,
+  `address_line2` varchar(255) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `state` varchar(100) NOT NULL,
+  `postal_code` varchar(20) NOT NULL,
+  `country` varchar(100) NOT NULL,
+  `latitude` decimal(9,6) NOT NULL,
+  `longitude` decimal(9,6) NOT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `customers`
+-- Dumping data for table `addresses`
 --
 
-INSERT INTO `customers` (`id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_password`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
-(1, 'Rose', '', 'Oriana', 'roseoriana16', '$2b$12$M3QkPqHAnZmpg6JnIyssa.AtLlTe6V4auEX.WsNYu6mQWDazK0MR2', '', '', 1, 1, 0, '2024-08-26 06:00:54');
+INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `city`, `state`, `postal_code`, `country`, `latitude`, `longitude`, `updated_at`) VALUES
+(1, 'Balagtas', 'Bulacan', 'Balagtas', 'Bulacan', '3016', 'Philippines', 14.814821, 120.911270, '2024-09-01 06:26:50');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer`
+--
+
+CREATE TABLE `customer` (
+  `id` bigint(20) NOT NULL,
+  `store_id` bigint(20) DEFAULT NULL,
+  `c_firstname` varchar(255) NOT NULL,
+  `c_middlename` varchar(255) NOT NULL,
+  `c_lastname` varchar(255) NOT NULL,
+  `c_username` varchar(255) NOT NULL,
+  `c_number` varchar(20) NOT NULL,
+  `c_email` varchar(255) NOT NULL,
+  `isAgreement` tinyint(1) NOT NULL,
+  `isOnline` tinyint(1) NOT NULL,
+  `isArchive` tinyint(1) NOT NULL,
+  `date_created` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_security`
+--
+
+CREATE TABLE `customer_security` (
+  `id` bigint(20) NOT NULL,
+  `customer_id` bigint(20) NOT NULL,
+  `c_password` varchar(255) NOT NULL,
+  `c_password_salt` varchar(255) NOT NULL,
+  `mfa_enabled` tinyint(1) NOT NULL,
+  `mfa_secret` varchar(255) NOT NULL,
+  `failed_login_attempts` int(11) NOT NULL,
+  `account_locked` tinyint(1) NOT NULL,
+  `lockout_time` timestamp NULL DEFAULT NULL,
+  `last_login` timestamp NULL DEFAULT NULL,
+  `last_logout` timestamp NULL DEFAULT NULL,
+  `last_password_change` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -63,13 +103,6 @@ CREATE TABLE `inventory` (
   `quantity` int(11) NOT NULL,
   `isStatus` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `inventory`
---
-
-INSERT INTO `inventory` (`id`, `store_id`, `item_id`, `price`, `quantity`, `isStatus`) VALUES
-(7, 1, 12, 50.00, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -87,13 +120,6 @@ CREATE TABLE `item` (
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `item`
---
-
-INSERT INTO `item` (`id`, `category_id`, `item_code`, `item_name`, `isArchive`, `updated_at`, `date_created`) VALUES
-(12, 16, 'ITM001', 'Surf Powder', 0, '2024-08-26 16:35:11', '2024-08-26 16:35:11');
-
 -- --------------------------------------------------------
 
 --
@@ -107,16 +133,6 @@ CREATE TABLE `item_category` (
   `updated_at` datetime NOT NULL,
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `item_category`
---
-
-INSERT INTO `item_category` (`id`, `category_name`, `isArchive`, `updated_at`, `date_created`) VALUES
-(16, 'Laundry Detergents', 0, '2024-08-26 11:09:25', '2024-08-26 11:09:25'),
-(17, 'Fabric Softeners', 0, '2024-08-26 11:09:33', '2024-08-26 11:09:33'),
-(18, 'Stain Removers', 0, '2024-08-26 11:09:39', '2024-08-26 11:09:39'),
-(19, 'Bleach', 0, '2024-08-26 11:09:45', '2024-08-26 11:09:45');
 
 -- --------------------------------------------------------
 
@@ -138,12 +154,7 @@ CREATE TABLE `laundry_unit` (
 --
 
 INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(1, 1, 'Unit 1', '2024-08-26 06:14:45', 0, 0),
-(2, 1, 'Unit 2', '2024-08-26 15:02:08', 0, 0),
-(3, 1, 'Unit 3', '2024-08-26 15:02:16', 0, 0),
-(4, 1, 'Unit 4', '2024-08-26 15:14:08', 0, 0),
-(5, 1, 'Unit 5', '2024-08-26 15:14:14', 1, 0),
-(6, 1, 'Unit 6', '2024-08-26 16:18:59', 0, 0);
+(1, 1, 'Unit 1', '2024-09-01 14:28:50', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -153,10 +164,11 @@ INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUn
 
 CREATE TABLE `stores` (
   `id` bigint(20) NOT NULL,
+  `address_id` bigint(20) DEFAULT NULL,
   `store_no` varchar(50) NOT NULL,
   `store_name` varchar(255) NOT NULL,
-  `store_address` text NOT NULL,
   `store_contact` varchar(50) NOT NULL,
+  `store_email` varchar(255) NOT NULL,
   `is_main_store` tinyint(1) NOT NULL,
   `updated_at` datetime NOT NULL,
   `date_created` datetime NOT NULL,
@@ -168,8 +180,8 @@ CREATE TABLE `stores` (
 -- Dumping data for table `stores`
 --
 
-INSERT INTO `stores` (`id`, `store_no`, `store_name`, `store_address`, `store_contact`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
-(1, 'LIZASO-1724580830730', 'Main Store', 'Main Address', 'Main Contact', 1, '0000-00-00 00:00:00', '2024-08-25 18:13:50', 0, 0);
+INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_contact`, `store_email`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
+(1, 1, 'LIZASO-1725172010785', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-09-01 14:26:50', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -198,7 +210,7 @@ CREATE TABLE `user_account` (
 --
 
 INSERT INTO `user_account` (`id`, `store_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isRole`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
-(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 1, 0, '2024-08-25 18:13:50');
+(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 1, 0, '2024-09-01 14:26:50');
 
 -- --------------------------------------------------------
 
@@ -226,17 +238,31 @@ CREATE TABLE `user_security` (
 --
 
 INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$10$ZuHv8Lnrfhw8pJl.ucgC7u8eoJdkQweuXcC2TYOi.tjjG.g.wvWNC', '$2b$10$XC2dRNqztIbvhJKIdc1dde', 0, '', 0, 0, '2024-08-25 10:13:50', NULL, NULL, NULL);
+(1, 1, '$2b$10$xTP3q0f3U/t51fwviSRQPeWRw0Z7j1DgAWzIGTLqilbBu2Ub.nS/a', '$2b$10$EA9oTC1EbfBq1ku/gGAEG.', 0, '', 0, 0, '2024-09-01 06:26:50', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `customers`
+-- Indexes for table `addresses`
 --
-ALTER TABLE `customers`
+ALTER TABLE `addresses`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `customer`
+--
+ALTER TABLE `customer`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Customer_Stores` (`store_id`);
+
+--
+-- Indexes for table `customer_security`
+--
+ALTER TABLE `customer_security`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Customer_Security` (`customer_id`);
 
 --
 -- Indexes for table `inventory`
@@ -291,34 +317,46 @@ ALTER TABLE `user_security`
 --
 
 --
--- AUTO_INCREMENT for table `customers`
+-- AUTO_INCREMENT for table `addresses`
 --
-ALTER TABLE `customers`
+ALTER TABLE `addresses`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `customer`
+--
+ALTER TABLE `customer`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `customer_security`
+--
+ALTER TABLE `customer_security`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `item_category`
 --
 ALTER TABLE `item_category`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `stores`
@@ -341,6 +379,18 @@ ALTER TABLE `user_security`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `customer`
+--
+ALTER TABLE `customer`
+  ADD CONSTRAINT `Customer_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `customer_security`
+--
+ALTER TABLE `customer_security`
+  ADD CONSTRAINT `Customer_Security` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`);
 
 --
 -- Constraints for table `inventory`

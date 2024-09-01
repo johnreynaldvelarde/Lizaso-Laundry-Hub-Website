@@ -56,18 +56,30 @@ last_logout
 last_password_change
 
 
-
 Stores
 id (Primary Key)
+address_id (Foregin Key)
 store_no
 store_name
-store_address
 store_contact
+store_email
 is_main_store
 updated_at
 date_created
 isStatus
 isArchive
+
+--> Addresses <--
+id (Primary Key)
+address_line1
+address_line2
+city
+state
+postal_code
+country
+latitude
+longitude
+updated_at
 
 Laundry_Unit
 id  (Primary Key)
@@ -102,3 +114,5 @@ store_id (Foregin Key)
 price
 quantity
 isStatus
+
+

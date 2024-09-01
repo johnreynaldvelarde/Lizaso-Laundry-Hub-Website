@@ -18,20 +18,63 @@ export const getMainStoreId = async (db) => {
 export const ensureMainStoreExists = async (db) => {
   try {
     const [[{ count }]] = await db.query('SELECT COUNT(*) AS count FROM Stores WHERE is_main_store = TRUE');
+    
     if (count === 0) {
-      const storeId = 'LIZASO-' + new Date().getTime(); // Unique store ID starting with LIZASO
+      const storeNo = 'LIZASO-' + new Date().getTime(); // Unique store ID starting with LIZASO
 
-      const insertStoreQuery = `INSERT INTO Stores 
-        (store_no, store_name, store_address, store_contact, is_main_store, date_created) 
-        VALUES (?, 'Main Store', 'Main Address', 'Main Contact', TRUE, NOW())`;
+      // Step 1: Insert the address into the Addresses table
+      const insertAddressQuery = `
+        INSERT INTO Addresses (address_line1, address_line2, city, state, postal_code, country, latitude, longitude, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+      
+      const addressValues = [
+        'Balagtas',          // address_line1
+        'Bulacan',           // address_line2
+        'Balagtas',          // city
+        'Bulacan',           // state
+        '3016',              // postal_code
+        'Philippines',       // country
+        '14.814820876765298', // latitude
+        '120.91126972957287' // longitude
+      ];
 
-      await db.query(insertStoreQuery, [storeId]);
+      const [addressResult] = await db.query(insertAddressQuery, addressValues);
+      const addressId = addressResult.insertId;
+
+      // Step 2: Insert the store into the Stores table using the address_id
+      const insertStoreQuery = `
+        INSERT INTO Stores 
+        (address_id, store_no, store_name, store_contact, store_email, is_main_store, date_created) 
+        VALUES (?, ?, 'Lizaso Laundry Hub', 'Main Contact', '', TRUE, NOW())`;
+
+      const storeValues = [addressId, storeNo];
+
+      await db.query(insertStoreQuery, storeValues);
+      
       console.log('Main store created.');
     }
   } catch (err) {
     throw new Error(`Error ensuring main store exists: ${err.message}`);
   }
 };
+
+// export const ensureMainStoreExists = async (db) => {
+//   try {
+//     const [[{ count }]] = await db.query('SELECT COUNT(*) AS count FROM Stores WHERE is_main_store = TRUE');
+//     if (count === 0) {
+//       const storeNo = 'LIZASO-' + new Date().getTime(); // Unique store ID starting with LIZASO
+
+//       const insertStoreQuery = `INSERT INTO Stores 
+//         (store_no, store_name, store_address, store_location, store_contact, is_main_store, date_created) 
+//         VALUES (?, 'Lizaso Laundry Hub', 'Balagtas, Bulacan', '14.814820876765298, 120.91126972957287', 'Main Contact', TRUE, NOW())`;
+
+//       await db.query(insertStoreQuery, [storeNo]);
+//       console.log('Main store created.');
+//     }
+//   } catch (err) {
+//     throw new Error(`Error ensuring main store exists: ${err.message}`);
+//   }
+// };
 
 // Function to create a default admin account
 export const createDefaultAdmin = async (db) => {

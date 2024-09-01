@@ -45,7 +45,7 @@ export const handleViewStore = async (req, res, db) => {
   try {
     // Query the database to get the list of stores
     const [rows] = await db.query(
-      `SELECT id, store_no, store_name, store_address, store_contact, 
+      `SELECT id, address_id, store_no, store_name, store_contact, 
               is_main_store, updated_at, date_created, isStatus, isArchive
        FROM Stores`
     );
