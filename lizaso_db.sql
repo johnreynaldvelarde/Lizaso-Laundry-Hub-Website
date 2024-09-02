@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 01, 2024 at 08:31 AM
+-- Generation Time: Sep 02, 2024 at 05:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,10 +31,10 @@ CREATE TABLE `addresses` (
   `id` bigint(20) NOT NULL,
   `address_line1` varchar(255) NOT NULL,
   `address_line2` varchar(255) NOT NULL,
-  `city` varchar(100) NOT NULL,
-  `state` varchar(100) NOT NULL,
-  `postal_code` varchar(20) NOT NULL,
   `country` varchar(100) NOT NULL,
+  `province` varchar(100) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `postal_code` varchar(20) NOT NULL,
   `latitude` decimal(9,6) NOT NULL,
   `longitude` decimal(9,6) NOT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -44,8 +44,9 @@ CREATE TABLE `addresses` (
 -- Dumping data for table `addresses`
 --
 
-INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `city`, `state`, `postal_code`, `country`, `latitude`, `longitude`, `updated_at`) VALUES
-(1, 'Balagtas', 'Bulacan', 'Balagtas', 'Bulacan', '3016', 'Philippines', 14.814821, 120.911270, '2024-09-01 06:26:50');
+INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
+(1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-09-01 23:13:15'),
+(2, 'Malolos, Bulacan', 'Malolos, Bulacan', 'Philippines', 'Bulacan', 'Malolos', '3000', 14.849900, 120.823900, NULL);
 
 -- --------------------------------------------------------
 
@@ -56,6 +57,7 @@ INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `city`, `state`
 CREATE TABLE `customer` (
   `id` bigint(20) NOT NULL,
   `store_id` bigint(20) DEFAULT NULL,
+  `address_id` bigint(20) DEFAULT NULL,
   `c_firstname` varchar(255) NOT NULL,
   `c_middlename` varchar(255) NOT NULL,
   `c_lastname` varchar(255) NOT NULL,
@@ -67,6 +69,13 @@ CREATE TABLE `customer` (
   `isArchive` tinyint(1) NOT NULL,
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer`
+--
+
+INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
+(1, NULL, NULL, 'Rose', '', 'Oriana', 'rose16', '', '', 1, 1, 0, '2024-09-02 07:19:10');
 
 -- --------------------------------------------------------
 
@@ -88,6 +97,13 @@ CREATE TABLE `customer_security` (
   `last_logout` timestamp NULL DEFAULT NULL,
   `last_password_change` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer_security`
+--
+
+INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
+(1, 1, '$2b$12$.NPFb5IrbWu4H/AWA31LJ.N3/yw9FtojJ/gT0vf3cP8QjP54t0IQW', '$2b$12$I/FCPj7VZMRdV/geL4Tfve', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -149,13 +165,6 @@ CREATE TABLE `laundry_unit` (
   `isArchive` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `laundry_unit`
---
-
-INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(1, 1, 'Unit 1', '2024-09-01 14:28:50', 0, 0);
-
 -- --------------------------------------------------------
 
 --
@@ -181,7 +190,8 @@ CREATE TABLE `stores` (
 --
 
 INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_contact`, `store_email`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
-(1, 1, 'LIZASO-1725172010785', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-09-01 14:26:50', 0, 0);
+(1, 1, 'LIZASO-1725232395416', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-09-02 07:13:15', 0, 0),
+(2, 2, 'Lizaso Store 0001', 'Lizaso Malolos', '09124747061', 'lizasomalolos@gmail.com', 0, '2024-09-02 01:51:07', '2024-09-02 01:51:07', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -210,7 +220,7 @@ CREATE TABLE `user_account` (
 --
 
 INSERT INTO `user_account` (`id`, `store_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isRole`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
-(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 1, 0, '2024-09-01 14:26:50');
+(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 0, 0, '2024-09-02 07:13:15');
 
 -- --------------------------------------------------------
 
@@ -238,7 +248,7 @@ CREATE TABLE `user_security` (
 --
 
 INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$10$xTP3q0f3U/t51fwviSRQPeWRw0Z7j1DgAWzIGTLqilbBu2Ub.nS/a', '$2b$10$EA9oTC1EbfBq1ku/gGAEG.', 0, '', 0, 0, '2024-09-01 06:26:50', NULL, NULL, NULL);
+(1, 1, '$2b$10$FqG.2B/vBiFjHXYZ8MciauDzZDDrN2R9WXt39rI1hOn19WBgNLw7.', '$2b$10$ydRnrAI0vq/w4NDifXDIc.', 0, '', 0, 0, '2024-09-01 23:13:15', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -255,7 +265,8 @@ ALTER TABLE `addresses`
 --
 ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `Customer_Stores` (`store_id`);
+  ADD KEY `Customer_Stores` (`store_id`),
+  ADD KEY `Customer_Addresses` (`address_id`);
 
 --
 -- Indexes for table `customer_security`
@@ -296,7 +307,8 @@ ALTER TABLE `laundry_unit`
 -- Indexes for table `stores`
 --
 ALTER TABLE `stores`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Stores_Addresses` (`address_id`);
 
 --
 -- Indexes for table `user_account`
@@ -320,19 +332,19 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `customer_security`
 --
 ALTER TABLE `customer_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -356,13 +368,13 @@ ALTER TABLE `item_category`
 -- AUTO_INCREMENT for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `stores`
 --
 ALTER TABLE `stores`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `user_account`
@@ -384,6 +396,7 @@ ALTER TABLE `user_security`
 -- Constraints for table `customer`
 --
 ALTER TABLE `customer`
+  ADD CONSTRAINT `Customer_Addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`),
   ADD CONSTRAINT `Customer_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
 
 --
@@ -410,6 +423,12 @@ ALTER TABLE `item`
 --
 ALTER TABLE `laundry_unit`
   ADD CONSTRAINT `Laundry_Unit_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `stores`
+--
+ALTER TABLE `stores`
+  ADD CONSTRAINT `Stores_Addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`);
 
 --
 -- Constraints for table `user_account`
