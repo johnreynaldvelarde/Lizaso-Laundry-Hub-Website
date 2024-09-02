@@ -246,8 +246,7 @@ export const cities = {
   Guimaras: ["Jordan"],
   Iloilo: ["Iloilo City", "Passi"],
   "Negros Occidental": [
-    "Bacolod",
-    "Bago",
+    "Bacolod",   
     "Cadiz",
     "Escalante",
     "Himamaylan",
