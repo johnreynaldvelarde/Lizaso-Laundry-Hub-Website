@@ -1,23 +1,25 @@
 import React from "react";
 import C_Navbar from "../../components/common/C_Navbar";
+import C_Footer from "../../components/common/C_Footer";
+import SelectionService from "./SelectionService";
 
 const MainCustomer = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen">
       <C_Navbar />
-      <div className="p-4">
-        <header className="bg-blue-600 text-white p-4 mb-4 rounded-md shadow-md">
-          <h1 className="text-2xl font-semibold">Customer Dashboard</h1>
-        </header>
-        <main className="bg-white p-6 rounded-md shadow-md">
-          <h2 className="text-xl font-semibold mb-4">
-            Welcome, [Customer Name]
-          </h2>
-          <p className="text-gray-700">
-            Here you can manage your orders and view your account details.
-          </p>
-        </main>
-      </div>
+      <main className="flex-grow max-w-7xl mx-auto pt-20 px-6">
+        <section>
+          {/* <h1 className="text-2xl font-bold mb-4">
+            Welcome to Lizaso Laundry Hub
+          </h1>
+          <p className="text-lg mb-4">
+            We're here to help you with all your laundry needs. Explore our
+            services and get in touch with us if you have any questions.
+          </p> */}
+          <SelectionService />
+        </section>
+      </main>
+      <C_Footer />
     </div>
   );
 };

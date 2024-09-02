@@ -6,6 +6,12 @@ export const navItems = [
   { label: "Contact", href: "#" },
 ];
 
+export const c_navItems = [
+  { label: "Select a Service", href: "#" },
+  { label: "Order Tracking", href: "#" },
+  { label: "Payment History", href: "#" },
+];
+
 /*
 import { BotMessageSquare } from "lucide-react";
 import { BatteryCharging } from "lucide-react";

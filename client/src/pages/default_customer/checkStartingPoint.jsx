@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import styles from "../../style";
 import {
   countries,
   regions,
@@ -198,7 +199,7 @@ const CheckStartingPoint = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 mt-2"
             >
               Continue
             </button>
