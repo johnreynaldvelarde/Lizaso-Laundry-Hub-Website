@@ -300,7 +300,7 @@ export const getUserDetails = async (req, res, db) => {
         return res.status(200).json({
           success: true,
           user: {
-            customerId: customer.id,
+            userId: customer.id,
             storeId: customer.store_id,
             fullName: `${customer.c_firstname} ${customer.c_lastname}`,
             username: customer.c_username,
@@ -317,44 +317,10 @@ export const getUserDetails = async (req, res, db) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+ 
 
  
 
-// export const getUserDetails = async (req, res, db) => {
-//   const authHeader = req.headers.authorization;
-
-//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-//     return res.status(401).json({ success: false, message: 'Unauthorized' });
-//   }
-
-//   const token = authHeader.split(' ')[1];
-//   const decoded = decodeToken(token);
-
-//   if (!decoded) {
-//     return res.status(401).json({ success: false, message: 'Invalid token' });
-//   }
-
-//   // Fetch user details from database
-//   const userId = decoded.userId;
-//   const customerUsername = decoded.username;
-
-//   const [userAccountResults] = await db.query('SELECT * FROM User_Account WHERE id = ?', [userId]);
-
-//   if (userAccountResults.length > 0) {
-//     const user = userAccountResults[0];
-//     return res.status(200).json({
-//       success: true,
-//       user: {
-//         userId: user.id,
-//         storeId: user.store_id,
-//         fullName: `${user.first_name} ${user.last_name}`,
-//         username: user.username,
-//       }
-//     });
-//   } else {
-//     return res.status(404).json({ success: false, message: 'User not found' });
-//   }
-// };
 
 
 
@@ -370,74 +336,3 @@ export const getUserDetails = async (req, res, db) => {
 
 
 
-
-
-// export const handleRegister = async (req, res, db) => {
-//   const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement } = req.body;
-
-//   try {
-
-//     const hashedPassword = await hashPassword(c_password);
-
-//     const [result] = await db.query(
-//       'INSERT INTO Customers (c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement, date_created) VALUES (?, ?, ?, ?, ?, ?, NOW())',
-//       [c_firstname, c_middlename, c_lastname, c_username, hashedPassword, isAgreement]
-//     );
-
-//     const newCustomer = {
-//       id: result.insertId,
-//       c_username,
-//       c_firstname,
-//       c_lastname
-//     };
-
-//     // // Generate access token
-//     // const accessToken = generateAccessToken(newCustomer);
-
-//     // Respond with success and redirection URL
-//     res.status(201).json({ success: true, message: 'Customer registered successfully'});
-//   } catch (error) {
-//     console.error('Error registering customer:', error);
-//     res.status(500).json({ success: false, message: 'Server error' });
-//   }
-// };
-
-// export const handleRegister = async (req, res, db) => {
-//   const { c_firstname, c_middlename, c_lastname, c_username, c_password, isAgreement, c_email, c_number, store_id } = req.body;
-
-//   try {
-//     // Hash the customer's password
-//     // const salt = await passwordSalt();
-//     const hashedPassword =  await hashPassword(c_password);
-//     // Begin transaction
-//     await db.beginTransaction();
-
-//     // Insert customer into Customers table
-//     const [customerResult] = await db.query(
-//       `INSERT INTO Customer (c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
-//        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-//       [c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement]
-//     );
-
-//     const customerId = customerResult.insertId;
-
-//     // Insert customer security data into Customer_Security table
-//     await db.query(
-//       `INSERT INTO Customer_Security (customer_id, c_password, c_password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
-//        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-//       [customerId, hashedPassword, passwordSalt, false, 0, false, null, null, null]
-//     );
-
-//     // Commit transaction
-//     await db.commit();
-
-//     // Respond with success
-//     res.status(201).json({ success: true, message: 'Customer registered successfully' });
-//   } catch (error) {
-//     // Rollback transaction in case of error
-//     await db.rollback();
-
-//     console.error('Error registering customer:', error);
-//     res.status(500).json({ success: false, message: 'Server error' });
-//   }
-// };

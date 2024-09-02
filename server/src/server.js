@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js'
 import getRoutes from './routes/getRoutes.js'
-import  putRoutes from './routes/postRoutes.js'
+import putRoutes from './routes/putRoutes.js'
 import checkRoutes from './routes/checkRoutes.js'
 import { authenticateToken } from './middleware/authMiddleware.js';
 

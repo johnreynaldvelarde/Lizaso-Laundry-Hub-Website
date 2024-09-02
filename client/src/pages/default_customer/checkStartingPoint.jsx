@@ -44,7 +44,7 @@ const CheckStartingPoint = () => {
 
     // Fetch
     fetchStoreData,
-    handleDetailsSubmit,
+    handleFinalSubmit,
   } = useCheckStartingPoint();
 
   useEffect(() => {
@@ -56,8 +56,8 @@ const CheckStartingPoint = () => {
   }, [latitude, longitude]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-5">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl my-8">
         {step === 1 && (
           <form onSubmit={handleAddressSubmit}>
             <h1 className="text-xl font-semibold text-gray-800 mb-4">
@@ -252,89 +252,7 @@ const CheckStartingPoint = () => {
               </ul>
             </div>
 
-            {/* <div className="overflow-y-auto max-h-96 scrollable p-5">
-              <ul className="mb-6">
-                {storeData.map((store) => (
-                  <li
-                    key={store.id}
-                    className={`flex justify-between items-center p-4 mb-2 rounded-lg cursor-pointer transition-transform duration-200 ease-in-out ${
-                      selectedStore?.id === store.id
-                        ? "bg-blue-200"
-                        : "bg-gray-200"
-                    } hover:bg-blue-100 hover:scale-105`} // Added hover:scale-105 for a smoother hover effect
-                    onClick={() => handleStoreSelection(store)}
-                  >
-                    <div>
-                      <h2 className="text-lg font-semibold">
-                        {store.store_name}
-                      </h2>
-                      <p className="text-sm">
-                        {store.province &&
-                          store.city &&
-                          `${store.province}, ${store.city}`}
-                        {store.province && !store.city && store.province}
-                        {!store.province && store.city && store.city}
-                      </p>
-                      <p className="text-xs mt-1">{store.address_line1}</p>
-                    </div>
-                    {store.distance && (
-                      <p
-                        className={`text-base font-semibold ${
-                          store.distance >= 5
-                            ? "text-red-600"
-                            : "text-green-600"
-                        }`}
-                      >
-                        {store.distance} km
-                      </p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div> */}
-
-            {/* <div className="overflow-y-auto max-h-96 scrollable p-1">
-              <ul className="mb-6">
-                {storeData.map((store) => (
-                  <li
-                    key={store.id}
-                    className={`flex justify-between items-center p-4 mb-2 rounded-lg cursor-pointer hover:bg-blue-100 ${
-                      selectedStore?.id === store.id
-                        ? "bg-blue-200"
-                        : "bg-gray-200"
-                    }`}
-                    onClick={() => handleStoreSelection(store)}
-                  >
-                    <div>
-                      <h2 className="text-lg font-semibold">
-                        {store.store_name}
-                      </h2>
-                      <p className="text-sm">
-                        {store.province &&
-                          store.city &&
-                          `${store.province}, ${store.city}`}
-                        {store.province && !store.city && store.province}
-                        {!store.province && store.city && store.city}
-                      </p>
-                      <p className="text-xs mt-1">{store.address_line1}</p>
-                    </div>
-                    {store.distance && (
-                      <p
-                        className={`text-base font-semibold ${
-                          store.distance >= 5
-                            ? "text-red-600"
-                            : "text-green-600"
-                        }`}
-                      >
-                        {store.distance} km
-                      </p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div> */}
-
-            <form onSubmit={handleDetailsSubmit}>
+            <form onSubmit={handleFinalSubmit}>
               <div className="mb-4 mt-5">
                 <label className="block text-gray-700 mb-2" htmlFor="email">
                   Email
@@ -379,41 +297,3 @@ const CheckStartingPoint = () => {
 };
 
 export default CheckStartingPoint;
-
-{
-  /* {store.distance && (
-                      <p className="text-base font-semibold">
-                        {store.distance} km
-                      </p>
-                    )} */
-}
-
-{
-  /* <div className="overflow-y-auto max-h-96 scrollable p-1">
-              <ul className="mb-6">
-                {storeData.map((store) => (
-                  <li
-                    key={store.id}
-                    className={`p-4 mb-2 rounded-lg cursor-pointer hover:bg-blue-100 ${
-                      selectedStore?.id === store.id
-                        ? "bg-blue-200"
-                        : "bg-gray-200"
-                    }`}
-                    onClick={() => handleStoreSelection(store)}
-                  >
-                    <h2 className="text-lg font-semibold">
-                      {store.store_name}
-                    </h2>
-                    <p className="text-sm">
-                      {store.province &&
-                        store.city &&
-                        `${store.province}, ${store.city}`}
-                      {store.province && !store.city && store.province}
-                      {!store.province && store.city && store.city}
-                    </p>
-                    <p className="text-xs mt-1">{store.address_line1}</p>
-                  </li>
-                ))}
-              </ul>
-            </div> */
-}

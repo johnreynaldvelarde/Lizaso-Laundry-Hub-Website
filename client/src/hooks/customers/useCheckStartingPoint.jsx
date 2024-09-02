@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import useAuth from "../../contexts/AuthContext";
 import { viewStore } from "../../services/api/getApi";
+import { updateCustomerBasicInformation } from "../../services/api/putApi";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +22,7 @@ const geocodeAddress = async (address) => {
 
 const useCheckStartingPoint = () => {
   const { userDetails } = useAuth();
+  const navigate = useNavigate();
   const [storeData, setStoreData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
@@ -59,11 +61,11 @@ const useCheckStartingPoint = () => {
     setCity(e.target.value);
   };
 
-  useEffect(() => {
-    if (latitude !== null && longitude !== null) {
-      console.log("Lat: " + latitude + " Lon: " + longitude);
-    }
-  }, [latitude, longitude]);
+  // useEffect(() => {
+  //   if (latitude !== null && longitude !== null) {
+  //     console.log("Lat: " + latitude + " Lon: " + longitude);
+  //   }
+  // }, [latitude, longitude]);
 
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
@@ -85,7 +87,6 @@ const useCheckStartingPoint = () => {
     const location = await geocodeAddress(address);
 
     if (location) {
-      console.log("1");
       setLatitude(location.lat);
       setLongitude(location.lng);
       setStep(2);
@@ -123,41 +124,48 @@ const useCheckStartingPoint = () => {
     setSelectedStore(store);
   };
 
-  const handleSubmitDetails = async (e) => {
-    e.preventDefault();
-  };
-
-  const handleDetailsSubmit = async (e) => {
+  const handleFinalSubmit = async (e) => {
     e.preventDefault();
     if (!selectedStore) {
       alert("Please select a store.");
       return;
     }
 
+    if (!userDetails || !userDetails.userId) {
+      console.error("User details are not properly set.");
+      return;
+    }
+
     try {
       const storeId = selectedStore.id;
-      const response = await updateCustomer.updateCustomer({
+      const customerData = {
         store_id: storeId,
         c_email: email,
         c_number: phoneNumber,
-        address_line1: addressLine1,
-        address_line2: addressLine2,
-        country: country,
-        province: province,
-        city: city,
-        postal_code: postalCode,
-        country: country,
-        latitude: latitude,
-        longitude: longitude,
-      });
+        a_address_line1: addressLine1,
+        a_address_line2: addressLine2,
+        a_country: country,
+        a_province: province,
+        a_city: city,
+        a_postal_code: postalCode,
+        a_latitude: latitude,
+        a_longitude: longitude,
+      };
+
+      const response =
+        await updateCustomerBasicInformation.setCustomerInformation(
+          userDetails.userId,
+          customerData
+        );
 
       if (response.success) {
-        console.log("Customer details updated successfully.");
+        toast.success(response.message);
+        navigate("/customer-page");
       } else {
-        console.error("Failed to update customer details.");
+        toast.error(response.message);
       }
     } catch (error) {
-      console.error("Error updating customer details:", error);
+      toast.error("Error updating customer details:", error);
     }
   };
 
@@ -220,7 +228,6 @@ const useCheckStartingPoint = () => {
 
       setStoreData(storeList);
       setLoading(false);
-      console.log(storeList);
     } catch (error) {
       console.error("Error fetching store data:", error);
       setLoading(false);
@@ -267,8 +274,7 @@ const useCheckStartingPoint = () => {
     handleStoreSelection,
 
     //
-    handleSubmitDetails,
-    handleDetailsSubmit,
+    handleFinalSubmit,
     fetchStoreData,
   };
 };

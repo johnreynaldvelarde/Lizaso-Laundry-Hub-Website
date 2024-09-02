@@ -1,6 +1,7 @@
 import express from 'express';
 import { handleCreateStore } from '../services/useStore.js';
 import { handleCreateUnits } from '../services/useUnits.js';
+import { handleUpdateCustomerBasicInformation } from '../services/useCustomer.js';
 import { getPool } from '../db/dbConfig.js';
 
 
@@ -23,6 +24,15 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 router.post('/update-status', withDatabaseConnection(async (req, res, connection) => {
     await handleUpdateUserStatus(req, res, connection);
 }));
+
+// router.put('/update-start-customer', withDatabaseConnection(async (req, res, connection) => {
+//   await handleUpdateCustomerBasicInformation(req, res, connection);
+// }));
+
+router.put('/customers/:id/start', withDatabaseConnection(async (req, res, connection) => {
+  await handleUpdateCustomerBasicInformation(req, res, connection);
+}));
+
 
 
 
