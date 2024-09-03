@@ -35,7 +35,8 @@
 // export default LaundryPlans;
 
 import React, { useState } from "react";
-import PopupServiceSelect from "./PopupServiceSelect"; // Import your Popup component
+
+import PopupServiceSelect from "./PopupServiceSelect";
 
 const services = [
   { id: 1, label: "Wash" },

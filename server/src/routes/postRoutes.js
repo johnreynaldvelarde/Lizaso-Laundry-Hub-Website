@@ -2,6 +2,7 @@ import express from 'express';
 import { handleCreateStore } from '../services/useStore.js';
 import { handleCreateUnits } from '../services/useUnits.js';
 import { handleCreateItem,handleCreateItemCategory } from '../services/useInventory.js';
+import { handleCustomerServiceRequest } from '../services/useCustomer.js';
 import { getPool } from '../db/dbConfig.js';
 
 
@@ -41,6 +42,10 @@ router.post('/create-category-item', withDatabaseConnection(async (req, res, con
   await handleCreateItemCategory(req, res, connection);
 }));
 
+
+router.post('/customers/:id/service-requests', withDatabaseConnection(async (req, res, connection) => {
+  await handleCustomerServiceRequest(req, res, connection);
+}));
 
 export default router;
   

@@ -275,12 +275,18 @@ const CheckStartingPoint = () => {
                   Phone Number
                 </label>
                 <input
-                  type="text"
+                  type="tel"
                   id="phoneNumber"
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (/^\d*$/.test(value)) {
+                      setPhoneNumber(value);
+                    }
+                  }}
                   required
+                  pattern="\d*"
                 />
               </div>
               <button

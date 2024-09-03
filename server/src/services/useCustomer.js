@@ -116,3 +116,58 @@ export const handleUpdateCustomerBasicInformation = async (req, res, connection)
     connection.release();
   }
 };
+
+export const handleCustomerServiceRequest = async (req, res, connection) => {
+  const { id } = req.params; 
+  const { store_id, service_type } = req.body; 
+
+  if (!store_id || !service_type) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    // Create a new service request
+    const [result] = await connection.execute(
+      `INSERT INTO Service_Request (
+        store_id,
+        user_id,  -- Assuming you want to assign the delivery person later
+        customer_id,
+        service_type,
+        request_date,
+        request_status
+      ) VALUES (?, ?, ?, ?, NOW(), ?)`,
+      [
+        store_id,
+        null,  // Placeholder for user_id, set this later
+        id,
+        service_type,
+        'Pending' // Initial status of the request
+      ]
+    );
+
+    // Get the ID of the newly created service request
+    const newRequestId = result.insertId;
+
+    // Respond with the created service request ID and success message
+    res.status(201).json({
+      message: 'Service request created successfully',
+      service_request_id: newRequestId
+    });
+  } catch (error) {
+    console.error('Error creating service request:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+// export const handleCustomerServiceRequest = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const {
+//     store_id,
+//     service_type
+   
+//   } = req.body;
+
+//   await connection.execute();
+// };

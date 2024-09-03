@@ -1,4 +1,5 @@
 import React from "react";
+import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 import {
   Dialog,
   DialogTitle,
@@ -12,6 +13,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
+  const { name, setName } = useLaundryPlans();
   if (!service) return null;
 
   const handleSubmit = () => {
