@@ -1,3 +1,5 @@
+import LaundryPlans from "./default_customer/LaundryPlans";
+
 // Landing Page
 export { default as StartingPage } from "./landing-page/StartingPage";
 
@@ -38,3 +40,5 @@ export { default as Settings } from "./admin/Settings/Settings";
 // Customer => Page
 export {default as CheckStartingPoint} from "./default_customer/checkStartingPoint"
 export {default as MainCustomer} from "./default_customer/mainCustomer"
+export {default as LaundryPlans} from "./default_customer/LaundryPlans"
+export {default as TrackingOrder} from "./default_customer/TrackingOrder"

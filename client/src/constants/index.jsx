@@ -7,10 +7,16 @@ export const navItems = [
 ];
 
 export const c_navItems = [
-  { label: "Select a Service", href: "#" },
-  { label: "Order Tracking", href: "#" },
+  { label: "Laundry Plans", href: "/customer-page/laundry-plans" },
+  { label: "Track Your Order", href: "/customer-page/tracking-order" },
   { label: "Payment History", href: "#" },
 ];
+
+// export const c_navItems = [
+//   { label: "Select a Service", href: "#" },
+//   { label: "Order Tracking", href: "#" },
+//   { label: "Payment History", href: "#" },
+// ];
 
 /*
 import { BotMessageSquare } from "lucide-react";

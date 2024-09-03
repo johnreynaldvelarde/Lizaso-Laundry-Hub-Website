@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useState, Suspense, lazy } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 import C_Navbar from "../../components/common/C_Navbar";
 import C_Footer from "../../components/common/C_Footer";
-import SelectionService from "./SelectionService";
+
+const LaundryPlans = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.LaundryPlans }))
+);
+
+const TrackingOrder = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.TrackingOrder }))
+);
 
 const MainCustomer = () => {
   return (
@@ -9,14 +17,18 @@ const MainCustomer = () => {
       <C_Navbar />
       <main className="flex-grow max-w-7xl mx-auto pt-20 px-6">
         <section>
-          {/* <h1 className="text-2xl font-bold mb-4">
-            Welcome to Lizaso Laundry Hub
-          </h1>
-          <p className="text-lg mb-4">
-            We're here to help you with all your laundry needs. Explore our
-            services and get in touch with us if you have any questions.
-          </p> */}
-          <SelectionService />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<Navigate to="laundry-plans" />} />
+              <Route path="laundry-plans" element={<LaundryPlans />} />
+              <Route path="tracking-order" element={<TrackingOrder />} />
+
+              <Route
+                path="*"
+                element={<Navigate to="laundry-plans" replace />}
+              />
+            </Routes>
+          </Suspense>
         </section>
       </main>
       <C_Footer />

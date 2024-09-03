@@ -117,3 +117,6 @@ quantity
 isStatus
 
 
+
+// Hard Part
+--> Inventory <--
