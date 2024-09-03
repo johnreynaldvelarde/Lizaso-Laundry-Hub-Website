@@ -119,14 +119,14 @@ export const handleUpdateCustomerBasicInformation = async (req, res, connection)
 
 export const handleCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; 
-  const { store_id, service_type } = req.body; 
+  const { store_id, service_type } = req.body;
 
   if (!store_id || !service_type) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
   try {
-    // Create a new service request
+    
     const [result] = await connection.execute(
       `INSERT INTO Service_Request (
         store_id,

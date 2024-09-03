@@ -35,7 +35,7 @@
 // export default LaundryPlans;
 
 import React, { useState } from "react";
-
+import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 import PopupServiceSelect from "./PopupServiceSelect";
 
 const services = [

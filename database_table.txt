@@ -119,13 +119,19 @@ isStatus
 
 
 // Hard Part
+
+
 --> Service_Request <--
 id (Primary Key)
 store_id (Foregin Key)
 user_id (Foregin Key)
 customer_id (Foregin Key)
+customer_fullname
 service_type
 request_date
 pickup_date
 delivery_date
 request_status
+
+
+--> Notifications <--
