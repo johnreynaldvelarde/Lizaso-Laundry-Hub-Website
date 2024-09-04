@@ -1,105 +1,8 @@
-// // import React from "react";
-// // import {
-// //   Dialog,
-// //   DialogTitle,
-// //   DialogContent,
-// //   DialogActions,
-// //   Button,
-// //   Typography,
-// // } from "@mui/material";
-
-// // const PopupCustomerRequest = ({ open, onClose }) => {
-// //   return (
-// //     <Dialog open={open} onClose={onClose}>
-// //       <DialogTitle>Customer Request</DialogTitle>
-// //       <DialogContent>
-// //         <Typography variant="body1">
-// //           Details of the customer request go here.
-// //         </Typography>
-// //         {/* Add form or content for customer request */}
-// //       </DialogContent>
-// //       <DialogActions>
-// //         <Button onClick={onClose}>Close</Button>
-// //       </DialogActions>
-// //     </Dialog>
-// //   );
-// // };
-
-// // export default PopupCustomerRequest;
-// import React from "react";
-// import {
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   DialogActions,
-//   Button,
-//   Typography,
-// } from "@mui/material";
-
-// const PopupCustomerRequest = ({ open, onClose }) => {
-//   // Sample data for the table
-//   const requests = [
-//     {
-//       id: 1,
-//       name: "John Doe",
-//       request: "Need urgent delivery",
-//       status: "Pending",
-//     },
-//     {
-//       id: 2,
-//       name: "Jane Smith",
-//       request: "Wash and fold service",
-//       status: "Completed",
-//     },
-//     {
-//       id: 3,
-//       name: "Emily Johnson",
-//       request: "Dry cleaning for suit",
-//       status: "In Progress",
-//     },
-//   ];
-
-//   return (
-//     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-//       <DialogTitle>Customer Request</DialogTitle>
-//       <DialogContent>
-//         <Typography variant="body1" className="mb-4">
-//           Details of the customer requests:
-//         </Typography>
-//         <div className="overflow-x-auto">
-//           <table className="min-w-full bg-white border border-gray-200">
-//             <thead>
-//               <tr className="w-full bg-gray-100 border-b border-gray-300">
-//                 <th className="py-2 px-4 text-left text-gray-600">ID</th>
-//                 <th className="py-2 px-4 text-left text-gray-600">Name</th>
-//                 <th className="py-2 px-4 text-left text-gray-600">Request</th>
-//                 <th className="py-2 px-4 text-left text-gray-600">Status</th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {requests.map((request) => (
-//                 <tr key={request.id} className="border-b border-gray-200">
-//                   <td className="py-2 px-4 text-gray-700">{request.id}</td>
-//                   <td className="py-2 px-4 text-gray-700">{request.name}</td>
-//                   <td className="py-2 px-4 text-gray-700">{request.request}</td>
-//                   <td className="py-2 px-4 text-gray-700">{request.status}</td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </DialogContent>
-//       <DialogActions>
-//         <Button onClick={onClose}>Close</Button>
-//       </DialogActions>
-//     </Dialog>
-//   );
-// };
-
-// export default PopupCustomerRequest;
 import React, { useEffect, useState } from "react";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
 import {
+  createTheme,
+  ThemeProvider,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -113,89 +16,102 @@ import {
   TableHead,
   TableRow,
   Paper,
+  TablePagination,
+  Stack,
 } from "@mui/material";
 
 const PopupCustomerRequest = ({ open, onClose }) => {
   const { fetchCustomerRequestData, requestData } = useUnitMonitor();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // useEffect(() => {
-  //   fetchCustomerRequestData();
-  // });
+  const theme = createTheme({
+    typography: {
+      fontFamily: "Poppins",
+    },
+  });
 
-  // State to hold table data
-  // const [requests, setRequests] = useState([
-  //   {
-  //     id: 1,
-  //     name: "John Doe",
-  //     request: "Need urgent delivery",
-  //     status: "Pending",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Jane Smith",
-  //     request: "Wash and fold service",
-  //     status: "Completed",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Emily Johnson",
-  //     request: "Dry cleaning for suit",
-  //     status: "In Progress",
-  //   },
-  // ]);
+  useEffect(() => {
+    fetchCustomerRequestData();
+  }, [fetchCustomerRequestData]);
 
-  // // Update data every second
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     // Simulate data update
-  //     setRequests((prevRequests) =>
-  //       prevRequests.map((item) => ({
-  //         ...item,
-  //         status:
-  //           item.status === "Pending"
-  //             ? "Completed"
-  //             : item.status === "Completed"
-  //             ? "In Progress"
-  //             : "Pending",
-  //       }))
-  //     );
-  //   }, 1000);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-  //   // Cleanup interval on component unmount
-  //   return () => clearInterval(interval);
-  // }, []);
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  // Calculate the data to display on the current page
+  const paginatedData = requestData.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>Customer Requests</DialogTitle>
       <DialogContent>
-        <Typography variant="body1" paragraph>
-          Details of the customer requests:
-        </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {/* <TableCell>ID</TableCell> */}
-                <TableCell>Name</TableCell>
-                <TableCell>Service Type</TableCell>
-                <TableCell>Request Date</TableCell>
-                <TableCell>Status</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {requestData.map((requestData) => (
-                <TableRow key={requestData.id}>
-                  {/* <TableCell>{requestData.id}</TableCell> */}
-                  <TableCell>{requestData.customer_fullname}</TableCell>
-                  <TableCell>{requestData.service_type}</TableCell>
-                  <TableCell>{requestData.request_date}</TableCell>
-                  <TableCell>{requestData.request_status}</TableCell>
+        <ThemeProvider theme={theme}>
+          <Typography variant="body1" paragraph>
+            Details of the customer requests:
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Service Type</TableCell>
+                  <TableCell>Request Date</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {paginatedData.map((request) => (
+                  <TableRow key={request.id}>
+                    <TableCell>{request.customer_fullname}</TableCell>
+                    <TableCell>{request.service_type}</TableCell>
+                    <TableCell>{request.request_date}</TableCell>
+                    <TableCell>{request.request_status}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleAssign(request.id)}
+                        sx={{
+                          backgroundColor: "#5787C8",
+                          borderRadius: "20px",
+                          fontWeight: 500,
+                          textTransform: "none",
+                          paddingLeft: "23px",
+                          paddingRight: "23px",
+                          fontSize: "16px",
+                          "&:hover": {
+                            backgroundColor: "#3b5c9f",
+                          },
+                        }}
+                      >
+                        Assign
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={requestData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        </ThemeProvider>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
@@ -206,4 +122,340 @@ const PopupCustomerRequest = ({ open, onClose }) => {
   );
 };
 
+// Example function for handling the assign action
+const handleAssign = (requestId) => {
+  console.log(`Assign action clicked for request ID: ${requestId}`);
+  // Add your assign logic here
+};
+
 export default PopupCustomerRequest;
+
+// import React, { useEffect } from "react";
+// import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+// import {
+//   createTheme,
+//   ThemeProvider,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
+//   DialogActions,
+//   Button,
+//   Typography,
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Paper,
+// } from "@mui/material";
+
+// const PopupCustomerRequest = ({ open, onClose }) => {
+//   const { fetchCustomerRequestData, requestData } = useUnitMonitor();
+
+//   const options = {
+//     selectableRows: false,
+//     elevation: 0,
+//     rowsPerPage: 5,
+//     rowsPerPageOptions: [5, 10, 20, 30],
+//   };
+
+//   const getMuiTheme = () => {
+//     createTheme({
+//       typography: {
+//         fontFamily: "Poppins",
+//       },
+//     });
+//   };
+
+//   useEffect(() => {
+//     fetchCustomerRequestData();
+//   }, []);
+
+//   return (
+//     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+//       <DialogTitle>Customer Requests</DialogTitle>
+//       <DialogContent>
+//         <Typography variant="body1" paragraph>
+//           Details of the customer requests:
+//         </Typography>
+//         <ThemeProvider theme={getMuiTheme}></ThemeProvider>
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={onClose} color="primary">
+//           Close
+//         </Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+// };
+
+// export default PopupCustomerRequest;
+// import React, { useEffect } from "react";
+// import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+// import {
+//   createTheme,
+//   ThemeProvider,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
+//   DialogActions,
+//   Button,
+//   Typography,
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Paper,
+// } from "@mui/material";
+
+// const PopupCustomerRequest = ({ open, onClose }) => {
+//   const { fetchCustomerRequestData, requestData } = useUnitMonitor();
+
+//   const options = {
+//     selectableRows: false,
+//     elevation: 0,
+//     rowsPerPage: 5,
+//     rowsPerPageOptions: [5, 10, 20, 30],
+//   };
+
+//   // Return the theme object correctly
+//   const getMuiTheme = createTheme({
+//     typography: {
+//       fontFamily: "Poppins",
+//     },
+//   });
+
+//   useEffect(() => {
+//     fetchCustomerRequestData();
+//   }, []);
+
+//   return (
+//     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+//       <DialogTitle>Customer Requests</DialogTitle>
+//       <DialogContent>
+//         <Typography variant="body1" paragraph>
+//           Details of the customer requests:
+//         </Typography>
+//         <ThemeProvider theme={getMuiTheme}></ThemeProvider>
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={onClose} color="primary">
+//           Close
+//         </Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+// };
+
+// export default PopupCustomerRequest;
+{
+  /* <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Service Type</TableCell>
+                  <TableCell>Request Date</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {requestData.map((request) => (
+                  <TableRow key={request.id}>
+                    <TableCell>{request.customer_fullname}</TableCell>
+                    <TableCell>{request.service_type}</TableCell>
+                    <TableCell>{request.request_date}</TableCell>
+                    <TableCell>{request.request_status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer> */
+}
+
+// import React, { useEffect } from "react";
+// import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+// import {
+//   createTheme,
+//   ThemeProvider,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
+//   DialogActions,
+//   Button,
+//   Typography,
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Paper,
+// } from "@mui/material";
+
+// const PopupCustomerRequest = ({ open, onClose }) => {
+//   const { fetchCustomerRequestData, requestData } = useUnitMonitor();
+
+//   const theme = createTheme({
+//     typography: {
+//       fontFamily: "Poppins",
+//     },
+//   });
+
+//   useEffect(() => {
+//     fetchCustomerRequestData();
+//   }, [fetchCustomerRequestData]);
+
+//   return (
+//     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+//       <DialogTitle>Customer Requests</DialogTitle>
+//       <DialogContent>
+//         <ThemeProvider theme={theme}>
+//           <Typography variant="body1" paragraph>
+//             Details of the customer requests:
+//           </Typography>
+//           <TableContainer component={Paper}>
+//             <Table>
+//               <TableHead>
+//                 <TableRow>
+//                   <TableCell>Name</TableCell>
+//                   <TableCell>Service Type</TableCell>
+//                   <TableCell>Request Date</TableCell>
+//                   <TableCell>Status</TableCell>
+//                   <TableCell>Action</TableCell>
+//                 </TableRow>
+//               </TableHead>
+//               <TableBody>
+//                 {requestData.map((request) => (
+//                   <TableRow key={request.id}>
+//                     <TableCell>{request.customer_fullname}</TableCell>
+//                     <TableCell>{request.service_type}</TableCell>
+//                     <TableCell>{request.request_date}</TableCell>
+//                     <TableCell>{request.request_status}</TableCell>
+//                     <TableCell>
+//                       <Button
+//                         variant="contained"
+//                         color="primary"
+//                         onClick={() => handleAssign(request.id)}
+//                       >
+//                         Assign
+//                       </Button>
+//                     </TableCell>
+//                   </TableRow>
+//                 ))}
+//               </TableBody>
+//             </Table>
+//           </TableContainer>
+//         </ThemeProvider>
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={onClose} color="primary">
+//           Close
+//         </Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+// };
+
+// // Example function for handling the assign action
+// const handleAssign = (requestId) => {
+//   console.log(`Assign action clicked for request ID: ${requestId}`);
+//   // Add your assign logic here
+// };
+
+// export default PopupCustomerRequest;
+
+// import React, { useEffect } from "react";
+// import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+// import {
+//   createTheme,
+//   ThemeProvider,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
+//   DialogActions,
+//   Button,
+//   Typography,
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Paper,
+// } from "@mui/material";
+
+// const PopupCustomerRequest = ({ open, onClose }) => {
+//   const { fetchCustomerRequestData, requestData } = useUnitMonitor();
+
+//   const theme = createTheme({
+//     typography: {
+//       fontFamily: "Poppins",
+//     },
+//   });
+
+//   useEffect(() => {
+//     fetchCustomerRequestData();
+//   }, [fetchCustomerRequestData]);
+
+//   return (
+//     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+//       <DialogTitle>Customer Requests</DialogTitle>
+//       <DialogContent>
+//         <ThemeProvider theme={theme}>
+//           <Typography variant="body1" paragraph>
+//             Details of the customer requests:
+//           </Typography>
+//           <TableContainer>
+//             <Table>
+//               <TableHead>
+//                 <TableRow>
+//                   <TableCell>Name</TableCell>
+//                   <TableCell>Service Type</TableCell>
+//                   <TableCell>Request Date</TableCell>
+//                   <TableCell>Status</TableCell>
+//                   <TableCell>Action</TableCell>
+//                 </TableRow>
+//               </TableHead>
+//               <TableBody>
+//                 {requestData.map((request) => (
+//                   <TableRow key={request.id}>
+//                     <TableCell>{request.customer_fullname}</TableCell>
+//                     <TableCell>{request.service_type}</TableCell>
+//                     <TableCell>{request.request_date}</TableCell>
+//                     <TableCell>{request.request_status}</TableCell>
+//                     <TableCell>
+//                       <Button
+//                         variant="contained"
+//                         color="primary"
+//                         onClick={() => handleAssign(request.id)}
+//                       >
+//                         Assign
+//                       </Button>
+//                     </TableCell>
+//                   </TableRow>
+//                 ))}
+//               </TableBody>
+//             </Table>
+//           </TableContainer>
+//         </ThemeProvider>
+//       </DialogContent>
+//       <DialogActions>
+//         <Button onClick={onClose} color="primary">
+//           Close
+//         </Button>
+//       </DialogActions>
+//     </Dialog>
+//   );
+// };
+
+// // Example function for handling the assign action
+// const handleAssign = (requestId) => {
+//   console.log(`Assign action clicked for request ID: ${requestId}`);
+//   // Add your assign logic here
+// };
+
+// export default PopupCustomerRequest;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import useAuth from "../../contexts/AuthContext";
 import { viewUnits, viewCustomerRequest } from "../../services/api/getApi";
 
@@ -16,6 +16,8 @@ const useUnitMonitor = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userDetails } = useAuth();
+
+  const hasFetchedCustomerRequestData = useRef(false);
 
   const handleOpenDialog = (unit) => {
     setSelectedUnit(unit);
@@ -77,12 +79,15 @@ const useUnitMonitor = () => {
   };
 
   const fetchCustomerRequestData = async () => {
+    if (hasFetchedCustomerRequestData.current) return;
+
     try {
       const response = await viewCustomerRequest.getCustomerRequest(
         userDetails.storeId
       );
       if (response) {
         setRequestData(response);
+        hasFetchedCustomerRequestData.current = true;
       } else {
         setError("Failed to fetch customer request data.");
       }
