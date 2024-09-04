@@ -88,11 +88,11 @@ export const links = [
     subLinks: [
       {
         name: "All Users",
-        url: "",
+        url: "/main/all-user",
       },
       {
         name: "Add Users",
-        url: "",
+        url: "/main/add-user",
       },
     ],
   },

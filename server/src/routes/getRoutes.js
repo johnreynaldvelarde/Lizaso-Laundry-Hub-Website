@@ -3,6 +3,7 @@ import {handleViewStore } from '../services/useStore.js';
 import { handleViewUnits } from '../services/useUnits.js';
 import { handleGenerateUnitName } from '../services/checkService.js';
 import { handleGetCategory, handleViewInventory, handleViewListCategory } from '../services/useInventory.js';
+import { handleGetCustomerRequest } from '../services/useUnits.js';
 import { getPool } from '../db/dbConfig.js';
 
 
@@ -47,6 +48,12 @@ router.get('/view-inventory', withDatabaseConnection(async (req, res, connection
 
 router.get('/view-category', withDatabaseConnection(async (req, res, connection) => {
   await handleViewListCategory(req, res, connection);
+}));
+
+
+
+router.get('/user/:id/get-request', withDatabaseConnection(async (req, res, connection) => {
+  await handleGetCustomerRequest(req, res, connection);
 }));
 
 

@@ -119,9 +119,9 @@ export const handleUpdateCustomerBasicInformation = async (req, res, connection)
 
 export const handleCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; 
-  const { store_id, service_type } = req.body;
+  const { store_id, customer_name, service_type } = req.body;
 
-  if (!store_id || !service_type) {
+  if (!store_id || !customer_name || !service_type) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -132,14 +132,16 @@ export const handleCustomerServiceRequest = async (req, res, connection) => {
         store_id,
         user_id,  -- Assuming you want to assign the delivery person later
         customer_id,
+        customer_fullname,
         service_type,
         request_date,
         request_status
-      ) VALUES (?, ?, ?, ?, NOW(), ?)`,
+      ) VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
       [
         store_id,
-        null,  // Placeholder for user_id, set this later
+        null,  
         id,
+        customer_name,
         service_type,
         'Pending' // Initial status of the request
       ]
@@ -158,6 +160,24 @@ export const handleCustomerServiceRequest = async (req, res, connection) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+
+
+ 
+// export const handleGetCustomerRequest = async (req, res, connection) => {
+//   const { id } = req.params;
+  
+//   try {
+//     await connection.beginTransaction();
+
+//   }
+//   catch (error) {
+//     console.error('', error);
+//     res.status(500).json({ error: '' });
+//   }
+ 
+// }
 
 
 

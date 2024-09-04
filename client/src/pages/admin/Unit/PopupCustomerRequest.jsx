@@ -98,6 +98,7 @@
 
 // export default PopupCustomerRequest;
 import React, { useEffect, useState } from "react";
+import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
 import {
   Dialog,
   DialogTitle,
@@ -115,48 +116,54 @@ import {
 } from "@mui/material";
 
 const PopupCustomerRequest = ({ open, onClose }) => {
+  const { fetchCustomerRequestData, requestData } = useUnitMonitor();
+
+  // useEffect(() => {
+  //   fetchCustomerRequestData();
+  // });
+
   // State to hold table data
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      request: "Need urgent delivery",
-      status: "Pending",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      request: "Wash and fold service",
-      status: "Completed",
-    },
-    {
-      id: 3,
-      name: "Emily Johnson",
-      request: "Dry cleaning for suit",
-      status: "In Progress",
-    },
-  ]);
+  // const [requests, setRequests] = useState([
+  //   {
+  //     id: 1,
+  //     name: "John Doe",
+  //     request: "Need urgent delivery",
+  //     status: "Pending",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Jane Smith",
+  //     request: "Wash and fold service",
+  //     status: "Completed",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Emily Johnson",
+  //     request: "Dry cleaning for suit",
+  //     status: "In Progress",
+  //   },
+  // ]);
 
-  // Update data every second
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Simulate data update
-      setRequests((prevRequests) =>
-        prevRequests.map((item) => ({
-          ...item,
-          status:
-            item.status === "Pending"
-              ? "Completed"
-              : item.status === "Completed"
-              ? "In Progress"
-              : "Pending",
-        }))
-      );
-    }, 1000);
+  // // Update data every second
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     // Simulate data update
+  //     setRequests((prevRequests) =>
+  //       prevRequests.map((item) => ({
+  //         ...item,
+  //         status:
+  //           item.status === "Pending"
+  //             ? "Completed"
+  //             : item.status === "Completed"
+  //             ? "In Progress"
+  //             : "Pending",
+  //       }))
+  //     );
+  //   }, 1000);
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(interval);
-  }, []);
+  //   // Cleanup interval on component unmount
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
@@ -169,19 +176,21 @@ const PopupCustomerRequest = ({ open, onClose }) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
+                {/* <TableCell>ID</TableCell> */}
                 <TableCell>Name</TableCell>
-                <TableCell>Request</TableCell>
+                <TableCell>Service Type</TableCell>
+                <TableCell>Request Date</TableCell>
                 <TableCell>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {requests.map((request) => (
-                <TableRow key={request.id}>
-                  <TableCell>{request.id}</TableCell>
-                  <TableCell>{request.name}</TableCell>
-                  <TableCell>{request.request}</TableCell>
-                  <TableCell>{request.status}</TableCell>
+              {requestData.map((requestData) => (
+                <TableRow key={requestData.id}>
+                  {/* <TableCell>{requestData.id}</TableCell> */}
+                  <TableCell>{requestData.customer_fullname}</TableCell>
+                  <TableCell>{requestData.service_type}</TableCell>
+                  <TableCell>{requestData.request_date}</TableCell>
+                  <TableCell>{requestData.request_status}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

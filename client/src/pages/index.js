@@ -29,6 +29,11 @@ export { default as Inventory } from "./admin/Inventory/Inventory";
 export { default as AddItem } from "./admin/Inventory/AddItem";
 export { default as ItemCategory } from "./admin/Inventory/ItemCategory";
 
+
+// Section User
+export { default as User } from "./admin/User/User";
+export { default as AddUser } from "./admin/User/AddUser";
+
 // Section Settings
 export { default as Settings } from "./admin/Settings/Settings";
 

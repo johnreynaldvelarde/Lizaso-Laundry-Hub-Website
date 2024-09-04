@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -39,7 +39,13 @@ const UnitMonitor = () => {
     handleOpenInProgress,
     handleCloseInProgress,
     handleSearchChange,
+    fetchUnitsData,
+    userDetails,
   } = useUnitMonitor();
+
+  useEffect(() => {
+    fetchUnitsData();
+  }, [userDetails?.storeId]);
 
   const getImage = (status) => {
     switch (status) {

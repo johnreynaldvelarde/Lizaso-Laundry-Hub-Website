@@ -174,7 +174,7 @@ const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
               fullWidth
               margin="normal"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              // onChange={(e) => setName(e.target.value)}
             />
             <TextField
               label="Your Name"

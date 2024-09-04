@@ -82,6 +82,44 @@ export const handleViewUnits = async (req, res, db) => {
 };
 
 
+export const handleGetCustomerRequest = async (req, res, connection) => {
+  const { id } = req.params; // This represents the store_id
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        id, 
+        store_id, 
+        user_id, 
+        customer_id, 
+        customer_fullname, 
+        service_type, 
+        request_date, 
+        pickup_date, 
+        delivery_date, 
+        request_status
+      FROM 
+        Service_Request
+      WHERE 
+        store_id = ? AND request_status = 'Pending'
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json(results);
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error fetching customer requests:', error);
+    res.status(500).json({ error: 'An error occurred while fetching customer requests.' });
+  }
+};
+
+
+
 
 // export const handleViewUnits = async (req, res, db) => {
 //   try {

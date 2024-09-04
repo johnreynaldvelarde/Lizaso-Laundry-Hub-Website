@@ -5,7 +5,7 @@ import useAuth from "../../contexts/AuthContext";
 
 const useLaundryPlans = () => {
   const { userDetails } = useAuth();
-  const { name, setName } = useState("");
+  const [name, setName] = useState(userDetails.fullName);
   const [serviceType, setServiceType] = useState("");
 
   const handleSubmit = async (e) => {
@@ -21,6 +21,7 @@ const useLaundryPlans = () => {
       const customerData = {
         store_id: storeId,
         service_type: serviceType,
+        customer_name: name,
       };
 
       const response =

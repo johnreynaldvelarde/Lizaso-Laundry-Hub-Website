@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useAuth from "../../contexts/AuthContext";
-import { viewUnits } from "../../services/api/getApi";
+import { viewUnits, viewCustomerRequest } from "../../services/api/getApi";
 
 const useUnitMonitor = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -12,6 +12,7 @@ const useUnitMonitor = () => {
   const [filteredUnits, setFilteredUnits] = useState([]);
 
   const [unitsData, setUnitsData] = useState([]);
+  const [requestData, setRequestData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userDetails } = useAuth();
@@ -54,30 +55,43 @@ const useUnitMonitor = () => {
     setSearchTerm(event.target.value);
   };
 
-  useEffect(() => {
-    const fetchUnitsData = async () => {
-      if (!userDetails?.storeId) {
-        setError("Store ID is undefined.");
-        setLoading(false);
-        return;
-      }
+  const fetchUnitsData = async () => {
+    if (!userDetails?.storeId) {
+      setError("Store ID is undefined.");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const response = await viewUnits.getUnitsList(userDetails.storeId);
-        if (response.success) {
-          setUnitsData(response.data); // Adjust if the data structure is different
-        } else {
-          setError("Failed to fetch units data.");
-        }
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+    try {
+      const response = await viewUnits.getUnitsList(userDetails.storeId);
+      if (response.success) {
+        setUnitsData(response.data); // Adjust if the data structure is different
+      } else {
+        setError("Failed to fetch units data.");
       }
-    };
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchUnitsData();
-  }, [userDetails?.storeId]);
+  const fetchCustomerRequestData = async () => {
+    try {
+      const response = await viewCustomerRequest.getCustomerRequest(
+        userDetails.storeId
+      );
+      if (response) {
+        setRequestData(response);
+      } else {
+        setError("Failed to fetch customer request data.");
+      }
+    } catch (error) {
+      setError(error.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return {
     openDialog,
@@ -99,6 +113,10 @@ const useUnitMonitor = () => {
     handleOpenInProgress,
     handleCloseInProgress,
     handleSearchChange,
+    fetchUnitsData,
+    fetchCustomerRequestData,
+    userDetails,
+    requestData,
   };
 };
 

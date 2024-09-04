@@ -26,6 +26,17 @@ export const getUnitName = {
   },
 };
 
+export const viewCustomerRequest = {
+  getCustomerRequest: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(`/user/${storeId}/get-request`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching customer requests:', error);
+      throw error; 
+    }
+  },
+};
 
 export const viewUnits = {
   getUnitsList: async (storeId) => {
@@ -49,7 +60,6 @@ export const viewUnits = {
 
 
 // Inventory Section
-
 export const getCategoryItem = {
   getCategory: async () => {
     try {
@@ -123,3 +133,5 @@ export const viewStore = {
     }
   },
 };
+
+

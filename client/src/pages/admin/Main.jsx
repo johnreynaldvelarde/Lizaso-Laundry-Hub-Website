@@ -36,6 +36,14 @@ const Store = lazy(() =>
 // Add Section
 // --> Laundry Units <--
 
+// User Section
+const User = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.User }))
+);
+const AddUser = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.AddUser }))
+);
+
 const AddUnits = lazy(() =>
   import("../../pages").then((module) => ({ default: module.AddUnits }))
 );
@@ -86,7 +94,9 @@ const Main = () => {
             <Route path="add-item" element={<AddItem />} />
             <Route path="add-unit" element={<AddUnits />} />
             <Route path="item-category" element={<ItemCategory />} />
-
+            // User Section
+            <Route path="all-user" element={<User />} />
+            <Route path="add-user" element={<AddUser />} />
             {/* Catch all undefined routes and redirect to dashboard */}
             <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>
