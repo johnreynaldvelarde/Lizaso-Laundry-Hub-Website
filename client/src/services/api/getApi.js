@@ -57,8 +57,6 @@ export const viewUnits = {
   },
 };
 
-
-
 // Inventory Section
 export const getCategoryItem = {
   getCategory: async () => {
