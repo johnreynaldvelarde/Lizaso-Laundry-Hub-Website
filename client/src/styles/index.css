@@ -77,6 +77,57 @@ a.active > .linkBtn::before {
   background-clip: content-box; 
 }
 
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #447F8C, #4690FF);
+  border-radius: 8px; 
+  border: 2px solid transparent; 
+  background-clip: content-box; 
+}
+
+
+
+
+
+.sidebar-scrollable::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sidebar-scrollable::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+.sidebar-scrollable::-webkit-scrollbar-thumb {
+  background-color: #C8C8C8;
+  border-radius: 8px; 
+  border: 2px solid transparent; 
+  background-clip: content-box; 
+}
+
+
+/* .sidebar-scrollable::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #447F8C, #4690FF);
+  border-radius: 8px; 
+  border: 2px solid transparent; 
+  background-clip: content-box; 
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* .scrollable {
   scrollbar-width: thin; 
   scrollbar-color: transparent transparent; 

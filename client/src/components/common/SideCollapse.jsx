@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useEffect } from "react";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiChevronRight, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { NavLink, useLocation } from "react-router-dom";
 import styles from "../../styles/style";
 
@@ -52,7 +52,7 @@ const SideCollapse = ({ name, icon, url, subLinks }) => {
       >
         <ListItemIcon sx={{ color: "sidebar.textColor" }}>{icon}</ListItemIcon>
         <ListItemText primary={name} sx={{ ml: "-10px" }} />
-        {open ? <FiChevronUp /> : <FiChevronDown />}
+        {open ? <FiChevronDown /> : <FiChevronRight />}
       </ListItemButton>
       <Collapse in={open} timeout="auto">
         <List>
