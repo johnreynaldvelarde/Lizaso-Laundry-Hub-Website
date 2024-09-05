@@ -76,6 +76,8 @@ const Main = () => {
         component="main"
         sx={{
           flexGrow: 1,
+          backgroundColor: "white",
+          minHeight: "100vh",
           px: { xs: 1, md: 2 },
           width: { xs: "100%", md: `calc(100% - ${sideBarWidth}px)` },
         }}

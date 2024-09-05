@@ -1,4 +1,8 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState, useEffect, MouseEvent } from "react";
+import useUser from "../../../hooks/admin/useUser";
+import styles from "../../../styles/style";
+import { Link } from "react-router-dom";
+
 import {
   Button,
   Table,
@@ -14,6 +18,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Box } from "@mui/system";
+import { PlusCircle } from "@phosphor-icons/react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MessageIcon from "@mui/icons-material/Message";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -32,6 +37,10 @@ const stores = [
       { id: 6, name: "Jane Smith", role: "Staff", status: "Offline" },
       { id: 7, name: "John Doe", role: "Manager", status: "Online" },
       { id: 8, name: "Jane Smith", role: "Staff", status: "Offline" },
+      { id: 9, name: "John Doe", role: "Manager", status: "Online" },
+      { id: 10, name: "Jane Smith", role: "Staff", status: "Offline" },
+      { id: 11, name: "John Doe", role: "Manager", status: "Online" },
+      { id: 12, name: "Jane Smith", role: "Staff", status: "Offline" },
     ],
   },
   {
@@ -46,9 +55,14 @@ const stores = [
 ];
 
 const User = () => {
+  const { userData, fetchUserData, getUserRole, getUserisOnline } = useUser();
   const [selectedStore, setSelectedStore] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
   const handleStoreClick = (store) => {
     setSelectedStore(store);
@@ -77,56 +91,124 @@ const User = () => {
   const open = Boolean(anchorEl);
 
   return (
-    <div className="pt-20 pb-5 p-4">
+    <Box sx={{ pt: "100px", pb: "20px" }}>
       {/* First Row */}
-      <Box className="mb-4">
-        <Paper elevation={3} className="p-4">
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "20px",
+        }}
+      >
+        {/* <Paper
+          sx={{
+            boxShadow: "none !important",
+            borderRadius: "12px",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "divider",
+            p: "20px",
+          }}
+        >
           <Typography variant="h6" className="text-center">
             Store Selection
           </Typography>
-        </Paper>
+        </Paper> */}
+        <Typography variant="h6">User Management</Typography>
+        <Link to="/main/add-user" style={{ textDecoration: "none" }}>
+          <Button
+            variant="contained"
+            startIcon={
+              <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
+            }
+            sx={{
+              backgroundColor: "#5787C8",
+              borderRadius: "5px",
+              fontWeight: 600,
+              textTransform: "none",
+              paddingLeft: "23px",
+              paddingRight: "23px",
+              fontSize: "16px",
+              "&:hover": {
+                backgroundColor: "#3b5c9f",
+              },
+            }}
+          >
+            Add User
+          </Button>
+        </Link>
       </Box>
 
       {/* Second Row with Two Columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Column 1: List of Stores */}
-        <Box className="p-2">
+        <Box>
           <Typography variant="h6" className="text-center mb-4">
             Stores
           </Typography>
-          <TableContainer component={Paper} elevation={3}>
+          <TableContainer
+            component={Paper}
+            sx={{
+              boxShadow: "none !important",
+              borderRadius: "12px",
+              borderStyle: "solid",
+              borderWidth: "1px",
+              borderColor: "divider",
+            }}
+          >
             <Table>
-              <TableHead>
+              <TableHead
+                sx={{
+                  backgroundColor: "#F1F1F1", // Background color for the table head
+                }}
+              >
                 <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Actions</TableCell>
+                  <TableCell>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontWeight: "500",
+                        color: styles.textColor2,
+                      }}
+                    >
+                      Name
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    {" "}
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: "500", color: styles.textColor2 }}
+                    >
+                      Status
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    {" "}
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: "500", color: styles.textColor2 }}
+                    >
+                      Actions
+                    </Typography>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {stores.map((store) => (
+                {userData.map((store) => (
                   <TableRow
-                    key={store.id}
+                    key={store.store_id}
                     hover
                     onClick={() => handleStoreClick(store)}
                     className="cursor-pointer"
                   >
-                    <TableCell>{store.name}</TableCell>
-                    <TableCell>
-                      <Typography
-                        className={`text-center ${
-                          store.status === "Open"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {store.status}
-                      </Typography>
-                    </TableCell>
+                    <TableCell>{store.store_name}</TableCell>
+                    <TableCell>{store.isStatus ? "Open" : "Closed"}</TableCell>
                     <TableCell>
                       <IconButton
                         color="error"
-                        onClick={(e) => handleDeleteStore(store.id, e)}
+                        onClick={(e) => handleDeleteStore(store.store_id, e)}
                       >
                         <DeleteIcon />
                       </IconButton>
@@ -139,12 +221,21 @@ const User = () => {
         </Box>
 
         {/* Column 2: List of Users */}
-        <Box className="p-2">
+        <Box>
           <Typography variant="h6" className="text-center mb-4">
             Users
           </Typography>
           {selectedStore ? (
-            <TableContainer component={Paper} elevation={3}>
+            <TableContainer
+              component={Paper}
+              sx={{
+                boxShadow: "none !important",
+                borderRadius: "12px",
+                borderStyle: "solid",
+                borderWidth: "1px",
+                borderColor: "divider",
+              }}
+            >
               <Table>
                 <TableHead>
                   <TableRow>
@@ -157,8 +248,10 @@ const User = () => {
                 <TableBody>
                   {selectedStore.users.map((user) => (
                     <TableRow key={user.id}>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.role}</TableCell>
+                      <TableCell>
+                        {user.first_name} {user.last_name}
+                      </TableCell>
+                      <TableCell>{getUserRole(user.isRole)}</TableCell>
                       <TableCell>
                         <Typography
                           className={`text-center ${
@@ -167,7 +260,7 @@ const User = () => {
                               : "text-gray-500"
                           }`}
                         >
-                          {user.status}
+                          {getUserisOnline(user.isOnline)}
                         </Typography>
                       </TableCell>
                       <TableCell>
@@ -210,11 +303,15 @@ const User = () => {
           )}
         </Box>
       </div>
-    </div>
+    </Box>
   );
 };
 
 export default User;
+
+{
+  /* <div className="pt-20 pb-5 p-4"></div>; */
+}
 
 // import React, { useState } from "react";
 // import {

@@ -58,7 +58,16 @@ const PopupCustomerRequest = ({ open, onClose }) => {
           <Typography variant="body1" paragraph>
             Details of the customer requests:
           </Typography>
-          <TableContainer component={Paper}>
+          <TableContainer
+            component={Paper}
+            sx={{
+              boxShadow: "none !important",
+              borderRadius: "12px",
+              borderStyle: "solid",
+              borderWidth: "1px",
+              borderColor: "divider",
+            }}
+          >
             <Table>
               <TableHead>
                 <TableRow>

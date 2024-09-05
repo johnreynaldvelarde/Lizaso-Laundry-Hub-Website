@@ -5,6 +5,7 @@ import { handleGenerateUnitName } from '../services/checkService.js';
 import { handleGetCategory, handleViewInventory, handleViewListCategory } from '../services/useInventory.js';
 import { handleGetCustomerRequest } from '../services/useUnits.js';
 import { getPool } from '../db/dbConfig.js';
+import { handleAdminGetUser } from '../services/useUser.js';
 
 
 const router = express.Router();
@@ -56,7 +57,10 @@ router.get('/user/:id/get-request', withDatabaseConnection(async (req, res, conn
   await handleGetCustomerRequest(req, res, connection);
 }));
 
-
+// Use Management Section
+router.get('/user/:id/admin-get-user', withDatabaseConnection(async (req, res, connection) => {
+  await handleAdminGetUser(req, res, connection);
+}));
 
 // console.log("Ako")
 // User management Section

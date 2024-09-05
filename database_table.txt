@@ -135,3 +135,4 @@ request_status
 
 
 --> Notifications <--
+https://isomorphic-furyroad.vercel.app/logistics

@@ -47,7 +47,7 @@ const SideItem = ({ name, icon, url }) => {
         className="linkBtn"
         sx={{
           "&:hover": { backgroundColor: "sidebar.hoverBg" }, // Light blue background on hover
-          paddingY: "8px",
+          paddingY: "10px",
           paddingX: "24px",
           color: styles.textColor1, // Set the text color using textColor1
         }}

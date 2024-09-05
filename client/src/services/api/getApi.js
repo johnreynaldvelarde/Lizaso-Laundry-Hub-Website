@@ -132,4 +132,16 @@ export const viewStore = {
   },
 };
 
+// User Management
+export const viewUser = {
+  getUser: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(`/user/${userId}/admin-get-user`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching:', error);
+      throw error; 
+    }
+  },
+};
 

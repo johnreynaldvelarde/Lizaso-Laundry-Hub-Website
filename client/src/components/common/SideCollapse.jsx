@@ -46,12 +46,16 @@ const SideCollapse = ({ name, icon, url, subLinks }) => {
         onClick={() => setOpen(!open)}
         sx={{
           "&:hover": { backgroundColor: "sidebar.hoverBg" },
-          paddingY: "8px",
+          paddingY: "10px",
           paddingX: "24px",
         }}
       >
         <ListItemIcon sx={{ color: "sidebar.textColor" }}>{icon}</ListItemIcon>
-        <ListItemText primary={name} sx={{ ml: "-10px" }} />
+        <ListItemText
+          primary={name}
+          sx={{ ml: "-10px", color: styles.textColor2 }}
+          // primaryTypographyProps={{ fontWeight: "500" }}
+        />
         {open ? <FiChevronDown /> : <FiChevronRight />}
       </ListItemButton>
       <Collapse in={open} timeout="auto">
@@ -76,8 +80,10 @@ const SideCollapse = ({ name, icon, url, subLinks }) => {
                 <CustomListItemText
                   primary={name}
                   sx={{
-                    color: "sidebar.textColor",
+                    color: styles.textColor2,
+                    // color: "sidebar.textColor",
                   }}
+                  // primaryTypographyProps={{ fontWeight: "500" }}
                 />
               </ListItemButton>
             </NavLink>
