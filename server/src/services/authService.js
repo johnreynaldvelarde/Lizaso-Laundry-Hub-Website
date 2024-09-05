@@ -117,6 +117,7 @@ export const handleLogin = async (req, res, db) => {
       await db.query("UPDATE Customer SET isOnline = 1 WHERE id = ?", [
         user.id,
       ]);
+
     }
 
     // Generate JWT tokens
