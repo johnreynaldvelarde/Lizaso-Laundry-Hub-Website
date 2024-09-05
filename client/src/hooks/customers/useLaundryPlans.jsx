@@ -6,6 +6,7 @@ import useAuth from "../../contexts/AuthContext";
 const useLaundryPlans = () => {
   const { userDetails } = useAuth();
   const [name, setName] = useState(userDetails.fullName);
+  const { note, setNote } = useState("");
   const [serviceType, setServiceType] = useState("");
 
   const handleSubmit = async (e) => {
@@ -40,7 +41,7 @@ const useLaundryPlans = () => {
     }
   };
 
-  return { name, setName, serviceType, setServiceType, handleSubmit };
+  return { name, note, setName, serviceType, setServiceType, handleSubmit };
 };
 
 export default useLaundryPlans;

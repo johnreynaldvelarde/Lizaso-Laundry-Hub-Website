@@ -52,15 +52,16 @@ const PopupCustomerRequest = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle>Customer Requests</DialogTitle>
+      <DialogTitle sx={{ marginTop: 2 }}>Customer Requests</DialogTitle>
       <DialogContent>
         <ThemeProvider theme={theme}>
           <Typography variant="body1" paragraph>
-            Details of the customer requests:
+            View details of customer laundry requests in the queue
           </Typography>
           <TableContainer
             component={Paper}
             sx={{
+              marginTop: 3,
               boxShadow: "none !important",
               borderRadius: "12px",
               borderStyle: "solid",
@@ -88,15 +89,14 @@ const PopupCustomerRequest = ({ open, onClose }) => {
                     <TableCell>
                       <Button
                         variant="contained"
+                        disableElevation
                         color="primary"
                         onClick={() => handleAssign(request.id)}
                         sx={{
                           backgroundColor: "#5787C8",
-                          borderRadius: "20px",
+                          borderRadius: "5px",
                           fontWeight: 500,
                           textTransform: "none",
-                          paddingLeft: "23px",
-                          paddingRight: "23px",
                           fontSize: "16px",
                           "&:hover": {
                             backgroundColor: "#3b5c9f",
@@ -123,7 +123,22 @@ const PopupCustomerRequest = ({ open, onClose }) => {
         </ThemeProvider>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button
+          variant="outlined"
+          onClick={onClose}
+          color="primary"
+          sx={{
+            marginRight: "15px",
+            marginBottom: "10px",
+            borderRadius: "5px",
+            fontWeight: 500,
+            textTransform: "none",
+            fontSize: "16px",
+            "&:hover": {
+              // backgroundColor: "#3b5c9f",
+            },
+          }}
+        >
           Close
         </Button>
       </DialogActions>
