@@ -103,7 +103,7 @@ export const handleGetCustomerRequest = async (req, res, connection) => {
       FROM 
         Service_Request
       WHERE 
-        store_id = ? AND request_status = 'Pending'
+        store_id = ? AND request_status = 'Pending Pickup'
     `;
 
     const [results] = await connection.execute(query, [id]);

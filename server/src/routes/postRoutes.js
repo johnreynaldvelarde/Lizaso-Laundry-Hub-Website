@@ -47,5 +47,12 @@ router.post('/customers/:id/service-requests', withDatabaseConnection(async (req
   await handleCustomerServiceRequest(req, res, connection);
 }));
 
+
+
+// Activity Log Section
+// router.post('/activity/:id/post-log', withDatabaseConnection(async (req, res, connection) => {
+//   await handleSetActivityLog(req, res, connection);
+// }));
+
 export default router;
   

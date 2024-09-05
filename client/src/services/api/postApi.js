@@ -105,3 +105,18 @@ export const createCustomerServiceRequest = {
       }
   },
 };
+
+
+
+// Activity Log Section
+export const createActivityLog = {
+  setActivtyLog: async (userId, data) => {
+      try {
+          const response = await axiosPrivate.post(`/activity/${userId}/post-log`, data);
+          return response.data;
+      } catch (error) {
+          console.error("Error:", error);
+          throw error;
+      }
+  },
+};

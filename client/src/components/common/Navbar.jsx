@@ -105,12 +105,12 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
               </IconButton>
             </Tooltip>
 
-            <Typography
+            {/* <Typography
               variant="h5"
               sx={{ display: { xs: "none", sm: "block" } }}
             >
               Dashboard
-            </Typography>
+            </Typography> */}
           </Box>
 
           <Stack direction="row" spacing={1.5} alignItems="center">

@@ -4,6 +4,8 @@ import {
   comparePassword,
   generatePasswordSalt,
 } from "../helpers/auth.js";
+import { ActionDescriptions, ActionTypes } from "../helpers/activityLog.js";
+import { logActivity } from "./useExtraSystem.js";
 
 const createToken = (payload, secret, expiresIn) => {
   return jwt.sign(payload, secret, { expiresIn });
@@ -62,6 +64,13 @@ export const handleLogin = async (req, res, db) => {
       await db.query("UPDATE User_Account SET isOnline = 1 WHERE id = ?", [
         user.id,
       ]);
+
+
+      const actionType = ActionTypes.AUTHENTICATION
+      const actionDescription = ActionDescriptions[actionType].LOGIN(username);
+
+      await logActivity(db, user.id, userType, actionType, actionDescription);
+
     } else {
       // If not in User_Account, check Customers table
       const [customerAccountResults] = await db.query(
