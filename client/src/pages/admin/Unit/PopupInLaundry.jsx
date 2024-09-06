@@ -8,7 +8,12 @@ import {
   Button,
 } from "@mui/material";
 import styles from "../../../styles/style";
-import { CalendarDots, SlidersHorizontal } from "@phosphor-icons/react";
+import { Link } from "react-router-dom";
+import {
+  CalendarDots,
+  SlidersHorizontal,
+  MinusSquare,
+} from "@phosphor-icons/react";
 import CloseIcon from "@mui/icons-material/Close";
 import nodata from "../../../assets/images/no_data.png";
 
@@ -30,6 +35,7 @@ const PopupInLaundry = ({ open, onClose }) => {
     { id: 2, name: "Unit 2", status: 0 },
     { id: 3, name: "Unit 3", status: 0 },
     { id: 4, name: "Unit 4", status: 0 },
+    { id: 5, name: "Unit 4", status: 1 },
   ];
 
   return (
@@ -47,7 +53,7 @@ const PopupInLaundry = ({ open, onClose }) => {
           <span className="text-lg font-semibold">In Progress Laundry</span>
           <IconButton
             onClick={onClose}
-            className="text-red-500 hover:text-red-700"
+            className="text-[#5787C8] hover:text-[#5787C8]"
           >
             <CloseIcon />
           </IconButton>
@@ -56,28 +62,31 @@ const PopupInLaundry = ({ open, onClose }) => {
           Here you can track the status of laundry currently in progress.
         </p>
         <div className="mt-4 flex gap-2 justify-between">
-          <Button
-            variant="outlined"
-            startIcon={
-              <CalendarDots size={24} color="#5787C8" weight="duotone" />
-            }
-            sx={{
-              borderRadius: "5px",
-              fontWeight: 600,
-              textTransform: "none",
-              paddingLeft: "20px",
-              paddingRight: "20px",
-              fontSize: "16px",
-              color: "#5787C8",
-              borderColor: "#5787C8",
-              "&:hover": {
+          <Link to="/main/schedule" style={{ textDecoration: "none" }}>
+            <Button
+              variant="outlined"
+              startIcon={
+                <CalendarDots size={24} color="#5787C8" weight="duotone" />
+              }
+              sx={{
+                borderRadius: "5px",
+                fontWeight: 600,
+                textTransform: "none",
+                paddingLeft: "20px",
+                paddingRight: "20px",
+                fontSize: "16px",
+                color: "#5787C8",
                 borderColor: "#5787C8",
-                backgroundColor: "rgba(87, 135, 200, 0.1)",
-              },
-            }}
-          >
-            View Schedule Details
-          </Button>
+                "&:hover": {
+                  borderColor: "#5787C8",
+                  backgroundColor: "rgba(87, 135, 200, 0.1)",
+                },
+              }}
+            >
+              View Schedule Details
+            </Button>
+          </Link>
+
           <Button
             variant="outlined"
             startIcon={
@@ -101,18 +110,17 @@ const PopupInLaundry = ({ open, onClose }) => {
             Mark
           </Button>
         </div>
-        <div className="flex items-center mt-5">
-          {/* Text with Circle Dots */}
+        <div className="flex items-center mt-6 ">
           <span className="text-base font-semibold flex items-center">
             Laundry Units
-            <span
-              className="w-4 h-4 rounded-full block ml-2"
-              style={{ backgroundColor: "green" }} // Adjust color as needed
-            />
-            <span
-              className="w-4 h-4 rounded-full block ml-2"
-              style={{ backgroundColor: "red" }} // Adjust color as needed
-            />
+            <span className="ml-4 flex items-center">
+              <span className="px-3 py-1 rounded-full border-2 border-[#0ba360]  text-[#0ba360] bg-[#3cba92] bg-opacity-10 font-normal mr-2">
+                Available
+              </span>
+              <span className="px-3 py-1 rounded-full border-2 border-[#eb3941] bg-[#f15e64] bg-opacity-10 text-[#eb3941] font-normal">
+                Occupied
+              </span>
+            </span>
           </span>
         </div>
         <div>
@@ -120,9 +128,12 @@ const PopupInLaundry = ({ open, onClose }) => {
             {availableUnits.map((unit) => (
               <div
                 key={unit.id}
-                className={`flex-shrink-0 p-4 rounded-md min-w-[100px] text-center mb-1 ${
-                  unit.status === 0 ? "bg-green-500" : "bg-red-500"
+                className={`flex-shrink-0 p-4 rounded-lg min-w-[100px] text-center mb-1 ${
+                  unit.status === 0
+                    ? "bg-gradient-to-r from-[#0ba360] to-[#3cba92] text-white"
+                    : "bg-gradient-to-r from-[#B4162C] to-[#e14e53] text-white"
                 }`}
+                EA384D
               >
                 <span className="text-base block font-medium text-white">
                   {unit.name}
@@ -173,23 +184,28 @@ const PopupInLaundry = ({ open, onClose }) => {
                     Time in Queue: {customer.timeInQueue}
                   </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <Button
                     variant="contained"
+                    disableElevation
                     color="primary"
                     size="small"
                     className="ml-4"
+                    sx={{
+                      backgroundColor: "#5787C8",
+                      borderRadius: "5px",
+                      fontWeight: 500,
+                      textTransform: "none",
+                      "&:hover": {
+                        backgroundColor: "#3A5A85",
+                      },
+                    }}
                   >
-                    Finish
+                    Assign
                   </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    size="small"
-                    className="ml-2"
-                  >
-                    Delete
-                  </Button>
+                  <IconButton>
+                    <MinusSquare size={20} color="#DB524B" weight="duotone" />
+                  </IconButton>
                 </div>
               </Paper>
             ))}

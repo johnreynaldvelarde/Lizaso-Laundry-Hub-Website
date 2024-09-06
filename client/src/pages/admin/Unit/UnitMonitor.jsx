@@ -15,6 +15,7 @@ import { SlidersHorizontal } from "@phosphor-icons/react";
 import PopupSelectUnit from "./PopupSelectUnit";
 import PopupCustomerRequest from "./PopupCustomerRequest";
 import PopupInLaundry from "./PopupInLaundry";
+import PopupInQueue from "./PopupInQueue";
 
 // image
 import Available from "../../../assets/images/Available.png";
@@ -28,6 +29,7 @@ const UnitMonitor = () => {
     openDialog,
     selectedUnit,
     openCustomerRequest,
+    openInQueue,
     openInProgress,
     searchTerm,
     filteredUnits,
@@ -40,6 +42,8 @@ const UnitMonitor = () => {
     handleOpenInProgress,
     handleCloseInProgress,
     handleSearchChange,
+    handleOpenInQueue,
+    handleCloseInQueue,
     fetchUnitsData,
     userDetails,
   } = useUnitMonitor();
@@ -61,7 +65,11 @@ const UnitMonitor = () => {
 
   useEffect(() => {
     fetchUnitsData();
-  }, [userDetails?.storeId]);
+  }, []);
+
+  // useEffect(() => {
+  //   fetchUnitsData();
+  // }, [userDetails?.storeId]);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -118,14 +126,17 @@ const UnitMonitor = () => {
               borderRadius: "5px",
               fontWeight: 600,
               textTransform: "none",
-              paddingLeft: "23px",
-              paddingRight: "23px",
+              paddingLeft: "20px",
+              paddingRight: "20px",
               fontSize: "16px",
+              color: "#5787C8",
+              borderColor: "#5787C8",
               "&:hover": {
-                // backgroundColor: "#fff",
+                borderColor: "#5787C8",
+                backgroundColor: "rgba(87, 135, 200, 0.1)",
               },
             }}
-            onClick={handleOpenCustomerRequest}
+            onClick={handleOpenInQueue}
           >
             Customer Request
           </Button>
@@ -294,6 +305,10 @@ const UnitMonitor = () => {
           open={openCustomerRequest}
           onClose={handleCloseCustomerRequest}
         />
+      )}
+
+      {openInQueue && (
+        <PopupInQueue open={openInQueue} onClose={handleCloseInQueue} />
       )}
 
       {openInProgress && (

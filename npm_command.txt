@@ -78,6 +78,9 @@ npm install --save react-toastify
 npm install react-hot-toast
 npm install framer-motion
 
+npm install date-fns
+
+
 // icons
 npm install phosphor-react
 
