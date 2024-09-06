@@ -8,29 +8,57 @@ import Button from "@mui/material/Button";
 function ConfirmationDialog({ open, onClose, onConfirm, itemId }) {
   return (
     <Dialog open={open} onClose={onClose} className="p-4">
-      <DialogTitle className="text-lg font-semibold">
-        Are you absolutely sure?
-      </DialogTitle>
-      <DialogContent className="text-sm text-gray-700">
-        Are you sure you want to remove this item?
-      </DialogContent>
-      <DialogActions className="space-x-2">
-        <Button
-          onClick={onClose}
-          className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => {
-            onConfirm(itemId);
-            onClose();
-          }}
-          className="bg-blue-500 text-white hover:bg-blue-600"
-        >
-          Confirm
-        </Button>
-      </DialogActions>
+      <div className="relative">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md mx-4 p-2 relative z-50">
+            <DialogTitle className="text-lg font-semibold mb-4">
+              Are you absolutely sure?
+            </DialogTitle>
+            <DialogContent className="text-sm text-gray-700 mb-1">
+              Are you sure you want to remove this item?
+            </DialogContent>
+            <DialogActions className="flex justify-end space-x-2">
+              <Button
+                onClick={onClose}
+                variant="outlined"
+                sx={{
+                  marginRight: 1,
+                  borderColor: "#595959",
+                  borderRadius: "5px",
+                  fontWeight: 500,
+                  textTransform: "none",
+                  color: "#595959",
+                  "&:hover": {
+                    borderColor: "#595959",
+                    backgroundColor: "rgba(144, 144, 144 0.1)",
+                  },
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                disableElevation
+                onClick={() => {
+                  onConfirm(itemId);
+                  onClose();
+                }}
+                sx={{
+                  backgroundColor: "#5787C8",
+                  borderRadius: "5px",
+                  fontWeight: 500,
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "#3A5A85",
+                  },
+                }}
+              >
+                Continue
+              </Button>
+            </DialogActions>
+          </div>
+        </div>
+      </div>
     </Dialog>
   );
 }
