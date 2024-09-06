@@ -63,7 +63,7 @@ a.active > .linkBtn::before {
 /* Custom scrollbar styles */
 
 .scrollable::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 12px; 
 }
 
 .scrollable::-webkit-scrollbar-track {
@@ -77,13 +77,47 @@ a.active > .linkBtn::before {
   background-clip: content-box; 
 }
 
+/* Horizontal Scroll */
+.hori-scrollable {
+  height: 100%;
+  overflow-x: auto; /* Ensure horizontal scrolling */
+  overflow-y: hidden; /* Hide vertical scrollbar */
+}
 
-.scrollable::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #447F8C, #4690FF);
+.hori-scrollable::-webkit-scrollbar {
+  height: 10px; /* Adjust this value to decrease scrollbar height */
+}
+
+.hori-scrollable::-webkit-scrollbar-track {
+  background: #ffffff; /* Track color */
+}
+
+.hori-scrollable::-webkit-scrollbar-thumb {
+  background-color: #C8C8C8; /* Scrollbar color */
+  border-radius: 8px; /* Rounded corners */
+  border: 2px solid transparent; /* Space around the thumb */
+  background-clip: content-box; /* Ensures border color is visible */
+}
+
+/* .hori-scrollable {
+  height: 100%; 
+  overflow-y: auto; 
+}
+
+.hori-scrollable::-webkit-scrollbar {
+  width: 10px;
+}
+
+.hori-scrollable::-webkit-scrollbar-track {
+  background: #ffffff; 
+}
+
+.hori-scrollable::-webkit-scrollbar-thumb {
+  background-color: #C8C8C8; 
   border-radius: 8px; 
   border: 2px solid transparent; 
   background-clip: content-box; 
-}
+} */
 
 
 

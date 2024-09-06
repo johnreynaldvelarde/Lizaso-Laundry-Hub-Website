@@ -8,6 +8,7 @@ import {
   Button,
 } from "@mui/material";
 import styles from "../../../styles/style";
+import { CalendarDots, SlidersHorizontal } from "@phosphor-icons/react";
 import CloseIcon from "@mui/icons-material/Close";
 import nodata from "../../../assets/images/no_data.png";
 
@@ -25,11 +26,10 @@ const PopupInLaundry = ({ open, onClose }) => {
   ];
 
   const availableUnits = [
-    { id: "1", name: "Unit 1" },
-    { id: "2", name: "Unit 2" },
-    { id: "3", name: "Unit 3" },
-    { id: "4", name: "Unit 4" },
-    { id: "5", name: "Unit 5" },
+    { id: 1, name: "Unit 1", status: 0 },
+    { id: 2, name: "Unit 2", status: 0 },
+    { id: 3, name: "Unit 3", status: 0 },
+    { id: 4, name: "Unit 4", status: 0 },
   ];
 
   return (
@@ -55,29 +55,81 @@ const PopupInLaundry = ({ open, onClose }) => {
         <p className="mt-2 text-sm text-gray-600">
           Here you can track the status of laundry currently in progress.
         </p>
-        <div className="mt-4 flex gap-2">
-          <button
-            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
-            onClick={() => console.log("View Details Clicked")}
+        <div className="mt-4 flex gap-2 justify-between">
+          <Button
+            variant="outlined"
+            startIcon={
+              <CalendarDots size={24} color="#5787C8" weight="duotone" />
+            }
+            sx={{
+              borderRadius: "5px",
+              fontWeight: 600,
+              textTransform: "none",
+              paddingLeft: "20px",
+              paddingRight: "20px",
+              fontSize: "16px",
+              color: "#5787C8",
+              borderColor: "#5787C8",
+              "&:hover": {
+                borderColor: "#5787C8",
+                backgroundColor: "rgba(87, 135, 200, 0.1)",
+              },
+            }}
           >
-            View Details
-          </button>
-          <button
-            className="px-4 py-2 bg-green-500 text-white font-semibold rounded hover:bg-green-600"
-            onClick={() => console.log("Mark as Complete Clicked")}
+            View Schedule Details
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={
+              <SlidersHorizontal size={24} color="#5787C8" weight="duotone" />
+            }
+            sx={{
+              borderRadius: "5px",
+              fontWeight: 600,
+              textTransform: "none",
+              paddingLeft: "20px",
+              paddingRight: "20px",
+              fontSize: "16px",
+              color: "#5787C8",
+              borderColor: "#5787C8",
+              "&:hover": {
+                borderColor: "#5787C8",
+                backgroundColor: "rgba(87, 135, 200, 0.1)",
+              },
+            }}
           >
-            Mark as Complete
-          </button>
+            Mark
+          </Button>
         </div>
-        <div className="mt-4 flex overflow-x-auto space-x-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-200 scrollbar-thumb-rounded-md scrollbar-track-rounded-md">
-          {availableUnits.map((unit) => (
-            <div
-              key={unit.id}
-              className="flex-shrink-0 p-4 bg-gray-200 rounded-lg border border-gray-300 min-w-[100px] text-center mb-2 "
-            >
-              <span className="block font-semibold">{unit.name}</span>
-            </div>
-          ))}
+        <div className="flex items-center mt-5">
+          {/* Text with Circle Dots */}
+          <span className="text-base font-semibold flex items-center">
+            Laundry Units
+            <span
+              className="w-4 h-4 rounded-full block ml-2"
+              style={{ backgroundColor: "green" }} // Adjust color as needed
+            />
+            <span
+              className="w-4 h-4 rounded-full block ml-2"
+              style={{ backgroundColor: "red" }} // Adjust color as needed
+            />
+          </span>
+        </div>
+        <div>
+          <div className="mt-4 flex overflow-x-auto space-x-3 hori-scrollable">
+            {availableUnits.map((unit) => (
+              <div
+                key={unit.id}
+                className={`flex-shrink-0 p-4 rounded-md min-w-[100px] text-center mb-1 ${
+                  unit.status === 0 ? "bg-green-500" : "bg-red-500"
+                }`}
+              >
+                <span className="text-base block font-medium text-white">
+                  {unit.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </DialogTitle>
 
@@ -113,8 +165,9 @@ const PopupInLaundry = ({ open, onClose }) => {
               >
                 <div>
                   <h3 className="text-lg font-semibold">{customer.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    Status: {customer.status}
+                  <p className="text-sm">
+                    <span className="font-normal">Service Type:</span>
+                    <span className="font-normal"> {customer.status}</span>
                   </p>
                   <p className="text-sm text-gray-600">
                     Time in Queue: {customer.timeInQueue}
@@ -148,6 +201,23 @@ const PopupInLaundry = ({ open, onClose }) => {
 };
 
 export default PopupInLaundry;
+
+{
+  /* <button
+            className="px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600"
+            onClick={() => console.log("View Details Clicked")}
+          >
+            View Details
+          </button> */
+}
+{
+  /* <button
+            className="px-4 py-2 bg-green-500 text-white font-semibold rounded hover:bg-green-600"
+            onClick={() => console.log("Mark as Complete Clicked")}
+          >
+            Mark as Complete
+          </button> */
+}
 
 // import React from "react";
 // import {
