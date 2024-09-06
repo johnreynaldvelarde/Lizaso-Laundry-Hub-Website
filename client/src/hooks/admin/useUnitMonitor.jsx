@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import useAuth from "../../contexts/AuthContext";
-import { viewUnits, viewCustomerRequest } from "../../services/api/getApi";
+import { viewUnits, viewRequestInQueue } from "../../services/api/getApi";
 
 const useUnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -105,31 +105,12 @@ const useUnitMonitor = () => {
     }
   };
 
-  const fetchCustomerRequestData = async () => {
-    if (hasFetchedCustomerRequestData.current) return;
-
-    try {
-      const response = await viewCustomerRequest.getCustomerRequest(
-        userDetails.storeId
-      );
-      if (response) {
-        setRequestData(response);
-        hasFetchedCustomerRequestData.current = true;
-      } else {
-        setError("Failed to fetch customer request data.");
-      }
-    } catch (error) {
-      setError(error.message || "An unexpected error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch In Queue Service Request
   const fetchInQueueLaundry = async () => {
     if (hasFetchedCustomerRequestData.current) return;
 
     try {
-      const response = await viewCustomerRequest.getCustomerRequest(
+      const response = await viewRequestInQueue.getRequestInQueue(
         userDetails.storeId
       );
       if (response) {
@@ -179,3 +160,23 @@ const useUnitMonitor = () => {
 };
 
 export default useUnitMonitor;
+
+// const fetchCustomerRequestData = async () => {
+//   if (hasFetchedCustomerRequestData.current) return;
+
+//   try {
+//     const response = await viewCustomerRequest.getCustomerRequest(
+//       userDetails.storeId
+//     );
+//     if (response) {
+//       setRequestData(response);
+//       hasFetchedCustomerRequestData.current = true;
+//     } else {
+//       setError("Failed to fetch customer request data.");
+//     }
+//   } catch (error) {
+//     setError(error.message || "An unexpected error occurred.");
+//   } finally {
+//     setLoading(false);
+//   }
+// };

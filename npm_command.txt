@@ -78,11 +78,26 @@ npm install --save react-toastify
 npm install react-hot-toast
 npm install framer-motion
 
-npm install date-fns
+
+
 
 
 // icons
 npm install phosphor-react
+
+// latest 
+npm install date-fns
+npx shadcn@latest init
+
+
+
+
+
+
+
+
+
+
 
 store_id: userDetails.storeId,
 

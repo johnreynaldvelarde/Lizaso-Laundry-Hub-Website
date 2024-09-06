@@ -26,10 +26,10 @@ export const getUnitName = {
   },
 };
 
-export const viewCustomerRequest = {
-  getCustomerRequest: async (storeId) => {
+export const viewRequestInQueue = {
+  getRequestInQueue: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/get-request`);
+      const response = await axiosPrivate.get(`/user/${storeId}/get-inqueue`);
       return response.data;
     } catch (error) {
       console.error('Error fetching customer requests:', error);

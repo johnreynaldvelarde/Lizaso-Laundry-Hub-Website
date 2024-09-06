@@ -81,9 +81,9 @@ export const handleViewUnits = async (req, res, db) => {
   }
 };
 
-
-export const handleGetCustomerRequest = async (req, res, connection) => {
-  const { id } = req.params; // This represents the store_id
+// Get Service In Queue
+export const handleGetServiceInQueue = async (req, res, connection) => {
+  const { id } = req.params; 
 
   try {
     await connection.beginTransaction();
@@ -94,7 +94,8 @@ export const handleGetCustomerRequest = async (req, res, connection) => {
         store_id, 
         user_id, 
         customer_id, 
-        customer_fullname, 
+        customer_fullname,
+        notes, 
         service_type, 
         request_date, 
         pickup_date, 

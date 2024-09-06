@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
   Dialog,
@@ -7,7 +7,7 @@ import {
   IconButton,
   Paper,
   Button,
-  colors,
+  Tooltip,
 } from "@mui/material";
 import styles from "../../../styles/style";
 import { Link } from "react-router-dom";
@@ -19,6 +19,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import nodata from "../../../assets/images/no_data.png";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 
 const PopupInQueue = ({ open, onClose }) => {
   const { fetchUnitsData, fetchInQueueLaundry, unitsData, inQueueData } =
@@ -32,16 +33,18 @@ const PopupInQueue = ({ open, onClose }) => {
     fetchInQueueLaundry();
   }, []);
 
-  const customers = [
-    { id: 1, name: "John Doe", status: "Washing", timeInQueue: "30 minutes" },
-    { id: 2, name: "Jane Smith", status: "Drying", timeInQueue: "15 minutes" },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      status: "Waiting",
-      timeInQueue: "45 minutes",
-    },
-  ];
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+
+  const handleOpenDialog = (id) => {
+    setSelectedItemId(id);
+    setDialogOpen(true);
+  };
+
+  const handleConfirm = (id) => {
+    console.log(`Item removed with ID: ${id}`);
+    // Add your removal logic here (e.g., API call to remove the item)
+  };
 
   return (
     <Dialog
@@ -195,27 +198,30 @@ const PopupInQueue = ({ open, onClose }) => {
                   </p>
                 </div>
                 <div className="flex gap-1">
-                  <Button
-                    variant="outlined"
-                    disableElevation
-                    color="primary"
-                    size="small"
-                    className="ml-4"
-                    sx={{
-                      marginRight: 1,
-                      borderColorolor: "#5787C8",
-                      borderRadius: "5px",
-                      fontWeight: 500,
-                      textTransform: "none",
-                      "&:hover": {
-                        borderColor: "#5787C8",
-                        backgroundColor: "rgba(87, 135, 200, 0.1)",
-                      },
-                    }}
-                  >
-                    Notes
-                  </Button>
-
+                  {customer.notes && customer.notes.trim() !== "" && (
+                    <Tooltip title={customer.notes} arrow>
+                      <Button
+                        variant="outlined"
+                        disableElevation
+                        color="primary"
+                        size="small"
+                        className="ml-4"
+                        sx={{
+                          marginRight: 1,
+                          borderColor: "#5787C8", // Corrected typo
+                          borderRadius: "5px",
+                          fontWeight: 500,
+                          textTransform: "none",
+                          "&:hover": {
+                            borderColor: "#5787C8",
+                            backgroundColor: "rgba(87, 135, 200, 0.1)",
+                          },
+                        }}
+                      >
+                        Notes
+                      </Button>
+                    </Tooltip>
+                  )}
                   <Button
                     variant="contained"
                     disableElevation
@@ -234,7 +240,7 @@ const PopupInQueue = ({ open, onClose }) => {
                   >
                     Assign
                   </Button>
-                  <IconButton>
+                  <IconButton onClick={() => handleOpenDialog(customer.id)}>
                     <MinusSquare size={20} color="#DB524B" weight="duotone" />
                   </IconButton>
                 </div>
@@ -243,6 +249,13 @@ const PopupInQueue = ({ open, onClose }) => {
           </ul>
         )}
       </DialogContent>
+
+      <ConfirmationDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleConfirm}
+        itemId={selectedItemId}
+      />
     </Dialog>
   );
 };
