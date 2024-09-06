@@ -26,9 +26,26 @@ const useUnitMonitor = () => {
 
   // PopupInLaundry
 
-  // PopupInQueue
+  //  <----- PopupInQueue ----->
   const [inQueueData, setInQueueData] = useState([]);
   const [openInQueue, setInQueue] = useState(false);
+  const [dialogQueueOpen, setDialogQueueOpen] = useState(false);
+  const [selectedQueueID, setSelectedQueueId] = useState(null);
+
+  const handleDialogRemoveInQueue = (id) => {
+    setSelectedQueueId(id);
+    setDialogQueueOpen(true);
+  };
+
+  const handleConfrimRemoveQueue = (id) => {
+    console.log(`Item removed with ID: ${id}`);
+  };
+
+  const handleConfirmQueue = (id) => {
+    // console.log(`Item removed with ID: ${id}`);
+  };
+
+  // <------------------------->
 
   const handleOpenDialog = (unit) => {
     setSelectedUnit(unit);
@@ -153,6 +170,13 @@ const useUnitMonitor = () => {
     handleSearchChange,
     fetchUnitsData,
     fetchInQueueLaundry,
+    //<----- PopupInQueue ----->
+    dialogQueueOpen,
+    selectedQueueID,
+    setDialogQueueOpen,
+    handleDialogRemoveInQueue,
+    handleConfrimRemoveQueue,
+    handleConfirmQueue,
     userDetails,
     requestData,
     inQueueData,
