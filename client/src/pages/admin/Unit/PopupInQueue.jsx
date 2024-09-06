@@ -19,13 +19,17 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import nodata from "../../../assets/images/no_data.png";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+import PopupAssignUnit from "./PopupAssignUnit";
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 
 const PopupInQueue = ({ open, onClose }) => {
   const {
     dialogQueueOpen,
+    dialogAssignUnitOpen,
     selectedQueueID,
     setDialogQueueOpen,
+    setDialogAssignUnitOpen,
+    handleDialogAssignUnit,
     handleDialogRemoveInQueue,
     handleConfrimRemoveQueue,
     handleConfirmQueue,
@@ -225,6 +229,7 @@ const PopupInQueue = ({ open, onClose }) => {
                     color="primary"
                     size="small"
                     className="ml-4"
+                    onClick={() => handleDialogAssignUnit(customer.id)}
                     sx={{
                       backgroundColor: "#5787C8",
                       borderRadius: "5px",
@@ -248,6 +253,14 @@ const PopupInQueue = ({ open, onClose }) => {
           </ul>
         )}
       </DialogContent>
+
+      <PopupAssignUnit
+        open={dialogAssignUnitOpen}
+        onClose={() => setDialogAssignUnitOpen(false)}
+        onConfirm={handleConfirmQueue}
+        itemId={selectedQueueID}
+        fetchAvailableUnits={fetchUnitsData}
+      />
 
       <ConfirmationDialog
         open={dialogQueueOpen}

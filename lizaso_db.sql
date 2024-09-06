@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 04, 2024 at 12:10 PM
+-- Generation Time: Sep 06, 2024 at 10:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,33 @@ SET time_zone = "+00:00";
 --
 -- Database: `lizaso_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `activity_log`
+--
+
+CREATE TABLE `activity_log` (
+  `id` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `user_type` varchar(255) NOT NULL,
+  `action_type` varchar(255) NOT NULL,
+  `action_description` varchar(255) NOT NULL,
+  `timestamp` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `activity_log`
+--
+
+INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action_description`, `timestamp`) VALUES
+(1, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 05:23:02'),
+(2, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 05:35:33'),
+(3, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 09:12:05'),
+(4, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 12:34:35'),
+(5, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 12:35:35'),
+(6, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 12:56:04');
 
 -- --------------------------------------------------------
 
@@ -183,12 +210,16 @@ CREATE TABLE `laundry_unit` (
 --
 
 INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(1, 1, 'Unit 1', '2024-09-02 23:34:46', 0, 0),
-(2, 1, 'Unit 2', '2024-09-02 23:34:59', 0, 0),
-(3, 1, 'Unit 3', '2024-09-02 23:35:04', 0, 0),
-(4, 1, 'Unit 4', '2024-09-02 23:35:07', 0, 0),
-(5, 1, 'Unit 5', '2024-09-02 23:35:11', 0, 0),
-(6, 1, 'Unit 6', '2024-09-04 11:59:29', 0, 0);
+(16, 1, 'Unit 1', '2024-09-06 12:21:07', 0, 0),
+(17, 1, 'Unit 2', '2024-09-06 12:21:11', 0, 0),
+(18, 1, 'Unit 3', '2024-09-06 12:21:13', 0, 0),
+(19, 1, 'Unit 4', '2024-09-06 12:21:16', 0, 0),
+(21, 1, 'Unit 5', '2024-09-06 12:22:08', 0, 0),
+(22, 1, 'Unit 6', '2024-09-06 12:22:10', 0, 0),
+(23, 1, 'Unit 7', '2024-09-06 12:22:13', 0, 0),
+(24, 1, 'Unit 8', '2024-09-06 12:22:16', 0, 0),
+(25, 1, 'Unit 9', '2024-09-06 12:22:18', 0, 0),
+(26, 1, 'Unit 10', '2024-09-06 12:22:21', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -202,12 +233,23 @@ CREATE TABLE `service_request` (
   `user_id` bigint(20) DEFAULT NULL,
   `customer_id` bigint(20) NOT NULL,
   `customer_fullname` varchar(255) NOT NULL,
+  `notes` varchar(255) NOT NULL,
   `service_type` varchar(255) NOT NULL,
   `request_date` timestamp NULL DEFAULT current_timestamp(),
   `pickup_date` timestamp NULL DEFAULT NULL,
   `delivery_date` timestamp NULL DEFAULT NULL,
   `request_status` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_request`
+--
+
+INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `customer_fullname`, `notes`, `service_type`, `request_date`, `pickup_date`, `delivery_date`, `request_status`) VALUES
+(21, 1, NULL, 3, 'Alpha Shadow', 'dijdsjnsjnsjndjsndsjndsjndsjndsjndsjndsjndjnsdjsdjnsdjnsdjnsdjnsjndsjndsjndsjndjnsdjnsdnjsnjdsnjdsjndsjndjsndajdadas', 'Wash', '2024-09-06 04:35:21', NULL, NULL, 'In Queue'),
+(22, 1, NULL, 3, 'Alpha Shadow', '', 'Wash/Dry', '2024-09-06 04:35:23', NULL, NULL, 'In Queue'),
+(23, 1, NULL, 3, 'Alpha Shadow', '', 'Wash/Dry/Fold', '2024-09-06 04:35:25', NULL, NULL, 'In Queue'),
+(24, 1, NULL, 3, 'Alpha Shadow', 'dsdsdsdsds', 'Wash', '2024-09-06 04:55:53', NULL, NULL, 'In Queue');
 
 -- --------------------------------------------------------
 
@@ -299,6 +341,13 @@ INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_
 --
 
 --
+-- Indexes for table `activity_log`
+--
+ALTER TABLE `activity_log`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Activity_Log_User_Account` (`user_id`);
+
+--
 -- Indexes for table `addresses`
 --
 ALTER TABLE `addresses`
@@ -382,6 +431,12 @@ ALTER TABLE `user_security`
 --
 
 --
+-- AUTO_INCREMENT for table `activity_log`
+--
+ALTER TABLE `activity_log`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
@@ -421,13 +476,13 @@ ALTER TABLE `item_category`
 -- AUTO_INCREMENT for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `stores`
@@ -450,6 +505,12 @@ ALTER TABLE `user_security`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `activity_log`
+--
+ALTER TABLE `activity_log`
+  ADD CONSTRAINT `Activity_Log_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
 
 --
 -- Constraints for table `customer`

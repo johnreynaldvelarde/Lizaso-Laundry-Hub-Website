@@ -30,6 +30,7 @@ const useUnitMonitor = () => {
   const [inQueueData, setInQueueData] = useState([]);
   const [openInQueue, setInQueue] = useState(false);
   const [dialogQueueOpen, setDialogQueueOpen] = useState(false);
+  const [dialogAssignUnitOpen, setDialogAssignUnitOpen] = useState(false);
   const [selectedQueueID, setSelectedQueueId] = useState(null);
 
   const handleDialogRemoveInQueue = (id) => {
@@ -37,12 +38,17 @@ const useUnitMonitor = () => {
     setDialogQueueOpen(true);
   };
 
+  const handleDialogAssignUnit = (id) => {
+    setSelectedQueueId(id);
+    setDialogAssignUnitOpen(true);
+  };
+
   const handleConfrimRemoveQueue = (id) => {
     console.log(`Item removed with ID: ${id}`);
   };
 
   const handleConfirmQueue = (id) => {
-    // console.log(`Item removed with ID: ${id}`);
+    console.log(`Item is assign with ID: ${id}`);
   };
 
   // <------------------------->
@@ -172,8 +178,11 @@ const useUnitMonitor = () => {
     fetchInQueueLaundry,
     //<----- PopupInQueue ----->
     dialogQueueOpen,
+    dialogAssignUnitOpen,
     selectedQueueID,
     setDialogQueueOpen,
+    setDialogAssignUnitOpen,
+    handleDialogAssignUnit,
     handleDialogRemoveInQueue,
     handleConfrimRemoveQueue,
     handleConfirmQueue,
