@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
+import toast from "react-hot-toast";
 import useAuth from "../../contexts/AuthContext";
-import { viewUnits, viewRequestInQueue } from "../../services/api/getApi";
+import {
+  viewUnits,
+  viewRequestInQueue,
+  viewUnitAvailable,
+} from "../../services/api/getApi";
+import { createLaundryAssignment } from "../../services/api/postApi";
 
 const useUnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -49,6 +55,67 @@ const useUnitMonitor = () => {
 
   const handleConfirmQueue = (id) => {
     console.log(`Item is assign with ID: ${id}`);
+    console.log(`Item is assign with ID: ${selectedAssignUnit}`);
+  };
+
+  // <------------------------->
+  // <----- PopupAssignUnit ----->
+  const [avaiableUnitData, setAvailableUnitsData] = useState([]);
+  const [selectedAssignUnit, setSelectedAssignUnit] = useState(null);
+  const isFetchUnitAvailableData = useRef(false);
+
+  const handleAssignUnitSelect = (event) => {
+    setSelectedAssignUnit(event.target.value);
+  };
+
+  const handleAssignUnitConfirm = async (inqueueID, onClose) => {
+    if (selectedAssignUnit) {
+      const assignData = {
+        requestId: inqueueID,
+        unitId: selectedAssignUnit,
+        weight: "",
+      };
+
+      try {
+        const response = await createLaundryAssignment.setLaundryAssignment(
+          userDetails.userId,
+          assignData
+        );
+
+        if (!response.success) {
+          toast.success(response.message);
+          await fetchInQueueLaundry();
+          await fetchUnitsData();
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error("Error:", error);
+      }
+      onClose();
+    } else {
+      toast.error("Select a unit before proceeding");
+    }
+  };
+
+  const fetchAvailableUnit = async () => {
+    if (isFetchUnitAvailableData.current) return;
+
+    try {
+      const response = await viewUnitAvailable.getUnitAvailable(
+        userDetails.storeId
+      );
+      if (response) {
+        setAvailableUnitsData(response);
+        isFetchUnitAvailableData.current = true;
+      } else {
+        setError("Failed to fetch data");
+      }
+    } catch (error) {
+      setError(error.message || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // <------------------------->
@@ -186,6 +253,16 @@ const useUnitMonitor = () => {
     handleDialogRemoveInQueue,
     handleConfrimRemoveQueue,
     handleConfirmQueue,
+
+    // <----- PopupAssignUnit ----->
+    avaiableUnitData,
+    selectedAssignUnit,
+    setSelectedAssignUnit,
+    handleAssignUnitSelect,
+    handleAssignUnitConfirm,
+    fetchAvailableUnit,
+    // <------------------------->
+
     userDetails,
     requestData,
     inQueueData,

@@ -57,6 +57,20 @@ export const viewUnits = {
   },
 };
 
+
+export const viewUnitAvailable = {
+  getUnitAvailable: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(`/user/${storeId}/unit-available`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching:', error);
+      throw error; 
+    }
+  },
+};
+
+
 // Inventory Section
 export const getCategoryItem = {
   getCategory: async () => {

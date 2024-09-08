@@ -130,12 +130,13 @@ request_status
 
 --> Laundry_Assignment <--
 id (Primary Key)
-service_request_id
-laundry_unit_id
-assigned_by
+service_request_id (Foregin Key)
+unit_id (Foregin Key)
+assigned_by (Foregin Key)
 weight
 assigned_at 
-isStatus
+completed_at
+isAssignmentStatus 0 = In Progress, 1 = Completed, 2 = Canceled
 isCompleted
 
 

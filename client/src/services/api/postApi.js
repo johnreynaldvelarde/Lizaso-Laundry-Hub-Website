@@ -6,7 +6,7 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// Create new unit
+// Laundry Unit Section
 export const createUnit = {
   setUnit: async (data) => {
     try {
@@ -22,6 +22,20 @@ export const createUnit = {
     }
   },
 };
+
+export const createLaundryAssignment = {
+  setLaundryAssignment: async (userId, data) => {
+      try {
+          const response = await axiosPrivate.post(`/user/${userId}/set-assignment`, data);
+          return response.data;
+      } catch (error) {
+          console.error("Error:", error);
+          throw error;
+      }
+  },
+};
+
+
 
 // Create new branch
 export const createStore = {

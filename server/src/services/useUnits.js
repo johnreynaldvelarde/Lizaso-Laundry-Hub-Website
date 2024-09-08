@@ -6,40 +6,52 @@ export const handleCreateUnits = async (req, res, db) => {
     // Log received data for debugging purposes
     // console.log('Received data:', { store_id, unit_name, isUnitStatus });
 
-    // Validate input    
+    // Validate input
     if (!store_id || !unit_name || isUnitStatus === undefined) {
-      return res.status(400).json({ success: false, message: "All fields are required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
 
     // Check if the store_id exists
     const [store] = await db.query(
-      'SELECT id FROM Stores WHERE id = ? LIMIT 1',
+      "SELECT id FROM Stores WHERE id = ? LIMIT 1",
       [store_id]
     );
 
     if (!store) {
-      return res.status(400).json({ success: false, message: "Store not found" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Store not found" });
     }
 
     // Validate isUnitStatus
     const validStatuses = [0, 1, 2, 3]; // Valid statuses
     if (!validStatuses.includes(isUnitStatus)) {
-      return res.status(400).json({ success: false, message: "Invalid unit status" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid unit status" });
     }
 
     // Check if the unit_name already exists for the given store_id
     const [unitExists] = await db.query(
-      'SELECT * FROM Laundry_Unit WHERE store_id = ? AND unit_name = ? LIMIT 1',
+      "SELECT * FROM Laundry_Unit WHERE store_id = ? AND unit_name = ? LIMIT 1",
       [store_id, unit_name] // Use store_id from the request body
     );
 
-    if (unitExists.length > 0) { // Ensure to check length to verify existence
-      return res.status(400).json({ success: false, message: "Unit name already exists in this store" });
+    if (unitExists.length > 0) {
+      // Ensure to check length to verify existence
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Unit name already exists in this store",
+        });
     }
 
     // Insert the new laundry unit
     await db.query(
-      'INSERT INTO Laundry_Unit (store_id, unit_name, isUnitStatus, date_created, isArchive) VALUES (?, ?, ?, NOW(), ?)',
+      "INSERT INTO Laundry_Unit (store_id, unit_name, isUnitStatus, date_created, isArchive) VALUES (?, ?, ?, NOW(), ?)",
       [store_id, unit_name, isUnitStatus, false] // Or true, depending on your requirement
     );
 
@@ -64,7 +76,7 @@ export const handleViewUnits = async (req, res, db) => {
     }
 
     const [rows] = await db.query(
-      'SELECT id, unit_name, isUnitStatus, date_created, isArchive FROM Laundry_Unit WHERE store_id = ? AND isArchive = 0',
+      "SELECT id, unit_name, isUnitStatus, date_created, isArchive FROM Laundry_Unit WHERE store_id = ? AND isArchive = 0",
       [store_id]
     );
 
@@ -83,7 +95,7 @@ export const handleViewUnits = async (req, res, db) => {
 
 // Get Service In Queue
 export const handleGetServiceInQueue = async (req, res, connection) => {
-  const { id } = req.params; 
+  const { id } = req.params;
 
   try {
     await connection.beginTransaction();
@@ -114,26 +126,177 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
     res.status(200).json(results);
   } catch (error) {
     await connection.rollback();
-    console.error('Error fetching customer requests:', error);
-    res.status(500).json({ error: 'An error occurred while fetching customer requests.' });
+    console.error("Error fetching customer requests:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching customer requests." });
   }
 };
 
 
+// Set Laundry Assignment
+export const handleSetLaundryAssignment = async (req, res, connection) => {
+  const { id } = req.params; 
+  const { requestId, unitId, weight } = req.body; 
+  const assignedAt = new Date(); 
 
+  try {
+    await connection.beginTransaction();
+
+    const insertQuery = `
+      INSERT INTO Laundry_Assignment (
+        service_request_id,
+        unit_id,
+        assigned_by,
+        weight,
+        assigned_at,
+        isAssignmentStatus,
+        isCompleted
+      )
+      VALUES (?, ?, ?, ?, ?, 0, 0)
+    `;
+
+    const [insertResults] = await connection.execute(insertQuery, [
+      requestId,
+      unitId,
+      id,
+      weight,
+      assignedAt
+    ]);
+
+    // Update Laundry Unit
+    const updateQuery = `
+      UPDATE Laundry_Unit
+      SET isUnitStatus = 1
+      WHERE id = ?
+    `;
+    await connection.execute(updateQuery, [unitId]);
+
+    // Update the Service_Request
+    const updateRequestQuery = `
+      UPDATE Service_Request
+      SET request_status = 'In Laundry'
+      WHERE id = ?
+    `;
+    await connection.execute(updateRequestQuery, [requestId]);
+
+
+    await connection.commit();
+
+    res.status(200).json({ message: "Laundry assignment successful", data: insertResults });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error setting laundry assignment:", error);
+    res.status(500).json({ error: "An error occurred while setting the laundry assignment." });
+  }
+};
+
+// Get unit list that only available only
+export const handleGetUnitListAvaiable = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+    SELECT 
+      id,
+      unit_name 
+    FROM 
+      Laundry_Unit
+    WHERE 
+      store_id = ? 
+      AND isUnitStatus = '0'
+      AND isArchive = '0'
+  `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json(results);
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching laundry Unit:", error);
+    res.status(500).json({ error: "An error occurred while fetching." });
+  }
+};
+
+// export const handleSetLaundryAssignment = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const { requestId, unitId, weight } = req.body; 
+//   const assignedAt = new Date(); 
+
+//   try {
+//     await connection.beginTransaction();
+
+//     // Define the SQL INSERT query
+//     const query = `
+//       INSERT INTO Laundry_Assignment (
+//         service_request_id,
+//         unit_id,
+//         assigned_by,
+//         weight,
+//         assigned_at,
+//         isAssignmentStatus,
+//         isCompleted
+//       )
+//       VALUES (?, ?, ?, ?, ?, 0, 0) 
+//     `;
+
+//     const [results] = await connection.execute(query, [
+//       requestId,
+//       unitId,
+//       id,
+//       weight,
+//       assignedAt
+//     ]);
+
+//     await connection.commit();
+
+//     res.status(200).json({ message: "Laundry assignment successful", data: results });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error setting laundry assignment:", error);
+//     res.status(500).json({ error: "An error occurred while setting the laundry assignment." });
+//   }
+// };
+
+// export const handleSetLaundryAssignment = async (req, res, connection) => {
+//   const { id } = req.params; 
+//   const { requestId, unitId, weight } = req.body; 
+//   const assignedAt = new Date(); 
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+  
+//   `;
+
+//     const [results] = await connection.execute(query, [id]);
+
+//     await connection.commit();
+
+//     res.status(200).json(results);
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching laundry Unit:", error);
+//     res.status(500).json({ error: "An error occurred while fetching." });
+//   }
+// };
 
 // export const handleViewUnits = async (req, res, db) => {
 //   try {
 
 //     const { store_id} = req.body;
 
-   
 //     res.status(200).json({
 //       success: true,
 //       data: rows,
 //     });
 //   } catch (error) {
-   
+
 //     console.error("Error retrieving unit list:", error);
 //     res.status(500).json({
 //       success: false,
@@ -141,4 +304,3 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
 //     });
 //   }
 // };
-
