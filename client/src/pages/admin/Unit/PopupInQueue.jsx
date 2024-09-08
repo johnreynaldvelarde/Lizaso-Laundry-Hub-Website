@@ -44,7 +44,7 @@ const PopupInQueue = ({ open, onClose }) => {
 
   useEffect(() => {
     fetchInQueueLaundry();
-  }, [fetchInQueueLaundry]);
+  }, []);
 
   return (
     <Dialog

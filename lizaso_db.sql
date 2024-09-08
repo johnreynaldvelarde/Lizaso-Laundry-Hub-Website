@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 06, 2024 at 10:32 AM
+-- Generation Time: Sep 08, 2024 at 07:58 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,10 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (3, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 09:12:05'),
 (4, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 12:34:35'),
 (5, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 12:35:35'),
-(6, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 12:56:04');
+(6, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 12:56:04'),
+(7, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 16:34:19'),
+(8, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-06 16:37:00'),
+(9, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-08 09:52:19');
 
 -- --------------------------------------------------------
 
@@ -193,6 +196,31 @@ CREATE TABLE `item_category` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `laundry_assignment`
+--
+
+CREATE TABLE `laundry_assignment` (
+  `id` bigint(20) NOT NULL,
+  `service_request_id` bigint(20) NOT NULL,
+  `unit_id` bigint(20) NOT NULL,
+  `assigned_by` bigint(20) NOT NULL,
+  `weight` varchar(255) NOT NULL,
+  `assigned_at` datetime NOT NULL,
+  `completed_at` datetime DEFAULT NULL,
+  `isAssignmentStatus` tinyint(4) NOT NULL,
+  `isCompleted` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `laundry_assignment`
+--
+
+INSERT INTO `laundry_assignment` (`id`, `service_request_id`, `unit_id`, `assigned_by`, `weight`, `assigned_at`, `completed_at`, `isAssignmentStatus`, `isCompleted`) VALUES
+(10, 21, 16, 1, '', '2024-09-08 13:53:49', NULL, 0, 0);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `laundry_unit`
 --
 
@@ -210,16 +238,10 @@ CREATE TABLE `laundry_unit` (
 --
 
 INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(16, 1, 'Unit 1', '2024-09-06 12:21:07', 0, 0),
+(16, 1, 'Unit 1', '2024-09-06 12:21:07', 1, 0),
 (17, 1, 'Unit 2', '2024-09-06 12:21:11', 0, 0),
 (18, 1, 'Unit 3', '2024-09-06 12:21:13', 0, 0),
-(19, 1, 'Unit 4', '2024-09-06 12:21:16', 0, 0),
-(21, 1, 'Unit 5', '2024-09-06 12:22:08', 0, 0),
-(22, 1, 'Unit 6', '2024-09-06 12:22:10', 0, 0),
-(23, 1, 'Unit 7', '2024-09-06 12:22:13', 0, 0),
-(24, 1, 'Unit 8', '2024-09-06 12:22:16', 0, 0),
-(25, 1, 'Unit 9', '2024-09-06 12:22:18', 0, 0),
-(26, 1, 'Unit 10', '2024-09-06 12:22:21', 0, 0);
+(28, 1, 'Unit 4', '2024-09-08 13:01:17', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -390,6 +412,15 @@ ALTER TABLE `item_category`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `laundry_assignment`
+--
+ALTER TABLE `laundry_assignment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Laundry_Assignment_Service_Request` (`service_request_id`),
+  ADD KEY `Laundry_Assignment_Laundry_Unit` (`unit_id`),
+  ADD KEY `Laundry_Assignment_User_Account` (`assigned_by`);
+
+--
 -- Indexes for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
@@ -434,7 +465,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `addresses`
@@ -473,10 +504,16 @@ ALTER TABLE `item_category`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `laundry_assignment`
+--
+ALTER TABLE `laundry_assignment`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
 -- AUTO_INCREMENT for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `service_request`
@@ -537,6 +574,14 @@ ALTER TABLE `inventory`
 --
 ALTER TABLE `item`
   ADD CONSTRAINT `Item_Item_Category` FOREIGN KEY (`category_id`) REFERENCES `item_category` (`id`);
+
+--
+-- Constraints for table `laundry_assignment`
+--
+ALTER TABLE `laundry_assignment`
+  ADD CONSTRAINT `Laundry_Assignment_Laundry_Unit` FOREIGN KEY (`unit_id`) REFERENCES `laundry_unit` (`id`),
+  ADD CONSTRAINT `Laundry_Assignment_Service_Request` FOREIGN KEY (`service_request_id`) REFERENCES `service_request` (`id`),
+  ADD CONSTRAINT `Laundry_Assignment_User_Account` FOREIGN KEY (`assigned_by`) REFERENCES `user_account` (`id`);
 
 --
 -- Constraints for table `laundry_unit`
