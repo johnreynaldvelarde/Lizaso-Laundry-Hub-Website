@@ -19,6 +19,18 @@ export const getCountRequestInQueue = {
   },
 };
 
+export const getAssignmentInProgress = {
+  getInProgress: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(`/user/${storeId}/get-assignment`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching laundry assignment:', error);
+      throw error; 
+    }
+  },
+};
+
 export const getUnitName = {
   getSuggestedUnitName: async (storeId) => {
     try {

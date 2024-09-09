@@ -225,7 +225,7 @@ export const handleGetUnitListAvaiable = async (req, res, connection) => {
 
 // Counting Section
 export const handleGetCountRequestInQueue = async (req, res, connection) => {
-  const { id } = req.params; 
+  const { id } = req.params; // Store ID to filter requests
 
   try {
     await connection.beginTransaction();
@@ -236,7 +236,7 @@ export const handleGetCountRequestInQueue = async (req, res, connection) => {
       WHERE store_id = ? AND request_status = 'In Queue'
     `;
 
-    const [results] = await connection.query(query, [id]);
+    const [results] = await connection.execute(query, [id]);
 
     await connection.commit();
 
@@ -249,6 +249,62 @@ export const handleGetCountRequestInQueue = async (req, res, connection) => {
     res.status(500).json({ error: 'Failed to get request count' });
   }
 };
+
+export const handleGetLaundryAssignments = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT
+        la.id,
+        sr.customer_fullname,
+        lu.unit_name,
+        la.assigned_at
+      FROM Laundry_Assignment la
+      JOIN Service_Request sr ON la.service_request_id = sr.id
+      JOIN Laundry_Unit lu ON la.unit_id = lu.id
+      WHERE sr.store_id = ? 
+        AND la.isAssignmentStatus = 0 
+        AND la.isCompleted = 0
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json(results);
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching assignments:", error);
+    res.status(500).json({ error: "An error occurred while fetching assignments." });
+  }
+};
+
+
+
+// export const handleGetLaundryAssignment = async (req, res, connection) => {
+//   const { id } = req.params;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+   
+//   `;
+
+//     const [results] = await connection.execute(query, [id]);
+
+//     await connection.commit();
+
+//     res.status(200).json(results);
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching ", error);
+//     res.status(500).json({ error: "An error occurred while fetching." });
+//   }
+// };
 
 
 

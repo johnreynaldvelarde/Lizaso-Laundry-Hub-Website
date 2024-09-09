@@ -6,6 +6,7 @@ import {
   viewRequestInQueue,
   viewUnitAvailable,
   getCountRequestInQueue,
+  getAssignmentInProgress,
 } from "../../services/api/getApi";
 import { createLaundryAssignment } from "../../services/api/postApi";
 
@@ -55,6 +56,31 @@ const useUnitMonitor = () => {
   }, [userDetails?.storeId]);
 
   // <--------------------------->
+  // <----- Drawer InProgress Section ----->
+  const [inProgressData, setInProgressData] = useState(null);
+  const hasInProgress = useRef(false);
+  const fetchInProgress = useCallback(async () => {
+    if (hasInProgress.current) return;
+    setLoading(true);
+    try {
+      const response = await getAssignmentInProgress.getInProgress(
+        userDetails.storeId
+      );
+
+      if (response) {
+        setInProgressData(response);
+        hasCountInQueue.current = true;
+      } else {
+        setError("Failed to fetch count data.");
+      }
+    } catch (error) {
+      setError(error.message || "An error occurred while fetching count data.");
+    } finally {
+      setLoading(false);
+    }
+  }, [userDetails?.storeId]);
+
+  // <----- Drawer InProgress Section ----->
 
   // Filter
 
@@ -293,6 +319,10 @@ const useUnitMonitor = () => {
     handleAssignUnitSelect,
     handleAssignUnitConfirm,
     fetchAvailableUnit,
+    // <------------------------->
+    // <----- Drawer InProgress Section ----->
+    inProgressData,
+    fetchInProgress,
     // <------------------------->
 
     userDetails,
