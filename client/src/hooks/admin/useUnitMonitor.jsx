@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import toast from "react-hot-toast";
 import useAuth from "../../contexts/AuthContext";
 import {
   viewUnits,
   viewRequestInQueue,
   viewUnitAvailable,
+  getCountRequestInQueue,
 } from "../../services/api/getApi";
 import { createLaundryAssignment } from "../../services/api/postApi";
 
@@ -27,6 +28,33 @@ const useUnitMonitor = () => {
 
   const hasFetchedCustomerRequestData = useRef(false);
   const hasUnits = useRef(false);
+
+  // <----- Counting Section ----->
+  const [countInQueueData, setCountInQueueData] = useState(null);
+  const hasCountInQueue = useRef(false);
+
+  const fetchCountInQueue = useCallback(async () => {
+    if (hasCountInQueue.current) return;
+    setLoading(true);
+    try {
+      const response = await getCountRequestInQueue.getCountInQueue(
+        userDetails.storeId
+      );
+
+      if (response && response.count !== undefined) {
+        setCountInQueueData(response.count);
+        hasCountInQueue.current = true;
+      } else {
+        setError("Failed to fetch count data.");
+      }
+    } catch (error) {
+      setError(error.message || "An error occurred while fetching count data.");
+    } finally {
+      setLoading(false);
+    }
+  }, [userDetails?.storeId]);
+
+  // <--------------------------->
 
   // Filter
 
@@ -58,7 +86,7 @@ const useUnitMonitor = () => {
     console.log(`Item is assign with ID: ${selectedAssignUnit}`);
   };
 
-  // <------------------------->
+  // <--------------------------->
   // <----- PopupAssignUnit ----->
   const [avaiableUnitData, setAvailableUnitsData] = useState([]);
   const [selectedAssignUnit, setSelectedAssignUnit] = useState(null);
@@ -172,19 +200,18 @@ const useUnitMonitor = () => {
     setSearchTerm(event.target.value);
   };
 
-  const fetchUnitsData = async () => {
+  const fetchUnitsData = useCallback(async () => {
     if (hasUnits.current) return;
-
+    setLoading(true);
     if (!userDetails?.storeId) {
       setError("Store ID is undefined.");
       setLoading(false);
       return;
     }
-
     try {
       const response = await viewUnits.getUnitsList(userDetails.storeId);
       if (response.success) {
-        setUnitsData(response.data); // Adjust if the data structure is different
+        setUnitsData(response.data);
       } else {
         setError("Failed to fetch units data.");
       }
@@ -193,7 +220,7 @@ const useUnitMonitor = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userDetails?.storeId]);
 
   // Fetch In Queue Service Request
   const fetchInQueueLaundry = async () => {
@@ -243,7 +270,12 @@ const useUnitMonitor = () => {
     handleSearchChange,
     fetchUnitsData,
     fetchInQueueLaundry,
-    //<----- PopupInQueue ----->
+
+    // <----- Counting Section ----->
+    countInQueueData,
+    fetchCountInQueue,
+
+    // <----- PopupInQueue ----->
     dialogQueueOpen,
     dialogAssignUnitOpen,
     selectedQueueID,
@@ -270,6 +302,68 @@ const useUnitMonitor = () => {
 };
 
 export default useUnitMonitor;
+
+// const fetchCountInQueue = useCallback(async () => {
+//   if (hasCountInQueue.current) return;
+//   setLoading(true);
+//   try {
+//     const response = await getCountRequestInQueue.getCountInQueue(
+//       userDetails.storeId
+//     );
+//     if (response && response.success) {
+//       setCountInQueueData(response.data);
+//       hasCountInQueue.current = true;
+//     } else {
+//       setError("Failed to fetch count data.");
+//     }
+//   } catch (error) {
+//     setError(error.message);
+//   } finally {
+//     setLoading(false);
+//   }
+// }, [userDetails?.storeId]);
+
+// const fetchCountInQueue = async () => {
+//   if (hasCountInQueue.current) return;
+//   try {
+//     const response = await getCountRequestInQueue.getRequestInQueue(
+//       userDetails.storeId
+//     );
+//     if (response && response.data) {
+//       console.log("Data:" + response.data.count);
+//       setCountInQueueData(response.data.count);
+//     } else {
+//       setError("Failed to fetch data");
+//     }
+//   } catch (error) {
+//     setError(error.message || "An unexpected error occurred.");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+// const fetchUnitsData = async () => {
+//   if (hasUnits.current) return;
+
+//   if (!userDetails?.storeId) {
+//     setError("Store ID is undefined.");
+//     setLoading(false);
+//     return;
+//   }
+
+//   try {
+//     const response = await viewUnits.getUnitsList(userDetails.storeId);
+//     if (response.success) {
+//       setUnitsData(response.data); // Adjust if the data structure is different
+//     } else {
+//       setError("Failed to fetch units data.");
+//     }
+//   } catch (error) {
+//     setError(error.message);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
 // const fetchCustomerRequestData = async () => {
 //   if (hasFetchedCustomerRequestData.current) return;

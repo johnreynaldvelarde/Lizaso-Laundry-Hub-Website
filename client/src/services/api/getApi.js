@@ -7,6 +7,17 @@ const handleError = (error) => {
 };
 
 // Laundry Units Section
+export const getCountRequestInQueue = {
+  getCountInQueue: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(`/user/${storeId}/count-inqueue`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching customer requests:', error);
+      throw error; 
+    }
+  },
+};
 
 export const getUnitName = {
   getSuggestedUnitName: async (storeId) => {

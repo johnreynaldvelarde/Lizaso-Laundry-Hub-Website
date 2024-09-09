@@ -1,6 +1,6 @@
 import express from 'express';
 import {handleViewStore } from '../services/useStore.js';
-import { handleGetServiceInQueue, handleGetUnitListAvaiable, handleViewUnits } from '../services/useUnits.js';
+import { handleGetCountRequestInQueue, handleGetServiceInQueue, handleGetUnitListAvaiable, handleViewUnits } from '../services/useUnits.js';
 import { handleGenerateUnitName } from '../services/checkService.js';
 import { handleGetCategory, handleViewInventory, handleViewListCategory } from '../services/useInventory.js';
 import { getPool } from '../db/dbConfig.js';
@@ -29,6 +29,10 @@ router.get('/view-store', withDatabaseConnection(async (req, res, connection) =>
 
 
 // Laundry Unit Section
+router.get('/user/:id/count-inqueue', withDatabaseConnection(async (req, res, connection) => {
+  await handleGetCountRequestInQueue(req, res, connection);
+}));
+
 router.get('/user/:id/unit-available', withDatabaseConnection(async (req, res, connection) => {
   await handleGetUnitListAvaiable(req, res, connection);
 }));
@@ -59,7 +63,7 @@ router.get('/user/:id/get-inqueue', withDatabaseConnection(async (req, res, conn
   await handleGetServiceInQueue(req, res, connection);
 }));
 
-// Use Management Section
+// User Management Section
 router.get('/user/:id/admin-get-user', withDatabaseConnection(async (req, res, connection) => {
   await handleAdminGetUser(req, res, connection);
 }));

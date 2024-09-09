@@ -222,6 +222,74 @@ export const handleGetUnitListAvaiable = async (req, res, connection) => {
   }
 };
 
+
+// Counting Section
+export const handleGetCountRequestInQueue = async (req, res, connection) => {
+  const { id } = req.params; 
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM Service_Request
+      WHERE store_id = ? AND request_status = 'In Queue'
+    `;
+
+    const [results] = await connection.query(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      count: results[0].count
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error getting count of requests in queue:', error);
+    res.status(500).json({ error: 'Failed to get request count' });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// export const handleGetCountRequestInQueue = async (req, res, connection) => {
+//   const { id } = req.params;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+//     SELECT 
+    
+//   `;
+
+
+
+//     res.status(200).json(results);
+//   } catch (error) {
+    
+//   }
+// };
+
+
+
 // export const handleSetLaundryAssignment = async (req, res, connection) => {
 //   const { id } = req.params;
 //   const { requestId, unitId, weight } = req.body; 
