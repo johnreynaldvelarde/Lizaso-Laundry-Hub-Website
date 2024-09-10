@@ -116,6 +116,16 @@ price
 quantity
 isStatus
 
+
+--> Laundry_Unit <--
+id  (Primary Key)
+store_id (Foregin Key)
+unit_name
+date_created
+isUnitStatus (0 -> its Available, 1 -> its occupied  2 -> its Reserved 3 -> In Maintainance)
+isArchive
+
+
 --> Service_Request <--
 id (Primary Key)
 store_id (Foregin Key)

@@ -6,14 +6,14 @@ import useAuth from "../../contexts/AuthContext";
 const useLaundryPlans = () => {
   const { userDetails } = useAuth();
   const [name, setName] = useState(userDetails.fullName);
-  const { note, setNote } = useState("");
+  const [note, setNote] = useState("");
   const [serviceType, setServiceType] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!userDetails || !userDetails.userId) {
-      console.error("User details are not properly set.");
+      alert("User details are not properly set.");
       return;
     }
 
@@ -23,6 +23,7 @@ const useLaundryPlans = () => {
         store_id: storeId,
         service_type: serviceType,
         customer_name: name,
+        notes: note,
       };
 
       const response =
@@ -41,7 +42,15 @@ const useLaundryPlans = () => {
     }
   };
 
-  return { name, note, setName, serviceType, setServiceType, handleSubmit };
+  return {
+    name,
+    note,
+    setName,
+    setNote,
+    serviceType,
+    setServiceType,
+    handleSubmit,
+  };
 };
 
 export default useLaundryPlans;

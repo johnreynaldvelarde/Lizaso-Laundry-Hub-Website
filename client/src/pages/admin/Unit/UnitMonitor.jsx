@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import {
   Box,
   Button,
@@ -37,6 +38,7 @@ import Available from "../../../assets/images/Available.png";
 import Occupied from "../../../assets/images/Occupied.png";
 import Reserved from "../../../assets/images/Reserved.png";
 import In_Maintaince from "../../../assets/images/Not_Available.png";
+import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 
 const UnitMonitor = () => {
   const {
@@ -60,88 +62,23 @@ const UnitMonitor = () => {
     userDetails,
     // <----- Counting Section ----->
     countInQueueData,
+    countAssignmentData,
     fetchCountInQueue,
+    fetchCountLaundryAssignment,
     // <------------------------->
     // <----- Drawer InProgress Section ----->
     inProgressData,
+    dialogProgressOpen,
+    selectedProgressID,
+    setDialogProgressOpen,
     fetchInProgress,
+    handleDialogRemoveInProgress,
+    handleConfirmRemoveInProgress,
     // <------------------------->
   } = useUnitMonitor();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [customerData, setCustomerData] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      unitName: "Unit A",
-      occupiedDuration: "45 minutes",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      unitName: "Unit B",
-      occupiedDuration: "2 hours",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      name: "Alice Johnson",
-      unitName: "Unit C",
-      occupiedDuration: "30 minutes",
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Bob Brown",
-      unitName: "Unit D",
-      occupiedDuration: "1 hour",
-      status: "Inactive",
-    },
-    {
-      id: 5,
-      name: "Charlie Davis",
-      unitName: "Unit E",
-      occupiedDuration: "15 minutes",
-      status: "Active",
-    },
-    {
-      id: 6,
-      name: "Diana Wilson",
-      unitName: "Unit F",
-      occupiedDuration: "3 hours",
-      status: "Pending",
-    },
-    {
-      id: 7,
-      name: "Edward Lee",
-      unitName: "Unit G",
-      occupiedDuration: "50 minutes",
-      status: "Active",
-    },
-    {
-      id: 8,
-      name: "Fiona Clark",
-      unitName: "Unit H",
-      occupiedDuration: "2 hours 30 minutes",
-      status: "Inactive",
-    },
-    {
-      id: 9,
-      name: "George Harris",
-      unitName: "Unit I",
-      occupiedDuration: "40 minutes",
-      status: "Active",
-    },
-    {
-      id: 10,
-      name: "Hannah Martinez",
-      unitName: "Unit J",
-      occupiedDuration: "1 hour 15 minutes",
-      status: "Pending",
-    },
-  ]);
 
   const open = Boolean(anchorEl);
 
@@ -173,6 +110,7 @@ const UnitMonitor = () => {
       try {
         await fetchUnitsData();
         await fetchCountInQueue();
+        await fetchCountLaundryAssignment();
         await fetchInProgress();
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -181,7 +119,12 @@ const UnitMonitor = () => {
     };
 
     fetchData();
-  }, [fetchUnitsData, fetchCountInQueue, fetchInProgress]);
+  }, [
+    fetchUnitsData,
+    fetchCountInQueue,
+    fetchCountLaundryAssignment,
+    fetchInProgress,
+  ]);
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -267,7 +210,7 @@ const UnitMonitor = () => {
             </Button>
           </Badge>
           <Badge
-            badgeContent={"99"}
+            badgeContent={countAssignmentData.count_in_progress}
             color="error"
             anchorOrigin={{
               vertical: "top",
@@ -291,6 +234,7 @@ const UnitMonitor = () => {
           </Badge>
         </Box>
       </Box>
+
       {/* Drawer */}
       <Drawer
         anchor="right"
@@ -384,7 +328,9 @@ const UnitMonitor = () => {
                         {customer.unit_name}
                       </div>
                       <div className="text-sm text-gray-600 truncate">
-                        {customer.assigned_at}
+                        {formatDistanceToNow(new Date(customer.assigned_at), {
+                          addSuffix: true,
+                        })}
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -405,7 +351,11 @@ const UnitMonitor = () => {
                       >
                         Complete
                       </Button>
-                      <IconButton>
+                      <IconButton
+                        onClick={() =>
+                          handleDialogRemoveInProgress(customer.id)
+                        }
+                      >
                         <MinusSquare
                           size={20}
                           color="#DB524B"
@@ -602,10 +552,9 @@ const UnitMonitor = () => {
       {/* Filter */}
       <Menu
         anchorEl={anchorEl}
-        id="account-menu"
+        id="filter-menu"
         open={open}
         onClose={handleClose}
-        onClick={handleClose}
         PaperProps={{
           elevation: 0,
           sx: {
@@ -635,17 +584,18 @@ const UnitMonitor = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleClose}>
-          <Avatar /> Profile
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Avatar /> My account
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleClose}>Add another account</MenuItem>
-        <MenuItem onClick={handleClose}>Settings</MenuItem>
-        <MenuItem>Logout</MenuItem>
+        <MenuItem onClick={handleClose}>Available</MenuItem>
+        <MenuItem onClick={handleClose}>Occupied</MenuItem>
+        <MenuItem onClick={handleClose}>Reserved</MenuItem>
+        <MenuItem onClick={handleClose}>Maintenance</MenuItem>
       </Menu>
+
+      <ConfirmationDialog
+        open={dialogProgressOpen}
+        onClose={() => setDialogProgressOpen(false)}
+        onConfirm={handleConfirmRemoveInProgress}
+        itemId={selectedProgressID}
+      />
     </Box>
   );
 };

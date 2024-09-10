@@ -1,6 +1,6 @@
 import express from 'express';
 import { handleCreateStore } from '../services/useStore.js';
-import { handleCreateUnits } from '../services/useUnits.js';
+import { handleCreateUnits, handlePutAssignment, handlePutRemoveInQueue } from '../services/useUnits.js';
 import { handleUpdateCustomerBasicInformation } from '../services/useCustomer.js';
 import { getPool } from '../db/dbConfig.js';
 
@@ -20,24 +20,33 @@ const withDatabaseConnection = (handler) => async (req, res) => {
     }
   };
 
-// Update User Status to offline isStatus to 0
 router.post('/update-status', withDatabaseConnection(async (req, res, connection) => {
     await handleUpdateUserStatus(req, res, connection);
 }));
 
-// router.put('/update-start-customer', withDatabaseConnection(async (req, res, connection) => {
-//   await handleUpdateCustomerBasicInformation(req, res, connection);
-// }));
 
 router.put('/customers/:id/start', withDatabaseConnection(async (req, res, connection) => {
   await handleUpdateCustomerBasicInformation(req, res, connection);
 }));
 
+router.put('/user/:id/update-assignment', withDatabaseConnection(async (req, res, connection) => {
+  await handlePutAssignment(req, res, connection);
+}));
+
+
+router.put('/user/:id/remove-request', withDatabaseConnection(async (req, res, connection) => {
+  await handlePutRemoveInQueue(req, res, connection);
+}));
 
 
 
 
 
+
+
+// router.put('/update-start-customer', withDatabaseConnection(async (req, res, connection) => {
+//   await handleUpdateCustomerBasicInformation(req, res, connection);
+// }));
 
 export default router;
   

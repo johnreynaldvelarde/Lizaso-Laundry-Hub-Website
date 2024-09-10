@@ -62,7 +62,7 @@ export const handleUpdateCustomerBasicInformation = async (req, res, connection)
 
 export const handleCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; 
-  const { store_id, customer_name, service_type } = req.body;
+  const { store_id, customer_name, notes, service_type } = req.body;
 
   if (!store_id || !customer_name || !service_type) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -76,19 +76,23 @@ export const handleCustomerServiceRequest = async (req, res, connection) => {
         user_id,  -- Assuming you want to assign the delivery person later
         customer_id,
         customer_fullname,
+        notes,
         service_type,
         request_date,
         request_status
-      ) VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)`,
       [
         store_id,
         null,  
         id,
         customer_name,
+        notes,
         service_type,
-        'Pending Pickup' // Initial status of the request
+        'In Queue' 
       ]
     );
+
+    // 'Pending Pickup' 
 
     // Get the ID of the newly created service request
     const newRequestId = result.insertId;

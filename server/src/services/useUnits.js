@@ -223,32 +223,7 @@ export const handleGetUnitListAvaiable = async (req, res, connection) => {
 };
 
 
-// Counting Section
-export const handleGetCountRequestInQueue = async (req, res, connection) => {
-  const { id } = req.params; // Store ID to filter requests
 
-  try {
-    await connection.beginTransaction();
-
-    const query = `
-      SELECT COUNT(*) AS count
-      FROM Service_Request
-      WHERE store_id = ? AND request_status = 'In Queue'
-    `;
-
-    const [results] = await connection.execute(query, [id]);
-
-    await connection.commit();
-
-    res.status(200).json({
-      count: results[0].count
-    });
-  } catch (error) {
-    await connection.rollback();
-    console.error('Error getting count of requests in queue:', error);
-    res.status(500).json({ error: 'Failed to get request count' });
-  }
-};
 
 export const handleGetLaundryAssignments = async (req, res, connection) => {
   const { id } = req.params;
@@ -281,6 +256,224 @@ export const handleGetLaundryAssignments = async (req, res, connection) => {
     res.status(500).json({ error: "An error occurred while fetching assignments." });
   }
 };
+
+
+
+
+// Put Section
+
+export const handlePutAssignment = async (req, res, connection) => {
+  const { id } = req.params; // The id refers to Laundry_Assignment.id
+
+  try {
+    // Start the transaction
+    await connection.beginTransaction();
+
+    // Query to update Laundry_Assignment: Set isAssignmentStatus to 2 (Canceled)
+    const updateAssignmentQuery = `
+      UPDATE Laundry_Assignment
+      SET isAssignmentStatus = 2
+      WHERE id = ?
+    `;
+    await connection.query(updateAssignmentQuery, [id]);
+
+    // Query to update Service_Request: Set request_status to 'Canceled'
+    const updateServiceRequestQuery = `
+      UPDATE Service_Request
+      SET request_status = 'Canceled'
+      WHERE id = (
+        SELECT service_request_id
+        FROM Laundry_Assignment
+        WHERE id = ?
+      )
+    `;
+    await connection.query(updateServiceRequestQuery, [id]);
+
+    // Query to update Laundry_Unit: Set isUnitStatus to 0 (Available)
+    const updateLaundryUnitQuery = `
+      UPDATE Laundry_Unit
+      SET isUnitStatus = 0
+      WHERE id = (
+        SELECT unit_id
+        FROM Laundry_Assignment
+        WHERE id = ?
+      )
+    `;
+    await connection.query(updateLaundryUnitQuery, [id]);
+
+    // Commit the transaction after successful updates
+    await connection.commit();
+
+    // Return success response
+    res.status(200).json({message: "Assignment and related records updated successfully." });
+  } catch (error) {
+    // Rollback the transaction in case of an error
+    await connection.rollback();
+    console.error("Error updating assignment: ", error);
+    res.status(500).json({ error: "Failed to update assignment." });
+  }
+};
+
+export const handlePutRemoveInQueue = async (req, res, connection) => {
+  const { id } = req.params;
+  try {
+
+    await connection.beginTransaction();
+    const query = `
+      UPDATE Service_Request
+      SET request_status = 'Canceled'
+      WHERE id = ?;
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({message: 'Request canceled successfully'});
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({ success: false, message: 'Error canceling the request', error });
+  }
+};
+
+
+
+// Counting Section
+export const handleGetCountRequestInQueue = async (req, res, connection) => {
+  const { id } = req.params; // Store ID to filter requests
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM Service_Request
+      WHERE store_id = ? AND request_status = 'In Queue'
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      count: results[0].count
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error getting count of requests in queue:', error);
+    res.status(500).json({ error: 'Failed to get request count' });
+  }
+};
+
+
+
+export const handleGetCountLaundryAssignment = async (req, res, connection) => {
+  const { id } = req.params; 
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        SUM(CASE WHEN la.isAssignmentStatus = '0' THEN 1 ELSE 0 END) AS count_in_progress,
+        SUM(CASE WHEN la.isAssignmentStatus = '1' THEN 1 ELSE 0 END) AS count_completed,
+        SUM(CASE WHEN la.isAssignmentStatus = '2' THEN 1 ELSE 0 END) AS count_canceled
+      FROM Laundry_Assignment AS la
+      INNER JOIN Service_Request AS sr ON la.service_request_id = sr.id
+      WHERE sr.store_id = ?
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      count_in_progress: results[0].count_in_progress,
+      count_completed: results[0].count_completed,
+      count_canceled: results[0].count_canceled,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error('Error getting count of assignments:', error);
+    res.status(500).json({ error: 'Failed to get assignment count' });
+  }
+};
+
+
+
+// export const handleGetCountAssignmentInProgress = async (req, res, connection) => {
+//   const { id } = req.params; 
+
+//   try {
+//     // Begin the transaction
+//     await connection.beginTransaction();
+
+//     const query = `
+//       SELECT COUNT(*) AS count
+//       FROM Laundry_Assignment AS la
+//       INNER JOIN Service_Request AS sr ON la.service_request_id = sr.id
+//       WHERE sr.store_id = ? AND la.isAssignmentStatus = '0'
+//     `;
+
+//     const [results] = await connection.execute(query, [id]);
+
+//     await connection.commit();
+
+//     res.status(200).json({
+//       count: results[0].count,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error('Error getting count of assignments in progress:', error);
+//     res.status(500).json({ error: 'Failed to get assignment count' });
+//   }
+// };
+
+
+
+
+
+// export const handlePutRemoveInQueue = async (req, res, connection) => {
+//   const { id } = req.params;
+//   try {
+
+//     await connection.beginTransaction();
+//     const query = `
+//       UPDATE Service_Request
+//       SET request_status = 'Canceled'
+//       WHERE id = ?;
+//     `;
+
+//     const [results] = await connection.execute(query, [id]);
+
+//     await connection.commit();
+
+//     res.status(200).json({ success: true, message: 'Request canceled successfully', results });
+//   } catch (error) {
+//     await connection.rollback();
+//     res.status(500).json({ success: false, message: 'Error canceling the request', error });
+//   }
+// };
+
+
+
+
+// export const handlePutAsssignment = async (req, res, connection) => {
+//   const { id } = req.params;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+   
+//   `;
+
+
+//     await connection.commit();
+
+//     res.status(200).json(results);
+//   } catch (error) {
+//   }
+// };
 
 
 

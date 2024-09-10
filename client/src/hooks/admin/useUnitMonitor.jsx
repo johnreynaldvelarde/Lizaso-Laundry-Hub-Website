@@ -7,8 +7,13 @@ import {
   viewUnitAvailable,
   getCountRequestInQueue,
   getAssignmentInProgress,
+  getCountLaundryAssignment,
 } from "../../services/api/getApi";
 import { createLaundryAssignment } from "../../services/api/postApi";
+import {
+  updateRemoveAssignment,
+  updateRemoveInQueue,
+} from "../../services/api/putApi";
 
 const useUnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -32,6 +37,12 @@ const useUnitMonitor = () => {
 
   // <----- Counting Section ----->
   const [countInQueueData, setCountInQueueData] = useState(null);
+  const [countAssignmentData, setCountAssignmentData] = useState({
+    count_in_progress: 0,
+    count_completed: 0,
+    count_canceled: 0,
+  });
+  const hastCountAssignment = useRef(false);
   const hasCountInQueue = useRef(false);
 
   const fetchCountInQueue = useCallback(async () => {
@@ -55,10 +66,67 @@ const useUnitMonitor = () => {
     }
   }, [userDetails?.storeId]);
 
+  const fetchCountLaundryAssignment = useCallback(async () => {
+    if (hastCountAssignment.current) return;
+    setLoading(true);
+    try {
+      const response = await getCountLaundryAssignment.getCountAssignment(
+        userDetails.storeId
+      );
+
+      if (response) {
+        setCountAssignmentData({
+          count_in_progress: Number(response.count_in_progress),
+          count_completed: Number(response.count_completed),
+          count_canceled: Number(response.count_canceled),
+        });
+        hastCountAssignment.current = true;
+      } else {
+        setError("Failed to fetch count data.");
+      }
+    } catch (error) {
+      setError(error.message || "An error occurred while fetching count data.");
+    } finally {
+      setLoading(false);
+    }
+  }, [userDetails?.storeId]);
+
   // <--------------------------->
   // <----- Drawer InProgress Section ----->
-  const [inProgressData, setInProgressData] = useState(null);
+  const [inProgressData, setInProgressData] = useState([]);
+  const [dialogProgressOpen, setDialogProgressOpen] = useState(false);
+  const [selectedProgressID, setSelectedProgressId] = useState(null);
   const hasInProgress = useRef(false);
+
+  const handleDialogRemoveInProgress = (id) => {
+    setSelectedProgressId(id);
+    setDialogProgressOpen(true);
+  };
+
+  const handleConfirmRemoveInProgress = async (id) => {
+    if (id) {
+      try {
+        const response = await updateRemoveAssignment.putAssignment(id);
+
+        if (response.success) {
+          toast.error(response.message);
+        } else {
+          toast.success(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+      // onClose();
+    } else {
+      // Handle case when no assignment is selected
+      toast.error("Select an assignment before proceeding");
+    }
+  };
+
+  const handleConfirmInProgress = (id) => {
+    console.log(`Item is assign with ID: ${id}`);
+  };
+
   const fetchInProgress = useCallback(async () => {
     if (hasInProgress.current) return;
     setLoading(true);
@@ -79,8 +147,7 @@ const useUnitMonitor = () => {
       setLoading(false);
     }
   }, [userDetails?.storeId]);
-
-  // <----- Drawer InProgress Section ----->
+  // <--------------------------->
 
   // Filter
 
@@ -103,16 +170,32 @@ const useUnitMonitor = () => {
     setDialogAssignUnitOpen(true);
   };
 
-  const handleConfrimRemoveQueue = (id) => {
-    console.log(`Item removed with ID: ${id}`);
+  const handleConfrimRemoveQueue = async (id) => {
+    if (id) {
+      try {
+        const response = await updateRemoveInQueue.putRemoveInQueue(id);
+
+        if (response.success) {
+          toast.error(response.message);
+        } else {
+          toast.success(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+      // onClose();
+    } else {
+      // Handle case when no assignment is selected
+      toast.error("Select an assignment before proceeding");
+    }
   };
 
   const handleConfirmQueue = (id) => {
     console.log(`Item is assign with ID: ${id}`);
     console.log(`Item is assign with ID: ${selectedAssignUnit}`);
   };
-
   // <--------------------------->
+
   // <----- PopupAssignUnit ----->
   const [avaiableUnitData, setAvailableUnitsData] = useState([]);
   const [selectedAssignUnit, setSelectedAssignUnit] = useState(null);
@@ -299,7 +382,9 @@ const useUnitMonitor = () => {
 
     // <----- Counting Section ----->
     countInQueueData,
+    countAssignmentData,
     fetchCountInQueue,
+    fetchCountLaundryAssignment,
 
     // <----- PopupInQueue ----->
     dialogQueueOpen,
@@ -322,7 +407,12 @@ const useUnitMonitor = () => {
     // <------------------------->
     // <----- Drawer InProgress Section ----->
     inProgressData,
+    dialogProgressOpen,
+    selectedProgressID,
+    setDialogProgressOpen,
     fetchInProgress,
+    handleDialogRemoveInProgress,
+    handleConfirmRemoveInProgress,
     // <------------------------->
 
     userDetails,

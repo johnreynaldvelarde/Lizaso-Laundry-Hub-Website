@@ -13,8 +13,15 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
-  const { name, note, setName, serviceType, setServiceType, handleSubmit } =
-    useLaundryPlans();
+  const {
+    name,
+    note,
+    setName,
+    setNote,
+    serviceType,
+    setServiceType,
+    handleSubmit,
+  } = useLaundryPlans();
 
   React.useEffect(() => {
     if (service && service.label) {
@@ -68,7 +75,7 @@ const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
               fullWidth
               margin="normal"
               value={name}
-              // onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
             />
             <TextField
               label="Additional Notes"
@@ -76,6 +83,7 @@ const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
               fullWidth
               multiline
               value={note}
+              onChange={(e) => setNote(e.target.value)}
               rows={4}
               margin="normal"
             />
