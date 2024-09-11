@@ -6,7 +6,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import { motion } from "framer-motion";
-import { Radio, RadioGroup, FormControlLabel, Paper } from "@mui/material";
+import {
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  Paper,
+  TextField,
+} from "@mui/material";
 
 function PopupAssignUnit({ open, onClose, inqueueID }) {
   const {
@@ -28,17 +34,6 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
       fetchAvailableUnit();
     }
   }, [open]);
-
-  // const handleAssignUnitConfirm = (inqueueID) => {
-  //   if (selectedAssignUnit) {
-  //     // onConfirm(inqueueID, selectedAssignUnit);
-  //     console.log("In Queue ID: " + inqueueID);
-  //     console.log("Unit ID: " + selectedAssignUnit);
-  //     onClose();
-  //   } else {
-  //     toast.error("Select a unit before proceeding");
-  //   }
-  // };
 
   return (
     <Dialog
@@ -99,6 +94,25 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
                 <p>No available units at the moment.</p>
               )}
             </RadioGroup>
+          </div>
+          <div className="mt-4">
+            <TextField
+              label="Weight (kg)"
+              // value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              fullWidth
+              margin="dense"
+              variant="outlined"
+            />
+            <TextField
+              label="Quantity"
+              // value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              fullWidth
+              margin="dense"
+              variant="outlined"
+              className="mt-2"
+            />
           </div>
         </DialogContent>
         <DialogActions className="flex justify-end space-x-2 mb-1">

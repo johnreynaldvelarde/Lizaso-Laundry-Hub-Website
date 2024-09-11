@@ -123,8 +123,12 @@ const useUnitMonitor = () => {
     }
   };
 
-  const handleConfirmInProgress = (id) => {
+  const handleConfirmInProgress = async (id) => {
+    setLoading(true);
+    // Call the function that handles the completion process
+    // await completeLaundryProcess(customerId);
     console.log(`Item is assign with ID: ${id}`);
+    setLoading(false);
   };
 
   const fetchInProgress = useCallback(async () => {
@@ -413,6 +417,7 @@ const useUnitMonitor = () => {
     fetchInProgress,
     handleDialogRemoveInProgress,
     handleConfirmRemoveInProgress,
+    handleConfirmInProgress,
     // <------------------------->
 
     userDetails,
