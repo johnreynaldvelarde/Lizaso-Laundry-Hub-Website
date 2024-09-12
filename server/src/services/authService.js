@@ -127,7 +127,7 @@ export const handleLogin = async (req, res, db) => {
       process.env.JWT_EXPIRES_IN
     );
     const refreshToken = createToken(
-      { userId: user.id, username},
+      { userId: user.id, username, userType},
       process.env.REFRESH_TOKEN_SECRET,
       process.env.JWT_REFRESH_EXPIRES_IN
     );
@@ -275,7 +275,7 @@ export const getUserDetails = async (req, res, db) => {
     return res.status(401).json({ success: false, message: "Invalid token" });
   }
 
-  console.log("Decoded Token:", decoded);
+  console.log("Decoded Token1:", decoded);
 
   const userId = decoded.userId;
   const username = decoded.username;
@@ -295,7 +295,7 @@ export const getUserDetails = async (req, res, db) => {
           userId: user.id,
           storeId: user.store_id,
           fullName: `${user.first_name} ${user.last_name}`,
-          username: user.username,
+          userType: user.isRole,
         },
       });
     } else {
@@ -316,11 +316,13 @@ export const getUserDetails = async (req, res, db) => {
             username: customer.c_username,
           },
         });
+   
       } else {
         return res
           .status(404)
           .json({ success: false, message: "User or Customer not found" });
       }
+
     }
   } catch (error) {
     console.error("Error fetching user details:", error);

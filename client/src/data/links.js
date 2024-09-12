@@ -5,6 +5,7 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { MdLocalLaundryService, MdOutlineWarehouse } from "react-icons/md";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { IoStorefrontOutline } from "react-icons/io5"
+import { FaUsers } from "react-icons/fa6";
 import {
   FiHome,
   FiLayers,
@@ -83,19 +84,11 @@ export const links = [
     ],
   },
   {
-    name: "User Manage",
-    icon: React.createElement(FiUser ),
-    subLinks: [
-      {
-        name: "All Users",
-        url: "/main/all-user",
-      },
-      {
-        name: "Add Users",
-        url: "/main/add-user",
-      },
-    ],
+    name: "User Management",
+    icon: React.createElement(FaUsers),
+    url: "/main/all-user",
   },
+
   {
     name: "Customers",
     icon: React.createElement(FiUsers),
@@ -129,11 +122,7 @@ export const links = [
       },
     ],
   },
-  {
-    name: "Suppliers",
-    icon: React.createElement(FaShare),
-    url: "",
-  },
+
   {
     name: "Transactions",
     icon: React.createElement(FaHandshake),
@@ -159,5 +148,26 @@ export const links = [
     icon: React.createElement(FiMail),
     url: "",
   },
+
+  // {
+  //   name: "Suppliers",
+  //   icon: React.createElement(FaShare),
+  //   url: "",
+  // },
+
+  // {
+  //   name: "User Manage",
+  //   icon: React.createElement(FiUser ),
+  //   subLinks: [
+  //     {
+  //       name: "All Users",
+  //       url: "/main/all-user",
+  //     },
+  //     {
+  //       name: "Add Users",
+  //       url: "/main/add-user",
+  //     },
+  //   ],
+  // },
 ];
 

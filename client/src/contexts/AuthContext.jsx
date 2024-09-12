@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
     storeId: "",
     fullName: "",
     username: "",
+    user_type: "",
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -60,6 +61,7 @@ export const AuthProvider = ({ children }) => {
           storeId: user.storeId,
           fullName: user.fullName,
           username: user.username,
+          user_type: user.userType,
         });
       } else {
         console.error("Error fetching user details:", response.data.message);
