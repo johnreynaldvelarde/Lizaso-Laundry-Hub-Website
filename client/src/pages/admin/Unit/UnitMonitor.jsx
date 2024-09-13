@@ -578,6 +578,7 @@ const UnitMonitor = () => {
           open={openDialog}
           onClose={handleCloseDialog}
           unitName={selectedUnit.unit_name}
+          unitId={selectedUnit.id}
         />
       )}
 
