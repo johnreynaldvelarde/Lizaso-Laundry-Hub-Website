@@ -556,7 +556,14 @@ const UnitMonitor = () => {
                   fontSize: "1rem",
                   fontWeight: 500,
                 }}
-                onClick={() => handleOpenDialog(unit)}
+                onClick={() => {
+                  if (unit.isUnitStatus === 0) {
+                    handleOpenDialog(unit);
+                  } else if (unit.isUnitStatus === 1) {
+                    alert("This is occupied");
+                    // handleShowOccupiedMenu(unit); // Function to handle occupied state
+                  }
+                }}
               >
                 {unit.isUnitStatus === 0
                   ? "Select"
@@ -597,8 +604,23 @@ const UnitMonitor = () => {
         <PopupInLaundry open={openInProgress} onClose={handleCloseInProgress} />
       )}
 
-      {/* Filter */}
-      {/* <Menu
+      <ConfirmationDialog
+        open={dialogProgressOpen}
+        onClose={() => setDialogProgressOpen(false)}
+        onConfirm={handleConfirmRemoveInProgress}
+        itemId={selectedProgressID}
+      />
+    </Box>
+  );
+};
+
+export default UnitMonitor;
+
+{
+  /* Filter */
+}
+{
+  /* <Menu
         anchorEl={anchorEl}
         id="filter-menu"
         open={open}
@@ -636,16 +658,5 @@ const UnitMonitor = () => {
         <MenuItem onClick={handleClose}>Occupied</MenuItem>
         <MenuItem onClick={handleClose}>Reserved</MenuItem>
         <MenuItem onClick={handleClose}>Maintenance</MenuItem>
-      </Menu> */}
-
-      <ConfirmationDialog
-        open={dialogProgressOpen}
-        onClose={() => setDialogProgressOpen(false)}
-        onConfirm={handleConfirmRemoveInProgress}
-        itemId={selectedProgressID}
-      />
-    </Box>
-  );
-};
-
-export default UnitMonitor;
+      </Menu> */
+}

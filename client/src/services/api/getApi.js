@@ -19,7 +19,6 @@ export const getCountRequestInQueue = {
   },
 };
 
-
 export const getCountLaundryAssignment = {
   getCountAssignment: async (storeId) => {
     try {
@@ -31,8 +30,6 @@ export const getCountLaundryAssignment = {
     }
   },
 };
-
-
 
 export const getAssignmentInProgress = {
   getInProgress: async (storeId) => {
@@ -108,6 +105,18 @@ export const viewUnitAvailable = {
   },
 };
 
+
+export const getListCustomer = {
+  getSelectedCustomer: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(`/user/${storeId}/get-inqueue`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching customer requests:', error);
+      throw error; 
+    }
+  },
+};
 
 // Inventory Section
 export const getCategoryItem = {
