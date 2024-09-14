@@ -1,12 +1,7 @@
 export const handleCreateUnits = async (req, res, db) => {
   try {
-    // Extract the fields from the request body
     const { store_id, unit_name, isUnitStatus } = req.body;
 
-    // Log received data for debugging purposes
-    // console.log('Received data:', { store_id, unit_name, isUnitStatus });
-
-    // Validate input
     if (!store_id || !unit_name || isUnitStatus === undefined) {
       return res
         .status(400)
@@ -93,45 +88,83 @@ export const handleViewUnits = async (req, res, db) => {
   }
 };
 
-// Get Service In Queue
-export const handleGetServiceInQueue = async (req, res, connection) => {
-  const { id } = req.params;
+
+
+// <----- Set Section ----->
+export const handleSetWalkInRequest = async (req, res, connection) => {
+  const { id } = req.params; 
+  const { customerId, userId, unitId, fullname, weight, serviceType, customerNotes } = req.body;
 
   try {
     await connection.beginTransaction();
 
-    const query = `
-      SELECT 
-        id, 
-        store_id, 
-        user_id, 
-        customer_id, 
+    // Step 1: Insert into Service_Request
+    const serviceRequestQuery = `
+      INSERT INTO Service_Request (
+        store_id,
+        user_id,
+        customer_id,
         customer_fullname,
-        notes, 
-        service_type, 
-        request_date, 
-        pickup_date, 
-        delivery_date, 
+        service_type,
+        notes,
+        request_date,
         request_status
-      FROM 
-        Service_Request
-      WHERE 
-        store_id = ? AND request_status = 'In Queue'
+      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'In Laundry')
     `;
 
-    const [results] = await connection.execute(query, [id]);
+    const [serviceRequestResult] = await connection.execute(serviceRequestQuery, [
+      id,         // store_id
+      userId,     // user_id
+      customerId, // customer_id
+      fullname,   // customer_fullname
+      serviceType, // service_type
+      customerNotes // notes
+    ]);
 
+    const serviceRequestId = serviceRequestResult.insertId;
+
+    // Step 2: Insert into Laundry_Assignment
+    const assignmentQuery = `
+      INSERT INTO Laundry_Assignment (
+        service_request_id,
+        unit_id,
+        assigned_by,
+        weight,
+        assigned_at,
+        isAssignmentStatus
+      ) VALUES (?, ?, ?, ?, NOW(), 0)
+    `;
+
+    await connection.execute(assignmentQuery, [
+      serviceRequestId, // service_request_id (from Step 1)
+      unitId,           // unit_id
+      userId,           // assigned_by
+      weight            // weight
+    ]);
+
+    // Step 3: Update Laundry_Unit's isUnitStatus to 1 (Occupied)
+    const updateUnitQuery = `
+      UPDATE Laundry_Unit 
+      SET isUnitStatus = 1 
+      WHERE id = ?
+    `;
+
+    await connection.execute(updateUnitQuery, [unitId]);
+
+    // Commit the transaction
     await connection.commit();
 
-    res.status(200).json(results);
+    res.status(200).json({ message: "Assignment created successfully." });
+
   } catch (error) {
     await connection.rollback();
-    console.error("Error fetching customer requests:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching customer requests." });
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while setting the laundry assignment." });
   }
 };
+
+
+
 
 // Set Laundry Assignment
 export const handleSetLaundryAssignment = async (req, res, connection) => {
@@ -187,6 +220,49 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
     await connection.rollback();
     console.error("Error setting laundry assignment:", error);
     res.status(500).json({ error: "An error occurred while setting the laundry assignment." });
+  }
+};
+
+
+// <----- Get Section ----->
+
+// Get Service In Queue
+export const handleGetServiceInQueue = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        id, 
+        store_id, 
+        user_id, 
+        customer_id, 
+        customer_fullname,
+        notes, 
+        service_type, 
+        request_date, 
+        pickup_date, 
+        delivery_date, 
+        request_status
+      FROM 
+        Service_Request
+      WHERE 
+        store_id = ? AND request_status = 'In Queue'
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json(results);
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching customer requests:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching customer requests." });
   }
 };
 
@@ -259,16 +335,15 @@ export const handleGetSelectedCustomer = async (req, res, connection) => {
   try {
     await connection.beginTransaction();
     const query = `
-    SELECT 
-      id,
-      CONCAT(c_lastname, ', ', c_firstname, ' ', c_middlename) AS fullname,
-      c_username,
-      date_created
-    FROM Customer
-    WHERE store_id = ? AND isArchive = 0
-    ORDER BY date_created DESC
-  `;
-
+      SELECT 
+        id,
+        CONCAT(c_lastname, ', ', c_firstname, ' ', c_middlename) AS fullname,
+        c_username,
+        date_created
+      FROM Customer
+      WHERE store_id = ? AND isArchive = 0
+      ORDER BY date_created DESC
+    `;
 
     const [results] = await connection.execute(query, [id]);
 
@@ -418,6 +493,28 @@ export const handleGetCountLaundryAssignment = async (req, res, connection) => {
     res.status(500).json({ error: 'Failed to get assignment count' });
   }
 };
+
+
+// export const handleSetWalkInRequest = async (req, res, connection) => {
+//   const { id } = req.params; 
+//   const { customerId, userId, unitId, fullname, weight, serviceType, customerNotes } = req.body; 
+
+//   try {
+//     await connection.beginTransaction();
+
+
+ 
+//     await connection.execute(, []);
+
+
+//     await connection.commit();
+
+//   } catch (error) {
+//     await connection.rollback();
+//     res.status(500).json({ error: "An error occurred while setting the laundry assignment." });
+//   }
+// };
+
 
 
 

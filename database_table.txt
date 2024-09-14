@@ -90,8 +90,6 @@ date_created
 isUnitStatus (0 -> its Available, 1 -> its occupied  2 -> its Reserved 3 -> In Maintainance)
 isArchive
 
-
-
 --> Item Category <--
 id (Primary Key)
 category_name
@@ -125,7 +123,6 @@ date_created
 isUnitStatus (0 -> its Available, 1 -> its occupied  2 -> its Reserved 3 -> In Maintainance)
 isArchive
 
-
 --> Service_Request <--
 id (Primary Key)
 store_id (Foregin Key)
@@ -133,6 +130,7 @@ user_id (Foregin Key)
 customer_id (Foregin Key)
 customer_fullname
 service_type
+notes
 request_date
 pickup_date
 delivery_date

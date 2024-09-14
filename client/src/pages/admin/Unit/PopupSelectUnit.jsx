@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useAuth from "../../../contexts/AuthContext";
-import { format } from "date-fns";
+import toast from "react-hot-toast";
 import {
   Dialog,
   DialogTitle,
@@ -15,10 +15,12 @@ import {
   IconButton,
   FormControl,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import { createFilterOptions } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { getSelectedCustomer } from "../../../services/api/getApi";
+import { createWalkInServiceRequest } from "../../../services/api/postApi";
 
 const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
   const { userDetails } = useAuth();
@@ -29,6 +31,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleAdditionalInfoToggle = () => {
     setShowAdditionalInfo((prev) => !prev);
@@ -56,23 +59,78 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
     stringify: (option) => `${option.fullname} ${option.c_username}`, // Combine both fields for search purposes
   });
 
-  const handleProceedSelectedUnit = (e) => {
+  const handleInputChange = (field) => (e) => {
+    const value = e.target.value;
+
+    if (field === "selectedCustomer") {
+      setSelectedCustomer(value);
+    } else if (field === "weight") {
+      setWeight(value);
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: "",
+    }));
+  };
+
+  const handleProceedSelectedUnit = async (e) => {
     e.preventDefault();
 
     const newErrors = validateFields();
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log("Proceeding with selection...");
-      console.log("Selected Customer Name: " + selectedCustomer.fullname);
-      console.log("Selected Customer ID: " + selectedCustomer.id);
-      console.log("Selected Tab: " + selectedTab); // 0 = Wash, 1 = Wash/Dry, 2 = Wash/Dry/Fold
-      console.log("Weight: " + weight);
-      console.log("Store ID: " + userDetails.storeId);
-      console.log("Selected Unit ID: " + unitId);
-      console.log("Notes from customer: " + notes);
+      setLoading(true);
+      const data = {
+        customerId: selectedCustomer.id,
+        userId: userDetails.userId,
+        unitId: unitId,
+        fullname: selectedCustomer.fullname,
+        weight: weight,
+        customerNotes: notes,
+        serviceType:
+          selectedTab === 0
+            ? "Wash"
+            : selectedTab === 1
+            ? "Wash/Dry"
+            : "Wash/Dry/Fold",
+      };
 
-      // You can proceed with the next steps, e.g., submitting data to an API, etc.
+      // Introduce a delay before making the API call
+      setTimeout(async () => {
+        try {
+          const response = await createWalkInServiceRequest.setWalkInRequest(
+            userDetails.storeId,
+            data
+          );
+
+          if (!response.success) {
+            toast.success(response.message);
+          } else {
+            toast.error(response.message);
+          }
+        } catch (error) {
+          toast.error("Error:", error);
+        } finally {
+          setLoading(false);
+          onClose();
+        }
+      }, 1500);
+
+      // try {
+      //   const response = await createWalkInServiceRequest.setWalkInRequest(
+      //     userDetails.storeId,
+      //     data
+      //   );
+      //   if (!response.success) {
+      //     toast.success(response.message);
+      //   } else {
+      //     toast.error(response.message);
+      //   }
+      // } catch (error) {
+      //   toast.error("Error:", error);
+      // }
     }
   };
 
@@ -97,27 +155,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
       fetchSelectedCustomer();
     }
   }, [open]);
-
-  const customers = [
-    {
-      id: 1,
-      name: "John Doe",
-      username: "john_doe",
-      createdDate: "2024-09-14",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      username: "jane_smith",
-      createdDate: "2024-09-13",
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      username: "michael_johnson",
-      createdDate: "2024-09-14",
-    },
-  ];
 
   return (
     <Dialog
@@ -261,6 +298,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
                 label="Customer"
                 variant="outlined"
                 placeholder="Search for a customer"
+                error={!!errors.selectedCustomer}
               />
             )}
           />
@@ -352,17 +390,19 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
           variant="contained"
           disableElevation
           onClick={handleProceedSelectedUnit}
+          disabled={loading}
           sx={{
             backgroundColor: "#5787C8",
             borderRadius: "5px",
             fontWeight: 500,
+            minWidth: "90px",
             textTransform: "none",
             "&:hover": {
               backgroundColor: "#3A5A85",
             },
           }}
         >
-          Proceed
+          {loading ? <CircularProgress size={24} /> : "Proceed"}
         </Button>
       </DialogActions>
     </Dialog>

@@ -35,6 +35,17 @@ export const createLaundryAssignment = {
   },
 };
 
+export const createWalkInServiceRequest = {
+  setWalkInRequest: async (storeId, data) => {
+      try {
+          const response = await axiosPrivate.post(`/user/${storeId}/set-walkin`, data);
+          return response.data;
+      } catch (error) {
+          console.error("Error:", error);
+          throw error;
+      }
+  },
+};
 
 
 // Create new branch

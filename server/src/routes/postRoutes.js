@@ -1,6 +1,6 @@
 import express from 'express';
 import { handleCreateStore } from '../services/useStore.js';
-import { handleCreateUnits, handleSetLaundryAssignment } from '../services/useUnits.js';
+import { handleCreateUnits, handleSetLaundryAssignment, handleSetWalkInRequest } from '../services/useUnits.js';
 import { handleCreateItem,handleCreateItemCategory } from '../services/useInventory.js';
 import { handleCustomerServiceRequest } from '../services/useCustomer.js';
 import { getPool } from '../db/dbConfig.js';
@@ -26,6 +26,11 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 router.post('/user/:id/set-assignment', withDatabaseConnection(async (req, res, connection) => {
   await handleSetLaundryAssignment(req, res, connection);
 }));
+
+router.post('/user/:id/set-walkin', withDatabaseConnection(async (req, res, connection) => {
+  await handleSetWalkInRequest(req, res, connection);
+}));
+
   
 
 // Store Section
