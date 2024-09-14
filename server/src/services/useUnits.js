@@ -133,7 +133,6 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
   }
 };
 
-
 // Set Laundry Assignment
 export const handleSetLaundryAssignment = async (req, res, connection) => {
   const { id } = req.params; 
@@ -222,9 +221,6 @@ export const handleGetUnitListAvaiable = async (req, res, connection) => {
   }
 };
 
-
-
-
 export const handleGetLaundryAssignments = async (req, res, connection) => {
   const { id } = req.params;
 
@@ -257,11 +253,36 @@ export const handleGetLaundryAssignments = async (req, res, connection) => {
   }
 };
 
+export const handleGetSelectedCustomer = async (req, res, connection) => {
+  const { id } = req.params; 
 
+  try {
+    await connection.beginTransaction();
+    const query = `
+    SELECT 
+      id,
+      CONCAT(c_lastname, ', ', c_firstname, ' ', c_middlename) AS fullname,
+      c_username,
+      date_created
+    FROM Customer
+    WHERE store_id = ? AND isArchive = 0
+    ORDER BY date_created DESC
+  `;
+
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json(results);
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({ error: "An error occurred while fetching the customer list." });
+  }
+};
 
 
 // Put Section
-
 export const handlePutAssignment = async (req, res, connection) => {
   const { id } = req.params; // The id refers to Laundry_Assignment.id
 

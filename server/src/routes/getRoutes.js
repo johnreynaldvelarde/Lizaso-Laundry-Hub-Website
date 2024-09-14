@@ -1,6 +1,6 @@
 import express from 'express';
 import {handleViewStore } from '../services/useStore.js';
-import {handleGetCountLaundryAssignment, handleGetCountRequestInQueue, handleGetLaundryAssignments, handleGetServiceInQueue, handleGetUnitListAvaiable, handleViewUnits } from '../services/useUnits.js';
+import {handleGetCountLaundryAssignment, handleGetCountRequestInQueue, handleGetLaundryAssignments, handleGetSelectedCustomer, handleGetServiceInQueue, handleGetUnitListAvaiable, handleViewUnits } from '../services/useUnits.js';
 import { handleGenerateUnitName } from '../services/checkService.js';
 import { handleGetCategory, handleViewInventory, handleViewListCategory } from '../services/useInventory.js';
 import { getPool } from '../db/dbConfig.js';
@@ -35,6 +35,10 @@ router.get('/user/:id/count-inqueue', withDatabaseConnection(async (req, res, co
 
 router.get('/user/:id/count-assignment', withDatabaseConnection(async (req, res, connection) => {
   await handleGetCountLaundryAssignment(req, res, connection);
+}));
+
+router.get('/user/:id/get-customer', withDatabaseConnection(async (req, res, connection) => {
+  await handleGetSelectedCustomer(req, res, connection);
 }));
 
 router.get('/user/:id/get-assignment', withDatabaseConnection(async (req, res, connection) => {

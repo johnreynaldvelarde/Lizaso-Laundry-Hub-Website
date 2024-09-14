@@ -118,6 +118,18 @@ export const getListCustomer = {
   },
 };
 
+export const getSelectedCustomer = {
+  getSelectCustomer: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(`/user/${storeId}/get-customer`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching selected customer:', error);
+      throw error; 
+    }
+  },
+};
+
 // Inventory Section
 export const getCategoryItem = {
   getCategory: async () => {
