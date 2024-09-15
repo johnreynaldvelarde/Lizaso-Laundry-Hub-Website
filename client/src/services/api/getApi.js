@@ -218,3 +218,16 @@ export const viewUser = {
   },
 };
 
+// SETTINGS SECTION
+//  <----- Service Type Section ----->
+export const getServiceTypeAndStore = {
+  getServiceType: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(`/settings/${userId}/get-service-types`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching:', error);
+      throw error; 
+    }
+  },
+};

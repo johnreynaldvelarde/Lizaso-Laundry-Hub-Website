@@ -57,7 +57,7 @@ last_logout
 last_password_change
 
 
-Stores
+--> Stores <--
 id (Primary Key)
 address_id (Foregin Key)
 store_no

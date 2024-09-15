@@ -152,6 +152,20 @@ export const createActivityLog = {
 
 // SETTINGS SECTION
 //  <----- Service Type Section ----->
+export const createNewServiceType = {
+  setServiceType: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/settings/set-service-types`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // export const createNewServiceType = {
 //   setServiceType: async (data) => {
 //     try {
@@ -185,16 +199,3 @@ export const createActivityLog = {
 //   },
 // };
 
-export const createNewServiceType = {
-  setServiceType: async (data) => {
-    try {
-      const response = await axiosPrivate.post(
-        `/settings/set-service-types`,
-        data
-      );
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-};

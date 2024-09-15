@@ -5,6 +5,7 @@ import { handleGenerateUnitName } from '../services/checkService.js';
 import { handleGetCategory, handleViewInventory, handleViewListCategory } from '../services/useInventory.js';
 import { getPool } from '../db/dbConfig.js';
 import { handleAdminGetUser } from '../services/useUser.js';
+import { handleGetServiceTypeAndStore } from '../services/useSettings.js';
 
 
 const router = express.Router();
@@ -79,6 +80,18 @@ router.get('/user/:id/get-inqueue', withDatabaseConnection(async (req, res, conn
 router.get('/user/:id/admin-get-user', withDatabaseConnection(async (req, res, connection) => {
   await handleAdminGetUser(req, res, connection);
 }));
+
+
+// SETTINGS SECTION
+// -> TAB DASHBOARD CONFIG <-
+// router.post('/settings/set-dashboard-config', withDatabaseConnection(async (req, res, connection) => {
+// }));
+
+// -> TAB SERVICE TYPES <-
+router.get('/settings/:id/get-service-types', withDatabaseConnection(async (req, res, connection) => {
+  await handleGetServiceTypeAndStore(req, res, connection);
+}));
+
 
 // console.log("Ako")
 // User management Section

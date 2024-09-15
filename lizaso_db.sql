@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 10, 2024 at 02:08 AM
+-- Generation Time: Sep 15, 2024 at 04:28 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -56,7 +56,20 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (13, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-10 05:20:14'),
 (14, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-10 06:36:06'),
 (15, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-10 06:57:58'),
-(16, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-10 07:17:33');
+(16, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-10 07:17:33'),
+(17, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-11 20:29:50'),
+(18, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-13 19:06:54'),
+(19, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-14 05:10:46'),
+(20, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-14 06:09:54'),
+(21, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-14 19:11:55'),
+(22, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-14 22:04:28'),
+(23, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 00:58:53'),
+(24, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 02:33:34'),
+(25, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 07:01:20'),
+(26, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 08:10:49'),
+(27, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 11:16:42'),
+(28, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 17:59:49'),
+(29, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 20:22:31');
 
 -- --------------------------------------------------------
 
@@ -91,7 +104,8 @@ INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `pro
 (9, 'Malolos, Bulacan', 'Malolos, Bulacan', 'PH', 'Bulacan', 'Malolos', '3000', 14.843045, 120.811145, '2024-09-02 13:45:27'),
 (10, 'Malolos, Bulacan', 'Malolos, Bulacan', 'PH', 'Bulacan', 'Malolos', '3000', 14.843045, 120.811145, '2024-09-02 13:48:50'),
 (11, 'Bulakan, Bulacan', 'Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.794673, 120.879270, '2024-09-02 14:05:55'),
-(12, 'Taliptip Bulakan, Bulacan', 'Taliptip Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.759256, 120.904878, '2024-09-09 22:50:57');
+(12, 'Taliptip Bulakan, Bulacan', 'Taliptip Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.759256, 120.904878, '2024-09-09 22:50:57'),
+(13, 'Bambang Bulakan, Bulacan', 'Bambang Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.788308, 120.929684, '2024-09-13 21:19:36');
 
 -- --------------------------------------------------------
 
@@ -124,7 +138,8 @@ INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middle
 (2, 2, 10, 'Alexia', '', 'Midgar', 'alexia16', '09151616711', 'alexia@gmail.com', 1, 1, 0, '2024-09-02 21:42:48'),
 (3, 1, 11, 'Alpha', '', 'Shadow', 'alpha16', '09126767541', 'alpha@gmail.com', 1, 1, 0, '2024-09-02 21:57:26'),
 (4, NULL, NULL, 'Juan', '', 'Tamad', 'juantamad16', '', '', 1, 1, 0, '2024-09-04 05:56:57'),
-(5, 1, 12, 'John Reynald', 'P.', 'Velarde', 'velarde12', '09472727061', 'johnreynaldvelarde@gmail.com', 1, 1, 0, '2024-09-10 06:50:15');
+(5, 1, 12, 'John Reynald', 'P.', 'Velarde', 'velarde12', '09472727061', 'johnreynaldvelarde@gmail.com', 1, 1, 0, '2024-09-10 06:50:15'),
+(6, 1, 13, 'juan', '', 'tamad', 'junjun16', '0912127651', 'juantamad@gmail.com', 1, 1, 0, '2024-09-14 05:17:48');
 
 -- --------------------------------------------------------
 
@@ -156,7 +171,8 @@ INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_
 (2, 2, '$2b$12$PlG8mYitFYFIZvY3aeka2./1qiDSAU6GYaQ0MPG0a7ns/6OIe0on2', '$2b$12$sFHGjpsTJ.Dqq1VBi9PK4u', 0, '', 0, 0, NULL, NULL, NULL, NULL),
 (3, 3, '$2b$12$/tYLR4F29Jcsq0ktG.1obe0XsjWffnlY1qpYd/YN4/0l1pjOLDe7q', '$2b$12$ecnx2sSVORyWoWlZq7qAKe', 0, '', 0, 0, NULL, NULL, NULL, NULL),
 (4, 4, '$2b$12$9lWoAI67jHuabfy/69g1/uaSfy2HTrKnd1isy5AmeqWgkeHZ0TwB2', '$2b$12$r8pEBKr3olkeFllkoCksQ.', 0, '', 0, 0, NULL, NULL, NULL, NULL),
-(5, 5, '$2b$12$0lg9/NOBdQFxFOMcLtmXsONI8UXxFxNtDhWgM9ezcspw9nN8NHNmu', '$2b$12$7qZHqhKnv6R6nywwSUGsSe', 0, '', 0, 0, NULL, NULL, NULL, NULL);
+(5, 5, '$2b$12$0lg9/NOBdQFxFOMcLtmXsONI8UXxFxNtDhWgM9ezcspw9nN8NHNmu', '$2b$12$7qZHqhKnv6R6nywwSUGsSe', 0, '', 0, 0, NULL, NULL, NULL, NULL),
+(6, 6, '$2b$12$F8hsWLf0RDAkFFLPIVOa0OSz7LsJ5WEzQAr1NaebdBoheJyFn8Fn6', '$2b$12$6blgY4eSmYX9kfe9azAWWu', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -226,12 +242,8 @@ CREATE TABLE `laundry_assignment` (
 --
 
 INSERT INTO `laundry_assignment` (`id`, `service_request_id`, `unit_id`, `assigned_by`, `weight`, `assigned_at`, `completed_at`, `isAssignmentStatus`, `isCompleted`) VALUES
-(13, 21, 39, 1, '', '2024-09-09 12:32:30', NULL, 2, 0),
-(14, 22, 40, 1, '', '2024-09-09 13:31:02', NULL, 2, 0),
-(15, 23, 39, 1, '', '2024-09-10 06:33:38', NULL, 2, 0),
-(16, 24, 48, 1, '', '2024-09-10 06:34:52', NULL, 2, 0),
-(17, 25, 39, 1, '', '2024-09-10 07:27:04', NULL, 0, 0),
-(18, 26, 40, 1, '', '2024-09-10 07:27:07', NULL, 0, 0);
+(34, 48, 39, 1, '5', '2024-09-15 07:57:01', NULL, 0, 0),
+(35, 49, 40, 1, '2', '2024-09-15 08:46:03', NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -289,20 +301,35 @@ CREATE TABLE `service_request` (
 --
 
 INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `customer_fullname`, `notes`, `service_type`, `request_date`, `pickup_date`, `delivery_date`, `request_status`) VALUES
-(21, 1, NULL, 3, 'Alpha Shadow', 'dijdsjnsjnsjndjsndsjndsjndsjndsjndsjndsjndjnsdjsdjnsdjnsdjnsdjnsjndsjndsjndsjndjnsdjnsdnjsnjdsnjdsjndsjndjsndajdadas', 'Wash', '2024-09-06 04:35:21', NULL, NULL, 'Canceled'),
-(22, 1, NULL, 3, 'Alpha Shadow', '', 'Wash/Dry', '2024-09-06 04:35:23', NULL, NULL, 'Canceled'),
-(23, 1, NULL, 3, 'Alpha Shadow', '', 'Wash/Dry/Fold', '2024-09-06 04:35:25', NULL, NULL, 'Canceled'),
-(24, 1, NULL, 3, 'Alpha Shadow', 'dsdsdsdsds', 'Wash', '2024-09-06 04:55:53', NULL, NULL, 'Canceled'),
-(25, 1, NULL, 3, 'Alpha Shadow', '', 'Wash', '2024-09-09 22:35:52', NULL, NULL, 'In Laundry'),
-(26, 1, NULL, 3, 'Alpha Shadow', '', 'Wash/Dry', '2024-09-09 22:35:55', NULL, NULL, 'In Laundry'),
-(27, 1, NULL, 3, 'Alpha Shadow', '', 'Wash/Dry/Fold', '2024-09-09 22:35:58', NULL, NULL, 'In Queue'),
-(28, 1, NULL, 5, 'John Reynald Velarde', NULL, 'Wash', '2024-09-09 22:57:24', NULL, NULL, 'In Queue'),
-(29, 1, NULL, 5, 'John Reynald Velarde', NULL, 'Wash', '2024-09-09 23:05:16', NULL, NULL, 'In Queue'),
-(30, 1, NULL, 5, 'John Reynald Velarde', NULL, 'Wash', '2024-09-09 23:05:40', NULL, NULL, 'Canceled'),
-(31, 1, NULL, 5, 'John Reynald Velarde', NULL, 'Wash/Dry', '2024-09-09 23:15:24', NULL, NULL, 'Canceled'),
-(32, 1, NULL, 5, 'John Reynald Velarde', 'Pakibilisan Po', 'Wash/Dry/Fold', '2024-09-09 23:17:02', NULL, NULL, 'In Queue'),
-(33, 1, NULL, 5, 'John Reynald Velarde', 'Gago Ka Ba', 'Wash/Dry', '2024-09-09 23:17:13', NULL, NULL, 'Canceled'),
-(34, 1, NULL, 5, 'John Reynald Velarde', 'Tarantado Kaba', 'Wash', '2024-09-09 23:17:24', NULL, NULL, 'Canceled');
+(48, 1, 1, 6, 'tamad, juan ', '', 'Wash/Dry/Fold', '2024-09-14 23:57:01', NULL, NULL, 'In Laundry'),
+(49, 1, 1, 6, 'tamad, juan ', '', 'Wash', '2024-09-15 00:46:03', NULL, NULL, 'In Laundry');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service_type`
+--
+
+CREATE TABLE `service_type` (
+  `id` bigint(20) NOT NULL,
+  `store_id` bigint(20) NOT NULL,
+  `service_name` varchar(100) NOT NULL,
+  `default_price` decimal(10,2) NOT NULL,
+  `date_created` datetime NOT NULL,
+  `isArchive` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_type`
+--
+
+INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `default_price`, `date_created`, `isArchive`) VALUES
+(2, 1, 'Wash', 65.00, '2024-09-15 18:54:41', 0),
+(3, 1, 'Dry', 60.00, '2024-09-15 18:55:53', 0),
+(4, 1, 'Fold', 30.00, '2024-09-15 18:56:05', 0),
+(27, 2, '1', 6.00, '2024-09-15 20:36:20', 0),
+(28, 3, '1', 1.00, '2024-09-15 21:42:42', 0),
+(29, 1, 'Curtain Wash', 100.00, '2024-09-15 22:21:27', 0);
 
 -- --------------------------------------------------------
 
@@ -330,7 +357,9 @@ CREATE TABLE `stores` (
 
 INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_contact`, `store_email`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
 (1, 1, 'LIZASO-1725232395416', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-09-02 07:13:15', 0, 0),
-(2, 2, 'Lizaso Store 0001', 'Lizaso Malolos', '09124747061', 'lizasomalolos@gmail.com', 0, '2024-09-02 01:51:07', '2024-09-02 01:51:07', 0, 0);
+(2, 2, 'Lizaso Store 0001', 'Lizaso Malolos', '09124747061', 'lizasomalolos@gmail.com', 0, '2024-09-02 01:51:07', '2024-09-02 01:51:07', 0, 0),
+(3, 12, 'sasasas', 'Lizaso Perez', '12', '12', 0, '2024-09-15 15:43:24', '2024-09-15 15:43:24', 0, 0),
+(4, 1, '12', 'Lizaso Bambang', '1212', '1212', 0, '2024-09-15 15:45:41', '2024-09-15 15:45:41', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -359,7 +388,7 @@ CREATE TABLE `user_account` (
 --
 
 INSERT INTO `user_account` (`id`, `store_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isRole`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
-(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 0, 0, '2024-09-02 07:13:15');
+(1, 1, 'admin', 'admin@example.com', '09472727061', 'Admin', '', 'User', 0, 1, 0, 0, '2024-09-02 07:13:15');
 
 -- --------------------------------------------------------
 
@@ -468,6 +497,13 @@ ALTER TABLE `service_request`
   ADD KEY `Service_Request_Customer` (`customer_id`);
 
 --
+-- Indexes for table `service_type`
+--
+ALTER TABLE `service_type`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Service_Type_Stores` (`store_id`);
+
+--
 -- Indexes for table `stores`
 --
 ALTER TABLE `stores`
@@ -496,25 +532,25 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `customer_security`
 --
 ALTER TABLE `customer_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -538,7 +574,7 @@ ALTER TABLE `item_category`
 -- AUTO_INCREMENT for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
@@ -550,13 +586,19 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+
+--
+-- AUTO_INCREMENT for table `service_type`
+--
+ALTER TABLE `service_type`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `stores`
 --
 ALTER TABLE `stores`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `user_account`
@@ -627,6 +669,12 @@ ALTER TABLE `service_request`
   ADD CONSTRAINT `Service_Request_Customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
   ADD CONSTRAINT `Service_Request_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`),
   ADD CONSTRAINT `Service_Request_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
+
+--
+-- Constraints for table `service_type`
+--
+ALTER TABLE `service_type`
+  ADD CONSTRAINT `Service_Type_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
 
 --
 -- Constraints for table `stores`
