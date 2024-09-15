@@ -4,6 +4,7 @@ import { handleCreateUnits, handleSetLaundryAssignment, handleSetWalkInRequest }
 import { handleCreateItem,handleCreateItemCategory } from '../services/useInventory.js';
 import { handleCustomerServiceRequest } from '../services/useCustomer.js';
 import { getPool } from '../db/dbConfig.js';
+import { handleSetNewServiceType } from '../services/useSettings.js';
 
 
 const router = express.Router();
@@ -53,16 +54,26 @@ router.post('/create-category-item', withDatabaseConnection(async (req, res, con
 }));
 
 
-router.post('/customers/:id/service-requests', withDatabaseConnection(async (req, res, connection) => {
-  await handleCustomerServiceRequest(req, res, connection);
+// SETTINGS SECTION
+
+// -> TAB DASHBOARD CONFIG <-
+router.post('/settings/set-dashboard-config', withDatabaseConnection(async (req, res, connection) => {
+}));
+
+// -> TAB SERVICE TYPES <-
+router.post('/settings/set-service-types', withDatabaseConnection(async (req, res, connection) => {
+  await handleSetNewServiceType(req, res, connection);
 }));
 
 
 
-// Activity Log Section
-// router.post('/activity/:id/post-log', withDatabaseConnection(async (req, res, connection) => {
-//   await handleSetActivityLog(req, res, connection);
-// }));
+
+
+
+// Customers Side 
+router.post('/customers/:id/service-requests', withDatabaseConnection(async (req, res, connection) => {
+  await handleCustomerServiceRequest(req, res, connection);
+}));
 
 export default router;
   

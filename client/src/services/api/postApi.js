@@ -6,7 +6,7 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// Unit Monitored Section
+// UNIT MONITORED SECTION
 export const createUnit = {
   setUnit: async (data) => {
     try {
@@ -25,30 +25,35 @@ export const createUnit = {
 
 export const createLaundryAssignment = {
   setLaundryAssignment: async (userId, data) => {
-      try {
-          const response = await axiosPrivate.post(`/unit-monitor/${userId}/set-assignment`, data);
-          return response.data;
-      } catch (error) {
-          console.error("Error:", error);
-          throw error;
-      }
+    try {
+      const response = await axiosPrivate.post(
+        `/unit-monitor/${userId}/set-assignment`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
   },
 };
 
 export const createWalkInServiceRequest = {
   setWalkInRequest: async (storeId, data) => {
-      try {
-          const response = await axiosPrivate.post(`/unit-monitor/${storeId}/set-walkin`, data);
-          return response.data;
-      } catch (error) {
-          console.error("Error:", error);
-          throw error;
-      }
+    try {
+      const response = await axiosPrivate.post(
+        `/unit-monitor/${storeId}/set-walkin`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
   },
 };
 
-
-// Create new branch
+// STORE SECTION
 export const createStore = {
   setStore: async (data) => {
     try {
@@ -71,7 +76,7 @@ export const createStore = {
   },
 };
 
-// Inventory Section
+// INVENTORY SECTION
 export const createItem = {
   setItem: async (data) => {
     try {
@@ -113,35 +118,83 @@ export const createItemCategory = {
   },
 };
 
-
-
-
-
-
 // Customer Section
 export const createCustomerServiceRequest = {
   setCustomerServiceRequest: async (customerId, data) => {
-      try {
-          const response = await axiosPrivate.post(`/customers/${customerId}/service-requests`, data);
-          return response.data;
-      } catch (error) {
-          console.error("Error customer service request:", error);
-          throw error;
-      }
+    try {
+      const response = await axiosPrivate.post(
+        `/customers/${customerId}/service-requests`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error customer service request:", error);
+      throw error;
+    }
   },
 };
-
-
 
 // Activity Log Section
 export const createActivityLog = {
   setActivtyLog: async (userId, data) => {
-      try {
-          const response = await axiosPrivate.post(`/activity/${userId}/post-log`, data);
-          return response.data;
-      } catch (error) {
-          console.error("Error:", error);
-          throw error;
-      }
+    try {
+      const response = await axiosPrivate.post(
+        `/activity/${userId}/post-log`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  },
+};
+
+// SETTINGS SECTION
+//  <----- Service Type Section ----->
+// export const createNewServiceType = {
+//   setServiceType: async (data) => {
+//     try {
+//       const response = await axiosPrivate.post(`/settings/set-service-types`, data);
+//       return response.data;
+//     } catch (error) {
+//       // Error handling will use interceptors to avoid unnecessary console logs
+//       if (error.response && error.response.data) {
+//         throw error.response.data; // Ensure error has a consistent structure
+//       }
+//       throw new Error("An unexpected error occurred.");
+//     }
+//   },
+// };
+
+// export const createNewServiceType = {
+//   setServiceType: async (data) => {
+//     try {
+//       const response = await axiosPrivate.post(
+//         `/settings/set-service-types`,
+//         data
+//       );
+//       return response.data;
+//     } catch (error) {
+//       // Handle error gracefully
+//       if (error.response && error.response.data) {
+//         throw error.response.data; // Ensure error has a consistent structure
+//       }
+//       throw new Error("An unexpected error occurred.");
+//     }
+//   },
+// };
+
+export const createNewServiceType = {
+  setServiceType: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/settings/set-service-types`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   },
 };

@@ -157,6 +157,13 @@ payment_method,
 isStatus
 isArhive
 
+--> Service_Type <--
+id (Primary Key)
+store_id (Foregin Key)
+service_name
+default_price
+date_created
+isArchive
 
 // Hard Part
 Pending Pickup – The customer has placed a service request, but the clothes have not been picked up yet.

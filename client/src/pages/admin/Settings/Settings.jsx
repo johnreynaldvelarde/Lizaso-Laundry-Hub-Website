@@ -5,6 +5,7 @@ import React from "react";
 import Notifications from "../../../components/settings/Notifications";
 import Password from "../../../components/settings/Password";
 import Profile from "../../../components/settings/Profile";
+import ServiceType from "../../../components/settings/ServiceType";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -51,10 +52,11 @@ const Settings = () => {
           borderStyle: "solid",
           borderWidth: "1px",
           borderColor: "divider",
-          p: "20px",
         }}
       >
-        <Typography variant="h4">Settings</Typography>
+        <Typography variant="h4" sx={{ marginLeft: "20px", marginTop: "20px" }}>
+          Settings
+        </Typography>
 
         <Box sx={{ width: "100%", mt: 3 }}>
           <Box
@@ -88,6 +90,7 @@ const Settings = () => {
               <Tab label="Password" {...a11yProps(1)} />
               <Tab label="Notifications" {...a11yProps(2)} />
               <Tab label="Dashboard" {...a11yProps(3)} />
+              <Tab label="Service Types" {...a11yProps(4)} />
             </Tabs>
           </Box>
 
@@ -103,6 +106,9 @@ const Settings = () => {
           </TabPanel>
           <TabPanel value={value} index={3}>
             {/* Add Dashboard component or content here */}
+          </TabPanel>
+          <TabPanel value={value} index={4}>
+            <ServiceType />
           </TabPanel>
         </Box>
       </Paper>

@@ -163,9 +163,6 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
   }
 };
 
-
-
-
 // Set Laundry Assignment
 export const handleSetLaundryAssignment = async (req, res, connection) => {
   const { id } = req.params; 

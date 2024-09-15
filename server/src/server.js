@@ -45,7 +45,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Something went wrong!" });
 });
 
-
 // Ensure main store exists and start the server
 const initServer = async () => {
     try {
