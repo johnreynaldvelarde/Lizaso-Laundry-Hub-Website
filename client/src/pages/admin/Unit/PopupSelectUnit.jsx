@@ -97,7 +97,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
             : "Wash/Dry/Fold",
       };
 
-      // Introduce a delay before making the API call
       setTimeout(async () => {
         try {
           const response = await createWalkInServiceRequest.setWalkInRequest(
@@ -117,20 +116,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
           onClose();
         }
       }, 1500);
-
-      // try {
-      //   const response = await createWalkInServiceRequest.setWalkInRequest(
-      //     userDetails.storeId,
-      //     data
-      //   );
-      //   if (!response.success) {
-      //     toast.success(response.message);
-      //   } else {
-      //     toast.error(response.message);
-      //   }
-      // } catch (error) {
-      //   toast.error("Error:", error);
-      // }
     }
   };
 

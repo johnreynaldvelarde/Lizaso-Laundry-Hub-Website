@@ -37,6 +37,10 @@ export const links = [
         url: "/main/add-unit",  
       },
       {
+        name: "Services Configuration",
+        url: "/main/add-unit",  
+      },
+      {
         name: "Units Statistic",
         url: "",
       },
@@ -95,6 +99,11 @@ export const links = [
     url: "/main/customers",
   },
   {
+    name: "Settings",
+    icon: React.createElement(FiSettings),
+    url: "/main/settings",
+  },
+  {
     name: "Sales",
     icon: React.createElement(BsCurrencyDollar),
     subLinks: [
@@ -138,11 +147,7 @@ export const links = [
     icon: React.createElement(FiMessageCircle),
     url: "",
   },
-  {
-    name: "Settings",
-    icon: React.createElement(FiSettings),
-    url: "/main/settings",
-  },
+
   {
     name: "Inbox",
     icon: React.createElement(FiMail),

@@ -147,6 +147,16 @@ completed_at
 isAssignmentStatus 0 = In Progress, 1 = Completed, 2 = Canceled
 isCompleted
 
+--> Transaction <--
+id (Primary Key)
+assigment_id (Foregin Key)
+qr_code
+total_amount,
+transaction_date,
+payment_method,
+isStatus
+isArhive
+
 
 // Hard Part
 Pending Pickup – The customer has placed a service request, but the clothes have not been picked up yet.

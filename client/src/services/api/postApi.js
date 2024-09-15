@@ -6,7 +6,7 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// Laundry Unit Section
+// Unit Monitored Section
 export const createUnit = {
   setUnit: async (data) => {
     try {
@@ -26,7 +26,7 @@ export const createUnit = {
 export const createLaundryAssignment = {
   setLaundryAssignment: async (userId, data) => {
       try {
-          const response = await axiosPrivate.post(`/user/${userId}/set-assignment`, data);
+          const response = await axiosPrivate.post(`/unit-monitor/${userId}/set-assignment`, data);
           return response.data;
       } catch (error) {
           console.error("Error:", error);
@@ -38,7 +38,7 @@ export const createLaundryAssignment = {
 export const createWalkInServiceRequest = {
   setWalkInRequest: async (storeId, data) => {
       try {
-          const response = await axiosPrivate.post(`/user/${storeId}/set-walkin`, data);
+          const response = await axiosPrivate.post(`/unit-monitor/${storeId}/set-walkin`, data);
           return response.data;
       } catch (error) {
           console.error("Error:", error);

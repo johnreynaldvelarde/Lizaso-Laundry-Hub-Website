@@ -17,6 +17,11 @@ export const AuthProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState({
     userId: "",
     storeId: "",
+    firstname: "",
+    middlename: "",
+    lastname: "",
+    email: "",
+    phone: "",
     fullName: "",
     username: "",
     user_type: "",
@@ -59,6 +64,11 @@ export const AuthProvider = ({ children }) => {
         setUserDetails({
           userId: user.userId,
           storeId: user.storeId,
+          firstname: user.firstname,
+          middlename: user.middlename,
+          lastname: user.lastname,
+          email: user.email,
+          phone: user.phone,
           fullName: user.fullName,
           username: user.username,
           user_type: user.userType,

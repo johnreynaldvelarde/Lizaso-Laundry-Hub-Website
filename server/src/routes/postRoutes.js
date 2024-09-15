@@ -21,29 +21,27 @@ const withDatabaseConnection = (handler) => async (req, res) => {
     }
   };
 
+// Unit Monitored Section
+router.post('/create-unit', withDatabaseConnection(async (req, res, connection) => {
+  await handleCreateUnits(req, res, connection);
+}));
 
-// Laundry Unit Section
-router.post('/user/:id/set-assignment', withDatabaseConnection(async (req, res, connection) => {
+router.post('/unit-monitor/:id/set-assignment', withDatabaseConnection(async (req, res, connection) => {
   await handleSetLaundryAssignment(req, res, connection);
 }));
 
-router.post('/user/:id/set-walkin', withDatabaseConnection(async (req, res, connection) => {
+router.post('/unit-monitor/:id/set-walkin', withDatabaseConnection(async (req, res, connection) => {
   await handleSetWalkInRequest(req, res, connection);
 }));
 
+router.post('/unit-monitor/:id/set-completed', withDatabaseConnection(async (req, res, connection) => {
   
+}));
 
 // Store Section
 router.post('/create-store', withDatabaseConnection(async (req, res, connection) => {
     await handleCreateStore(req, res, connection);
 }));
-
-
-// Laundry Unit Section
-router.post('/create-unit', withDatabaseConnection(async (req, res, connection) => {
-  await handleCreateUnits(req, res, connection);
-}));
-
 
 // For Inventory Section
 router.post('/create-item', withDatabaseConnection(async (req, res, connection) => {

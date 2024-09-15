@@ -294,7 +294,13 @@ export const getUserDetails = async (req, res, db) => {
         user: {
           userId: user.id,
           storeId: user.store_id,
+          firstname: user.first_name,
+          middlename: user.middle_name,
+          lastname: user.last_name,
+          email: user.email,
+          phone: user.mobile_number,
           fullName: `${user.first_name} ${user.last_name}`,
+          username: user.username,
           userType: user.isRole,
         },
       });
