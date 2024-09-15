@@ -75,7 +75,14 @@ const Profile = () => {
       try {
         // Save logic here
         // e.g., await saveProfile({ firstname, middlename, lastname, username, email, phone });
-        console.log("Profile saved:", { firstname, middlename, lastname, username, email, phone });
+        console.log("Profile saved:", {
+          firstname,
+          middlename,
+          lastname,
+          username,
+          email,
+          phone,
+        });
       } catch (error) {
         console.error("Save failed:", error);
       } finally {
