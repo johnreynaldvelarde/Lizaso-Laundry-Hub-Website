@@ -37,10 +37,6 @@ export const links = [
         url: "/main/add-unit",  
       },
       {
-        name: "Services Configuration",
-        url: "/main/add-unit",  
-      },
-      {
         name: "Units Statistic",
         url: "",
       },

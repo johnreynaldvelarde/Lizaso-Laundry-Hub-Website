@@ -35,14 +35,14 @@ const useUnitMonitor = () => {
   const hasFetchedCustomerRequestData = useRef(false);
   const hasUnits = useRef(false);
 
-  // <----- Counting Section ----->
+  // <----- COUNTING SECTION ----->
   const [countInQueueData, setCountInQueueData] = useState(null);
   const [countAssignmentData, setCountAssignmentData] = useState({
     count_in_progress: 0,
     count_completed: 0,
     count_canceled: 0,
   });
-  const hastCountAssignment = useRef(false);
+  const hasCountAssignment = useRef(false);
   const hasCountInQueue = useRef(false);
 
   const fetchCountInQueue = useCallback(async () => {
@@ -67,7 +67,6 @@ const useUnitMonitor = () => {
   }, [userDetails?.storeId]);
 
   const fetchCountLaundryAssignment = useCallback(async () => {
-    if (hastCountAssignment.current) return;
     setLoading(true);
     try {
       const response = await getCountLaundryAssignment.getCountAssignment(
@@ -80,11 +79,11 @@ const useUnitMonitor = () => {
           count_completed: Number(response.count_completed),
           count_canceled: Number(response.count_canceled),
         });
-        hastCountAssignment.current = true;
       } else {
         setError("Failed to fetch count data.");
       }
     } catch (error) {
+      console.error("Error fetching count data:", error);
       setError(error.message || "An error occurred while fetching count data.");
     } finally {
       setLoading(false);
@@ -92,41 +91,43 @@ const useUnitMonitor = () => {
   }, [userDetails?.storeId]);
 
   // <--------------------------->
-  // <----- Drawer InProgress Section ----->
+
+  // <----- DRAWER INPROGRESS SECTION ----->
   const [inProgressData, setInProgressData] = useState([]);
   const [dialogProgressOpen, setDialogProgressOpen] = useState(false);
   const [selectedProgressID, setSelectedProgressId] = useState(null);
+  const [onSuccessCallback, setOnSuccessCallback] = useState(null);
   const hasInProgress = useRef(false);
 
-  const handleDialogRemoveInProgress = (id) => {
+  const handleDialogRemoveInProgress = (id, onSuccess) => {
     setSelectedProgressId(id);
     setDialogProgressOpen(true);
+    setOnSuccessCallback(() => onSuccess);
   };
 
   const handleConfirmRemoveInProgress = async (id) => {
     if (id) {
       try {
         const response = await updateRemoveAssignment.putAssignment(id);
-
-        if (response.success) {
-          toast.error(response.message);
-        } else {
+        if (!response.success) {
           toast.success(response.message);
+          if (onSuccessCallback) {
+            onSuccessCallback();
+          }
+        } else {
+          toast.error(response.message);
+          console.log("Error message from API:", response.message);
         }
       } catch (error) {
         toast.error(`Error: ${error.message || "Something went wrong"}`);
       }
-      // onClose();
     } else {
-      // Handle case when no assignment is selected
       toast.error("Select an assignment before proceeding");
     }
   };
 
   const handleConfirmInProgress = async (id) => {
     setLoading(true);
-    // Call the function that handles the completion process
-    // await completeLaundryProcess(customerId);
     console.log(`Item is assign with ID: ${id}`);
     setLoading(false);
   };
@@ -153,11 +154,7 @@ const useUnitMonitor = () => {
   }, [userDetails?.storeId]);
   // <--------------------------->
 
-  // Filter
-
-  // PopupInLaundry
-
-  //  <----- PopupInQueue ----->
+  //  <----- POPUPINQUEUE SECTION ----->
   const [inQueueData, setInQueueData] = useState([]);
   const [openInQueue, setInQueue] = useState(false);
   const [dialogQueueOpen, setDialogQueueOpen] = useState(false);
@@ -427,6 +424,87 @@ const useUnitMonitor = () => {
 };
 
 export default useUnitMonitor;
+
+// const handleConfirmRemoveInProgress = async (id, onSuccess) => {
+//   if (id) {
+//     try {
+//       const response = await updateRemoveAssignment.putAssignment(id);
+
+//       if (response.success) {
+//         toast.error(response.message);
+//         if (onSuccess) onSuccess();
+//       } else {
+//         toast.success(response.message);
+//       }
+//     } catch (error) {
+//       toast.error(`Error: ${error.message || "Something went wrong"}`);
+//     }
+//     // onClose();
+//   } else {
+//     // Handle case when no assignment is selected
+//     toast.error("Select an assignment before proceeding");
+//   }
+// };
+
+// const fetchCountLaundryAssignment = useCallback(async () => {
+//   console.log(
+//     "Has Count Assignment Before Fetch:",
+//     hasCountAssignment.current
+//   );
+//   if (hasCountAssignment.current) return;
+//   console.log("Fetching count assignment...");
+//   setLoading(true);
+//   try {
+//     const response = await getCountLaundryAssignment.getCountAssignment(
+//       userDetails.storeId
+//     );
+
+//     console.log("API Response Data:", response);
+
+//     if (response) {
+//       setCountAssignmentData({
+//         count_in_progress: Number(response.count_in_progress),
+//         count_completed: Number(response.count_completed),
+//         count_canceled: Number(response.count_canceled),
+//       });
+//       hasCountAssignment.current = true;
+//     } else {
+//       console.error("No response data received.");
+//       setError("Failed to fetch count data.");
+//     }
+//   } catch (error) {
+//     console.error("Error fetching count data:", error);
+//     setError(error.message || "An error occurred while fetching count data.");
+//   } finally {
+//     setLoading(false);
+//   }
+// }, [userDetails?.storeId]);
+
+// const fetchCountLaundryAssignment = useCallback(async () => {
+//   if (hastCountAssignment.current) return;
+//   console.log("Okay");
+//   setLoading(true);
+//   try {
+//     const response = await getCountLaundryAssignment.getCountAssignment(
+//       userDetails.storeId
+//     );
+
+//     if (response) {
+//       setCountAssignmentData({
+//         count_in_progress: Number(response.count_in_progress),
+//         count_completed: Number(response.count_completed),
+//         count_canceled: Number(response.count_canceled),
+//       });
+//       hastCountAssignment.current = true;
+//     } else {
+//       setError("Failed to fetch count data.");
+//     }
+//   } catch (error) {
+//     setError(error.message || "An error occurred while fetching count data.");
+//   } finally {
+//     setLoading(false);
+//   }
+// }, [userDetails?.storeId]);
 
 // const fetchCountInQueue = useCallback(async () => {
 //   if (hasCountInQueue.current) return;

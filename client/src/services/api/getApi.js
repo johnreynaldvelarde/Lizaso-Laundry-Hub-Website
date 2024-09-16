@@ -6,7 +6,7 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// Laundry Units Section
+// UNIT MONITORED SECTION
 export const getCountRequestInQueue = {
   getCountInQueue: async (storeId) => {
     try {
@@ -130,6 +130,18 @@ export const getSelectedCustomer = {
   },
 };
 
+export const getServiceType = {
+  getService: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(`/unit/${storeId}/get-service-types`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching selected customer:', error);
+      throw error; 
+    }
+  },
+};
+
 // Inventory Section
 export const getCategoryItem = {
   getCategory: async () => {
@@ -187,7 +199,7 @@ export const viewCategory = {
 };
 
 
-// Store Section
+// STORE SECTION
 export const viewStore = {
   getStoreList: async (data) => {
     try {

@@ -1,6 +1,6 @@
 import express from 'express';
 import {handleViewStore } from '../services/useStore.js';
-import {handleGetCountLaundryAssignment, handleGetCountRequestInQueue, handleGetLaundryAssignments, handleGetSelectedCustomer, handleGetServiceInQueue, handleGetUnitListAvaiable, handleViewUnits } from '../services/useUnits.js';
+import {handleGetCountLaundryAssignment, handleGetCountRequestInQueue, handleGetLaundryAssignments, handleGetSelectedCustomer, handleGetServiceInQueue, handleGetServiceType, handleGetUnitListAvaiable, handleViewUnits } from '../services/useUnits.js';
 import { handleGenerateUnitName } from '../services/checkService.js';
 import { handleGetCategory, handleViewInventory, handleViewListCategory } from '../services/useInventory.js';
 import { getPool } from '../db/dbConfig.js';
@@ -58,7 +58,15 @@ router.get('/get-unitname', withDatabaseConnection(async (req, res, connection) 
   await handleGenerateUnitName(req, res, connection);
 }));
 
-// Inventory Section
+router.get('/unit/:id/get-service-types', withDatabaseConnection(async (req, res, connection) => {
+  await handleGetServiceType(req, res, connection);
+}));
+
+router.get('/user/:id/get-inqueue', withDatabaseConnection(async (req, res, connection) => {
+  await handleGetServiceInQueue(req, res, connection);
+}));
+
+// INVENTORY SECTION
 router.get('/get-category', withDatabaseConnection(async (req, res, connection) => {
   await handleGetCategory(req, res, connection);
 }));
@@ -71,12 +79,7 @@ router.get('/view-category', withDatabaseConnection(async (req, res, connection)
   await handleViewListCategory(req, res, connection);
 }));
 
-
-router.get('/user/:id/get-inqueue', withDatabaseConnection(async (req, res, connection) => {
-  await handleGetServiceInQueue(req, res, connection);
-}));
-
-// User Management Section
+// USER MANAGEMENT SECTION
 router.get('/user/:id/admin-get-user', withDatabaseConnection(async (req, res, connection) => {
   await handleAdminGetUser(req, res, connection);
 }));

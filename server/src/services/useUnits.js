@@ -1,3 +1,4 @@
+// SET SECTION
 export const handleCreateUnits = async (req, res, db) => {
   try {
     const { store_id, unit_name, isUnitStatus } = req.body;
@@ -60,40 +61,10 @@ export const handleCreateUnits = async (req, res, db) => {
   }
 };
 
-export const handleViewUnits = async (req, res, db) => {
-  const { store_id } = req.query;
-  try {
-    if (!store_id) {
-      return res.status(400).json({
-        success: false,
-        message: "Store ID is required",
-      });
-    }
 
-    const [rows] = await db.query(
-      "SELECT id, unit_name, isUnitStatus, date_created, isArchive FROM Laundry_Unit WHERE store_id = ? AND isArchive = 0",
-      [store_id]
-    );
-
-    res.status(200).json({
-      success: true,
-      data: rows,
-    });
-  } catch (error) {
-    console.error("Error retrieving unit list:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while retrieving the unit list.",
-    });
-  }
-};
-
-
-
-// <----- Set Section ----->
 export const handleSetWalkInRequest = async (req, res, connection) => {
   const { id } = req.params; 
-  const { customerId, userId, unitId, fullname, weight, serviceType, customerNotes } = req.body;
+  const { customerId, userId, serviceId, unitId, fullname, weight, customerNotes } = req.body;
 
   try {
     await connection.beginTransaction();
@@ -104,8 +75,8 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
         store_id,
         user_id,
         customer_id,
+        service_type_id,
         customer_fullname,
-        service_type,
         notes,
         request_date,
         request_status
@@ -116,8 +87,8 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
       id,         // store_id
       userId,     // user_id
       customerId, // customer_id
+      serviceId, // service_type
       fullname,   // customer_fullname
-      serviceType, // service_type
       customerNotes // notes
     ]);
 
@@ -221,7 +192,34 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
 };
 
 
-// <----- Get Section ----->
+// GET SECTION
+export const handleGetServiceType = async (req, res, connection) => {
+  const { id } = req.params;
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        id, 
+        service_name,
+        default_price 
+      FROM 
+        Service_Type
+      WHERE 
+        store_id = ? AND isArchive = '0'
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+    await connection.commit();
+    res.status(200).json(results);
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching service type:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching service type." });
+  }
+};
 
 // Get Service In Queue
 export const handleGetServiceInQueue = async (req, res, connection) => {
@@ -353,8 +351,35 @@ export const handleGetSelectedCustomer = async (req, res, connection) => {
   }
 };
 
+export const handleViewUnits = async (req, res, db) => {
+  const { store_id } = req.query;
+  try {
+    if (!store_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Store ID is required",
+      });
+    }
 
-// Put Section
+    const [rows] = await db.query(
+      "SELECT id, unit_name, isUnitStatus, date_created, isArchive FROM Laundry_Unit WHERE store_id = ? AND isArchive = 0",
+      [store_id]
+    );
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    console.error("Error retrieving unit list:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while retrieving the unit list.",
+    });
+  }
+};
+
+// PUT SECTION
 export const handlePutAssignment = async (req, res, connection) => {
   const { id } = req.params; // The id refers to Laundry_Assignment.id
 

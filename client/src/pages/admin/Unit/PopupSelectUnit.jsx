@@ -19,17 +19,21 @@ import {
 } from "@mui/material";
 import { createFilterOptions } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { getSelectedCustomer } from "../../../services/api/getApi";
+import {
+  getSelectedCustomer,
+  getServiceType,
+} from "../../../services/api/getApi";
 import { createWalkInServiceRequest } from "../../../services/api/postApi";
 
-const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
+const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
   const { userDetails } = useAuth();
   const [customerData, setCustomerData] = useState([]);
+  const [serviceData, setServiceData] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [weight, setWeight] = useState("");
   const [notes, setNotes] = useState("");
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTabId, setSelectedTabId] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -37,8 +41,8 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
     setShowAdditionalInfo((prev) => !prev);
   };
 
-  const handleTabChange = (index) => {
-    setSelectedTab(index);
+  const handleTabChange = (id) => {
+    setSelectedTabId(id);
   };
 
   const validateFields = () => {
@@ -80,21 +84,21 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
     const newErrors = validateFields();
     setErrors(newErrors);
 
+    if (!selectedTabId) {
+      toast.error("Select a service to proceed.");
+      return;
+    }
+
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
       const data = {
         customerId: selectedCustomer.id,
         userId: userDetails.userId,
         unitId: unitId,
+        serviceId: selectedTabId,
         fullname: selectedCustomer.fullname,
         weight: weight,
         customerNotes: notes,
-        serviceType:
-          selectedTab === 0
-            ? "Wash"
-            : selectedTab === 1
-            ? "Wash/Dry"
-            : "Wash/Dry/Fold",
       };
 
       setTimeout(async () => {
@@ -106,6 +110,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
 
           if (!response.success) {
             toast.success(response.message);
+            if (onSuccess) onSuccess();
           } else {
             toast.error(response.message);
           }
@@ -135,9 +140,24 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
     }
   };
 
+  // Get the Service Type Data
+  const fetchServiceType = async () => {
+    if (!userDetails?.storeId) return;
+
+    try {
+      const response = await getServiceType.getService(userDetails.storeId);
+      if (response) {
+        setServiceData(response);
+      }
+    } catch (error) {
+      console.error("Error fetching customer:", error);
+    }
+  };
+
   useEffect(() => {
     if (open) {
       fetchSelectedCustomer();
+      fetchServiceType();
     }
   }, [open]);
 
@@ -185,20 +205,22 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
         }}
       >
         {/* Custom Tab Navigation */}
-        <div className="mt-2 mb-2 flex justify-center bg-[#5787C8] rounded-md">
-          {["Wash", "Wash/Dry", "Wash/Dry/Fold"].map((label, index) => (
-            <button
-              key={index}
-              onClick={() => handleTabChange(index)}
-              className={`w-full p-2 m-1.5 font-bold text-sm rounded-sm transition-colors duration-200 ${
-                selectedTab === index
-                  ? "bg-white text-[#5787C8]"
-                  : "bg-transparent text-white hover:bg-[#4a6b9c]"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="mt-2 mb-2 flex justify-start bg-[#5787C8] rounded-md hori-scrollable p-2">
+          <div className="flex flex-nowrap">
+            {serviceData.map((service) => (
+              <button
+                key={service.id}
+                onClick={() => handleTabChange(service.id)}
+                className={`whitespace-nowrap px-4 py-2 mx-1.5 font-bold text-sm rounded-sm transition-colors duration-200 ${
+                  selectedTabId === service.id
+                    ? "bg-white text-[#5787C8]"
+                    : "bg-transparent text-white hover:bg-[#4a6b9c]"
+                }`}
+              >
+                {service.service_name}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Customer Selection Autocomplete */}
@@ -297,7 +319,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
             </Typography>
           )}
         </FormControl>
-
         {/* Weight Input */}
         <FormControl fullWidth margin="normal" error={!!errors.weight}>
           <TextField
@@ -319,7 +340,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
             </Typography>
           )}
         </FormControl>
-
         {/* Additional Info Toggle */}
         <Box
           display="flex"
@@ -335,7 +355,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
             {showAdditionalInfo ? "Hide" : "Show"}
           </Button>
         </Box>
-
         {/* Additional Info Text Field (Collapsible) */}
         <Collapse in={showAdditionalInfo}>
           <FormControl fullWidth margin="normal">
@@ -395,3 +414,21 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
 };
 
 export default PopupSelectUnit;
+
+{
+  /* <div className="mt-2 mb-2 flex justify-center bg-[#5787C8] rounded-md">
+          {["Wash", "Wash/Dry", "Wash/Dry/Fold"].map((label, index) => (
+            <button
+              key={index}
+              onClick={() => handleTabChange(index)}
+              className={`w-full p-2 m-1.5 font-bold text-sm rounded-sm transition-colors duration-200 ${
+                selectedTab === index
+                  ? "bg-white text-[#5787C8]"
+                  : "bg-transparent text-white hover:bg-[#4a6b9c]"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div> */
+}

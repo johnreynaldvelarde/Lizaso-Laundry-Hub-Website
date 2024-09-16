@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+import useUnitMonitor from "../hooks/admin/useUnitMonitor";
 import {
   createTheme,
   ThemeProvider,

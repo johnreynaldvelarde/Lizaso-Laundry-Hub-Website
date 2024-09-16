@@ -30,8 +30,6 @@ import {
 
 // popup page
 import PopupSelectUnit from "./PopupSelectUnit";
-import PopupCustomerRequest from "./PopupCustomerRequest";
-import PopupInLaundry from "./PopupInLaundry";
 import PopupInQueue from "./PopupInQueue";
 
 // image
@@ -128,6 +126,16 @@ const UnitMonitor = () => {
     fetchCountLaundryAssignment,
     fetchInProgress,
   ]);
+
+  const refreshData = async () => {
+    try {
+      await fetchUnitsData();
+      await fetchInProgress();
+      // await fetchCountLaundryAssignment();
+    } catch (error) {
+      console.error("Error during refresh:", error);
+    }
+  };
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -415,7 +423,7 @@ const UnitMonitor = () => {
                       </Button>
                       <IconButton
                         onClick={() =>
-                          handleDialogRemoveInProgress(customer.id)
+                          handleDialogRemoveInProgress(customer.id, refreshData)
                         }
                       >
                         <MinusSquare
@@ -601,15 +609,16 @@ const UnitMonitor = () => {
           onClose={handleCloseDialog}
           unitName={selectedUnit.unit_name}
           unitId={selectedUnit.id}
+          onSuccess={refreshData}
         />
       )}
 
-      {openCustomerRequest && (
+      {/* {openCustomerRequest && (
         <PopupCustomerRequest
           open={openCustomerRequest}
           onClose={handleCloseCustomerRequest}
         />
-      )}
+      )} */}
 
       {openInQueue && (
         <PopupInQueue open={openInQueue} onClose={handleCloseInQueue} />
