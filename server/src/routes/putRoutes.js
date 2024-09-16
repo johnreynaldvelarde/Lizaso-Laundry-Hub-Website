@@ -3,7 +3,7 @@ import { handleCreateStore } from '../services/useStore.js';
 import { handleCreateUnits, handlePutAssignment, handlePutRemoveInQueue } from '../services/useUnits.js';
 import { handleUpdateCustomerBasicInformation } from '../services/useCustomer.js';
 import { getPool } from '../db/dbConfig.js';
-import { handleUpdateServiceType } from '../services/useSettings.js';
+import { handleDeleteServiceType, handleUpdateServiceType } from '../services/useSettings.js';
 
 
 const router = express.Router();
@@ -51,9 +51,8 @@ router.put('/settings/:id/update-service-types', withDatabaseConnection(async (r
   await handleUpdateServiceType(req, res, connection);
 }));
 
-export default router;
+router.put('/settings/:id/delete-service-types', withDatabaseConnection(async (req, res, connection) => {
+  await handleDeleteServiceType(req, res, connection);
+}));
 
-// router.put('/update-start-customer', withDatabaseConnection(async (req, res, connection) => {
-//   await handleUpdateCustomerBasicInformation(req, res, connection);
-// }));
-  
+export default router;

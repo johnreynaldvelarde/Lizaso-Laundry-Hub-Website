@@ -50,21 +50,6 @@ export const handleUpdateServiceType = async (req, res, connection) => {
   try {
     await connection.beginTransaction();
 
-    const checkQuery = `
-        SELECT id FROM Service_Type 
-        WHERE store_id = ? AND service_name = ? AND isArchive = 0
-      `;
-    const [existingService] = await connection.query(checkQuery, [
-      store_id,
-      service_name,
-    ]);
-
-    if (existingService.length > 0) {
-      return res
-        .status(200)
-        .json({ success: false, message: "Service name already exists." });
-    }
-
     const updateQuery = `
       UPDATE Service_Type 
       SET service_name = ?, default_price = ?
@@ -90,22 +75,6 @@ export const handleDeleteServiceType = async (req, res, connection) => {
   
   try {
     await connection.beginTransaction();
-
-    const checkQuery = `
-        SELECT id FROM Service_Type 
-        WHERE store_id = ? AND service_name = ? AND isArchive = 0
-      `;
-    const [existingService] = await connection.query(checkQuery, [
-      store_id,
-      service_name,
-    ]);
-
-    if (existingService.length > 0) {
-      return res
-        .status(200)
-        .json({ success: false, message: "Service name already exists." });
-    }
-
     const updateQuery = `
       UPDATE Service_Type 
       SET isArchive = 1

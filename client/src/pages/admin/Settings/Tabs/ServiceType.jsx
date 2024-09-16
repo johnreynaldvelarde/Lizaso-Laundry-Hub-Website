@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import useAuth from "../../../../contexts/AuthContext";
 import {
   Divider,
@@ -12,6 +13,8 @@ import {
 import { PlusCircle, MinusSquare } from "@phosphor-icons/react";
 import PopupServiceType from "./PopupServiceType";
 import { getServiceTypeAndStore } from "../../../../services/api/getApi";
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
+import { updateDeleteServiceType } from "../../../../services/api/putApi";
 
 const ServiceType = () => {
   const { userDetails } = useAuth();
@@ -19,9 +22,11 @@ const ServiceType = () => {
   const [allServiceTypes, setAllServiceTypes] = useState([]);
   const [serviceTypes, setServiceTypes] = useState([]);
   const [selectedStoreId, setSelectedStoreId] = useState(null);
+  const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [openPopup, setOpenPopup] = useState(false);
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [editServiceData, setEditServiceData] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const fetchServiceType = async () => {
     if (!userDetails?.storeId) return;
@@ -31,7 +36,6 @@ const ServiceType = () => {
         userDetails.storeId
       );
       if (response) {
-        // Ensure stores and serviceTypes are defined
         const stores = response.stores || [];
         const serviceTypes = response.serviceTypes || [];
 
@@ -58,6 +62,10 @@ const ServiceType = () => {
     fetchServiceType();
   }, [userDetails?.storeId]);
 
+  const refreshData = () => {
+    fetchServiceType();
+  };
+
   const handleStoreSelect = (storeId) => {
     setSelectedStoreId(storeId);
     setServiceTypes(
@@ -81,6 +89,29 @@ const ServiceType = () => {
   const handleCloseEditPopup = () => {
     setOpenEditPopup(false);
     setEditServiceData(null);
+  };
+
+  const handleDialogDelete = (id) => {
+    setSelectedServiceId(id);
+    setDialogOpen(true);
+  };
+
+  const handleDeleteService = async (id) => {
+    if (id) {
+      try {
+        const response = await updateDeleteServiceType.putDeleteServiceType(id);
+        if (response.success) {
+          toast.success(response.message);
+          refreshData();
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
   };
 
   return (
@@ -199,7 +230,7 @@ const ServiceType = () => {
                 >
                   Edit
                 </Button>
-                <IconButton>
+                <IconButton onClick={() => handleDialogDelete(service.id)}>
                   <MinusSquare size={20} color="#DB524B" weight="duotone" />
                 </IconButton>
               </Box>
@@ -234,6 +265,7 @@ const ServiceType = () => {
         open={openPopup}
         onClose={handleClosePopup}
         storeId={selectedStoreId}
+        onSuccess={refreshData}
       />
       {editServiceData && (
         <PopupServiceType
@@ -241,8 +273,16 @@ const ServiceType = () => {
           onClose={handleCloseEditPopup}
           storeId={selectedStoreId}
           serviceData={editServiceData}
+          onSuccess={refreshData}
         />
       )}
+
+      <ConfirmationDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleDeleteService}
+        itemId={selectedServiceId}
+      />
     </Box>
   );
 };

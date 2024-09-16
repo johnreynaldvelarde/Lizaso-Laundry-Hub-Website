@@ -67,11 +67,11 @@ export const updateServiceType = {
   },
 };
 
-export const updateRemoveServiceType = {
-  putAssignment: async (assignmentID) => {
+export const updateDeleteServiceType = {
+  putDeleteServiceType: async (id) => {
     try {
       const response = await axiosPrivate.put(
-        `/user/${assignmentID}/update-assignment`,
+        `/settings/${id}/delete-service-types`,
       );
       return response.data;
     } catch (error) {

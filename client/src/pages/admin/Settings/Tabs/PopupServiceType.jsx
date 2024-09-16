@@ -15,7 +15,13 @@ import toast from "react-hot-toast";
 import { createNewServiceType } from "../../../../services/api/postApi";
 import { updateServiceType } from "../../../../services/api/putApi";
 
-const PopupServiceType = ({ open, onClose, storeId, serviceData }) => {
+const PopupServiceType = ({
+  open,
+  onClose,
+  storeId,
+  serviceData,
+  onSuccess,
+}) => {
   const { userDetails } = useAuth();
   const [serviceName, setServiceName] = useState("");
   const [defaultPrice, setDefaultPrice] = useState("");
@@ -31,6 +37,13 @@ const PopupServiceType = ({ open, onClose, storeId, serviceData }) => {
       setDefaultPrice("");
     }
   }, [serviceData]);
+
+  const handleClear = async () => {
+    setServiceName("");
+    setDefaultPrice("");
+    setErrors({});
+    onClose();
+  };
 
   const validateFields = () => {
     const newErrors = {};
@@ -75,39 +88,25 @@ const PopupServiceType = ({ open, onClose, storeId, serviceData }) => {
         };
 
         try {
+          let response;
           if (serviceData) {
-            const response = await updateServiceType.putServiceType(
+            response = await updateServiceType.putServiceType(
               serviceData.id,
               data
             );
-
-            if (response.success) {
-              toast.success(response.message);
-              setServiceName("");
-              setDefaultPrice("");
-              setErrors({});
-              onClose();
-            } else {
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                serviceName: response.message,
-              }));
-            }
           } else {
-            const response = await createNewServiceType.setServiceType(data);
+            response = await createNewServiceType.setServiceType(data);
+          }
 
-            if (response.success) {
-              toast.success(response.message);
-              setServiceName("");
-              setDefaultPrice("");
-              setErrors({});
-              onClose();
-            } else {
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                serviceName: response.message,
-              }));
-            }
+          if (response.success) {
+            toast.success(response.message);
+            handleClear();
+            if (onSuccess) onSuccess(); // Call the onSuccess callback to refresh the data
+          } else {
+            setErrors((prevErrors) => ({
+              ...prevErrors,
+              serviceName: response.message,
+            }));
           }
         } catch (error) {
           if (error.response && error.response.data) {
@@ -223,6 +222,64 @@ const PopupServiceType = ({ open, onClose, storeId, serviceData }) => {
 };
 
 export default PopupServiceType;
+
+// const handleSave = async () => {
+//   const newErrors = validateFields();
+//   setErrors(newErrors);
+
+//   if (Object.keys(newErrors).length === 0) {
+//     setLoading(true);
+
+//     setTimeout(async () => {
+//       const data = {
+//         store_id: storeId || userDetails.storeId,
+//         service_name: serviceName,
+//         default_price: defaultPrice,
+//       };
+
+//       try {
+//         if (serviceData) {
+//           const response = await updateServiceType.putServiceType(
+//             serviceData.id,
+//             data
+//           );
+
+//           if (response.success) {
+//             toast.success(response.message);
+//             handleClear();
+//           } else {
+//             setErrors((prevErrors) => ({
+//               ...prevErrors,
+//               serviceName: response.message,
+//             }));
+//           }
+//         } else {
+//           const response = await createNewServiceType.setServiceType(data);
+
+//           if (response.success) {
+//             toast.success(response.message);
+//             handleClear();
+//           } else {
+//             setErrors((prevErrors) => ({
+//               ...prevErrors,
+//               serviceName: response.message,
+//             }));
+//           }
+//         }
+//       } catch (error) {
+//         if (error.response && error.response.data) {
+//           toast.error(error.response.data.message);
+//         } else {
+//           toast.error(
+//             "An unexpected error occurred while creating the service type."
+//           );
+//         }
+//       } finally {
+//         setLoading(false);
+//       }
+//     }, 500);
+//   }
+// };
 
 // const handleSave = async () => {
 //   const newErrors = validateFields();
