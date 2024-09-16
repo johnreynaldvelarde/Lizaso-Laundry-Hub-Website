@@ -3,6 +3,7 @@ import { handleCreateStore } from '../services/useStore.js';
 import { handleCreateUnits, handlePutAssignment, handlePutRemoveInQueue } from '../services/useUnits.js';
 import { handleUpdateCustomerBasicInformation } from '../services/useCustomer.js';
 import { getPool } from '../db/dbConfig.js';
+import { handleUpdateServiceType } from '../services/useSettings.js';
 
 
 const router = express.Router();
@@ -39,14 +40,20 @@ router.put('/user/:id/remove-request', withDatabaseConnection(async (req, res, c
 }));
 
 
+// SETTINGS SECTION
 
+// -> TAB DASHBOARD CONFIG <-
+// router.post('/settings/set-dashboard-config', withDatabaseConnection(async (req, res, connection) => {
+// }));
 
+// -> TAB SERVICE TYPES <-
+router.put('/settings/:id/update-service-types', withDatabaseConnection(async (req, res, connection) => {
+  await handleUpdateServiceType(req, res, connection);
+}));
 
-
+export default router;
 
 // router.put('/update-start-customer', withDatabaseConnection(async (req, res, connection) => {
 //   await handleUpdateCustomerBasicInformation(req, res, connection);
 // }));
-
-export default router;
   

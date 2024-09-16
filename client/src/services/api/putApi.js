@@ -49,3 +49,34 @@ export const updateRemoveAssignment = {
     }
   },
 };
+
+
+// SETTINGS SECTION
+//  <----- Service Type Section ----->
+export const updateServiceType = {
+  putServiceType: async (serviceId, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/settings/${serviceId}/update-service-types`,
+        data  
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateRemoveServiceType = {
+  putAssignment: async (assignmentID) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/user/${assignmentID}/update-assignment`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating assignment:", error);
+      throw error;
+    }
+  },
+};

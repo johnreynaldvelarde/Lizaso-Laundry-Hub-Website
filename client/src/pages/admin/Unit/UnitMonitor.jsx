@@ -150,129 +150,144 @@ const UnitMonitor = () => {
           alignItems: "center",
         }}
       >
-        <TextField
-          variant="outlined"
-          placeholder="Search units name..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          sx={{ width: "100%", maxWidth: "400px" }}
-        />
-
-        <Box sx={{ mt: isSmallScreen ? 2 : 0, display: "flex", gap: 2 }}>
-          {/* <Button
+        <Box
+          sx={{
+            mt: { xs: 2, sm: 2, md: 0 },
+            display: "flex",
+            justifyContent: "space-between", // Ensure search is on the left, buttons on the right
+            alignItems: "center",
+            flexDirection: { xs: "column", sm: "column", md: "row" }, // Stack vertically on small screens
+            gap: 2, // Add spacing between elements
+            width: "100%",
+          }}
+        >
+          <TextField
             variant="outlined"
-            startIcon={
-              <SlidersHorizontal size={24} color="#5787C8" weight="duotone" />
-            }
+            placeholder="Search units name..."
+            value={searchTerm}
+            onChange={handleSearchChange}
             sx={{
-              borderRadius: "5px",
-              fontWeight: 600,
-              textTransform: "none",
-              paddingLeft: "20px",
-              paddingRight: "20px",
-              fontSize: "16px",
-              color: "#5787C8",
-              borderColor: "#5787C8",
-              "&:hover": {
-                borderColor: "#5787C8",
-                backgroundColor: "rgba(87, 135, 200, 0.1)",
+              width: "100%", // Full width of the container
+              maxWidth: { xs: "100%", sm: "100%", md: "300px", lg: "400px" }, // Adjust maximum width for different screen sizes
+              mb: { xs: 2, sm: 2, md: 0 }, // Margin bottom for spacing on small screens
+              "& .MuiInputBase-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem", md: "1.125rem" }, // Responsive font size
               },
             }}
-            onClick={handleClick}
-          >
-            Filter by Status
-          </Button> */}
+          />
 
-          <Button
-            variant="outlined"
-            startIcon={
-              <SlidersHorizontal size={24} color="#5787C8" weight="duotone" />
-            }
-            endIcon={open ? <CaretUp size={20} /> : <CaretDown size={20} />} // Toggle arrow icon
+          <Box
             sx={{
-              borderRadius: "5px",
-              fontWeight: 600,
-              textTransform: "none",
-              paddingLeft: "20px",
-              paddingRight: "20px",
-              fontSize: "16px",
-              color: "#5787C8",
-              borderColor: "#5787C8",
-              "&:hover": {
-                borderColor: "#5787C8",
-                backgroundColor: "rgba(87, 135, 200, 0.1)",
-              },
-            }}
-            onClick={handleClick}
-          >
-            Filter by Status
-          </Button>
-
-          {/* Menu for status options */}
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-            transformOrigin={{ vertical: "top", horizontal: "left" }}
-          >
-            <MenuItem onClick={handleClose}>Available</MenuItem>
-            <MenuItem onClick={handleClose}>Occupied</MenuItem>
-            <MenuItem onClick={handleClose}>Reserved</MenuItem>
-          </Menu>
-
-          <Badge
-            badgeContent={countInQueueData}
-            color="error"
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
+              display: "flex",
+              gap: 2, // Space between buttons
+              flexDirection: { xs: "column", sm: "column", md: "row" }, // Stack buttons vertically on small screens
+              width: "100%", // Ensure full width on small screens
+              justifyContent: { xs: "center", sm: "center", md: "flex-end" }, // Center buttons on small screens
             }}
           >
             <Button
               variant="outlined"
+              endIcon={open ? <CaretUp size={20} /> : <CaretDown size={20} />}
               sx={{
                 borderRadius: "5px",
                 fontWeight: 600,
                 textTransform: "none",
-                paddingLeft: "20px",
-                paddingRight: "20px",
-                fontSize: "16px",
+                padding: {
+                  xs: "8px 15px",
+                  sm: "10px 20px",
+                  md: "10px 20px",
+                  lg: "10px 20px",
+                  xl: "10px auto",
+                },
+                fontSize: { xs: "14px", sm: "15px", md: "16px" },
                 color: "#5787C8",
                 borderColor: "#5787C8",
+                height: "40px", // Fixed height for all screens
+                width: { xs: "100%", sm: "100%", md: "auto" }, // Full width on small screens
+                overflow: "hidden", // Hide overflow content
+                textOverflow: "ellipsis", // Handle overflowed text
+                whiteSpace: "nowrap", // Prevent text wrapping
                 "&:hover": {
                   borderColor: "#5787C8",
                   backgroundColor: "rgba(87, 135, 200, 0.1)",
                 },
               }}
-              onClick={handleOpenInQueue}
+              onClick={handleClick}
             >
-              Customer Request
+              Filter by Status
             </Button>
-          </Badge>
-          <Badge
-            badgeContent={countAssignmentData.count_in_progress}
-            color="error"
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-          >
-            <Button
-              variant="contained"
-              startIcon={
-                <HourglassLow size={24} color="#fcfcfc" weight="duotone" />
-              }
-              sx={{
-                textTransform: "none",
-                backgroundColor: "#17a2b8",
-                "&:hover": { backgroundColor: "#117a8b" },
+
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
+            >
+              <MenuItem onClick={handleClose}>Available</MenuItem>
+              <MenuItem onClick={handleClose}>Occupied</MenuItem>
+              <MenuItem onClick={handleClose}>Reserved</MenuItem>
+            </Menu>
+
+            <Badge
+              badgeContent={countInQueueData}
+              color="error"
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
               }}
-              onClick={() => toggleDrawer(true)}
             >
-              In Progress
-            </Button>
-          </Badge>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderRadius: "5px",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  padding: { xs: "8px 15px", sm: "10px 20px", md: "10px 20px" },
+                  fontSize: { xs: "14px", sm: "15px", md: "16px" },
+                  color: "#5787C8",
+                  borderColor: "#5787C8",
+                  height: "40px", // Fixed height for all screens
+                  width: { xs: "100%", sm: "100%", md: "auto" }, // Full width on small screens
+                  "&:hover": {
+                    borderColor: "#5787C8",
+                    backgroundColor: "rgba(87, 135, 200, 0.1)",
+                  },
+                }}
+                onClick={handleOpenInQueue}
+              >
+                Customer Request
+              </Button>
+            </Badge>
+
+            <Badge
+              badgeContent={countAssignmentData.count_in_progress}
+              color="error"
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <Button
+                variant="contained"
+                startIcon={
+                  <HourglassLow size={24} color="#fcfcfc" weight="duotone" />
+                }
+                sx={{
+                  textTransform: "none",
+                  backgroundColor: "#17a2b8",
+                  padding: { xs: "8px 15px", sm: "10px 20px", md: "10px 20px" },
+                  fontSize: { xs: "14px", sm: "15px", md: "16px" },
+                  height: "40px", // Fixed height for all screens
+                  width: { xs: "100%", sm: "100%", md: "auto" }, // Full width on small screens
+                  "&:hover": { backgroundColor: "#117a8b" },
+                }}
+                onClick={() => toggleDrawer(true)}
+              >
+                In Progress
+              </Button>
+            </Badge>
+          </Box>
         </Box>
       </Box>
 

@@ -2,10 +2,10 @@ import { Box, Paper, Tab, Tabs, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { useState } from "react";
 import React from "react";
-import Notifications from "../../../components/settings/Notifications";
-import Password from "../../../components/settings/Password";
-import Profile from "../../../components/settings/Profile";
-import ServiceType from "../../../components/settings/ServiceType";
+import Notifications from "./Tabs/Notifications";
+import Password from "./Tabs/Password";
+import Profile from "./Tabs/Profile";
+import ServiceType from "./Tabs/ServiceType";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;

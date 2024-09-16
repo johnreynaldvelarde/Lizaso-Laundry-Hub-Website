@@ -165,6 +165,20 @@ default_price
 date_created
 isArchive
 
+--> Activity Log <--
+id (Primary Key)
+user_id (Foregin Key)
+user_type 
+action_type
+action_description
+timestamp
+
+
+
+
+--> Notifications <--
+https://isomorphic-furyroad.vercel.app/logistics
+
 // Hard Part
 Pending Pickup – The customer has placed a service request, but the clothes have not been picked up yet.
 Picked Up – The delivery staff has picked up the clothes from the customer's location.
@@ -175,14 +189,3 @@ Laundry Completed – The clothes have finished the washing/drying process.
 Ready for Delivery – The clothes are ready to be delivered back to the customer.
 Out for Delivery – The delivery staff is on the way to deliver the clothes to the customer.
 Delivered – The clothes have been delivered to the customer, and payment has been confirmed.
-
---> Notifications <--
-https://isomorphic-furyroad.vercel.app/logistics
-
---> Activity Log <--
-id (Primary Key)
-user_id (Foregin Key)
-user_type 
-action_type
-action_description
-timestamp
