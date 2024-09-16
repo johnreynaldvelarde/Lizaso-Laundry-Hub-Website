@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 15, 2024 at 04:28 PM
+-- Generation Time: Sep 16, 2024 at 09:12 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,7 +69,9 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (26, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 08:10:49'),
 (27, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 11:16:42'),
 (28, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 17:59:49'),
-(29, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 20:22:31');
+(29, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-15 20:22:31'),
+(30, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-16 05:46:10'),
+(31, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-16 10:22:52');
 
 -- --------------------------------------------------------
 
@@ -242,8 +244,64 @@ CREATE TABLE `laundry_assignment` (
 --
 
 INSERT INTO `laundry_assignment` (`id`, `service_request_id`, `unit_id`, `assigned_by`, `weight`, `assigned_at`, `completed_at`, `isAssignmentStatus`, `isCompleted`) VALUES
-(34, 48, 39, 1, '5', '2024-09-15 07:57:01', NULL, 0, 0),
-(35, 49, 40, 1, '2', '2024-09-15 08:46:03', NULL, 0, 0);
+(39, 53, 39, 1, '5', '2024-09-16 12:46:17', NULL, 2, 0),
+(40, 54, 40, 1, '5', '2024-09-16 12:55:34', NULL, 2, 0),
+(41, 55, 41, 1, '3', '2024-09-16 12:56:58', NULL, 2, 0),
+(42, 56, 42, 1, '5', '2024-09-16 12:57:26', NULL, 2, 0),
+(43, 57, 43, 1, '5', '2024-09-16 12:57:42', NULL, 2, 0),
+(44, 58, 40, 1, '3', '2024-09-16 13:08:30', NULL, 2, 0),
+(45, 59, 41, 1, '2', '2024-09-16 13:08:43', NULL, 2, 0),
+(46, 60, 39, 1, '3', '2024-09-16 13:11:10', NULL, 2, 0),
+(47, 61, 40, 1, '4', '2024-09-16 13:11:17', NULL, 2, 0),
+(48, 62, 41, 1, '4', '2024-09-16 13:11:23', NULL, 2, 0),
+(49, 63, 42, 1, '3', '2024-09-16 13:12:00', NULL, 2, 0),
+(50, 64, 43, 1, '4', '2024-09-16 13:13:15', NULL, 2, 0),
+(51, 65, 39, 1, '2', '2024-09-16 13:14:06', NULL, 2, 0),
+(52, 66, 40, 1, '3', '2024-09-16 13:14:16', NULL, 2, 0),
+(53, 67, 41, 1, '5', '2024-09-16 13:17:03', NULL, 2, 0),
+(54, 68, 39, 1, '3', '2024-09-16 13:19:03', NULL, 2, 0),
+(55, 69, 40, 1, '3', '2024-09-16 13:19:16', NULL, 2, 0),
+(56, 70, 42, 1, '3', '2024-09-16 13:20:44', NULL, 2, 0),
+(57, 71, 39, 1, '2', '2024-09-16 13:22:26', NULL, 2, 0),
+(58, 72, 40, 1, '2', '2024-09-16 13:22:46', NULL, 2, 0),
+(59, 73, 41, 1, '2', '2024-09-16 13:23:21', NULL, 2, 0),
+(60, 74, 39, 1, '2', '2024-09-16 13:25:47', NULL, 2, 0),
+(61, 75, 40, 1, '2', '2024-09-16 13:28:07', NULL, 2, 0),
+(62, 76, 41, 1, '2', '2024-09-16 13:28:23', NULL, 2, 0),
+(63, 77, 42, 1, '2', '2024-09-16 13:30:16', NULL, 2, 0),
+(64, 78, 43, 1, '2', '2024-09-16 13:31:34', NULL, 2, 0),
+(65, 79, 39, 1, '3', '2024-09-16 13:48:46', NULL, 2, 0),
+(66, 80, 40, 1, '1', '2024-09-16 13:52:42', NULL, 2, 0),
+(67, 81, 41, 1, '2', '2024-09-16 13:52:56', NULL, 2, 0),
+(68, 82, 42, 1, '3', '2024-09-16 13:53:06', NULL, 2, 0),
+(69, 83, 43, 1, '2', '2024-09-16 13:53:20', NULL, 2, 0),
+(70, 84, 44, 1, '3', '2024-09-16 13:53:29', NULL, 2, 0),
+(71, 85, 39, 1, '2', '2024-09-16 13:54:12', NULL, 2, 0),
+(72, 86, 39, 1, '2', '2024-09-16 13:58:52', NULL, 2, 0),
+(73, 87, 40, 1, '3', '2024-09-16 13:58:59', NULL, 2, 0),
+(74, 88, 41, 1, '3', '2024-09-16 13:59:06', NULL, 2, 0),
+(75, 89, 39, 1, '2', '2024-09-16 14:04:20', NULL, 2, 0),
+(76, 90, 39, 1, '2', '2024-09-16 14:07:49', NULL, 2, 0),
+(77, 91, 40, 1, '1', '2024-09-16 14:07:56', NULL, 2, 0),
+(78, 92, 41, 1, '3', '2024-09-16 14:08:03', NULL, 2, 0),
+(79, 93, 42, 1, '2', '2024-09-16 14:08:19', NULL, 2, 0),
+(80, 94, 39, 1, '2', '2024-09-16 14:09:24', NULL, 2, 0),
+(81, 95, 40, 1, '2', '2024-09-16 14:09:34', NULL, 2, 0),
+(82, 96, 39, 1, '2', '2024-09-16 14:09:47', NULL, 2, 0),
+(83, 97, 46, 1, '2', '2024-09-16 14:09:55', NULL, 2, 0),
+(84, 98, 40, 1, '2', '2024-09-16 14:10:02', NULL, 2, 0),
+(85, 99, 41, 1, '3', '2024-09-16 14:10:09', NULL, 2, 0),
+(86, 100, 39, 1, '2', '2024-09-16 14:10:51', NULL, 2, 0),
+(87, 101, 40, 1, '2', '2024-09-16 14:10:57', NULL, 2, 0),
+(88, 102, 41, 1, '2', '2024-09-16 14:11:03', NULL, 2, 0),
+(89, 103, 42, 1, '2', '2024-09-16 14:11:09', NULL, 2, 0),
+(90, 104, 43, 1, '2', '2024-09-16 14:11:15', NULL, 2, 0),
+(91, 105, 39, 1, '3', '2024-09-16 14:14:50', NULL, 2, 0),
+(92, 106, 40, 1, '3', '2024-09-16 14:14:59', NULL, 2, 0),
+(93, 107, 41, 1, '2', '2024-09-16 14:15:12', NULL, 2, 0),
+(94, 108, 42, 1, '3', '2024-09-16 14:15:21', NULL, 2, 0),
+(95, 109, 43, 1, '2', '2024-09-16 14:15:30', NULL, 2, 0),
+(96, 110, 44, 1, '2', '2024-09-16 14:15:37', NULL, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -265,8 +323,8 @@ CREATE TABLE `laundry_unit` (
 --
 
 INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(39, 1, 'Unit 1', '2024-09-09 07:13:30', 1, 0),
-(40, 1, 'Unit 2', '2024-09-09 09:26:14', 1, 0),
+(39, 1, 'Unit 1', '2024-09-09 07:13:30', 0, 0),
+(40, 1, 'Unit 2', '2024-09-09 09:26:14', 0, 0),
 (41, 1, 'Unit 3', '2024-09-09 09:26:17', 0, 0),
 (42, 1, 'Unit 4', '2024-09-09 09:26:19', 0, 0),
 (43, 1, 'Unit 5', '2024-09-09 09:26:22', 0, 0),
@@ -287,9 +345,9 @@ CREATE TABLE `service_request` (
   `store_id` bigint(20) NOT NULL,
   `user_id` bigint(20) DEFAULT NULL,
   `customer_id` bigint(20) NOT NULL,
+  `service_type_id` bigint(20) NOT NULL,
   `customer_fullname` varchar(255) NOT NULL,
   `notes` varchar(255) DEFAULT NULL,
-  `service_type` varchar(255) NOT NULL,
   `request_date` timestamp NULL DEFAULT current_timestamp(),
   `pickup_date` timestamp NULL DEFAULT NULL,
   `delivery_date` timestamp NULL DEFAULT NULL,
@@ -300,9 +358,65 @@ CREATE TABLE `service_request` (
 -- Dumping data for table `service_request`
 --
 
-INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `customer_fullname`, `notes`, `service_type`, `request_date`, `pickup_date`, `delivery_date`, `request_status`) VALUES
-(48, 1, 1, 6, 'tamad, juan ', '', 'Wash/Dry/Fold', '2024-09-14 23:57:01', NULL, NULL, 'In Laundry'),
-(49, 1, 1, 6, 'tamad, juan ', '', 'Wash', '2024-09-15 00:46:03', NULL, NULL, 'In Laundry');
+INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `customer_fullname`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`) VALUES
+(53, 1, 1, 6, 54, 'tamad, juan ', '', '2024-09-16 04:46:17', NULL, NULL, 'Canceled'),
+(54, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 04:55:34', NULL, NULL, 'Canceled'),
+(55, 1, 1, 6, 54, 'tamad, juan ', '', '2024-09-16 04:56:58', NULL, NULL, 'Canceled'),
+(56, 1, 1, 6, 52, 'tamad, juan ', '', '2024-09-16 04:57:26', NULL, NULL, 'Canceled'),
+(57, 1, 1, 3, 50, 'Shadow, Alpha ', '', '2024-09-16 04:57:42', NULL, NULL, 'Canceled'),
+(58, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:08:30', NULL, NULL, 'Canceled'),
+(59, 1, 1, 6, 53, 'tamad, juan ', '', '2024-09-16 05:08:43', NULL, NULL, 'Canceled'),
+(60, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:11:10', NULL, NULL, 'Canceled'),
+(61, 1, 1, 6, 52, 'tamad, juan ', '', '2024-09-16 05:11:17', NULL, NULL, 'Canceled'),
+(62, 1, 1, 6, 52, 'tamad, juan ', '', '2024-09-16 05:11:23', NULL, NULL, 'Canceled'),
+(63, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:12:00', NULL, NULL, 'Canceled'),
+(64, 1, 1, 6, 53, 'tamad, juan ', '', '2024-09-16 05:13:15', NULL, NULL, 'Canceled'),
+(65, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:14:06', NULL, NULL, 'Canceled'),
+(66, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:14:16', NULL, NULL, 'Canceled'),
+(67, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:17:03', NULL, NULL, 'Canceled'),
+(68, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:19:03', NULL, NULL, 'Canceled'),
+(69, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:19:16', NULL, NULL, 'Canceled'),
+(70, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:20:44', NULL, NULL, 'Canceled'),
+(71, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:22:26', NULL, NULL, 'Canceled'),
+(72, 1, 1, 6, 54, 'tamad, juan ', '', '2024-09-16 05:22:46', NULL, NULL, 'Canceled'),
+(73, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:23:21', NULL, NULL, 'Canceled'),
+(74, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:25:47', NULL, NULL, 'Canceled'),
+(75, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:28:07', NULL, NULL, 'Canceled'),
+(76, 1, 1, 6, 54, 'tamad, juan ', '', '2024-09-16 05:28:23', NULL, NULL, 'Canceled'),
+(77, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:30:16', NULL, NULL, 'Canceled'),
+(78, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:31:34', NULL, NULL, 'Canceled'),
+(79, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:48:46', NULL, NULL, 'Canceled'),
+(80, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:52:42', NULL, NULL, 'Canceled'),
+(81, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:52:56', NULL, NULL, 'Canceled'),
+(82, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:53:06', NULL, NULL, 'Canceled'),
+(83, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:53:20', NULL, NULL, 'Canceled'),
+(84, 1, 1, 6, 52, 'tamad, juan ', '', '2024-09-16 05:53:29', NULL, NULL, 'Canceled'),
+(85, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:54:12', NULL, NULL, 'Canceled'),
+(86, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:58:52', NULL, NULL, 'Canceled'),
+(87, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:58:59', NULL, NULL, 'Canceled'),
+(88, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 05:59:06', NULL, NULL, 'Canceled'),
+(89, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:04:20', NULL, NULL, 'Canceled'),
+(90, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:07:49', NULL, NULL, 'Canceled'),
+(91, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:07:56', NULL, NULL, 'Canceled'),
+(92, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:08:03', NULL, NULL, 'Canceled'),
+(93, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:08:19', NULL, NULL, 'Canceled'),
+(94, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:09:24', NULL, NULL, 'Canceled'),
+(95, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:09:34', NULL, NULL, 'Canceled'),
+(96, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:09:47', NULL, NULL, 'Canceled'),
+(97, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:09:55', NULL, NULL, 'Canceled'),
+(98, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:10:02', NULL, NULL, 'Canceled'),
+(99, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:10:09', NULL, NULL, 'Canceled'),
+(100, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:10:51', NULL, NULL, 'Canceled'),
+(101, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:10:57', NULL, NULL, 'Canceled'),
+(102, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:11:03', NULL, NULL, 'Canceled'),
+(103, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:11:09', NULL, NULL, 'Canceled'),
+(104, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:11:15', NULL, NULL, 'Canceled'),
+(105, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:14:50', NULL, NULL, 'Canceled'),
+(106, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:14:59', NULL, NULL, 'Canceled'),
+(107, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:15:12', NULL, NULL, 'Canceled'),
+(108, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:15:21', NULL, NULL, 'Canceled'),
+(109, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:15:29', NULL, NULL, 'Canceled'),
+(110, 1, 1, 6, 50, 'tamad, juan ', '', '2024-09-16 06:15:37', NULL, NULL, 'Canceled');
 
 -- --------------------------------------------------------
 
@@ -324,12 +438,13 @@ CREATE TABLE `service_type` (
 --
 
 INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `default_price`, `date_created`, `isArchive`) VALUES
-(2, 1, 'Wash', 65.00, '2024-09-15 18:54:41', 0),
-(3, 1, 'Dry', 60.00, '2024-09-15 18:55:53', 0),
-(4, 1, 'Fold', 30.00, '2024-09-15 18:56:05', 0),
-(27, 2, '1', 6.00, '2024-09-15 20:36:20', 0),
-(28, 3, '1', 1.00, '2024-09-15 21:42:42', 0),
-(29, 1, 'Curtain Wash', 100.00, '2024-09-15 22:21:27', 0);
+(50, 1, 'Wash', 65.00, '2024-09-16 11:23:33', 0),
+(51, 1, 'Dry', 55.00, '2024-09-16 11:23:40', 0),
+(52, 1, 'Fold', 30.00, '2024-09-16 11:23:48', 0),
+(53, 1, 'Wash/Dry', 120.00, '2024-09-16 11:24:25', 0),
+(54, 1, 'Wash/Dry/Fold', 150.00, '2024-09-16 11:24:47', 0),
+(55, 2, 'Wash', 10.00, '2024-09-16 11:25:45', 0),
+(56, 1, '1', 1.00, '2024-09-16 14:16:22', 1);
 
 -- --------------------------------------------------------
 
@@ -494,7 +609,8 @@ ALTER TABLE `service_request`
   ADD PRIMARY KEY (`id`),
   ADD KEY `Service_Request_Stores` (`store_id`),
   ADD KEY `Service_Request_User_Account` (`user_id`),
-  ADD KEY `Service_Request_Customer` (`customer_id`);
+  ADD KEY `Service_Request_Customer` (`customer_id`),
+  ADD KEY `Service_Request_Service_Type` (`service_type_id`);
 
 --
 -- Indexes for table `service_type`
@@ -532,7 +648,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `addresses`
@@ -574,7 +690,7 @@ ALTER TABLE `item_category`
 -- AUTO_INCREMENT for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
@@ -586,13 +702,13 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- AUTO_INCREMENT for table `service_type`
 --
 ALTER TABLE `service_type`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `stores`
@@ -667,6 +783,7 @@ ALTER TABLE `laundry_unit`
 --
 ALTER TABLE `service_request`
   ADD CONSTRAINT `Service_Request_Customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `Service_Request_Service_Type` FOREIGN KEY (`service_type_id`) REFERENCES `service_type` (`id`),
   ADD CONSTRAINT `Service_Request_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`),
   ADD CONSTRAINT `Service_Request_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
 
