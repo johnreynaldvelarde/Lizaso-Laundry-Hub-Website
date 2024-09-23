@@ -180,8 +180,15 @@ timestamp
 https://isomorphic-furyroad.vercel.app/logistics
 
 // Hard Part
-Pending Pickup – The customer has placed a service request, but the clothes have not been picked up yet.
-Picked Up – The delivery staff has picked up the clothes from the customer's location.
+
+--> Pickup and Delivery Staff <--
+
+Pending Pickup – The customer has placed a service request, but the clothes have not yet been picked up.
+Ongoing Pickup – The customer has placed a service request, and pickup staff has been assigned to the customer.
+Picked Up – The delivery staff has collected the clothes from the customer's location.
+
+
+--> Store Staff <--
 At Store – The clothes have been dropped off at the laundry store.
 In Queue – The clothes are waiting for an available laundry unit.
 In Laundry – The clothes have been assigned to a laundry unit and are currently being washed/dried.
