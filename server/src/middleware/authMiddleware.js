@@ -1,3 +1,24 @@
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.ACCESTS_TOKEN_SECRET;
+
+export const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.sendStatus(401); // No token provided
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+    req.user = user;
+    next();
+  });
+};
+
 // import jwt from 'jsonwebtoken';
 
 // const verifyToken = (req, res, next) => {
@@ -32,22 +53,3 @@
 // export default verifyToken;
 
 // middleware/authMiddleware.js
-
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.ACCESTS_TOKEN_SECRET || 'your_jwt_secret_key';
-
-export const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (token == null) return res.sendStatus(401); // No token provided
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403); // Token is invalid or expired
-    req.user = user; // Attach the user information to the request object
-    next(); // Proceed to the next middleware or route handler
-  });
-};
-
-
