@@ -47,10 +47,15 @@ lizaso-laundry-hub/
 │   │     ├── middleware/
 │   │     │     └── authMiddleware.js
 │   │     ├── routes/
-│   │     │     └── authService.js
+│   │     │     ├── authRoutes.js
+│   │     │     ├── checkRoutes.js
+│   │     │     ├── getRoutes.js
+│   │     │     ├── mobileRoutes.js
+│   │     │     ├── postRoutes.js
+│   │     │     └── putRoutes.js
 │   │     ├── services/
 │   │     │     ├── authService.js
-│   │     │     └── storeService.js
+│   │     │     └── useInventory.js
 │   │     └── server.js
 │   ├── .env                           
 │   ├── .gitignore
