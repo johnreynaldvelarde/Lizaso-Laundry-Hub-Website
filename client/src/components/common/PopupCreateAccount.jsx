@@ -45,7 +45,7 @@ const PopupCreateAccount = ({
           <div
             className={`relative bg-white p-8 rounded-lg shadow-lg z-50 transition-transform duration-300 ${
               isVisible ? "scale-100" : "scale-90 opacity-0"
-            } `}
+            }  `}
           >
             {/* Header Section */}
             <button

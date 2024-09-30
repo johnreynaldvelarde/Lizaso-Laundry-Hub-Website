@@ -7,7 +7,7 @@ import {
   cities,
 } from "../../data/countrySelection";
 import useCheckStartingPoint from "../../hooks/customers/useCheckStartingPoint";
-import backGround from "../../assets/images/no_data.png";
+import background from "../../assets/images/background_2.jpg";
 
 const CheckStartingPoint = () => {
   const {
@@ -58,12 +58,14 @@ const CheckStartingPoint = () => {
   }, [latitude, longitude]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-5">
+    <div className="flex items-center justify-center min-h-screen bg-white px-5 relative overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: `url(${backGround})`,
-          opacity: 0.2,
+          backgroundImage: `url(${background})`,
+          opacity: 0.6,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       />
       <div className="relative z-10">
@@ -271,7 +273,6 @@ const CheckStartingPoint = () => {
                   ))}
                 </ul>
               </div>
-
               <form onSubmit={handleFinalSubmit}>
                 <div className="mb-4 mt-5">
                   <label className="block text-gray-700 mb-2" htmlFor="email">
