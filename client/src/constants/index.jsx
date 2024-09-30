@@ -1,9 +1,10 @@
 export const navItems = [
-  { label: "Features", href: "#" },
-  { label: "Pricing", href: "#" },
-  { label: "About", href: "#" },
-  { label: "Services", href: "#" },
-  { label: "Contact", href: "#" },
+  { label: "Home", href: "#" },
+  { label: "Features", href: "#features" },
+  { label: "Services", href: "#service" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "About", href: "#about" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export const c_navItems = [

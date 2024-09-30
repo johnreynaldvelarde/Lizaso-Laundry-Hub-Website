@@ -5,7 +5,7 @@ import m_1 from "../../assets/images/1636.jpg";
 import styles from "../../style";
 import Wave from "./Wave";
 
-const LandingHeroSection = () => {
+const Home = () => {
   return (
     <div className="flex flex-col items-center mt-6 lg:mt-20">
       {/* Background Image*/}
@@ -83,4 +83,4 @@ const LandingHeroSection = () => {
   );
 };
 
-export default LandingHeroSection;
+export default Home;

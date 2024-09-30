@@ -1,8 +1,10 @@
 const styles = {
   boxWidth: "xl:max-w-[1280px] w-full",
 
-  heading2: "font-poppins font-semibold xs:text-[48px] text-[40px] text-white xs:leading-[76.8px] leading-[66.8px] w-full",
-  paragraph: "font-poppins font-normal text-dimWhite text-[18px] leading-[30.8px]",
+  heading2:
+    "font-poppins font-semibold xs:text-[48px] text-[40px] text-white xs:leading-[76.8px] leading-[66.8px] w-full",
+  paragraph:
+    "font-poppins font-normal text-dimWhite text-[18px] leading-[30.8px]",
 
   flexCenter: "flex justify-center items-center",
   flexStart: "flex justify-center items-start",
@@ -14,20 +16,16 @@ const styles = {
   marginX: "sm:mx-16 mx-6",
   marginY: "sm:my-16 my-6",
 
-   /*  Text Color or Button Color */
+  /*  Text Color or Button Color */
   textColor1: "#5787C8",
   textColor2: "#595959",
-
 
   /*  Text Color or Button Color */
   IconColor1: "#5787C8",
   IconColor2: "#595959",
 
-  
-
   /* Input Box Focus Color */
   inputBorderColor1: "#5787C8",
-
 
   buttonColor1: "#5787C8",
 
@@ -40,10 +38,8 @@ const styles = {
   smallFontSize: ".813rem",
   smallestFontSize: ".75rem",
 
-
   // Admin Color
   backgroundColor1: "#f1f1f1",
-
 };
 
 export const layout = {
@@ -58,9 +54,8 @@ export const layout = {
 
 export default styles;
 
-
 // Wave Svg - later we will use it
-  /* <div className="absolute inset-x-0 bottom-0 z-0">
+/* <div className="absolute inset-x-0 bottom-0 z-0">
       <svg
         className="block w-full"
         xmlns="http://www.w3.org/2000/svg"
