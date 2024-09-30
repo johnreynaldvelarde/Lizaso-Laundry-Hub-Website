@@ -1,7 +1,7 @@
 import LaundryPlans from "./default_customer/LaundryPlans";
 
 // Landing Page
-export { default as StartingPage } from "./landing-page/StartingPage";
+export { default as StartingPage } from "./start/StartingPage";
 
 // Section Administrator
 export { default as Main } from "./admin/Main";
@@ -19,7 +19,6 @@ export { default as Customers } from "./admin/Customers/Customers";
 // Section Schedule
 export { default as Schedule } from "./admin/Schedule/Schedule";
 
-
 // Section Branch
 export { default as Store } from "./admin/Store/Store";
 export { default as AddStore } from "./admin/Store/AddStore";
@@ -29,7 +28,6 @@ export { default as Inventory } from "./admin/Inventory/Inventory";
 export { default as AddItem } from "./admin/Inventory/AddItem";
 export { default as ItemCategory } from "./admin/Inventory/ItemCategory";
 
-
 // Section User
 export { default as User } from "./admin/User/User";
 export { default as AddUser } from "./admin/User/AddUser";
@@ -37,13 +35,10 @@ export { default as AddUser } from "./admin/User/AddUser";
 // Section Settings
 export { default as Settings } from "./admin/Settings/Settings";
 
-
-
 // Section Delivery Man
 
-
 // Customer => Page
-export {default as CheckStartingPoint} from "./default_customer/checkStartingPoint"
-export {default as MainCustomer} from "./default_customer/mainCustomer"
-export {default as LaundryPlans} from "./default_customer/LaundryPlans"
-export {default as TrackingOrder} from "./default_customer/TrackingOrder"
+export { default as CheckStartingPoint } from "./default_customer/checkStartingPoint";
+export { default as MainCustomer } from "./default_customer/mainCustomer";
+export { default as LaundryPlans } from "./default_customer/LaundryPlans";
+export { default as TrackingOrder } from "./default_customer/TrackingOrder";

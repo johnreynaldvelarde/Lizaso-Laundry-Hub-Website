@@ -45,6 +45,7 @@ export const COLORS = {
   // Primary and Secondary colors
   primary: "#595959",
   secondary: "#5787C8",
+  gradinet: "#447F8C",
 
   // Status Colors
   success: "#28a745", // For success messages or indicators

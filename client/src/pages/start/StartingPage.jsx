@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 
 import LandingNavbar from "../../components/landing-page/LandingNavbar";
-import LandingHeroSection from "../../components/landing-page/Home";
-import LandingFeatures from "../../components/landing-page/Features";
 import PopupCreateAccount from "../../components/common/PopupCreateAccount";
 import PopupLogin from "../../components/common/PopupLogin";
-import LandingHome from "../../components/landing-page/LandingHome1";
 import Home from "../../components/landing-page/Home";
 import Features from "../../components/landing-page/Features";
 import Pricing from "../../components/landing-page/Pricing";
+import Services from "../../components/landing-page/Services";
+import Footer from "../../components/landing-page/Footer";
+import About from "../../components/landing-page/About";
+import Contact from "../../components/landing-page/Contact";
 
 const StartingPage = () => {
   const [showLoginPopup, setLoginShowPopup] = useState(false);
@@ -35,8 +36,17 @@ const StartingPage = () => {
         <div id="features">
           <Features />
         </div>
+        <div id="service">
+          <Services />
+        </div>
         <div id="pricing">
           <Pricing />
+        </div>
+        <div id="about">
+          <About />
+        </div>
+        <div id="contact">
+          <Contact />
         </div>
 
         <PopupLogin
@@ -48,6 +58,7 @@ const StartingPage = () => {
           setShowCreateAccountPopup={setShowCreateAccountPopup}
         />
       </div>
+      <Footer />
     </>
   );
 };
