@@ -171,14 +171,14 @@ const useCheckStartingPoint = () => {
 
       if (response.success) {
         toast.success(response.message);
-        // navigate("/customer-page");
+        navigate("/customer-page");
       } else {
         toast.error(response.message);
       }
     } catch (error) {
       toast.error("Error updating customer details:", error);
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
