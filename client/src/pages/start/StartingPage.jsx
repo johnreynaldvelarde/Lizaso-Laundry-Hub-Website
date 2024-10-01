@@ -31,7 +31,10 @@ const StartingPage = () => {
       />
       <div className="bg-[#f1f1f1]">
         <div id="#">
-          <Home />
+          <Home
+            HandleLoginPopup={handleLoginPopup}
+            HandleCreateAccountPopup={handleCreateAccountPopup}
+          />
         </div>
         <div id="features">
           <Features />

@@ -32,16 +32,24 @@ module.exports = {
       lg: "1200px",
       xl: "1700px",
     },
-    container:{
+    container: {
       center: true,
-      padding:{
+      padding: {
         default: "1rem",
         sm: "2rem",
         lg: "3rem",
         xl: "4rem",
-      }
+      },
     },
   },
   plugins: [],
 };
 
+// screens: {
+//   xs: "480px",
+//   ss: "620px",
+//   sm: "768px",
+//   md: "1060px",
+//   lg: "1200px",
+//   xl: "1700px",
+// },
