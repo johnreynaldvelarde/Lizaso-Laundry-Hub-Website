@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import LandingNavbar from "../../components/landing-page/LandingNavbar";
 import PopupCreateAccount from "../../components/common/PopupCreateAccount";
@@ -14,6 +14,8 @@ import Contact from "../../components/landing-page/Contact";
 const StartingPage = () => {
   const [showLoginPopup, setLoginShowPopup] = useState(false);
   const [showCreateAccountPopup, setShowCreateAccountPopup] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const sectionRefs = useRef([]);
 
   const handleLoginPopup = () => {
     setLoginShowPopup(true);
@@ -23,32 +25,64 @@ const StartingPage = () => {
     setShowCreateAccountPopup(true);
   };
 
+  // Set up the observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = sectionRefs.current.indexOf(entry.target);
+            if (index !== -1) {
+              setActiveIndex(index);
+            }
+          }
+        });
+      },
+      { threshold: 0.6 }
+    ); // Adjust threshold as needed
+
+    sectionRefs.current.forEach((section) => {
+      if (section) {
+        observer.observe(section);
+      }
+    });
+
+    return () => {
+      sectionRefs.current.forEach((section) => {
+        if (section) {
+          observer.unobserve(section);
+        }
+      });
+    };
+  }, []);
+
   return (
     <>
       <LandingNavbar
         HandleLoginPopup={handleLoginPopup}
         HandleCreateAccountPopup={handleCreateAccountPopup}
+        activeIndex={activeIndex}
       />
       <div className="bg-[#f1f1f1]">
-        <div id="#">
+        <div id="#" ref={(el) => (sectionRefs.current[0] = el)}>
           <Home
             HandleLoginPopup={handleLoginPopup}
             HandleCreateAccountPopup={handleCreateAccountPopup}
           />
         </div>
-        <div id="features">
+        <div id="features" ref={(el) => (sectionRefs.current[1] = el)}>
           <Features />
         </div>
-        <div id="service">
+        <div id="services" ref={(el) => (sectionRefs.current[2] = el)}>
           <Services />
         </div>
-        <div id="pricing">
+        <div id="pricing" ref={(el) => (sectionRefs.current[3] = el)}>
           <Pricing />
         </div>
-        <div id="about">
+        <div id="about" ref={(el) => (sectionRefs.current[4] = el)}>
           <About />
         </div>
-        <div id="contact">
+        <div id="contact" ref={(el) => (sectionRefs.current[5] = el)}>
           <Contact />
         </div>
 

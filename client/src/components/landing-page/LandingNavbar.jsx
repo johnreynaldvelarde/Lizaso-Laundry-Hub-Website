@@ -6,9 +6,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import X from "@mui/icons-material/Close";
 import styles from "../../style";
 
-const LandingNavbar = ({ HandleLoginPopup, HandleCreateAccountPopup }) => {
+const LandingNavbar = ({
+  HandleLoginPopup,
+  HandleCreateAccountPopup,
+  activeIndex,
+}) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
   };
@@ -33,15 +36,11 @@ const LandingNavbar = ({ HandleLoginPopup, HandleCreateAccountPopup }) => {
             </span>
           </div>
           <ul
-            className="hidden lg:flex ml-14 space-x-12 font-medium"
+            className="hidden lg:flex ml-14 space-x-10 font-medium"
             style={{ color: styles.textColor2, fontSize: styles.h3FontSize }}
           >
             {navItems.map((item, index) => (
-              <li
-                key={index}
-                className="relative"
-                onClick={() => setActiveIndex(index)}
-              >
+              <li key={index} className="relative">
                 <a
                   href={item.href}
                   style={{
@@ -65,13 +64,6 @@ const LandingNavbar = ({ HandleLoginPopup, HandleCreateAccountPopup }) => {
                 ></div>
               </li>
             ))}
-            {/* {navItems.map((item, index) => (
-              <li key={index}>
-                <a href={item.href} smooth>
-                  {item.label}
-                </a>
-              </li>
-            ))} */}
           </ul>
           <div
             className="hidden lg:flex justify-center space-x-6 items-center"

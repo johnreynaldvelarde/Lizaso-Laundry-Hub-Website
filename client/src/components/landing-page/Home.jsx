@@ -36,7 +36,7 @@ const Home = ({ HandleLoginPopup, HandleCreateAccountPopup }) => {
         backgroundColor: styles.divider,
       }}
     >
-      <div className="container mx-auto flex flex-col lg:flex-row items-center min-h-[780px]">
+      <div className="container mx-auto flex flex-col lg:flex-row items-center min-h-[765px]">
         {/* Text content */}
         <div className="lg:w-1/2 px-4 lg:px-0 lg:mr-20 flex flex-col items-center lg:items-start text-center lg:text-left mb-10 lg:mb-0">
           {/* Title */}

@@ -30,8 +30,8 @@ const featuresData = [
 const Services = () => {
   return (
     <div
-      className="py-20 bg-white  min-h-[500px] flex items-center"
-      id="features"
+      className="py-40 bg-gray-20  min-h-[915px] flex items-center"
+      id="services"
     >
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-gray-500 text-center mb-10">
