@@ -35,7 +35,7 @@ const Pricing = () => {
   ];
 
   return (
-    <div className="bg-gray-50 py-20" id="pricing">
+    <div className="bg-gray-20 py-20" id="pricing">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-10 text-[#5787C8]">
           Pricing Plans
