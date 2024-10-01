@@ -69,6 +69,7 @@ const useCheckStartingPoint = () => {
 
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (
       !addressLine1 ||
       !country ||
@@ -84,38 +85,46 @@ const useCheckStartingPoint = () => {
     const address = `${addressLine1}, ${
       addressLine2 ? addressLine2 + ", " : ""
     }${city}, ${province}, ${postalCode}, ${country}`;
-    const location = await geocodeAddress(address);
 
-    if (location) {
-      setLatitude(location.lat);
-      setLongitude(location.lng);
-      setStep(2);
-    } else {
-      // Address not found, use browser geolocation
-      if (navigator.geolocation) {
-        console.log("2");
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setLatitude(position.coords.latitude);
-            setLongitude(position.coords.longitude);
-            console.log(`Latitude: ${position.coords.latitude}`);
-            console.log(`Longitude: ${position.coords.longitude}`);
-            setStep(2);
-          },
-          (error) => {
-            console.error("Error getting location:", error);
-            toast.error("Unable to get your location.");
-          }
-        );
+    try {
+      // Try to fetch latitude and longitude for the given address
+      const location = await geocodeAddress(address);
+
+      if (location) {
+        // Set the latitude and longitude
+        setLatitude(location.lat);
+        setLongitude(location.lng);
+        setStep(2); // Proceed to step 2
       } else {
-        toast.error("Geolocation is not supported by this browser.");
+        // If geocode fails, use browser geolocation
+        if (navigator.geolocation) {
+          console.log("Using browser geolocation...");
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              setLatitude(position.coords.latitude);
+              setLongitude(position.coords.longitude);
+              console.log(`Latitude: ${position.coords.latitude}`);
+              console.log(`Longitude: ${position.coords.longitude}`);
+              setStep(2); // Proceed to step 2
+            },
+            (error) => {
+              console.error("Error getting location:", error);
+              toast.error("Unable to get your location.");
+            }
+          );
+        } else {
+          toast.error("Geolocation is not supported by this browser.");
+        }
       }
+    } catch (error) {
+      console.error("Error fetching address or location:", error);
+      toast.error("An error occurred while processing your request.");
+    } finally {
+      setLoading(false);
     }
-    setStep(2);
   };
 
   // Set 2
-
   const [selectedStore, setSelectedStore] = useState(null);
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -127,7 +136,7 @@ const useCheckStartingPoint = () => {
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
     if (!selectedStore) {
-      alert("Please select a store.");
+      toast.error("Please select a store.");
       return;
     }
 
@@ -135,6 +144,8 @@ const useCheckStartingPoint = () => {
       console.error("User details are not properly set.");
       return;
     }
+
+    setLoading(true);
 
     try {
       const storeId = selectedStore.id;
@@ -160,12 +171,14 @@ const useCheckStartingPoint = () => {
 
       if (response.success) {
         toast.success(response.message);
-        navigate("/customer-page");
+        // navigate("/customer-page");
       } else {
         toast.error(response.message);
       }
     } catch (error) {
       toast.error("Error updating customer details:", error);
+    } finally {
+      // setLoading(false);
     }
   };
 
@@ -280,93 +293,3 @@ const useCheckStartingPoint = () => {
 };
 
 export default useCheckStartingPoint;
-
-// Process the form submission here
-// alert(
-//   `Address: ${addressLine1}, ${addressLine2}, ${city}, ${province}, ${postalCode}, ${country}\n` +
-//     `Selected Store: ${selectedStore.store_name}\nEmail: ${email}\nPhone: ${phoneNumber}`
-// );
-
-// const fetchLocationFromOpenWeather = async () => {
-//   const apiKey = "your_openweather_api_key"; // Replace with your OpenWeather API key
-//   const response = await fetch(
-//     `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}`
-//   );
-//   const data = await response.json();
-//   if (data && data.coord) {
-//     return {
-//       lat: data.coord.lat,
-//       lng: data.coord.lon,
-//     };
-//   }
-//   return null;
-// };
-
-// else {
-//   // Address not found, use browser geolocation and OpenWeather API
-//   if (navigator.geolocation) {
-//     navigator.geolocation.getCurrentPosition(
-//       async (position) => {
-//         setLatitude(position.coords.latitude);
-//         setLongitude(position.coords.longitude);
-//         console.log(position);
-//         console.log(`Browser Latitude: ${position.coords.latitude}`);
-//         console.log(`Browser Longitude: ${position.coords.longitude}`);
-//         setStep(2);
-//       },
-//       async (error) => {
-//         console.error("Error getting location:", error);
-//         toast.error(
-//           "Unable to get your location via browser. Trying IP-based location..."
-//         );
-
-//         // Fallback to OpenWeather API if geolocation fails
-//         const ipLocation = await fetchLocationFromOpenWeather();
-//         if (ipLocation) {
-//           setLatitude(ipLocation.lat);
-//           setLongitude(ipLocation.lng);
-//           console.log(`IP-based Latitude: ${ipLocation.lat}`);
-//           console.log(`IP-based Longitude: ${ipLocation.lng}`);
-//           setStep(2);
-//         } else {
-//           toast.error("Unable to get your location.");
-//         }
-//       }
-//     );
-//   } else {
-//     toast.error("Geolocation is not supported by this browser.");
-//   }
-// }
-
-// const fetchStoreData = async () => {
-//   try {
-//     if (latitude === null || longitude === null) {
-//       console.error("Latitude or Longitude is not set.");
-//       return;
-//     }
-
-//     const response = await viewStore.getStoreList({});
-//     const storeList = response.data.map((store) => {
-//       const distance = calculateDistance(
-//         parseFloat(latitude),
-//         parseFloat(longitude),
-//         parseFloat(store.latitude), // assuming stores have latitude and longitude fields
-//         parseFloat(store.longitude)
-//       );
-//       return { ...store, distance };
-//     });
-
-//     // Sort stores by distance
-//     storeList.sort((a, b) => a.distance - b.distance);
-
-//     setStoreData(storeList);
-//     setLoading(false);
-//     console.log(storeList);
-//   } catch (error) {
-//     console.error("Error fetching store data:", error);
-//     setLoading(false);
-//   }
-// };
-// const response = await viewStore.getStoreList({});
-// setStoreData(response.data);
-// setLoading(false);

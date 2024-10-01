@@ -85,7 +85,7 @@ const CheckStartingPoint = () => {
                 <input
                   type="text"
                   id="addressLine1"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                   value={addressLine1}
                   onChange={(e) => setAddressLine1(e.target.value)}
                   required
@@ -101,7 +101,7 @@ const CheckStartingPoint = () => {
                 <input
                   type="text"
                   id="addressLine2"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                   value={addressLine2}
                   onChange={(e) => setAddressLine2(e.target.value)}
                 />
@@ -112,7 +112,7 @@ const CheckStartingPoint = () => {
                 </label>
                 <select
                   id="country"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                   value={country}
                   onChange={handleCountryChange}
                   required
@@ -135,7 +135,7 @@ const CheckStartingPoint = () => {
                     </label>
                     <select
                       id="region"
-                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                       value={region}
                       onChange={handleRegionChange}
                       disabled={!country}
@@ -159,7 +159,7 @@ const CheckStartingPoint = () => {
                       </label>
                       <select
                         id="province"
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                         value={province}
                         onChange={handleProvinceChange}
                         disabled={!region}
@@ -184,7 +184,7 @@ const CheckStartingPoint = () => {
                       </label>
                       <select
                         id="city"
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                         value={city}
                         onChange={handleCityChange}
                         disabled={!province}
@@ -211,7 +211,7 @@ const CheckStartingPoint = () => {
                 <input
                   type="text"
                   id="postalCode"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
                   required
@@ -219,10 +219,22 @@ const CheckStartingPoint = () => {
               </div>
               <button
                 type="submit"
-                className="w-full py-2 px-4  rounded-md hover:bg-blue-900 mt-2"
-                style={{ color: styles.white, background: styles.secondary }}
+                className={`w-full h-10 py-5 px-4 rounded-md transition duration-200 hover:opacity-90 flex justify-center items-center mt-8 ${
+                  loading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+                style={{
+                  color: styles.white,
+                  background: styles.secondary,
+                  fontWeight: 500,
+                  fontSize: 18,
+                }}
+                disabled={loading}
               >
-                Continue
+                {loading ? (
+                  <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                ) : (
+                  "Continue"
+                )}
               </button>
             </form>
           )}
@@ -231,20 +243,20 @@ const CheckStartingPoint = () => {
               <h1 className="text-xl font-semibold text-gray-800 mb-4">
                 Select a Store
               </h1>
-              <div className="overflow-y-auto max-h-96 scrollable p-1">
+              <div className="overflow-y-auto max-h-96 scrollable p-1 w-full xs:w-[350px] md:w-[450px]  lg:w-[450px] xl:w-[500px] my-8">
                 <ul className="mb-6">
                   {storeData.map((store) => (
                     <li
                       key={store.id}
                       className={`flex justify-between items-center p-4 mb-3 rounded-lg cursor-pointer transition-colors duration-300 ease-in-out ${
                         selectedStore?.id === store.id
-                          ? "bg-blue-600 text-white"
+                          ? "bg-[#5787C8] text-white"
                           : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                       }`}
                       onClick={() => handleStoreSelection(store)}
                     >
                       <div>
-                        <h2 className="text-lg font-semibold">
+                        <h2 className="text-lg font-bold ">
                           {store.store_name}
                         </h2>
                         <p className="text-sm">
@@ -262,8 +274,8 @@ const CheckStartingPoint = () => {
                             selectedStore?.id === store.id
                               ? "text-white"
                               : store.distance >= 5
-                              ? "text-red-600"
-                              : "text-green-600"
+                              ? "text-[#F23F42]"
+                              : "text-[#23A55A]"
                           }`}
                         >
                           {store.distance} km
@@ -281,7 +293,7 @@ const CheckStartingPoint = () => {
                   <input
                     type="email"
                     id="email"
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200 "
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -297,7 +309,7 @@ const CheckStartingPoint = () => {
                   <input
                     type="tel"
                     id="phoneNumber"
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
                     value={phoneNumber}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -311,9 +323,22 @@ const CheckStartingPoint = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mt-5"
+                  className={`w-full h-10 py-5 px-4 rounded-md transition duration-200 hover:opacity-90 flex justify-center items-center mt-10 ${
+                    loading ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
+                  style={{
+                    color: styles.white,
+                    background: styles.secondary,
+                    fontWeight: 500,
+                    fontSize: 18,
+                  }}
+                  disabled={loading}
                 >
-                  Submit
+                  {loading ? (
+                    <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                  ) : (
+                    "Submit"
+                  )}
                 </button>
               </form>
             </>
