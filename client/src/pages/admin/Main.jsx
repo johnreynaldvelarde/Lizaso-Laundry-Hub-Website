@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import Navbar from "../../components/common/Navbar";
 import Sidebar from "../../components/common/Sidebar";
+import LoadingBar from "../../components/LoadingBar";
 
 // Importing components lazily from the centralized index.js in the pages folder
 const Dashboard = lazy(() =>

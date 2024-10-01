@@ -89,6 +89,8 @@ npm install phosphor-react
 npm install date-fns
 npx shadcn@latest init
 
+npm install --save nprogress
+
 
 
 
@@ -100,4 +102,9 @@ npx shadcn@latest init
 
 
 store_id: userDetails.storeId,
+
+
+
+React Native -> rnf / rnfce
+React -> rfce
 

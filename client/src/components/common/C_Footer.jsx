@@ -17,7 +17,6 @@ const C_Footer = () => {
           </div>
           {/* Resources Section */}
           <div className="mb-6 md:mb-0 w-full md:w-1/3 text-center">
-            <h3 className="text-lg font-semibold mb-2">Resources</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="hover:underline">
