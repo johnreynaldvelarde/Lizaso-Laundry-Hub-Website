@@ -13,8 +13,8 @@ export const getCountRequestInQueue = {
       const response = await axiosPrivate.get(`/user/${storeId}/count-inqueue`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching customer requests:', error);
-      throw error; 
+      console.error("Error fetching customer requests:", error);
+      throw error;
     }
   },
 };
@@ -22,11 +22,13 @@ export const getCountRequestInQueue = {
 export const getCountLaundryAssignment = {
   getCountAssignment: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/count-assignment`);
+      const response = await axiosPrivate.get(
+        `/user/${storeId}/count-assignment`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching laundry assignment:', error);
-      throw error; 
+      console.error("Error fetching laundry assignment:", error);
+      throw error;
     }
   },
 };
@@ -34,11 +36,13 @@ export const getCountLaundryAssignment = {
 export const getAssignmentInProgress = {
   getInProgress: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/get-assignment`);
+      const response = await axiosPrivate.get(
+        `/user/${storeId}/get-assignment`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching laundry assignment:', error);
-      throw error; 
+      console.error("Error fetching laundry assignment:", error);
+      throw error;
     }
   },
 };
@@ -67,8 +71,8 @@ export const viewRequestInQueue = {
       const response = await axiosPrivate.get(`/user/${storeId}/get-inqueue`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching customer requests:', error);
-      throw error; 
+      console.error("Error fetching customer requests:", error);
+      throw error;
     }
   },
 };
@@ -92,19 +96,19 @@ export const viewUnits = {
   },
 };
 
-
 export const viewUnitAvailable = {
   getUnitAvailable: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/unit-available`);
+      const response = await axiosPrivate.get(
+        `/user/${storeId}/unit-available`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching:', error);
-      throw error; 
+      console.error("Error fetching:", error);
+      throw error;
     }
   },
 };
-
 
 export const getListCustomer = {
   getSelectedCustomer: async (storeId) => {
@@ -112,8 +116,8 @@ export const getListCustomer = {
       const response = await axiosPrivate.get(`/user/${storeId}/get-inqueue`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching customer requests:', error);
-      throw error; 
+      console.error("Error fetching customer requests:", error);
+      throw error;
     }
   },
 };
@@ -124,8 +128,8 @@ export const getSelectedCustomer = {
       const response = await axiosPrivate.get(`/user/${storeId}/get-customer`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching selected customer:', error);
-      throw error; 
+      console.error("Error fetching selected customer:", error);
+      throw error;
     }
   },
 };
@@ -133,11 +137,13 @@ export const getSelectedCustomer = {
 export const getServiceType = {
   getService: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/unit/${storeId}/get-service-types`);
+      const response = await axiosPrivate.get(
+        `/unit/${storeId}/get-service-types`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching selected customer:', error);
-      throw error; 
+      console.error("Error fetching selected customer:", error);
+      throw error;
     }
   },
 };
@@ -154,7 +160,7 @@ export const getCategoryItem = {
         throw new Error("Failed to fetch category items.");
       }
     } catch (error) {
-      return handleError(error); 
+      return handleError(error);
     }
   },
 };
@@ -163,7 +169,7 @@ export const viewInventory = {
   getViewInventoryList: async (storeId) => {
     try {
       const response = await axiosPrivate.get("/view-inventory", {
-        params: { store_id: storeId }
+        params: { store_id: storeId },
       });
       const { success, data } = response.data;
 
@@ -178,12 +184,11 @@ export const viewInventory = {
   },
 };
 
-
 export const viewCategory = {
   getViewCategoryList: async (storeId) => {
     try {
       const response = await axiosPrivate.get("/view-category", {
-        params: { store_id: storeId }
+        params: { store_id: storeId },
       });
       const { success, data } = response.data;
 
@@ -197,7 +202,6 @@ export const viewCategory = {
     }
   },
 };
-
 
 // STORE SECTION
 export const viewStore = {
@@ -224,8 +228,8 @@ export const viewUser = {
       const response = await axiosPrivate.get(`/user/${userId}/admin-get-user`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching:', error);
-      throw error; 
+      console.error("Error fetching:", error);
+      throw error;
     }
   },
 };
@@ -235,11 +239,45 @@ export const viewUser = {
 export const getServiceTypeAndStore = {
   getServiceType: async (userId) => {
     try {
-      const response = await axiosPrivate.get(`/settings/${userId}/get-service-types`);
+      const response = await axiosPrivate.get(
+        `/settings/${userId}/get-service-types`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error fetching:', error);
-      throw error; 
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+// ---> CUSTOMER SECTION <---
+
+//  <----- Laundry Services Section ----->
+export const getCustomerServiceType = {
+  getServiceType: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/settings/${userId}/get-service-types`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+//  <----- Track Order Section ----->
+export const getCustomerTrackOrder = {
+  getServiceType: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/settings/${userId}/get-service-types`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
     }
   },
 };

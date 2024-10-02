@@ -9,6 +9,7 @@ import getRoutes from "./routes/getRoutes.js";
 import putRoutes from "./routes/putRoutes.js";
 import checkRoutes from "./routes/checkRoutes.js";
 import mobileRoutes from "./routes/mobileRoutes.js";
+import customerRoutes from "./routes/customerRoutes.js";
 
 // Import File Function
 import {
@@ -40,6 +41,7 @@ app.use(
   getRoutes,
   putRoutes,
   checkRoutes,
+  customerRoutes,
   mobileRoutes
 );
 
