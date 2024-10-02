@@ -1,5 +1,5 @@
 import express from "express";
-import { handleViewStore } from "../services/useStore.js";
+import { handleViewStore } from "../services/admin/useStore.js";
 import {
   handleGetCountLaundryAssignment,
   handleGetCountRequestInQueue,
@@ -9,16 +9,16 @@ import {
   handleGetServiceType,
   handleGetUnitListAvaiable,
   handleViewUnits,
-} from "../services/useUnits.js";
+} from "../services/admin/useUnits.js";
 import { handleGenerateUnitName } from "../services/checkService.js";
 import {
   handleGetCategory,
   handleViewInventory,
   handleViewListCategory,
-} from "../services/useInventory.js";
+} from "../services/admin/useInventory.js";
 import { getPool } from "../db/dbConfig.js";
-import { handleAdminGetUser } from "../services/useUser.js";
-import { handleGetServiceTypeAndStore } from "../services/useSettings.js";
+import { handleAdminGetUser } from "../services/admin/useUser.js";
+import { handleGetServiceTypeAndStore } from "../services/admin/useSettings.js";
 
 const router = express.Router();
 

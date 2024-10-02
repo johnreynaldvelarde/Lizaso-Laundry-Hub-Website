@@ -1,17 +1,17 @@
 import express from "express";
-import { handleCreateStore } from "../services/useStore.js";
+import { handleCreateStore } from "../services/admin/useStore.js";
 import {
   handleCreateUnits,
   handleSetLaundryAssignment,
   handleSetWalkInRequest,
-} from "../services/useUnits.js";
+} from "../services/admin/useUnits.js";
 import {
   handleCreateItem,
   handleCreateItemCategory,
-} from "../services/useInventory.js";
-import { handleCustomerServiceRequest } from "../services/useCustomer.js";
+} from "../services/admin/useInventory.js";
+import { handleCustomerServiceRequest } from "../services/admin/useCustomer.js";
 import { getPool } from "../db/dbConfig.js";
-import { handleSetNewServiceType } from "../services/useSettings.js";
+import { handleSetNewServiceType } from "../services/admin/useSettings.js";
 
 const router = express.Router();
 

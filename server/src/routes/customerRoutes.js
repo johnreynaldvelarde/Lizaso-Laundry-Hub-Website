@@ -1,5 +1,6 @@
 import express from "express";
 import { getPool } from "../db/dbConfig.js";
+import { handleUpdateCustomerBasicInformation } from "../services/customer/customer.js";
 
 const router = express.Router();
 
@@ -27,5 +28,11 @@ router.get(
 );
 
 // PUT
+router.put(
+  "/customers/:id/start",
+  withDatabaseConnection(async (req, res, connection) => {
+    await handleUpdateCustomerBasicInformation(req, res, connection);
+  })
+);
 
 export default router;
