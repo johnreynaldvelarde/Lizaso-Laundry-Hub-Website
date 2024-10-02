@@ -31,12 +31,10 @@ export const handleLogin = async (req, res, db) => {
       );
 
       if (secResults.length === 0) {
-        return res
-          .status(404)
-          .json({
-            success: false,
-            message: "User security details not found.",
-          });
+        return res.status(404).json({
+          success: false,
+          message: "User security details not found.",
+        });
       }
 
       const userSecurity = secResults[0];
@@ -65,12 +63,10 @@ export const handleLogin = async (req, res, db) => {
         user.id,
       ]);
 
-
-      const actionType = ActionTypes.AUTHENTICATION
+      const actionType = ActionTypes.AUTHENTICATION;
       const actionDescription = ActionDescriptions[actionType].LOGIN(username);
 
       await logActivity(db, user.id, userType, actionType, actionDescription);
-
     } else {
       // If not in User_Account, check Customers table
       const [customerAccountResults] = await db.query(
@@ -91,12 +87,10 @@ export const handleLogin = async (req, res, db) => {
       );
 
       if (secCustomerResults.length === 0) {
-        return res
-          .status(404)
-          .json({
-            success: false,
-            message: "Customer security details not found.",
-          });
+        return res.status(404).json({
+          success: false,
+          message: "Customer security details not found.",
+        });
       }
 
       const customerSecuirty = secCustomerResults[0];
@@ -117,17 +111,16 @@ export const handleLogin = async (req, res, db) => {
       await db.query("UPDATE Customer SET isOnline = 1 WHERE id = ?", [
         user.id,
       ]);
-
     }
 
     // Generate JWT tokens
     const accessToken = createToken(
-      { userId: user.id, username, userType,},
+      { userId: user.id, username, userType },
       process.env.ACCESS_TOKEN_SECRET,
       process.env.JWT_EXPIRES_IN
     );
     const refreshToken = createToken(
-      { userId: user.id, username, userType},
+      { userId: user.id, username, userType },
       process.env.REFRESH_TOKEN_SECRET,
       process.env.JWT_REFRESH_EXPIRES_IN
     );
@@ -275,7 +268,7 @@ export const getUserDetails = async (req, res, db) => {
     return res.status(401).json({ success: false, message: "Invalid token" });
   }
 
-  console.log("Decoded Token1:", decoded);
+  // console.log("Decoded Token1:", decoded);
 
   const userId = decoded.userId;
   const username = decoded.username;
@@ -322,35 +315,14 @@ export const getUserDetails = async (req, res, db) => {
             username: customer.c_username,
           },
         });
-   
       } else {
         return res
           .status(404)
           .json({ success: false, message: "User or Customer not found" });
       }
-
     }
   } catch (error) {
     console.error("Error fetching user details:", error);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
- 
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

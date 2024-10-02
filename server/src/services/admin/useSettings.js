@@ -72,7 +72,7 @@ export const handleUpdateServiceType = async (req, res, connection) => {
 // Delete the service type
 export const handleDeleteServiceType = async (req, res, connection) => {
   const { id } = req.params;
-  
+
   try {
     await connection.beginTransaction();
     const updateQuery = `
@@ -93,9 +93,6 @@ export const handleDeleteServiceType = async (req, res, connection) => {
       .json({ error: "An error occurred while deleting the service type." });
   }
 };
-
-
-
 
 // Get the service type
 export const handleGetServiceTypeAndStore = async (req, res, connection) => {
@@ -162,12 +159,10 @@ export const handleGetServiceTypeAndStore = async (req, res, connection) => {
   } catch (error) {
     await connection.rollback();
     console.error("Error fetching service types and stores:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while fetching data.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
   } finally {
     // Release the connection back to the pool
     if (connection) connection.release();

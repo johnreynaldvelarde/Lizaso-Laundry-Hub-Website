@@ -1,3 +1,99 @@
+// POST
+export const handleCustomerServiceRequest = async (req, res, connection) => {
+  const { id } = req.params;
+  const { store_id, customer_name, notes, service_type } = req.body;
+
+  if (!store_id || !customer_name || !service_type) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const [result] = await connection.execute(
+      `INSERT INTO Service_Request (
+          store_id,
+          user_id,  -- Assuming you want to assign the delivery person later
+          customer_id,
+          customer_fullname,
+          notes,
+          service_type,
+          request_date,
+          request_status
+        ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)`,
+      [store_id, null, id, customer_name, notes, service_type, "In Queue"]
+    );
+
+    // 'Pending Pickup'
+
+    // Get the ID of the newly created service request
+    const newRequestId = result.insertId;
+
+    // Respond with the created service request ID and success message
+    res.status(201).json({
+      message: "Service request created successfully",
+      service_request_id: newRequestId,
+    });
+  } catch (error) {
+    console.error("Error creating service request:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+// GET
+export const handleGetServiceTypeAndPromotions = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params; // store id from the request params
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        st.id AS service_id,
+        st.service_name,
+        st.default_price,
+        sp.id AS promotion_id,
+        sp.discount_percentage,
+        sp.discount_price,
+        sp.valid_days,
+        sp.start_date,
+        sp.end_date,
+        sp.isActive
+      FROM 
+        Service_Type st
+      LEFT JOIN 
+        Service_Promotions sp ON st.id = sp.service_id 
+          AND sp.isActive = 1 
+          AND sp.isArchive = 0 
+          AND (sp.start_date IS NULL OR sp.start_date <= CURDATE())
+          AND (sp.end_date IS NULL OR sp.end_date >= CURDATE())
+      WHERE 
+        st.store_id = ? 
+        AND st.isArchive = 0
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching services and promotions:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+// PUT
 export const handleUpdateCustomerBasicInformation = async (
   req,
   res,
@@ -66,45 +162,6 @@ export const handleUpdateCustomerBasicInformation = async (
   }
 };
 
-export const handleCustomerServiceRequest = async (req, res, connection) => {
-  const { id } = req.params;
-  const { store_id, customer_name, notes, service_type } = req.body;
-
-  if (!store_id || !customer_name || !service_type) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-
-  try {
-    const [result] = await connection.execute(
-      `INSERT INTO Service_Request (
-          store_id,
-          user_id,  -- Assuming you want to assign the delivery person later
-          customer_id,
-          customer_fullname,
-          notes,
-          service_type,
-          request_date,
-          request_status
-        ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)`,
-      [store_id, null, id, customer_name, notes, service_type, "In Queue"]
-    );
-
-    // 'Pending Pickup'
-
-    // Get the ID of the newly created service request
-    const newRequestId = result.insertId;
-
-    // Respond with the created service request ID and success message
-    res.status(201).json({
-      message: "Service request created successfully",
-      service_request_id: newRequestId,
-    });
-  } catch (error) {
-    console.error("Error creating service request:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
 // export const handleUpdateCustomerBasicInformation = async (
 //   req,
 //   res,
@@ -170,5 +227,25 @@ export const handleCustomerServiceRequest = async (req, res, connection) => {
 //   } finally {
 //     // Release the database connection
 //     connection.release();
+//   }
+// };
+
+// export const handleGetServiceTypeAndPromotions = async (
+//   req,
+//   res,
+//   connection
+// ) => {
+//   const { id } = req.params; // store id from the request params
+
+//   try {
+//     await connection.beginTransaction();
+//   } catch (error) {
+//     await connection.rollback();
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching data.",
+//     });
+//   } finally {
+//     if (connection) connection.release();
 //   }
 // };

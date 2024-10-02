@@ -1,8 +1,18 @@
-export const getCustomerServiceType = {
-  getServiceType: async (userId) => {
+import { axiosPrivate } from "../../api/axios";
+
+// const handleError = (error) => {
+//   const message =
+//     error.response?.data?.message || "An unexpected error occurred.";
+//   return new Error(message);
+// };
+
+// POST
+// GET
+export const getCustomerServiceAndPromotions = {
+  getServiceWithPromotions: async (storeId) => {
     try {
       const response = await axiosPrivate.get(
-        `/settings/${userId}/get-service-types`
+        `/customers/${storeId}/get-service-types`
       );
       return response.data;
     } catch (error) {
@@ -26,3 +36,4 @@ export const getCustomerTrackOrder = {
     }
   },
 };
+// PUT

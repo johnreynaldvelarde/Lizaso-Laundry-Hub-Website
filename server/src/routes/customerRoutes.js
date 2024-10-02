@@ -1,6 +1,9 @@
 import express from "express";
 import { getPool } from "../db/dbConfig.js";
-import { handleUpdateCustomerBasicInformation } from "../services/customer/customer.js";
+import {
+  handleGetServiceTypeAndPromotions,
+  handleUpdateCustomerBasicInformation,
+} from "../services/customer/customer.js";
 
 const router = express.Router();
 
@@ -21,9 +24,9 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 
 // GET
 router.get(
-  "/settings/:id/get-service-types",
+  "/customers/:id/get-service-types",
   withDatabaseConnection(async (req, res, connection) => {
-    await (req, res, connection);
+    await handleGetServiceTypeAndPromotions(req, res, connection);
   })
 );
 

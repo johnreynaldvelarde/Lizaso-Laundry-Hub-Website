@@ -1,25 +1,39 @@
-import React, { useRef, useState } from "react";
-import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
+import React, { useEffect, useRef, useState } from "react";
+import useAuth from "../../contexts/AuthContext";
 import PopupServiceSelect from "./PopupServiceSelect";
 import m_1 from "../../assets/images/1636.jpg";
 import background_1 from "../../assets/images/background_2.jpg";
 import styles from "../../styles/style";
-import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Ensure this is included
+import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { getCustomerServiceAndPromotions } from "../../services/api/customerApi";
 
 const LaundryServices = () => {
+  const { userDetails } = useAuth();
   const [selectedService, setSelectedService] = useState(null);
-  const [services, setService] = useState([
-    { id: 1, label: "Wash", price: 10, promo: false },
-    { id: 2, label: "Wash/Dry", price: 15, promo: true },
-    { id: 3, label: "Wash/Dry/Fold", price: 20, promo: false },
-    { id: 4, label: "Ironing", price: 12, promo: true },
-    { id: 5, label: "Dry Cleaning", price: 25, promo: false },
-    { id: 6, label: "Stain Removal", price: 18, promo: true },
-    { id: 7, label: "Folding", price: 5, promo: false },
-    { id: 8, label: "Express Service", price: 30, promo: true },
-    { id: 9, label: "Pickup & Delivery", price: 10, promo: false },
-    { id: 10, label: "Special Packages", price: 40, promo: true },
-  ]);
+  const [services, setService] = useState([]);
+
+  const fetchServiceTypeAndPromotions = async () => {
+    if (!userDetails?.storeId) return;
+
+    try {
+      const response =
+        await getCustomerServiceAndPromotions.getServiceWithPromotions(
+          userDetails.storeId
+        );
+      if (response) {
+        const service = response.data || [];
+        setService(service);
+      } else {
+        console.error("Unexpected response format:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchServiceTypeAndPromotions();
+  }, [userDetails?.storeId]);
 
   // Example of promotional services
   const specialPromos = [
@@ -144,25 +158,28 @@ const LaundryServices = () => {
                 className="relative flex flex-col items-center bg-white border border-gray-300 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 ease-in-out w-full sm:w-64"
               >
                 {/* Promo Badge */}
-                {service.promo && (
+                {/* {service.promo && (
                   <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold py-1 px-2 rounded-full z-10">
                     Special Promo
                   </span>
-                )}
+                )} */}
                 <div className="flex items-center justify-center mb-4 mt-6">
                   <FaCheckCircle className="text-3xl text-[#5787C8] mr-2" />
                   <span
                     className="text-lg font-semibold"
                     style={{ color: styles.text3 }}
                   >
-                    {service.label}
+                    {service.service_name}
                   </span>
                 </div>
                 <p
-                  className="mt-2 text-gray-600 text-center"
+                  className="mt-2  text-center font-normal text-xl"
                   style={{ color: styles.primary }}
                 >
-                  ${service.price} {/* Display the price */}
+                  {new Intl.NumberFormat("en-PH", {
+                    style: "currency",
+                    currency: "PHP",
+                  }).format(service.default_price)}
                 </p>
                 <button
                   onClick={() => handleSelectService(service)}
