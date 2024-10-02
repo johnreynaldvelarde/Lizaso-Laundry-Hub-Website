@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 import PopupServiceSelect from "./PopupServiceSelect";
 import m_1 from "../../assets/images/1636.jpg";
-import background from "../../assets/images/background_3.jpg";
+import background_1 from "../../assets/images/background_2.jpg";
 import styles from "../../styles/style";
 import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Ensure this is included
 
@@ -51,76 +51,78 @@ const LaundryServices = () => {
   };
 
   return (
-    <div
-      className="bg-green-100"
-      style={{
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundBlendMode: "overlay",
-        backgroundColor: styles.white,
-      }}
-    >
-      {/* Upper Section */}
-      <div className="container mx-auto flex flex-col lg:flex-row items-center min-h-[300px] py-10">
-        {/* Left Side - Regular Services */}
-        <div className="flex-1 min-w-[300px] lg:min-w-[700px] max-w-[800px]  mt-5 lg:mt-0">
-          <h2 className="text-4xl font-bold text-[#5787C8] mb-4">
-            Welcome to Lizaso Laundry Hub
-          </h2>
-          <p className="text-lg text-gray-700 mb-6">
-            Choose from our wide range of laundry services that cater to all
-            your needs.
-          </p>
-          <button className="px-6 py-2 bg-[#5787C8] text-white rounded-md hover:bg-[#4A6D94] transition-colors duration-300 ease-in-out">
-            Explore Services
-          </button>
-        </div>
-
-        {/* Right Side - Special Promo Services */}
-        <div className="flex-1 min-w-[300px] lg:min-w-[400px] max-w-[800px] flex flex-col justify-center mt-14 lg:mt-0">
-          <h3 className="text-2xl font-bold text-[#5787C8] mb-4">
-            Special Promotions
-          </h3>
-          <div className="relative">
-            {/* Left Arrow */}
-            <button
-              onClick={scrollLeft}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
-            >
-              <FaChevronLeft className="text-[#5787C8]" />
+    <>
+      <div
+        className="bg-green-100"
+        style={{
+          backgroundImage: `url(${background_1})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "overlay",
+          backgroundColor: styles.border,
+        }}
+      >
+        {/* Upper Section */}
+        <div className="container mx-auto flex flex-col lg:flex-row items-center min-h-[300px] py-10">
+          {/* Left Side - Regular Services */}
+          <div className="flex-1 min-w-[300px] lg:min-w-[700px] max-w-[800px]  mt-5 lg:mt-0">
+            <h2 className="text-4xl font-bold text-[#5787C8] mb-4">
+              Welcome to Lizaso Laundry Hub
+            </h2>
+            <p className="text-lg font-semibold text-[#595959] mb-6">
+              Choose from our wide range of laundry services that cater to all
+              your needs.
+            </p>
+            <button className="px-6 py-2 bg-[#5787C8] text-white rounded-md hover:bg-[#4A6D94] transition-colors duration-300 ease-in-out">
+              Explore Services
             </button>
+          </div>
 
-            {/* Promotions Container */}
-            <div
-              ref={promoRef}
-              className="hori-scrollable flex overflow-x-auto scroll-smooth py-2 space-x-4"
-            >
-              {specialPromos.map((promo) => (
-                <div
-                  key={promo.id}
-                  className="relative bg-white border border-gray-300 rounded-lg shadow-lg p-4 m-2 transform transition-transform duration-300 hover:scale-105"
-                >
-                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-md">
-                    {promo.promo}
-                  </span>
-                  <FaCheckCircle className="text-3xl text-[#5787C8] mb-2" />
-                  <h3 className="text-lg font-semibold">{promo.label}</h3>
-                  <p className="text-gray-600">${promo.price}</p>
-                </div>
-              ))}
+          {/* Right Side - Special Promo Services */}
+          <div className="flex-1 min-w-[300px] lg:min-w-[400px] max-w-[800px] flex flex-col justify-center mt-14 lg:mt-0">
+            <h3 className="text-2xl font-bold text-[#5787C8] mb-4">
+              Special Promotions
+            </h3>
+            <div className="relative">
+              {/* Left Arrow */}
+              <button
+                onClick={scrollLeft}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
+              >
+                <FaChevronLeft className="text-[#5787C8]" />
+              </button>
+
+              {/* Promotions Container */}
+              <div
+                ref={promoRef}
+                className="hori-scrollable flex overflow-x-auto scroll-smooth py-2 space-x-4"
+              >
+                {specialPromos.map((promo) => (
+                  <div
+                    key={promo.id}
+                    className="relative bg-white border border-gray-300 rounded-lg shadow-lg p-4 m-2 transform transition-transform duration-300 hover:scale-105"
+                  >
+                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-md">
+                      {promo.promo}
+                    </span>
+                    <FaCheckCircle className="text-3xl text-[#5787C8] mb-2" />
+                    <h3 className="text-lg font-semibold">{promo.label}</h3>
+                    <p className="text-gray-600">${promo.price}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right Arrow */}
+              <button
+                onClick={scrollRight}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
+              >
+                <FaChevronRight className="text-[#5787C8]" />
+              </button>
             </div>
-
-            {/* Right Arrow */}
-            <button
-              onClick={scrollRight}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
-            >
-              <FaChevronRight className="text-[#5787C8]" />
-            </button>
           </div>
         </div>
       </div>
-
       {/* Below Section */}
       <div
         className="py-20 min-h-[500px] flex flex-col items-center"
@@ -170,7 +172,23 @@ const LaundryServices = () => {
                 </button>
               </div>
             ))}
-            {/* {services.map((service) => (
+          </div>
+          {selectedService && (
+            <PopupServiceSelect
+              service={selectedService}
+              onClose={handleClosePopup}
+            />
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default LaundryServices;
+
+{
+  /* {services.map((service) => (
               <div
                 key={service.id}
                 className="flex flex-col items-center bg-white border rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 ease-in-out w-full sm:w-64"
@@ -191,21 +209,8 @@ const LaundryServices = () => {
                   Select
                 </button>
               </div>
-            ))} */}
-          </div>
-          {selectedService && (
-            <PopupServiceSelect
-              service={selectedService}
-              onClose={handleClosePopup}
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default LaundryServices;
+            ))} */
+}
 
 // <div className="py-8 px-4 md:px-6 lg:px-8 mb-20">
 //   <h2 className="text-2xl font-bold text-center mb-6">

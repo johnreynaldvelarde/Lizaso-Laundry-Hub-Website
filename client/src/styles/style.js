@@ -75,6 +75,8 @@ const styles = {
   border: "#e0e0e0",
   border1: "#ccc",
 
+  header: "#A4A4A4",
+
   // Colors Additonal
   message: "#F23F42",
   online: "#23A55A",
