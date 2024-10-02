@@ -3,7 +3,6 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import C_Navbar from "../../components/common/C_Navbar";
 import C_Footer from "../../components/common/C_Footer";
 import LoadingBar from "../../components/LoadingBar";
-import C_Sidebar from "../../components/common/C_Sidebar";
 
 const LaundryServices = lazy(() =>
   import("../../pages").then((module) => ({ default: module.LaundryServices }))
@@ -22,7 +21,7 @@ const MainCustomer = () => {
     <div className="flex flex-col min-h-screen">
       <C_Navbar />
       <LoadingBar />
-      <main className="flex-grow max-w-7xl mx-auto pt-20 px-6">
+      <main className="bg-[#f1f1f1]">
         <section>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
@@ -45,6 +44,8 @@ const MainCustomer = () => {
 };
 
 export default MainCustomer;
+
+// flex-grow max-w-7xl mx-auto pt-10 px-6
 
 {
   /* <div className="flex flex-grow max-w-7xl mx-auto pt-20 px-6">

@@ -157,7 +157,7 @@ const C_Navbar = () => {
                 style={{
                   color: activeIndex === index ? "#5787C8" : "#595959",
                   backgroundColor:
-                    activeIndex === index ? "white" : "transparent",
+                    activeIndex === index ? "transparent" : "transparent",
                 }}
               >
                 <Tooltip title={tooltipTitles[index]} arrow>
