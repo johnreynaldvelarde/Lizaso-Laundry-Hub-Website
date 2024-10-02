@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 01, 2024 at 10:26 AM
+-- Generation Time: Oct 02, 2024 at 08:49 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -49,7 +49,17 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (6, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 11:14:31'),
 (7, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 11:57:27'),
 (8, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 13:45:23'),
-(9, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 15:05:51');
+(9, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 15:05:51'),
+(10, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 16:31:06'),
+(11, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 16:31:31'),
+(12, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 16:31:50'),
+(13, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 06:26:48'),
+(14, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 06:58:57'),
+(15, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 07:29:49'),
+(16, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 07:49:46'),
+(17, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 09:09:04'),
+(18, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 09:21:23'),
+(19, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 14:48:55');
 
 -- --------------------------------------------------------
 
@@ -497,7 +507,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `addresses`
