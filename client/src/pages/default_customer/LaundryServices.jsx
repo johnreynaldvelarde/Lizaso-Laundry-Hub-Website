@@ -154,7 +154,7 @@ const LaundryServices = () => {
           <div className="flex flex-wrap justify-center gap-6">
             {services.map((service) => (
               <div
-                key={service.id}
+                key={service.service_id}
                 className="relative flex flex-col items-center bg-white border border-gray-300 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 ease-in-out w-full sm:w-64"
               >
                 {/* Promo Badge */}

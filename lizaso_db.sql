@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 02, 2024 at 08:49 AM
+-- Generation Time: Oct 02, 2024 at 05:38 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,25 +41,10 @@ CREATE TABLE `activity_log` (
 --
 
 INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action_description`, `timestamp`) VALUES
-(1, 1, 'Admin', 'authentication', 'admin logged in.', '2024-09-22 21:13:20'),
-(2, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 02:51:26'),
-(3, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 06:42:46'),
-(4, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 06:50:16'),
-(5, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 07:07:54'),
-(6, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 11:14:31'),
-(7, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 11:57:27'),
-(8, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 13:45:23'),
-(9, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 15:05:51'),
-(10, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 16:31:06'),
-(11, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 16:31:31'),
-(12, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-01 16:31:50'),
-(13, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 06:26:48'),
-(14, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 06:58:57'),
-(15, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 07:29:49'),
-(16, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 07:49:46'),
-(17, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 09:09:04'),
-(18, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 09:21:23'),
-(19, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 14:48:55');
+(1, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 19:51:57'),
+(2, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 20:32:37'),
+(3, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 20:36:41'),
+(4, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 20:37:30');
 
 -- --------------------------------------------------------
 
@@ -85,40 +70,8 @@ CREATE TABLE `addresses` (
 --
 
 INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
-(1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-09-22 13:12:39'),
-(2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:29'),
-(3, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:30'),
-(4, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:31'),
-(5, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:32'),
-(6, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:32'),
-(7, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:33'),
-(8, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:33'),
-(9, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:33'),
-(10, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:34'),
-(11, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:34'),
-(12, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:34'),
-(13, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:34'),
-(14, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:34'),
-(15, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:57'),
-(16, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:58'),
-(17, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:00:58'),
-(18, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:01:07'),
-(19, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:01:51'),
-(20, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:01:59'),
-(21, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:02:21'),
-(22, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:02:29'),
-(23, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:02:46'),
-(24, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:02:57'),
-(25, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:03:48'),
-(26, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:03:58'),
-(27, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:04:12'),
-(28, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:04:18'),
-(29, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:05:00'),
-(30, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:05:12'),
-(31, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:07:02'),
-(32, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:07:23'),
-(33, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:07:56'),
-(34, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-01 08:25:03');
+(1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-02 11:51:45'),
+(2, 'Bambang Bulakan, Bulacan', 'Bambang Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.788308, 120.929684, '2024-10-02 11:53:10');
 
 -- --------------------------------------------------------
 
@@ -147,7 +100,7 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
-(1, 1, 34, 'Rose', '', 'Oriana', 'rose12', '092162626061', 'roseoriana12@gmailc.om', 1, 1, 0, '2024-10-01 13:18:01');
+(1, 1, 2, 'Rose', '', 'Oriana', 'rose12', '092708272323', 'roseoriana16@gmail.com', 1, 1, 0, '2024-10-02 19:52:42');
 
 -- --------------------------------------------------------
 
@@ -175,7 +128,7 @@ CREATE TABLE `customer_security` (
 --
 
 INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$12$V2c0ldqs35xTPlseUp6f5.eqYM8JKYvRBwvLVhkJIfUD28jwflWPS', '$2b$12$xyico7mHzbE9WFeRTR0gWu', 0, '', 0, 0, NULL, NULL, NULL, NULL);
+(1, 1, '$2b$12$Z5.7fbDf7/GzOjM1SRRTIer7brBHaUkNP611ge654z.kGMMv.v0xu', '$2b$12$efnV2E.KpBTbF/avFGx2xe', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -255,12 +208,24 @@ CREATE TABLE `laundry_unit` (
   `isArchive` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `laundry_unit`
+-- Table structure for table `service_promotions`
 --
 
-INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(1, 1, 'Unit 1', '2024-09-22 21:13:37', 0, 0);
+CREATE TABLE `service_promotions` (
+  `id` bigint(20) NOT NULL,
+  `service_id` bigint(20) NOT NULL,
+  `discount_percentage` decimal(5,2) DEFAULT NULL,
+  `discount_price` decimal(10,2) DEFAULT NULL,
+  `valid_days` varchar(100) DEFAULT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `isActive` tinyint(1) NOT NULL,
+  `date_created` datetime NOT NULL,
+  `isArchive` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -302,11 +267,11 @@ CREATE TABLE `service_type` (
 --
 
 INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `default_price`, `date_created`, `isArchive`) VALUES
-(1, 1, 'Wash', 60.00, '2024-09-22 21:12:39', 0),
-(2, 1, 'Dry', 55.00, '2024-09-22 21:12:39', 0),
-(3, 1, 'Fold', 30.00, '2024-09-22 21:12:39', 0),
-(4, 1, '11', 11.00, '2024-10-01 15:06:04', 1),
-(5, 1, '22', 22.00, '2024-10-01 15:06:13', 1);
+(1, 1, 'Wash', 65.00, '2024-10-02 19:51:45', 0),
+(2, 1, 'Dry', 55.00, '2024-10-02 19:51:45', 0),
+(3, 1, 'Fold', 30.00, '2024-10-02 19:51:45', 0),
+(4, 1, 'Curtain Wash', 20.00, '2024-10-02 20:32:56', 1),
+(5, 1, 'Bedsheet', 50.00, '2024-10-02 20:33:18', 1);
 
 -- --------------------------------------------------------
 
@@ -333,7 +298,7 @@ CREATE TABLE `stores` (
 --
 
 INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_contact`, `store_email`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
-(1, 1, 'LIZASO-1727010759731', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-09-22 21:12:39', 0, 0);
+(1, 1, 'LIZASO-1727869905207', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-10-02 19:51:45', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -362,7 +327,7 @@ CREATE TABLE `user_account` (
 --
 
 INSERT INTO `user_account` (`id`, `store_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isRole`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
-(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 0, 0, '2024-09-22 21:12:39');
+(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 0, 0, '2024-10-02 19:51:45');
 
 -- --------------------------------------------------------
 
@@ -390,7 +355,7 @@ CREATE TABLE `user_security` (
 --
 
 INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$10$IVUbzpV8C3Wb4JK7TC0gO./r3NirIn1WFHfmoD/82rcirZFlTrfR6', '$2b$10$AkITcd.Q5sfEOUAjauZlO.', 0, '', 0, 0, '2024-09-22 13:12:40', NULL, NULL, NULL);
+(1, 1, '$2b$10$fT/ydKFt1n64qi5LRQx7ceYBXe9oETu91bThFrtkcs7OA4ifhvVPa', '$2b$10$7P.qn7vGKphqFaRkMD.Ate', 0, '', 0, 0, '2024-10-02 11:51:45', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -462,6 +427,13 @@ ALTER TABLE `laundry_unit`
   ADD KEY `Laundry_Unit_Stores` (`store_id`);
 
 --
+-- Indexes for table `service_promotions`
+--
+ALTER TABLE `service_promotions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Service_Promotions_Service_Type` (`service_id`);
+
+--
 -- Indexes for table `service_request`
 --
 ALTER TABLE `service_request`
@@ -507,13 +479,13 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customer`
@@ -555,7 +527,13 @@ ALTER TABLE `laundry_assignment`
 -- AUTO_INCREMENT for table `laundry_unit`
 --
 ALTER TABLE `laundry_unit`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `service_promotions`
+--
+ALTER TABLE `service_promotions`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `service_request`
@@ -636,6 +614,12 @@ ALTER TABLE `laundry_assignment`
 --
 ALTER TABLE `laundry_unit`
   ADD CONSTRAINT `Laundry_Unit_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `service_promotions`
+--
+ALTER TABLE `service_promotions`
+  ADD CONSTRAINT `Service_Promotions_Service_Type` FOREIGN KEY (`service_id`) REFERENCES `service_type` (`id`);
 
 --
 -- Constraints for table `service_request`
