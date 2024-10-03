@@ -2,84 +2,26 @@ import React, { useEffect, useState } from "react";
 import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 import PopupQRCode from "./PoupQRCode";
 
+const order = {
+  id: "ORD12345",
+  status: "Pickup Scheduled",
+  pickupTime: "2024-10-02 12:00 PM",
+  deliveryStaff: "John Doe",
+  storeStatus: "Awaiting Clothes",
+  assessmentStatus: "Pending",
+  initialPayment: "$10.00",
+  assignedUnit: "Unit 5",
+};
+
 function TrackOrders() {
   const { qrCode } = useLaundryPlans();
-  const [showPopup, setShowPopup] = useState(false); // State to manage popup visibility
-
-  useEffect(() => {
-    if (qrCode) {
-      console.log("QR Code updated:", qrCode);
-      setShowPopup(true); // Show the popup when QR code is updated
-    } else {
-      console.log("QR Code is null or empty.");
-    }
-  }, [qrCode]);
-
-  const handleShowPopup = () => {
-    if (qrCode) {
-      setShowPopup(true);
-    } else {
-      console.log("No QR code available to show.");
-    }
-  };
-
-  // useEffect(() => {
-  //   // Log the QR code whenever it changes
-  //   console.log("QR Code updated:", qrCode);
-  // }, [qrCode]);
-
-  // const handleShowPopup = () => {
-  //   if (qrCode) {
-  //     setShowPopup(true);
-  //   } else {
-  //     console.log("No QR code available to show.");
-  //   }
-  // };
-
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Header */}
       <div className="text-3xl font-semibold text-center mb-6">
         Track Your Laundry Order
       </div>
-      <button onClick={handleShowPopup} className="btn-primary">
-        Show QR Code
-      </button>
-      {showPopup && <PopupQRCode qrCode={qrCode} />}
-
-      {/* {qrCode && (
-        <>
-          <button
-            onClick={handleShowPopup}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-          >
-            Show QR Code
-          </button>
-          {showPopup && <PopupQRCode qrCode={qrCode} />}
-        </>
-      )} */}
-    </div>
-  );
-}
-
-export default TrackOrders;
-
-// const order = {
-//   id: "ORD12345",
-//   status: "Pickup Scheduled",
-//   pickupTime: "2024-10-02 12:00 PM",
-//   deliveryStaff: "John Doe",
-//   storeStatus: "Awaiting Clothes",
-//   assessmentStatus: "Pending",
-//   initialPayment: "$10.00",
-//   assignedUnit: "Unit 5",
-// };
-
-{
-  /* Order Info */
-}
-{
-  /* <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+      {/* Order Info */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-6">
         <h2 className="text-xl font-bold mb-4">Order ID: {order.id}</h2>
         <div className="flex flex-col md:flex-row justify-between">
           <div>
@@ -108,14 +50,9 @@ export default TrackOrders;
             </p>
           </div>
         </div>
-      </div> */
-}
-
-{
-  /* Progress Timeline */
-}
-{
-  /* <div className="bg-white p-6 rounded-lg shadow-md">
+      </div>
+      ;{/* Progress Timeline  */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
         <h3 className="text-xl font-bold mb-4">Order Progress</h3>
         <div className="relative pt-2">
           <div className="border-l-2 border-blue-500 pl-4 space-y-4">
@@ -184,5 +121,10 @@ export default TrackOrders;
             </div>
           </div>
         </div>
-      </div> */
+      </div>
+      ;
+    </div>
+  );
 }
+
+export default TrackOrders;

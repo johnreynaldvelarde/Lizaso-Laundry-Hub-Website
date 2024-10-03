@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 import {
   Dialog,
@@ -12,8 +12,10 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import styles from "../../styles/style";
+import { useNavigate } from "react-router-dom";
 
 const PopupServiceSelect = ({ service, onClose }) => {
+  const navigate = useNavigate();
   const {
     qrCode,
     name,
@@ -24,6 +26,10 @@ const PopupServiceSelect = ({ service, onClose }) => {
     loading,
     errors,
   } = useLaundryPlans(onClose);
+
+  const handleNavigateToTrackOrder = () => {
+    navigate("/customer-page/track-orders");
+  };
 
   return (
     <Dialog
@@ -158,15 +164,17 @@ const PopupServiceSelect = ({ service, onClose }) => {
             style={{ marginTop: "16px" }}
             className="flex justify-center"
           >
-            <Typography variant="h6" className="font-semibold text-center">
+            <span className="font-semibold text-center text-xl">
+              {/* Changed to h2 to match the structure */}
               Customer Request QR Code
-            </Typography>
+            </span>
           </DialogTitle>
           <DialogContent className="flex flex-col items-center p-4">
-            <Typography variant="body2" className="mb-2 text-center">
+            <p className="mb-2 text-center text-sm">
+              {/* Used p for the paragraph */}
               Here is the QR code for the customer’s service request. Please
               scan this code to process the delivery request effectively.
-            </Typography>
+            </p>
             <img
               src={qrCode}
               alt="QR Code"
@@ -175,18 +183,17 @@ const PopupServiceSelect = ({ service, onClose }) => {
           </DialogContent>
           <DialogActions>
             <Button
-              variant="outlined"
-              onClick={onClose}
+              variant="contained"
+              disableElevation
+              onClick={handleNavigateToTrackOrder}
               sx={{
                 marginRight: 1,
-                borderColor: "#595959",
+                backgroundColor: "#5787C8",
                 borderRadius: "5px",
                 fontWeight: 500,
                 textTransform: "none",
-                color: "#595959",
                 "&:hover": {
-                  borderColor: "#595959",
-                  backgroundColor: "rgba(144, 144, 144, 0.1)",
+                  backgroundColor: "#3A5A85",
                 },
               }}
             >
