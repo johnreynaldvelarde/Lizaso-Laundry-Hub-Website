@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 02, 2024 at 05:38 PM
+-- Generation Time: Oct 03, 2024 at 06:25 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,10 +41,7 @@ CREATE TABLE `activity_log` (
 --
 
 INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action_description`, `timestamp`) VALUES
-(1, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 19:51:57'),
-(2, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 20:32:37'),
-(3, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 20:36:41'),
-(4, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-02 20:37:30');
+(1, 1, 'Admin', 'authentication', 'admin logged in.', '2024-10-03 12:25:18');
 
 -- --------------------------------------------------------
 
@@ -70,8 +67,7 @@ CREATE TABLE `addresses` (
 --
 
 INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
-(1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-02 11:51:45'),
-(2, 'Bambang Bulakan, Bulacan', 'Bambang Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.788308, 120.929684, '2024-10-02 11:53:10');
+(1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-03 04:24:41');
 
 -- --------------------------------------------------------
 
@@ -95,13 +91,6 @@ CREATE TABLE `customer` (
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `customer`
---
-
-INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
-(1, 1, 2, 'Rose', '', 'Oriana', 'rose12', '092708272323', 'roseoriana16@gmail.com', 1, 1, 0, '2024-10-02 19:52:42');
-
 -- --------------------------------------------------------
 
 --
@@ -122,13 +111,6 @@ CREATE TABLE `customer_security` (
   `last_logout` timestamp NULL DEFAULT NULL,
   `last_password_change` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `customer_security`
---
-
-INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$12$Z5.7fbDf7/GzOjM1SRRTIer7brBHaUkNP611ge654z.kGMMv.v0xu', '$2b$12$efnV2E.KpBTbF/avFGx2xe', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -244,7 +226,9 @@ CREATE TABLE `service_request` (
   `request_date` timestamp NULL DEFAULT current_timestamp(),
   `pickup_date` timestamp NULL DEFAULT NULL,
   `delivery_date` timestamp NULL DEFAULT NULL,
-  `request_status` varchar(100) DEFAULT NULL
+  `request_status` varchar(100) DEFAULT NULL,
+  `qr_code` varchar(255) NOT NULL,
+  `qr_code_generated` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -267,11 +251,9 @@ CREATE TABLE `service_type` (
 --
 
 INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `default_price`, `date_created`, `isArchive`) VALUES
-(1, 1, 'Wash', 65.00, '2024-10-02 19:51:45', 0),
-(2, 1, 'Dry', 55.00, '2024-10-02 19:51:45', 0),
-(3, 1, 'Fold', 30.00, '2024-10-02 19:51:45', 0),
-(4, 1, 'Curtain Wash', 20.00, '2024-10-02 20:32:56', 1),
-(5, 1, 'Bedsheet', 50.00, '2024-10-02 20:33:18', 1);
+(1, 1, 'Wash', 65.00, '2024-10-03 12:24:41', 0),
+(2, 1, 'Dry', 55.00, '2024-10-03 12:24:41', 0),
+(3, 1, 'Fold', 30.00, '2024-10-03 12:24:41', 0);
 
 -- --------------------------------------------------------
 
@@ -298,7 +280,7 @@ CREATE TABLE `stores` (
 --
 
 INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_contact`, `store_email`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
-(1, 1, 'LIZASO-1727869905207', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-10-02 19:51:45', 0, 0);
+(1, 1, 'LIZASO-1727929481793', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-10-03 12:24:41', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -327,7 +309,7 @@ CREATE TABLE `user_account` (
 --
 
 INSERT INTO `user_account` (`id`, `store_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isRole`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
-(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 0, 0, '2024-10-02 19:51:45');
+(1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 0, 1, 0, 0, '2024-10-03 12:24:41');
 
 -- --------------------------------------------------------
 
@@ -355,7 +337,7 @@ CREATE TABLE `user_security` (
 --
 
 INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$10$fT/ydKFt1n64qi5LRQx7ceYBXe9oETu91bThFrtkcs7OA4ifhvVPa', '$2b$10$7P.qn7vGKphqFaRkMD.Ate', 0, '', 0, 0, '2024-10-02 11:51:45', NULL, NULL, NULL);
+(1, 1, '$2b$10$c9x.0aNpXaSzRwW/Ua92..7MYICEGbrafsyypBV.0JiN3iLFo9KxO', '$2b$10$EXxGheGxtIxInJV/gyknqO', 0, '', 0, 0, '2024-10-03 04:24:41', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -479,25 +461,25 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `customer_security`
 --
 ALTER TABLE `customer_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -545,7 +527,7 @@ ALTER TABLE `service_request`
 -- AUTO_INCREMENT for table `service_type`
 --
 ALTER TABLE `service_type`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `stores`
