@@ -59,7 +59,6 @@ const useLaundryPlans = (onClose) => {
           if (!response.success) {
             toast.success(response.message);
             setQrCode(response.qr_code);
-            console.log("QR Code set:", response.qr_code);
           } else {
             toast.error(response.message);
           }

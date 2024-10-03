@@ -96,15 +96,6 @@ const PopupServiceSelect = ({ service, onClose }) => {
             margin="dense"
           />
         </div>
-        {/* Show QR Code if available */}
-        {qrCode && (
-          <div className="flex flex-col items-center mt-4">
-            <Typography variant="body2" className="mb-2">
-              Your QR Code:
-            </Typography>
-            <QRCode value={qrCode} size={128} /> {/* Adjust size as needed */}
-          </div>
-        )}
       </DialogContent>
       <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
         <Button
@@ -148,11 +139,122 @@ const PopupServiceSelect = ({ service, onClose }) => {
           )}
         </Button>
       </DialogActions>
+
+      {/* Show QR Code if available */}
+      {qrCode && (
+        <Dialog
+          open={Boolean(qrCode)}
+          fullWidth
+          onClose={onClose}
+          PaperProps={{
+            style: {
+              borderRadius: 16,
+              boxShadow: "none", // Removes the background shadow
+            },
+          }}
+          maxWidth="xs"
+        >
+          <DialogTitle
+            style={{ marginTop: "16px" }}
+            className="flex justify-center"
+          >
+            <Typography variant="h6" className="font-semibold text-center">
+              Customer Request QR Code
+            </Typography>
+          </DialogTitle>
+          <DialogContent className="flex flex-col items-center p-4">
+            <Typography variant="body2" className="mb-2 text-center">
+              Here is the QR code for the customer’s service request. Please
+              scan this code to process the delivery request effectively.
+            </Typography>
+            <img
+              src={qrCode}
+              alt="QR Code"
+              style={{ width: "100%", height: "auto" }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="outlined"
+              onClick={onClose}
+              sx={{
+                marginRight: 1,
+                borderColor: "#595959",
+                borderRadius: "5px",
+                fontWeight: 500,
+                textTransform: "none",
+                color: "#595959",
+                "&:hover": {
+                  borderColor: "#595959",
+                  backgroundColor: "rgba(144, 144, 144, 0.1)",
+                },
+              }}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Dialog>
   );
 };
 
 export default PopupServiceSelect;
+
+{
+  /* Show QR Code if available */
+}
+{
+  /* {qrCode && (
+          <Dialog
+            open={Boolean(qrCode)}
+            fullWidth
+            PaperProps={{
+              style: {
+                borderRadius: 16,
+              },
+            }}
+          >
+            <DialogContent className="flex flex-col items-center ">
+              <Typography variant="body2" className="mb-2">
+                Your QR Code:
+              </Typography>
+              <img
+                src={qrCode}
+                alt="QR Code"
+                style={{ width: "100%", height: "auto" }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="outlined"
+                onClick={onClose}
+                sx={{
+                  marginRight: 1,
+                  borderColor: "#595959",
+                  borderRadius: "5px",
+                  fontWeight: 500,
+                  textTransform: "none",
+                  color: "#595959",
+                  "&:hover": {
+                    borderColor: "#595959",
+                    backgroundColor: "rgba(144, 144, 144, 0.1)",
+                  },
+                }}
+              >
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )} */
+}
+
+{
+  /* <QRCodeCanvas value={qrCode} size={150} />{" "} */
+}
+{
+  /* Adjust size as needed */
+}
 
 // useEffect(() => {
 //   if (service && service.label) {
