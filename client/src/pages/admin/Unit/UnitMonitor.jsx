@@ -67,6 +67,7 @@ const UnitMonitor = () => {
     fetchCountLaundryAssignment,
     // <------------------------->
     // <----- Drawer InProgress Section ----->
+    inQueueData,
     inProgressData,
     dialogProgressOpen,
     selectedProgressID,

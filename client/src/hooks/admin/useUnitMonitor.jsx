@@ -407,6 +407,7 @@ const useUnitMonitor = () => {
     fetchAvailableUnit,
     // <------------------------->
     // <----- Drawer InProgress Section ----->
+    inQueueData,
     inProgressData,
     dialogProgressOpen,
     selectedProgressID,

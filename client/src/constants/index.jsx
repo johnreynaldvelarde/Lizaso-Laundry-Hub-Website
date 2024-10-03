@@ -16,9 +16,3 @@ export const c_navItems = [
   },
   { label: "Payment History", href: "/customer-page/payment-history" },
 ];
-
-// export const c_navItems = [
-//   { label: "Laundry Plans", href: "/customer-page/laundry-plans" },
-//   { label: "Track Your Order", href: "/customer-page/tracking-order" },
-//   { label: "Payment History", href: "#" },
-// ];

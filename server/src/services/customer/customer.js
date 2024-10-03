@@ -1,42 +1,74 @@
 // POST
-export const handleCustomerServiceRequest = async (req, res, connection) => {
-  const { id } = req.params;
-  const { store_id, customer_name, notes, service_type } = req.body;
+export const handleSetCustomerServiceRequest = async (req, res, connection) => {
+  const { id } = req.params; // Customer ID
+  const { store_id, service_type_id, customer_name, notes } = req.body;
 
-  if (!store_id || !customer_name || !service_type) {
-    return res.status(400).json({ error: "Missing required fields" });
+  // Validate required fields
+  const missingFields = [];
+  if (!store_id) missingFields.push("store_id");
+  if (!customer_name) missingFields.push("customer_name");
+  if (!service_type_id) missingFields.push("service_type_id");
+
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      error: "Missing required fields",
+      fields: missingFields,
+    });
   }
 
   try {
-    const [result] = await connection.execute(
-      `INSERT INTO Service_Request (
+    // Start the transaction
+    await connection.beginTransaction();
+
+    const query = `
+      INSERT INTO Service_Request (
           store_id,
-          user_id,  -- Assuming you want to assign the delivery person later
           customer_id,
+          service_type_id,
           customer_fullname,
           notes,
-          service_type,
           request_date,
           request_status
-        ) VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)`,
-      [store_id, null, id, customer_name, notes, service_type, "In Queue"]
-    );
+        ) 
+      VALUES (?, ?, ?, ?, ?, NOW(), ?)`;
 
-    // 'Pending Pickup'
+    const [result] = await connection.execute(query, [
+      store_id,
+      id,
+      service_type_id,
+      customer_name,
+      notes,
+      "In Queue",
+    ]);
 
     // Get the ID of the newly created service request
     const newRequestId = result.insertId;
 
+    // Commit the transaction
+    await connection.commit();
+
     // Respond with the created service request ID and success message
     res.status(201).json({
-      message: "Service request created successfully",
+      message: "Service request created!",
       service_request_id: newRequestId,
     });
   } catch (error) {
+    // Rollback the transaction if any error occurs
+    await connection.rollback();
+
     console.error("Error creating service request:", error);
+
+    // Differentiate between database errors and other types of errors
+    if (error.code === "ER_BAD_NULL_ERROR") {
+      return res
+        .status(400)
+        .json({ error: "Bad Request: Null value not allowed." });
+    }
+
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 // GET
 export const handleGetServiceTypeAndPromotions = async (
   req,
@@ -161,6 +193,45 @@ export const handleUpdateCustomerBasicInformation = async (
     connection.release();
   }
 };
+
+// // POST
+// export const handleCustomerServiceRequest = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const { store_id, service_type_id, customer_name, notes } = req.body;
+
+//   if (!store_id || !customer_name || !service_type_id) {
+//     return res.status(400).json({ error: "Missing required fields" });
+//   }
+
+//   try {
+//     const [result] = await connection.execute(
+//       `INSERT INTO Service_Request (
+//           store_id,
+//           customer_id,
+//           service_type_id,
+//           customer_fullname,
+//           notes,
+//           request_date,
+//           request_status
+//         ) VALUES (?, ?, ?, ?, ?, NOW(), ?)`,
+//       [store_id, id, service_type_id, customer_name, notes, "In Queue"]
+//     );
+
+//     // 'Pending Pickup'
+
+//     // Get the ID of the newly created service request
+//     const newRequestId = result.insertId;
+
+//     // Respond with the created service request ID and success message
+//     res.status(201).json({
+//       message: "Service request created successfully",
+//       service_request_id: newRequestId,
+//     });
+//   } catch (error) {
+//     console.error("Error creating service request:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
 // export const handleUpdateCustomerBasicInformation = async (
 //   req,

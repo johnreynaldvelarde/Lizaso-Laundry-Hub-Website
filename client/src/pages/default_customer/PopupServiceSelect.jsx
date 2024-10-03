@@ -6,32 +6,23 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Grid,
   TextField,
   Typography,
   IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import styles from "../../styles/style";
 
-const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
-  const [loading, setLoading] = useState(false);
+const PopupServiceSelect = ({ service, onClose }) => {
   const {
     name,
     note,
-    setName,
     setNote,
-    serviceType,
-    setServiceType,
+    handleInputChange,
     handleSubmit,
-  } = useLaundryPlans();
-
-  useEffect(() => {
-    if (service && service.label) {
-      setServiceType(service.label);
-    }
-  }, [service, setServiceType]);
-
-  if (!service) return null;
+    loading,
+    errors,
+  } = useLaundryPlans(onClose);
 
   return (
     <Dialog
@@ -75,7 +66,6 @@ const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
           }}
           sx={{ mb: 2 }}
         />
-
         <TextField
           autoFocus
           margin="dense"
@@ -84,20 +74,130 @@ const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
           fullWidth
           variant="outlined"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleInputChange("name")}
+          error={Boolean(errors.name)}
+          helperText={errors.name}
           sx={{ mb: 2 }}
         />
-        <TextField
-          label="Additional Notes"
+        <div>
+          <label className="block text-[#212121] text-sm font-semibold mb-1">
+            Additional Notes{" "}
+            <span className="text-[#595959] font-normal">(Optional)</span>
+          </label>
+          <TextField
+            label=""
+            variant="outlined"
+            fullWidth
+            multiline
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={4}
+            margin="dense"
+          />
+        </div>
+      </DialogContent>
+      <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
+        <Button
           variant="outlined"
-          fullWidth
-          multiline
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          rows={4}
-          margin="dense"
-        />
-        {/* <Grid container spacing={4}>
+          onClick={onClose}
+          sx={{
+            marginRight: 1,
+            borderColor: "#595959",
+            borderRadius: "5px",
+            fontWeight: 500,
+            textTransform: "none",
+            color: "#595959",
+            "&:hover": {
+              borderColor: "#595959",
+              backgroundColor: "rgba(144, 144, 144, 0.1)",
+            },
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          disableElevation
+          onClick={(e) => handleSubmit(service.service_id, e)}
+          sx={{
+            backgroundColor: "#5787C8",
+            borderRadius: "5px",
+            fontWeight: 500,
+            minWidth: "90px",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: "#3A5A85",
+            },
+          }}
+          disabled={loading}
+        >
+          {loading ? (
+            <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+          ) : (
+            "Submit"
+          )}
+          {/* {loading ? "Saving..." : "Save"} */}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default PopupServiceSelect;
+
+// useEffect(() => {
+//   if (service && service.label) {
+//     setServiceType(service.label);
+//   }
+// }, [service, setServiceType]);
+
+// if (!service) return null;
+
+{
+  /* <div
+          style={{
+            border: `2px solid ${styles.border1}`,
+            borderRadius: "5px",
+            padding: "8px",
+            marginBottom: "16px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <div className="flex items-center my-2 ">
+            <span className="text-base font-semibold flex items -center">
+              {service.service_name}
+              <span className="ml-4 flex items-center">
+                <span className="text-sm px-3 py-1 rounded-md border-2 border-[#5787C8]  text-[#5787C8] bg-[##3D6F9B] bg-opacity-10 font-normal mr-2">
+                  PHP {service.default_price}
+                </span>
+                <span className="text-sm px-3 py-1 rounded-full border-2 border-[#eb3941] bg-[#f15e64] bg-opacity-10 text-[#eb3941] font-normal">
+                  A
+                </span>
+              </span>
+            </span>
+          </div>
+        </div> */
+}
+
+{
+  /* <div className="flex items-center my-2 ">
+            <span className="text-base font-semibold flex items -center">
+              {service.service_name}
+              <span className="ml-4 flex items-center">
+                <span className="text-sm px-3 py-1 rounded-md border-2 border-[#5787C8]  text-[#5787C8] bg-[##3D6F9B] bg-opacity-10 font-normal mr-2">
+                  PHP {service.default_price}
+                </span>
+                <span className="text-sm px-3 py-1 rounded-full border-2 border-[#eb3941] bg-[#f15e64] bg-opacity-10 text-[#eb3941] font-normal">
+                  A
+                </span>
+              </span>
+            </span>
+          </div> */
+}
+
+{
+  /* <Grid container spacing={4}>
           <Grid item xs={12} md={12}>
             <Typography variant="h6" component="div" className="mb-4">
               {service.label}
@@ -124,52 +224,8 @@ const PopupServiceSelect = ({ service, onClose, onSubmit }) => {
               margin="normal"
             />
           </Grid>
-        </Grid> */}
-      </DialogContent>
-
-      <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          sx={{
-            marginRight: 1,
-            borderColor: "#595959",
-            borderRadius: "5px",
-            fontWeight: 500,
-            textTransform: "none",
-            color: "#595959",
-            "&:hover": {
-              borderColor: "#595959",
-              backgroundColor: "rgba(144, 144, 144, 0.1)",
-            },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          disableElevation
-          // onClick={handleSave}
-          sx={{
-            backgroundColor: "#5787C8",
-            borderRadius: "5px",
-            fontWeight: 500,
-            minWidth: "90px",
-            textTransform: "none",
-            "&:hover": {
-              backgroundColor: "#3A5A85",
-            },
-          }}
-          disabled={loading}
-        >
-          {loading ? "Saving..." : "Save"}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-export default PopupServiceSelect;
+        </Grid> */
+}
 
 {
   /* <Dialog

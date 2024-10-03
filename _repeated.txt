@@ -1,0 +1,19 @@
+
+  const handleSubmit = async (e) => {
+    const newErrors = validateFields();
+    setErrors(newErrors);
+
+
+    if (Object.keys(newErrors).length === 0) {
+      
+    try {
+
+    }
+    catch (error) {
+      toast.error("Error updating customer details:", error);
+    } finally {
+      setLoading(false);
+    }
+     
+    }
+  };

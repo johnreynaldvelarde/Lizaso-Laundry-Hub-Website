@@ -183,7 +183,7 @@ const PopupInQueue = ({ open, onClose }) => {
                   </h3>
                   <p className="text-sm" style={{ color: styles.textColor2 }}>
                     <span className="font-semibold mr-2">Service Type:</span>
-                    <span className="font-normal">{customer.service_type}</span>
+                    <span className="font-normal">{customer.service_name}</span>
                   </p>
                   <p className="text-sm" style={{ color: styles.textColor2 }}>
                     <span className="font-semibold mr-2">Waiting Time:</span>

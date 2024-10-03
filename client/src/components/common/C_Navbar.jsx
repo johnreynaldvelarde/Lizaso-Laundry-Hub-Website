@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useAuth from "../../contexts/AuthContext";
 import UserImage from "../admin-components/UserImage";
 import useLogout from "../../hooks/useLogout";
@@ -16,10 +16,7 @@ import {
   Avatar,
   Divider,
   ListItemIcon,
-  ListItemText,
   Typography,
-  Box,
-  Button,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -31,6 +28,7 @@ import { Logout, Settings } from "@mui/icons-material";
 const C_Navbar = () => {
   const { userDetails } = useAuth();
   const logout = useLogout();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElMessage, setAnchorElMessage] = useState(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState(null);
@@ -77,12 +75,8 @@ const C_Navbar = () => {
 
   useEffect(() => {
     const currentPath = location.pathname;
-    const foundIndex = c_navItems.findIndex(
-      (item) => item.href === currentPath
-    );
-    if (foundIndex !== -1) {
-      setActiveIndex(foundIndex);
-    }
+    const index = c_navItems.findIndex((item) => item.href === currentPath);
+    setActiveIndex(index !== -1 ? index : 0);
   }, [location.pathname]);
 
   const messages = [

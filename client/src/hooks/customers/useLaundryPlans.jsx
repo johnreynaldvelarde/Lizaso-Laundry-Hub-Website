@@ -1,44 +1,78 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { createCustomerServiceRequest } from "../../services/api/postApi";
 import useAuth from "../../contexts/AuthContext";
+import { createCustomerServiceRequest } from "../../services/api/customerApi";
+import { useNavigate } from "react-router-dom";
 
-const useLaundryPlans = () => {
+const useLaundryPlans = (onClose) => {
   const { userDetails } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState(userDetails.fullName);
   const [note, setNote] = useState("");
   const [serviceType, setServiceType] = useState("");
+  const [selectedService, setSelectedService] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const validateFields = () => {
+    const newErrors = {};
+    if (!name) {
+      newErrors.name = "Customer name is required";
+    }
+    return newErrors;
+  };
+
+  const handleInputChange = (field) => (e) => {
+    const value = e.target.value;
+
+    if (field === "name") {
+      setName(value);
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: "",
+    }));
+  };
+
+  const handleSubmit = async (serviceId, e) => {
     e.preventDefault();
 
-    if (!userDetails || !userDetails.userId) {
-      alert("User details are not properly set.");
-      return;
-    }
+    const newErrors = validateFields();
+    setErrors(newErrors);
 
-    try {
-      const storeId = userDetails.storeId;
-      const customerData = {
-        store_id: storeId,
-        service_type: serviceType,
-        customer_name: name,
-        notes: note,
-      };
+    if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+      setTimeout(async () => {
+        const storeId = userDetails.storeId;
+        const customerData = {
+          store_id: storeId,
+          service_type_id: serviceId,
+          customer_name: name,
+          notes: note,
+        };
 
-      const response =
-        await createCustomerServiceRequest.setCustomerServiceRequest(
-          userDetails.userId,
-          customerData
-        );
-
-      if (!response.success) {
-        toast.success(response.message);
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error) {
-      toast.error("Error customer service request:", error);
+        try {
+          const response =
+            await createCustomerServiceRequest.setCustomerServiceRequest(
+              userDetails.userId,
+              customerData
+            );
+          if (!response.success) {
+            toast.success(response.message);
+            onClose();
+            navigate("/customer-page/track-orders");
+          } else {
+            toast.error(response.message);
+          }
+        } catch (error) {
+          toast.error(`Error with service request: ${error.message || error}`);
+          console.log(error);
+        } finally {
+          setLoading(false);
+        }
+      }, 1000);
+    } else {
+      setLoading(false);
     }
   };
 
@@ -49,7 +83,14 @@ const useLaundryPlans = () => {
     setNote,
     serviceType,
     setServiceType,
+    selectedService,
+    setSelectedService,
+    handleInputChange,
     handleSubmit,
+    loading,
+    setLoading,
+    errors,
+    setErrors,
   };
 };
 

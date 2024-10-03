@@ -2,6 +2,7 @@ import express from "express";
 import { getPool } from "../db/dbConfig.js";
 import {
   handleGetServiceTypeAndPromotions,
+  handleSetCustomerServiceRequest,
   handleUpdateCustomerBasicInformation,
 } from "../services/customer/customer.js";
 
@@ -21,12 +22,28 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 };
 
 // POST
+router.post(
+  "/customers/:id/set-service-request",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetCustomerServiceRequest(req, res, connection);
+    } catch (error) {
+      console.error("Error creating service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 // GET
 router.get(
   "/customers/:id/get-service-types",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleGetServiceTypeAndPromotions(req, res, connection);
+    try {
+      await handleGetServiceTypeAndPromotions(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service types:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 
@@ -34,7 +51,12 @@ router.get(
 router.put(
   "/customers/:id/start",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleUpdateCustomerBasicInformation(req, res, connection);
+    try {
+      await handleUpdateCustomerBasicInformation(req, res, connection);
+    } catch (error) {
+      console.error("Error updating customer information:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

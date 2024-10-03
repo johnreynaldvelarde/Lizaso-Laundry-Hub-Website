@@ -119,20 +119,6 @@ export const createItemCategory = {
 };
 
 // Customer Section
-export const createCustomerServiceRequest = {
-  setCustomerServiceRequest: async (customerId, data) => {
-    try {
-      const response = await axiosPrivate.post(
-        `/customers/${customerId}/service-requests`,
-        data
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error customer service request:", error);
-      throw error;
-    }
-  },
-};
 
 // Activity Log Section
 export const createActivityLog = {
@@ -198,4 +184,3 @@ export const createNewServiceType = {
 //     }
 //   },
 // };
-

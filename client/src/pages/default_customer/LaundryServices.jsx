@@ -6,11 +6,12 @@ import background_1 from "../../assets/images/background_2.jpg";
 import styles from "../../styles/style";
 import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { getCustomerServiceAndPromotions } from "../../services/api/customerApi";
+import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 
 const LaundryServices = () => {
   const { userDetails } = useAuth();
-  const [selectedService, setSelectedService] = useState(null);
   const [services, setService] = useState([]);
+  const { selectedService, setSelectedService } = useLaundryPlans();
 
   const fetchServiceTypeAndPromotions = async () => {
     if (!userDetails?.storeId) return;
@@ -147,7 +148,52 @@ const LaundryServices = () => {
           backgroundPosition: "center",
         }}
       >
-        <div className="container mx-auto flex flex-wrap justify-center">
+        <div className="container mx-auto flex flex-col items-center px-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-16 text-center">
+            Select a Laundry Service
+          </h2>
+          <div className="flex flex-wrap justify-center gap-6 w-full">
+            {services.map((service) => (
+              <div
+                key={service.service_id}
+                className="relative flex flex-col items-center bg-white border border-gray-300 rounded-lg shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300 ease-in-out w-full sm:w-64"
+              >
+                <div className="flex items-center justify-center mb-4 mt-6">
+                  <FaCheckCircle className="text-3xl text-[#5787C8] mr-2" />
+                  <span
+                    className="text-lg font-semibold"
+                    style={{ color: styles.text3 }}
+                  >
+                    {service.service_name}
+                  </span>
+                </div>
+                <p
+                  className="mt-2 text-center font-normal text-lg sm:text-xl"
+                  style={{ color: styles.primary }}
+                >
+                  {new Intl.NumberFormat("en-PH", {
+                    style: "currency",
+                    currency: "PHP",
+                  }).format(service.default_price)}
+                </p>
+                <button
+                  onClick={() => handleSelectService(service)}
+                  className="mt-4 px-4 py-2 bg-[#5787C8] text-white rounded-md hover:bg-[#4A6D94] transition-colors duration-300 ease-in-out"
+                >
+                  Select
+                </button>
+              </div>
+            ))}
+          </div>
+          {selectedService && (
+            <PopupServiceSelect
+              service={selectedService}
+              onClose={handleClosePopup}
+            />
+          )}
+        </div>
+
+        {/* <div className="container mx-auto flex flex-wrap justify-center">
           <h2 className="text-4xl font-bold text-white mb-16">
             Select a Laundry Service
           </h2>
@@ -157,12 +203,6 @@ const LaundryServices = () => {
                 key={service.service_id}
                 className="relative flex flex-col items-center bg-white border border-gray-300 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 ease-in-out w-full sm:w-64"
               >
-                {/* Promo Badge */}
-                {/* {service.promo && (
-                  <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold py-1 px-2 rounded-full z-10">
-                    Special Promo
-                  </span>
-                )} */}
                 <div className="flex items-center justify-center mb-4 mt-6">
                   <FaCheckCircle className="text-3xl text-[#5787C8] mr-2" />
                   <span
@@ -196,13 +236,24 @@ const LaundryServices = () => {
               onClose={handleClosePopup}
             />
           )}
-        </div>
+        </div> */}
       </div>
     </>
   );
 };
 
 export default LaundryServices;
+
+{
+  /* Promo Badge */
+}
+{
+  /* {service.promo && (
+                  <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold py-1 px-2 rounded-full z-10">
+                    Special Promo
+                  </span>
+                )} */
+}
 
 {
   /* {services.map((service) => (
