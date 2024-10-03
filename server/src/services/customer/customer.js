@@ -37,7 +37,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       service_type_id,
       customer_name,
       notes,
-      "In Queue",
+      "Pending Pickup",
     ]);
 
     // Get the ID of the newly created service request

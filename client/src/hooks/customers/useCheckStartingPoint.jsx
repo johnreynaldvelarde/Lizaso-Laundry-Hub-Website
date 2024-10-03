@@ -171,7 +171,7 @@ const useCheckStartingPoint = () => {
 
       if (response.success) {
         toast.success(response.message);
-        navigate("/customer-page");
+        navigate("/customer-page/");
       } else {
         toast.error(response.message);
       }

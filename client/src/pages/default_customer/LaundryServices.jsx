@@ -7,9 +7,11 @@ import styles from "../../styles/style";
 import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { getCustomerServiceAndPromotions } from "../../services/api/customerApi";
 import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
+import { useNavigate } from "react-router-dom";
 
 const LaundryServices = () => {
   const { userDetails } = useAuth();
+  const navigate = useNavigate();
   const [services, setService] = useState([]);
   const { selectedService, setSelectedService } = useLaundryPlans();
 
