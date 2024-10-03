@@ -1,9 +1,9 @@
+import QRCode from "qrcode";
 // POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
   const { store_id, service_type_id, customer_name, notes } = req.body;
 
-  // Validate required fields
   const missingFields = [];
   if (!store_id) missingFields.push("store_id");
   if (!customer_name) missingFields.push("customer_name");
@@ -17,9 +17,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   }
 
   try {
-    // Start the transaction
     await connection.beginTransaction();
-
     const query = `
       INSERT INTO Service_Request (
           store_id,
@@ -28,9 +26,10 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
           customer_fullname,
           notes,
           request_date,
-          request_status
+          request_status,
+          qr_code_generated
         ) 
-      VALUES (?, ?, ?, ?, ?, NOW(), ?)`;
+      VALUES (?, ?, ?, ?, ?, NOW(), ?, 0)`;
 
     const [result] = await connection.execute(query, [
       store_id,
@@ -44,6 +43,19 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     // Get the ID of the newly created service request
     const newRequestId = result.insertId;
 
+    // Generate a unique QR code based on the service request ID
+    const qrCodeData = `SR-${newRequestId}-${Date.now()}`; // Unique string for QR code (e.g., Service Request ID and timestamp)
+
+    const qrCodeString = await QRCode.toDataURL(qrCodeData); // Generates a data URL for the QR code
+
+    // Update the Service_Request table with the generated QR code
+    const updateQuery = `
+      UPDATE Service_Request 
+      SET qr_code = ?, qr_code_generated = 1
+      WHERE id = ?`;
+
+    await connection.execute(updateQuery, [qrCodeString, newRequestId]);
+
     // Commit the transaction
     await connection.commit();
 
@@ -51,19 +63,13 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     res.status(201).json({
       message: "Service request created!",
       service_request_id: newRequestId,
+      qr_code: qrCodeString,
     });
   } catch (error) {
     // Rollback the transaction if any error occurs
     await connection.rollback();
 
     console.error("Error creating service request:", error);
-
-    // Differentiate between database errors and other types of errors
-    if (error.code === "ER_BAD_NULL_ERROR") {
-      return res
-        .status(400)
-        .json({ error: "Bad Request: Null value not allowed." });
-    }
 
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -193,6 +199,77 @@ export const handleUpdateCustomerBasicInformation = async (
     connection.release();
   }
 };
+
+// export const handleSetCustomerServiceRequest = async (req, res, connection) => {
+//   const { id } = req.params; // Customer ID
+//   const { store_id, service_type_id, customer_name, notes } = req.body;
+
+//   // Validate required fields
+//   const missingFields = [];
+//   if (!store_id) missingFields.push("store_id");
+//   if (!customer_name) missingFields.push("customer_name");
+//   if (!service_type_id) missingFields.push("service_type_id");
+
+//   if (missingFields.length > 0) {
+//     return res.status(400).json({
+//       error: "Missing required fields",
+//       fields: missingFields,
+//     });
+//   }
+
+//   try {
+//     // Start the transaction
+//     await connection.beginTransaction();
+
+//     const query = `
+//       INSERT INTO Service_Request (
+//           store_id,
+//           customer_id,
+//           service_type_id,
+//           customer_fullname,
+//           notes,
+//           request_date,
+//           request_status,
+//           qr_code_generated
+//         )
+//        VALUES (?, ?, ?, ?, ?, NOW(), ?, 0)`;
+
+//     const [result] = await connection.execute(query, [
+//       store_id,
+//       id,
+//       service_type_id,
+//       customer_name,
+//       notes,
+//       "In Queue",
+//     ]);
+
+//     // Get the ID of the newly created service request
+//     const newRequestId = result.insertId;
+
+//     // Commit the transaction
+//     await connection.commit();
+
+//     // Respond with the created service request ID and success message
+//     res.status(201).json({
+//       message: "Service request created!",
+//       service_request_id: newRequestId,
+//     });
+//   } catch (error) {
+//     // Rollback the transaction if any error occurs
+//     await connection.rollback();
+
+//     console.error("Error creating service request:", error);
+
+//     // Differentiate between database errors and other types of errors
+//     if (error.code === "ER_BAD_NULL_ERROR") {
+//       return res
+//         .status(400)
+//         .json({ error: "Bad Request: Null value not allowed." });
+//     }
+
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
 // // POST
 // export const handleCustomerServiceRequest = async (req, res, connection) => {

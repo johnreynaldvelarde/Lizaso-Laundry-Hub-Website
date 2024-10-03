@@ -135,6 +135,8 @@ request_date
 pickup_date
 delivery_date
 request_status
+qr_code
+qr_code_generated
 
 --> Laundry_Assignment <--
 id (Primary Key)

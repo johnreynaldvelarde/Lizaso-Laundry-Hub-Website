@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import useAuth from "../../contexts/AuthContext";
 import { createCustomerServiceRequest } from "../../services/api/customerApi";
-import { useNavigate } from "react-router-dom";
 
 const useLaundryPlans = (onClose) => {
   const { userDetails } = useAuth();
-  const navigate = useNavigate();
+  const [qrCode, setQrCode] = useState("");
   const [name, setName] = useState(userDetails.fullName);
   const [note, setNote] = useState("");
   const [serviceType, setServiceType] = useState("");
@@ -59,8 +58,8 @@ const useLaundryPlans = (onClose) => {
             );
           if (!response.success) {
             toast.success(response.message);
-            onClose();
-            navigate("/customer-page/track-orders");
+            setQrCode(response.qr_code);
+            console.log("QR Code set:", response.qr_code);
           } else {
             toast.error(response.message);
           }
@@ -76,7 +75,14 @@ const useLaundryPlans = (onClose) => {
     }
   };
 
+  useEffect(() => {
+    if (qrCode) {
+      console.log("QR Code updated:", qrCode);
+    }
+  }, [qrCode]);
+
   return {
+    qrCode,
     name,
     note,
     setName,

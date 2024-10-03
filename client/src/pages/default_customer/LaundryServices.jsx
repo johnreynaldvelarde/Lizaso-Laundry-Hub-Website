@@ -192,8 +192,15 @@ const LaundryServices = () => {
             />
           )}
         </div>
+      </div>
+    </>
+  );
+};
 
-        {/* <div className="container mx-auto flex flex-wrap justify-center">
+export default LaundryServices;
+
+{
+  /* <div className="container mx-auto flex flex-wrap justify-center">
           <h2 className="text-4xl font-bold text-white mb-16">
             Select a Laundry Service
           </h2>
@@ -236,13 +243,8 @@ const LaundryServices = () => {
               onClose={handleClosePopup}
             />
           )}
-        </div> */}
-      </div>
-    </>
-  );
-};
-
-export default LaundryServices;
+        </div> */
+}
 
 {
   /* Promo Badge */

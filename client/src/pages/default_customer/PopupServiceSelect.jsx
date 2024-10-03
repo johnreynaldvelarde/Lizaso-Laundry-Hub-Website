@@ -15,6 +15,7 @@ import styles from "../../styles/style";
 
 const PopupServiceSelect = ({ service, onClose }) => {
   const {
+    qrCode,
     name,
     note,
     setNote,
@@ -95,6 +96,15 @@ const PopupServiceSelect = ({ service, onClose }) => {
             margin="dense"
           />
         </div>
+        {/* Show QR Code if available */}
+        {qrCode && (
+          <div className="flex flex-col items-center mt-4">
+            <Typography variant="body2" className="mb-2">
+              Your QR Code:
+            </Typography>
+            <QRCode value={qrCode} size={128} /> {/* Adjust size as needed */}
+          </div>
+        )}
       </DialogContent>
       <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
         <Button
@@ -136,7 +146,6 @@ const PopupServiceSelect = ({ service, onClose }) => {
           ) : (
             "Submit"
           )}
-          {/* {loading ? "Saving..." : "Save"} */}
         </Button>
       </DialogActions>
     </Dialog>
