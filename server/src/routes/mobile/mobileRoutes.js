@@ -1,6 +1,13 @@
 import express from "express";
-import { handleGetLaundryPickup } from "../../services/user/staff.js";
+import {
+  handleGetLaundryPickup,
+  handleUpdateServiceRequestBackToPending,
+} from "../../services/user/staff.js";
 import { getPool } from "../../db/dbConfig.js";
+import {
+  handleUpdateServiceRequestCancel,
+  handleUpdateServiceRequestOngoing,
+} from "../../services/user/staff.js";
 
 const router = express.Router();
 
@@ -29,7 +36,6 @@ router.get(
   "/staff/:id/get-laundry-pickup",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      console.log("1");
       await handleGetLaundryPickup(req, res, connection);
     } catch (error) {
       console.error("Error retrieving service request:", error);
@@ -38,7 +44,42 @@ router.get(
   })
 );
 
-// PUT
+// #PUT
+router.put(
+  "/staff/:id/update-request-cancel",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestCancel(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/staff/:id/update-request-ongoing",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestOngoing(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/staff/:id/update-request-back-pending",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestBackToPending(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 export default router;
 

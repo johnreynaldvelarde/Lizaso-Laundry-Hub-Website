@@ -13,6 +13,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import styles from "../../styles/style";
 import { useNavigate } from "react-router-dom";
+import { QRCodeCanvas } from "qrcode.react";
 
 const PopupServiceSelect = ({ service, onClose }) => {
   const navigate = useNavigate();
@@ -175,11 +176,7 @@ const PopupServiceSelect = ({ service, onClose }) => {
               Here is the QR code for the customer’s service request. Please
               scan this code to process the delivery request effectively.
             </p>
-            <img
-              src={qrCode}
-              alt="QR Code"
-              style={{ width: "100%", height: "auto" }}
-            />
+            <QRCodeCanvas value={qrCode} alt="QR Code" size={300} />
           </DialogContent>
           <DialogActions>
             <Button

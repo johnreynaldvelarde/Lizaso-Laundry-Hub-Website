@@ -195,6 +195,7 @@ https://isomorphic-furyroad.vercel.app/logistics
 
 // Hard Part
 Pending Pickup – The customer has placed a service request, but the clothes have not been picked up yet.
+Ongoing Pickup – The delivery staff has picked up the clothes from the customer's location.
 Picked Up – The delivery staff has picked up the clothes from the customer's location.
 At Store – The clothes have been dropped off at the laundry store.
 In Queue – The clothes are waiting for an available laundry unit.
