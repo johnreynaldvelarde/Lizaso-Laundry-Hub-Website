@@ -4,7 +4,7 @@ import {
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
   handleUpdateCustomerBasicInformation,
-} from "../services/customer/customer.js";
+} from "../services/user/customer.js";
 
 const router = express.Router();
 

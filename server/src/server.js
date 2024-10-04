@@ -8,7 +8,7 @@ import postRoutes from "./routes/postRoutes.js";
 import getRoutes from "./routes/getRoutes.js";
 import putRoutes from "./routes/putRoutes.js";
 import checkRoutes from "./routes/checkRoutes.js";
-import mobileRoutes from "./routes/mobileRoutes.js";
+import mobileRoutes from "./routes/mobile/mobileRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 
 // Import File Function

@@ -114,7 +114,6 @@ price
 quantity
 isStatus
 
-
 --> Laundry_Unit <--
 id  (Primary Key)
 store_id (Foregin Key)
@@ -137,27 +136,6 @@ delivery_date
 request_status
 qr_code
 qr_code_generated
-
---> Laundry_Assignment <--
-id (Primary Key)
-service_request_id (Foregin Key)
-unit_id (Foregin Key)
-assigned_by (Foregin Key)
-weight
-assigned_at 
-completed_at
-isAssignmentStatus 0 = In Progress, 1 = Completed, 2 = Canceled
-isCompleted
-
---> Transaction <--
-id (Primary Key)
-assigment_id (Foregin Key)
-qr_code
-total_amount,
-transaction_date,
-payment_method,
-isStatus
-isArhive
 
 --> Service_Type <--
 id (Primary Key)
@@ -186,6 +164,28 @@ user_type
 action_type
 action_description
 timestamp
+
+--> Laundry_Assignment <--
+id (Primary Key)
+service_request_id (Foregin Key)
+unit_id (Foregin Key)
+assigned_by (Foregin Key)
+weight
+assigned_at 
+completed_at
+isAssignmentStatus 0 = In Progress, 1 = Completed, 2 = Canceled
+isCompleted
+
+--> Transaction <--
+id (Primary Key)
+assigment_id (Foregin Key)
+qr_code
+total_amount,
+transaction_date,
+payment_method,
+isStatus
+isArhive
+
 
 
 
