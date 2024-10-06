@@ -109,6 +109,3 @@ store_id: userDetails.storeId,
 
 
 
-React Native -> rnf / rnfce
-React -> rfce
-

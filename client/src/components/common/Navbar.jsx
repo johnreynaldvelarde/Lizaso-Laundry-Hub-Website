@@ -28,6 +28,8 @@ import { FiMenu } from "react-icons/fi";
 import UserImage from "../admin-components/UserImage";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { FaRegBell } from "react-icons/fa";
+import A_DropNotifications from "./A_DropNotifications";
+import A_DropMessage from "./A_DropMessage";
 
 const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -64,6 +66,62 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
   const handleNotificationsClose = () => {
     setNotificationAnchorEl(null);
   };
+
+  // For message
+  const [anchorElMessage, setAnchorElMessage] = useState(null);
+  const handleOpenMessage = (event) => {
+    setAnchorElMessage(event.currentTarget);
+  };
+  const handleCloseMessage = () => {
+    setAnchorElMessage(null);
+  };
+
+  const messages = [
+    {
+      senderName: "John Doe",
+      avatar: "https://via.placeholder.com/150",
+      preview: "Hey, are you available tomorrow?",
+      timestamp: "5 min ago",
+    },
+    {
+      senderName: "Jane Smith",
+      avatar: "https://via.placeholder.com/150",
+      preview: "Let's catch up soon!",
+      timestamp: "15 min ago",
+    },
+    {
+      senderName: "Mark Lee",
+      avatar: "https://via.placeholder.com/150",
+      preview: "Don't forget the meeting at 3 PM.",
+      timestamp: "1 hour ago",
+    },
+  ];
+
+  // For notificatons
+  const [anchorElNotifications, setAnchorElNotifications] = useState(null);
+  const handleOpenNotifications = (event) => {
+    setAnchorElNotifications(event.currentTarget);
+  };
+  const handleCloseNotifications = () => {
+    setAnchorElNotifications(null);
+  };
+
+  const notifications = [
+    {
+      id: 1,
+      senderName: "Laundry Hub",
+      avatar: "/images/laundry-icon.png",
+      message: "Your laundry is ready for pickup.",
+      timestamp: "10 minutes ago",
+    },
+    {
+      id: 2,
+      senderName: "Laundry Hub",
+      avatar: "/images/laundry-icon.png",
+      message: "Your laundry is ready for pickup.",
+      timestamp: "10 minutes ago",
+    },
+  ];
 
   return (
     <AppBar
@@ -114,71 +172,29 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
           </Box>
 
           <Stack direction="row" spacing={1.5} alignItems="center">
+            {/* For message */}
             <Tooltip title="Messages" arrow>
               <IconButton
                 className="rounded-circle"
-                onClick={handleMessagesClick}
+                onClick={handleOpenMessage}
               >
-                <Badge badgeContent={4} color="error">
+                <Badge badgeContent={messages.length} color="error">
                   <MdOutlineMailOutline />
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Menu
-              anchorEl={messageAnchorEl}
-              open={openMessages}
-              onClose={handleMessagesClose}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  overflow: "visible",
-                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                  mt: 1.5,
-                },
-              }}
-              transformOrigin={{ horizontal: "right", vertical: "top" }}
-              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            >
-              <MenuItem onClick={handleMessagesClose}>Message 1</MenuItem>
-              <MenuItem onClick={handleMessagesClose}>Message 2</MenuItem>
-              <MenuItem onClick={handleMessagesClose}>Message 3</MenuItem>
-            </Menu>
 
+            {/* For notications */}
             <Tooltip title="Notifications" arrow>
               <IconButton
                 className="rounded-circle"
-                onClick={handleNotificationsClick}
+                onClick={handleOpenNotifications}
               >
-                <Badge badgeContent={10} color="error">
+                <Badge badgeContent={notifications.length} color="error">
                   <FaRegBell />
                 </Badge>
               </IconButton>
             </Tooltip>
-            <Menu
-              anchorEl={notificationAnchorEl}
-              open={openNotifications}
-              onClose={handleNotificationsClose}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  overflow: "visible",
-                  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                  mt: 1.5,
-                },
-              }}
-              transformOrigin={{ horizontal: "right", vertical: "top" }}
-              anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            >
-              <MenuItem onClick={handleNotificationsClose}>
-                Notification 1
-              </MenuItem>
-              <MenuItem onClick={handleNotificationsClose}>
-                Notification 2
-              </MenuItem>
-              <MenuItem onClick={handleNotificationsClose}>
-                Notification 3
-              </MenuItem>
-            </Menu>
 
             <div>
               <UserImage />
@@ -286,6 +302,20 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
           </Stack>
         </Box>
       </Toolbar>
+
+      {/* For message */}
+      <A_DropMessage
+        anchorElMessage={anchorElMessage}
+        handleCloseMessage={handleCloseMessage}
+        messages={messages}
+      />
+
+      {/* For notications */}
+      <A_DropNotifications
+        anchorElNotifications={anchorElNotifications}
+        handleCloseNotifications={handleCloseNotifications}
+        notifications={notifications}
+      />
     </AppBar>
   );
 };
