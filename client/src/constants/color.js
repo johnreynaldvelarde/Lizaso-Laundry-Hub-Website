@@ -41,6 +41,7 @@ export const COLORS = {
   text1: "#161616",
   text2: "#2C2C2C",
   text3: "#393939",
+  subtitle: "#666666",
 
   // Primary and Secondary colors
   primary: "#595959",
@@ -67,6 +68,7 @@ export const COLORS = {
   background: "#f4f4f4",
   border: "#e0e0e0",
   border1: "#ccc",
+  border2: "#E3E3E3",
 
   // Colors Additonal
   message: "#F23F42",
