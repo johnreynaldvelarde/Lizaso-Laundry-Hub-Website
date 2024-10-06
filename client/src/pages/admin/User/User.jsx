@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Typography,
@@ -26,7 +26,7 @@ import {
 import { PlusCircle, FolderUser } from "@phosphor-icons/react";
 import { MoreVert } from "@mui/icons-material";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import { UserCircle } from "@phosphor-icons/react";
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { COLORS } from "../../../constants/color";
 
 const roles = [
@@ -40,9 +40,20 @@ const roles = [
   { id: 8, name: "Support" },
 ];
 
+// Sample store data
+const stores = [
+  { id: 1, name: "Main Branch", totalUsers: 10 },
+  { id: 2, name: "East Branch", totalUsers: 5 },
+  { id: 3, name: "West Branch", totalUsers: 7 },
+  { id: 4, name: "South Branch", totalUsers: 4 },
+];
+
 const User = () => {
+  const scrollRef = useRef(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedRole, setSelectedRole] = React.useState(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
 
   const handleMenuClick = (event, role) => {
     setAnchorEl(event.currentTarget);
@@ -51,6 +62,32 @@ const User = () => {
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+  };
+
+  const checkOverflow = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setShowLeftArrow(scrollLeft > 0);
+    setShowRightArrow(scrollLeft < scrollWidth - clientWidth);
+  };
+
+  useEffect(() => {
+    checkOverflow(); // Initial check on mount
+
+    const ref = scrollRef.current;
+    ref.addEventListener("scroll", checkOverflow); // Check overflow on scroll
+    window.addEventListener("resize", checkOverflow); // Check overflow on resize
+
+    return () => {
+      ref.removeEventListener("scroll", checkOverflow);
+      window.removeEventListener("resize", checkOverflow);
+    };
+  }, []);
+
+  const scrollTo = (direction) => {
+    if (!scrollRef.current) return;
+    const scrollAmount = direction === "left" ? -300 : 300; // Adjust scroll amount as needed
+    scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
   return (
@@ -232,6 +269,272 @@ const User = () => {
         ))}
       </Box>
 
+      {/* Here add on this the list of store */}
+      <Box
+        sx={{
+          marginTop: "40px",
+          padding: "20px",
+          border: `1px solid ${COLORS.border2}`,
+          borderRadius: "8px",
+          backgroundColor: COLORS.white,
+          position: "relative",
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: { xs: "18px", sm: "24px", md: "28px" },
+            fontWeight: 500,
+            marginBottom: "16px",
+          }}
+        >
+          Stores List
+        </Typography>
+
+        {/* Left Arrow */}
+        {showLeftArrow && (
+          <Box
+            onClick={() => scrollTo("left")}
+            sx={{
+              position: "absolute",
+              left: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              zIndex: 1,
+              backgroundColor: "#fff",
+              borderRadius: "50%",
+              padding: "5px",
+              boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <ArrowBackIos />
+          </Box>
+        )}
+
+        {/* List of Stores */}
+        <Box
+          ref={scrollRef}
+          className="hori-scrollable"
+          sx={{
+            display: "flex",
+            overflowX: "auto",
+            padding: "10px 0",
+          }}
+        >
+          {stores.map((store) => (
+            <Box
+              key={store.id}
+              sx={{
+                border: `1px solid ${COLORS.border2}`,
+                borderRadius: "8px",
+                padding: "20px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                backgroundColor: COLORS.white,
+                minWidth: "300px", // Minimum width for each store box
+                marginRight: "20px", // Space between boxes
+              }}
+            >
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  whiteSpace: "nowrap", // Prevent text from wrapping
+                  overflow: "hidden", // Hide overflow text
+                  textOverflow: "ellipsis", // Add ellipsis for overflow
+                }}
+              >
+                {store.name}
+              </Typography>
+              <Typography variant="body2" sx={{ color: COLORS.subtitle }}>
+                Total Users: {store.totalUsers}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+
+        {/* Right Arrow */}
+        {showRightArrow && (
+          <Box
+            onClick={() => scrollTo("right")}
+            sx={{
+              position: "absolute",
+              right: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              zIndex: 1,
+              backgroundColor: "#fff",
+              borderRadius: "50%",
+              padding: "5px",
+              boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <ArrowForwardIos />
+          </Box>
+        )}
+      </Box>
+
+      {/* <Box
+        sx={{
+          marginTop: "40px",
+          padding: "20px",
+          border: `1px solid ${COLORS.border2}`,
+          borderRadius: "8px",
+          backgroundColor: COLORS.white,
+          position: "relative", // Positioning context for arrows
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: { xs: "18px", sm: "24px", md: "28px" },
+            fontWeight: 500,
+            marginBottom: "16px",
+          }}
+        >
+          Stores List
+        </Typography>
+
+        {showLeftArrow && (
+          <Box
+            onClick={() => scrollTo("left")}
+            sx={{
+              position: "absolute",
+              left: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              zIndex: 1,
+            }}
+          >
+            <ArrowBackIos />
+          </Box>
+        )}
+
+        <Box
+          ref={scrollRef}
+          className="hori-scrollable"
+          sx={{
+            display: "flex",
+            overflowX: "auto",
+            padding: "10px 0",
+          }}
+        >
+          {stores.map((store) => (
+            <Box
+              key={store.id}
+              sx={{
+                border: `1px solid ${COLORS.border2}`,
+                borderRadius: "8px",
+                padding: "20px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                backgroundColor: COLORS.white,
+                minWidth: "300px", // Minimum width for each store box
+                marginRight: "20px", // Space between boxes
+              }}
+            >
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  whiteSpace: "nowrap", // Prevent text from wrapping
+                  overflow: "hidden", // Hide overflow text
+                  textOverflow: "ellipsis", // Add ellipsis for overflow
+                }}
+              >
+                {store.name}
+              </Typography>
+              <Typography variant="body2" sx={{ color: COLORS.subtitle }}>
+                Total Users: {store.totalUsers}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+
+       
+        {showRightArrow && (
+          <Box
+            onClick={() => scrollTo("right")}
+            sx={{
+              position: "absolute",
+              right: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              zIndex: 1,
+            }}
+          >
+            <ArrowForwardIos />
+          </Box>
+        )}
+      </Box> */}
+      {/* <Box
+        sx={{
+          marginTop: "40px",
+          padding: "20px",
+          border: `1px solid ${COLORS.border2}`,
+          borderRadius: "8px",
+          backgroundColor: COLORS.white,
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: { xs: "18px", sm: "24px", md: "28px" },
+            fontWeight: 500,
+            marginBottom: "16px",
+          }}
+        >
+          Stores List
+        </Typography>
+
+        <Box
+          className="hori-scrollable"
+          sx={{
+            display: "flex",
+            overflowX: "auto",
+            padding: "10px 0",
+          }}
+        >
+          {stores.map((store) => (
+            <Box
+              key={store.id}
+              sx={{
+                border: `1px solid ${COLORS.border2}`,
+                borderRadius: "8px",
+                padding: "20px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                backgroundColor: COLORS.white,
+                minWidth: "300px", // Minimum width for each store box
+                marginRight: "20px", // Space between boxes
+              }}
+            >
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 500,
+                  whiteSpace: "nowrap", // Prevent text from wrapping
+                  overflow: "hidden", // Hide overflow text
+                  textOverflow: "ellipsis", // Add ellipsis for overflow
+                }}
+              >
+                {store.name}
+              </Typography>
+              <Typography variant="body2" sx={{ color: COLORS.subtitle }}>
+                Total Users: {store.totalUsers}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      </Box> */}
+
       {/* Menu for role options */}
       <Menu
         anchorEl={anchorEl}
@@ -255,6 +558,43 @@ const User = () => {
 };
 
 export default User;
+{
+  /* <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(1, 1fr)",
+              md: "repeat(2, 1fr)",
+              lg: "repeat(3, 1fr)",
+              xl: "repeat(4, 1fr)",
+            },
+            gap: "20px",
+          }}
+        >
+          {stores.map((store) => (
+            <Box
+              key={store.id}
+              sx={{
+                border: `1px solid ${COLORS.border2}`,
+                borderRadius: "8px",
+                padding: "20px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                backgroundColor: COLORS.white,
+              }}
+            >
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {store.name}
+              </Typography>
+              <Typography variant="body2" sx={{ color: COLORS.subtitle }}>
+                Total Users: {store.totalUsers}
+              </Typography>
+            </Box>
+          ))}
+        </Box> */
+}
 
 {
   /* <Box
