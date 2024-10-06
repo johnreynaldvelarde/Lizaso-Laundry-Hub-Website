@@ -16,6 +16,7 @@ import {
   Snackbar,
   Alert,
   colors,
+  Divider,
 } from "@mui/material";
 import { PlusCircle } from "@phosphor-icons/react";
 import EditIcon from "@mui/icons-material/Edit";
@@ -179,119 +180,256 @@ const User = () => {
           </ul>
         </Box>
 
-        {/* Delete Selected Button */}
-        {/* className="flex items-center justify-between mb-8" */}
-        <Box mb={2} >
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDelete}
-            disabled={selected.length === 0}
+        {/* Table for user list */}
+        <Box mb={2}>
+          {/* Delete Selected Button */}
+          <Box mb={2}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleDelete}
+              disabled={selected.length === 0}
+            >
+              Delete Selected
+            </Button>
+          </Box>
+          {/* User Table */}
+          <TableContainer
+            component={Paper}
+            sx={{
+              overflowX: "auto",
+              borderRadius: 2, // No rounded corners
+              boxShadow: "none", // No shadow
+              border: "1px solid #e0e0e0", // Light gray outline
+            }}
           >
-            Delete Selected
-          </Button>
+            <Table>
+              <TableHead className="bg-gray-100 border-b">
+                <TableRow>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      indeterminate={
+                        selected.length > 0 && selected.length < users.length
+                      }
+                      checked={
+                        users.length > 0 && selected.length === users.length
+                      }
+                      onChange={handleSelectAllClick}
+                      inputProps={{ "aria-label": "select all users" }}
+                    />
+                  </TableCell>
+                  <TableCell className="text-left py-3 px-4">ID</TableCell>
+                  <TableCell className="text-left py-3 px-4">Name</TableCell>
+                  <TableCell className="text-left py-3 px-4">Role</TableCell>
+                  <TableCell className="text-left py-3 px-4">Store</TableCell>
+                  <TableCell className="text-left py-3 px-4">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((user) => {
+                    const isItemSelected = isSelected(user.id);
+                    return (
+                      <TableRow
+                        key={user.id}
+                        className="border-b"
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        selected={isItemSelected}
+                        tabIndex={-1}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isItemSelected}
+                            inputProps={{
+                              "aria-labelledby": `checkbox-${user.id}`,
+                            }}
+                            onClick={() => handleClickCheckbox(user.id)} // Handle checkbox click
+                          />
+                        </TableCell>
+                        <TableCell className="py-3 px-4">{user.id}</TableCell>
+                        <TableCell className="py-3 px-4">
+                          <Typography className="font-semibold">
+                            {user.name}
+                          </Typography>
+                          <Typography variant="body2" className="text-gray-500">
+                            {user.email}
+                          </Typography>
+                        </TableCell>
+                        <TableCell className="py-3 px-4">{user.role}</TableCell>
+                        <TableCell className="py-3 px-4">
+                          {user.store}
+                        </TableCell>
+                        <TableCell className="py-3 px-4">
+                          <IconButton onClick={() => handleView(user.id)}>
+                            <VisibilityIcon />
+                          </IconButton>
+                          <IconButton onClick={() => handleEdit(user.id)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => {
+                              // Add your delete logic here
+                              console.log("Delete user with ID:", user.id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={users.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
         </Box>
 
-        {/* User Table */}
-        <TableContainer
-          component={Paper}
+        <Box mt={5}>
+          {/* Delete Selected Button */}
+          <Box mb={2}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleDelete}
+              disabled={selected.length === 0}
+            >
+              Delete Selected
+            </Button>
+          </Box>
+          {/* User Table */}
+          <TableContainer
+            component={Paper}
+            sx={{
+              overflowX: "auto",
+              borderRadius: 2, // No rounded corners
+              boxShadow: "none", // No shadow
+              border: "1px solid #e0e0e0", // Light gray outline
+            }}
+          >
+            <Table>
+              <TableHead className="bg-gray-100 border-b">
+                <TableRow>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      indeterminate={
+                        selected.length > 0 && selected.length < users.length
+                      }
+                      checked={
+                        users.length > 0 && selected.length === users.length
+                      }
+                      onChange={handleSelectAllClick}
+                      inputProps={{ "aria-label": "select all users" }}
+                    />
+                  </TableCell>
+                  <TableCell className="text-left py-3 px-4">ID</TableCell>
+                  <TableCell className="text-left py-3 px-4">Name</TableCell>
+                  <TableCell className="text-left py-3 px-4">Role</TableCell>
+                  <TableCell className="text-left py-3 px-4">Store</TableCell>
+                  <TableCell className="text-left py-3 px-4">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((user) => {
+                    const isItemSelected = isSelected(user.id);
+                    return (
+                      <TableRow
+                        key={user.id}
+                        className="border-b"
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        selected={isItemSelected}
+                        tabIndex={-1}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={isItemSelected}
+                            inputProps={{
+                              "aria-labelledby": `checkbox-${user.id}`,
+                            }}
+                            onClick={() => handleClickCheckbox(user.id)} // Handle checkbox click
+                          />
+                        </TableCell>
+                        <TableCell className="py-3 px-4">{user.id}</TableCell>
+                        <TableCell className="py-3 px-4">
+                          <Typography className="font-semibold">
+                            {user.name}
+                          </Typography>
+                          <Typography variant="body2" className="text-gray-500">
+                            {user.email}
+                          </Typography>
+                        </TableCell>
+                        <TableCell className="py-3 px-4">{user.role}</TableCell>
+                        <TableCell className="py-3 px-4">
+                          {user.store}
+                        </TableCell>
+                        <TableCell className="py-3 px-4">
+                          <IconButton onClick={() => handleView(user.id)}>
+                            <VisibilityIcon />
+                          </IconButton>
+                          <IconButton onClick={() => handleEdit(user.id)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => {
+                              // Add your delete logic here
+                              console.log("Delete user with ID:", user.id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              component="div"
+              count={users.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </TableContainer>
+        </Box>
+      </Box>
+      {/* Snackbar for delete notification */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }} // Fixed "below" to "bottom"
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
           sx={{
-            overflowX: "auto",
-            borderRadius: 2, // No rounded corners
-            boxShadow: "none", // No shadow
-            border: "1px solid #e0e0e0", // Light gray outline
+            width: "100%",
+            color: COLORS.white,
+            backgroundColor: COLORS.secondary,
+            "& .MuiAlert-icon": {
+              color: "white", // Change icon color to white
+            },
           }}
         >
-          <Table>
-            <TableHead className="bg-gray-100 border-b">
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={
-                      selected.length > 0 && selected.length < users.length
-                    }
-                    checked={
-                      users.length > 0 && selected.length === users.length
-                    }
-                    onChange={handleSelectAllClick}
-                    inputProps={{ "aria-label": "select all users" }}
-                  />
-                </TableCell>
-                <TableCell className="text-left py-3 px-4">ID</TableCell>
-                <TableCell className="text-left py-3 px-4">Name</TableCell>
-                <TableCell className="text-left py-3 px-4">Role</TableCell>
-                <TableCell className="text-left py-3 px-4">Store</TableCell>
-                <TableCell className="text-left py-3 px-4">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((user) => {
-                  const isItemSelected = isSelected(user.id);
-                  return (
-                    <TableRow
-                      key={user.id}
-                      className="border-b"
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      selected={isItemSelected}
-                      tabIndex={-1}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isItemSelected}
-                          inputProps={{
-                            "aria-labelledby": `checkbox-${user.id}`,
-                          }}
-                          onClick={() => handleClickCheckbox(user.id)} // Handle checkbox click
-                        />
-                      </TableCell>
-                      <TableCell className="py-3 px-4">{user.id}</TableCell>
-                      <TableCell className="py-3 px-4">
-                        <Typography className="font-semibold">
-                          {user.name}
-                        </Typography>
-                        <Typography variant="body2" className="text-gray-500">
-                          {user.email}
-                        </Typography>
-                      </TableCell>
-                      <TableCell className="py-3 px-4">{user.role}</TableCell>
-                      <TableCell className="py-3 px-4">{user.store}</TableCell>
-                      <TableCell className="py-3 px-4">
-                        <IconButton onClick={() => handleView(user.id)}>
-                          <VisibilityIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleEdit(user.id)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          onClick={() => {
-                            // Add your delete logic here
-                            console.log("Delete user with ID:", user.id);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={users.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </TableContainer>
-
-        {/* Snackbar for delete notification */}
-        {/* <Snackbar
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+      {/* <Snackbar
           open={snackbarOpen}
           autoHideDuration={2000}
           onClose={handleSnackbarClose}
@@ -305,28 +443,6 @@ const User = () => {
             {snackbarMessage}
           </Alert>
         </Snackbar> */}
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={2000}
-          onClose={handleSnackbarClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }} // Fixed "below" to "bottom"
-        >
-          <Alert
-            onClose={handleSnackbarClose}
-            severity="success"
-            sx={{
-              width: "100%",
-              color: COLORS.white,
-              backgroundColor: COLORS.secondary,
-              "& .MuiAlert-icon": {
-                color: "white", // Change icon color to white
-              },
-            }}
-          >
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
-      </Box>
     </Box>
   );
 };
