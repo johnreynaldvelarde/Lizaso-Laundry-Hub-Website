@@ -45,6 +45,7 @@ export const COLORS = {
   // Primary and Secondary colors
   primary: "#595959",
   secondary: "#5787C8",
+  secondaryLight: "#ECF1F8",
   gradinet: "#447F8C",
 
   // Status Colors
