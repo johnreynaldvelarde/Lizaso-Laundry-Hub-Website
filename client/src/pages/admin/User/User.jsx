@@ -23,10 +23,9 @@ import {
   InputLabel,
   Menu,
 } from "@mui/material";
-import { PlusCircle } from "@phosphor-icons/react";
+import { PlusCircle, FolderUser } from "@phosphor-icons/react";
 import { MoreVert } from "@mui/icons-material";
-import EditIcon from "@mui/icons-material/Edit";
-import { Person } from "@mui/icons-material";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { UserCircle } from "@phosphor-icons/react";
 import { COLORS } from "../../../constants/color";
 
@@ -36,6 +35,9 @@ const roles = [
   { id: 3, name: "User" },
   { id: 4, name: "Delivery Personnel" },
   { id: 5, name: "Support" },
+  { id: 6, name: "User" },
+  { id: 7, name: "Delivery Personnel" },
+  { id: 8, name: "Support" },
 ];
 
 const User = () => {
@@ -53,6 +55,7 @@ const User = () => {
 
   return (
     <Box sx={{ pt: "100px", pb: "20px", px: "20px" }}>
+      {/* Header */}
       <Box
         className="flex items-center justify-between mb-8"
         sx={{
@@ -118,8 +121,10 @@ const User = () => {
           display: "grid",
           gridTemplateColumns: {
             xs: "1fr",
-            sm: "repeat(3, 1fr)",
-            md: "repeat(4, 1fr)",
+            sm: "repeat(1, 1fr)",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+            xl: "repeat(4, 1fr)",
           },
           gap: "20px",
         }}
@@ -140,7 +145,17 @@ const User = () => {
             }}
           >
             <Box display="flex" alignItems="center">
-              <UserCircle size={24} color="#5787C8" />
+              <Box
+                display="flex"
+                alignItems="center"
+                sx={{
+                  borderRadius: "5px",
+                  padding: "4px",
+                  backgroundColor: COLORS.secondary,
+                }}
+              >
+                <FolderUser size={30} color="white" weight="duotone" />
+              </Box>
               <Typography
                 variant="body1"
                 sx={{
@@ -152,8 +167,14 @@ const User = () => {
                 {role.name}
               </Typography>
             </Box>
-            <Box display="flex" alignItems="center" mt={2} mb={5}>
-              <Box display="flex" alignItems="center">
+            <Box
+              display="flex"
+              flexDirection={{ xs: "column", sm: "row" }} // Stack vertically on small screens
+              alignItems="center"
+              mt={2}
+              mb={5}
+            >
+              <Box display="flex" alignItems="center" mb={{ xs: 1, sm: 0 }}>
                 {[...Array(4)].map((_, index) => (
                   <Box
                     key={index}
@@ -173,34 +194,31 @@ const User = () => {
                 variant="body2"
                 sx={{
                   color: COLORS.subtitle,
-                  marginLeft: "8px", // Adjusted spacing for clarity
+                  marginLeft: { xs: 0, sm: "8px" }, // No left margin on small screens
                   marginBottom: "8px",
+                  textAlign: { xs: "center", sm: "left" }, // Center text on small screens
                 }}
               >
                 Total Users: {role.totalUsers}
               </Typography>
             </Box>
 
-            {/* <Box display="flex" alignItems="center" mt={2}>
-              <Person color="#5787C8" />
-              <Typography
-                variant="body2"
-                sx={{
-                  color: COLORS.subtitle,
-                  marginLeft: "4px", // Add spacing between icon and text
-                  marginBottom: "8px",
-                }}
-              >
-                Total Users: {role.totalUsers}
-              </Typography>
-            </Box> */}
-
             <Button
               variant="outlined"
-              sx={{ marginBottom: "8px", textTransform: "none" }} // Ensure text is not capitalized
+              sx={{
+                padding: 1,
+                marginBottom: "8px",
+                textTransform: "none",
+                color: COLORS.primary,
+                borderColor: COLORS.border,
+                "&:hover": {
+                  borderColor: COLORS.secondary,
+                  color: COLORS.secondary,
+                  backgroundColor: COLORS.secondaryLight,
+                },
+              }}
             >
-              <EditIcon sx={{ marginRight: "4px" }} />{" "}
-              {/* Replace with appropriate edit icon */}
+              <ManageAccountsIcon sx={{ marginRight: "5px" }} />
               Edit Role
             </Button>
 
@@ -219,9 +237,18 @@ const User = () => {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleCloseMenu}>Edit</MenuItem>
-        <MenuItem onClick={handleCloseMenu}>Delete</MenuItem>
+        <MenuItem onClick={handleCloseMenu} sx={{ fontSize: "14px" }}>
+          Rename
+        </MenuItem>
+        <MenuItem
+          onClick={handleCloseMenu}
+          sx={{ fontSize: "14px", color: COLORS.error }}
+        >
+          Remove Role
+        </MenuItem>
       </Menu>
     </Box>
   );
