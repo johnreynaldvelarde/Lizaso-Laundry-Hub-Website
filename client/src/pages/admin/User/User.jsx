@@ -17,6 +17,8 @@ import {
   Alert,
   colors,
   Divider,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { PlusCircle } from "@phosphor-icons/react";
 import EditIcon from "@mui/icons-material/Edit";
@@ -182,8 +184,82 @@ const User = () => {
 
         {/* Table for user list */}
         <Box mb={2}>
-          {/* Delete Selected Button */}
-          <Box mb={2}>
+          <Box mb={2} className="flex items-center justify-between mb-8">
+            {/* Filter by Status */}
+            <Box className="flex items-center mr-4">
+              <Typography variant="body1" sx={{ marginRight: 2 }}>
+                Filter by Status:
+              </Typography>
+              <Select
+                // value={filterStatus}
+                // onChange={handleFilterStatusChange} // Define this function to handle status change
+                displayEmpty
+                inputProps={{ "aria-label": "Without label" }}
+                sx={{ marginRight: 2 }}
+              >
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+                {/* Add more status options as needed */}
+              </Select>
+            </Box>
+
+            {/* Filter by Role */}
+            <Box className="flex items-center mr-4">
+              <Typography variant="body1" sx={{ marginRight: 2 }}>
+                Filter by Role:
+              </Typography>
+              <Select
+                // value={filterRole}
+                // onChange={handleFilterRoleChange} // Define this function to handle role change
+                displayEmpty
+              >
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="user">User</MenuItem>
+                <MenuItem value="delivery">Delivery Personnel</MenuItem>
+              </Select>
+            </Box>
+
+            {/* Button Group */}
+            <Box className="flex items-center">
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleDelete}
+                disabled={selected.length === 0}
+              >
+                Delete Selected
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={
+                  <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
+                }
+                sx={{
+                  backgroundColor: "#5787C8",
+                  borderRadius: "5px",
+                  fontWeight: 600,
+                  textTransform: "none",
+                  paddingLeft: "23px",
+                  paddingRight: "23px",
+                  fontSize: "16px",
+                  marginLeft: 2, // Add spacing between buttons
+                  "&:hover": {
+                    backgroundColor: "#3b5c9f",
+                  },
+                }}
+              >
+                Add new user
+              </Button>
+            </Box>
+          </Box>
+
+          {/* <Box mb={2} className="flex items-center justify-between mb-8">
             <Button
               variant="contained"
               color="error"
@@ -192,7 +268,27 @@ const User = () => {
             >
               Delete Selected
             </Button>
-          </Box>
+            <Button
+              variant="contained"
+              startIcon={
+                <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
+              }
+              sx={{
+                backgroundColor: "#5787C8",
+                borderRadius: "5px",
+                fontWeight: 600,
+                textTransform: "none",
+                paddingLeft: "23px",
+                paddingRight: "23px",
+                fontSize: "16px",
+                "&:hover": {
+                  backgroundColor: "#3b5c9f",
+                },
+              }}
+            >
+              Add new user
+            </Button>
+          </Box> */}
           {/* User Table */}
           <TableContainer
             component={Paper}
