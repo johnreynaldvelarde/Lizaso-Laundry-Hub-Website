@@ -47,11 +47,13 @@ export const COLORS = {
   primary: "#595959",
   secondary: "#5787C8",
   secondaryLight: "#ECF1F8",
+  secondaryHover: "#3F6A9A",
   gradinet: "#447F8C",
 
   // Status Colors
   success: "#28a745", // For success messages or indicators
   error: "#dc3545", // For error messages or alerts
+  errorHover: "#c82333",
   warning: "#ffc107", // For warning alerts
   info: "#17a2b8", // For informational messages
   pending: "#f0ad4e", // For pending status (added color for Pending)
