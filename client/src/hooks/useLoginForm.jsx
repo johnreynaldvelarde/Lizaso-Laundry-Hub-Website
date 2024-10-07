@@ -31,10 +31,11 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     setLoading(true);
 
     try {
-      const { success, userType, accessToken } = await loginService.login({
-        username: loginUsername,
-        password: loginPassword,
-      });
+      const { success, userType, roleName, permissions, accessToken } =
+        await loginService.login({
+          username: loginUsername,
+          password: loginPassword,
+        });
 
       if (success) {
         if (accessToken) {
@@ -67,23 +68,19 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
               toast.error("Failed to check customer details.");
             }
           } else {
-            // Redirect to main page for non-customer users
-            navigate("/main");
+            if (roleName === "Administrator") {
+              navigate("/main");
+            } else {
+            }
           }
         }, 1000);
-
-        // Use setTimeout to allow toast to show before navigation
-        // setTimeout(() => {
-        //   setLoginShowPopup(false);
-        //   navigate(userType === "Customer" ? "/customer-page" : "/main");
-        // }, 1000); // Adjust delay as needed
       } else {
         setErrorMessage("Unexpected error occurred.");
       }
     } catch (error) {
       setErrorMessage(error.message);
     } finally {
-      setLoading(false); // Set loading to false after request completes
+      setLoading(false);
     }
   };
 

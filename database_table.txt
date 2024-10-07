@@ -1,13 +1,13 @@
 User_Account
-store_id (Foregin Key)
 id
+store_id (Foregin Key)
+role_permissions_id (Foregin Key)
 username
 email
 mobile_number
 first_name
 middle_name
 last_name
-isRole
 isOnline
 isStatus
 isArchive
