@@ -36,7 +36,10 @@ import noData from "../../../../assets/images/no_data.png";
 import { COLORS } from "../../../../constants/color";
 import A_PopupAddUser from "./A_PopupAddUser";
 import A_PopupAddRole from "./A_PopupAddRole";
-import { viewRolesAndPermissions } from "../../../../services/api/getApi";
+import {
+  viewAdminBasedStore,
+  viewRolesAndPermissions,
+} from "../../../../services/api/getApi";
 
 // const roles = [
 //   { id: 1, name: "Admin" },
@@ -49,7 +52,7 @@ import { viewRolesAndPermissions } from "../../../../services/api/getApi";
 //   { id: 8, name: "Support" },
 // ];
 
-const stores = [
+const store = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
   { id: 2, name: "East Branch", totalUsers: 5 },
   { id: 3, name: "West Branch", totalUsers: 7 },
@@ -85,34 +88,59 @@ const users = [
     store: "LIZASO Branch A",
     storeId: 1,
   },
-  {
-    id: 5,
-    name: "Bob White",
-    role: "User",
-    store: "LIZASO Branch A",
-    storeId: 1,
-  },
-  {
-    id: 6,
-    name: "Emma Green",
-    role: "User",
-    store: "LIZASO Branch B",
-    storeId: 1,
-  },
-  {
-    id: 7,
-    name: "Charlie Black",
-    role: "Delivery",
-    store: "LIZASO Branch B",
-    storeId: 1,
-  },
 ];
 
 const SectionAdminUser = () => {
   const { userDetails } = useAuth();
   const [roles, setRole] = useState([]);
+  const [stores, setStores] = useState([]);
   const [selectedRole, setSelectedRole] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  // For fetching data for role and permissions
+  const fetchRoleAndPermissions = async () => {
+    if (!userDetails?.userId) return;
+
+    try {
+      const response = await viewRolesAndPermissions.getRoleAndPermission(
+        userDetails.storeId
+      );
+      if (response) {
+        const roledata = response.data || [];
+        setRole(roledata);
+      } else {
+        console.error("Unexpected response format:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // For fetching data of stores
+  const fetchAdminBasedStores = async () => {
+    if (!userDetails?.userId) return;
+
+    try {
+      const response = await viewAdminBasedStore.getAdminBasedStore(
+        userDetails.storeId
+      );
+      if (response) {
+        const storeData = response.data || [];
+        setStores(storeData);
+      } else {
+        console.error("Unexpected response format:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userDetails?.userId) {
+      fetchRoleAndPermissions();
+      fetchAdminBasedStores();
+    }
+  }, [userDetails?.userId]);
 
   // For Popup
   const [openPopupAddUser, setOpenPopupAddUser] = useState(false);
@@ -146,7 +174,7 @@ const SectionAdminUser = () => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
-  const [selectedStore, setSelectedStore] = useState(stores[0].id);
+  const [selectedStore, setSelectedStore] = useState(stores[0]);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -233,29 +261,6 @@ const SectionAdminUser = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-
-  // For fetching data for role and permissions
-  const fetchRoleAndPermissions = async () => {
-    if (!userDetails?.userId) return;
-
-    try {
-      const response = await viewRolesAndPermissions.getRoleAndPermission(
-        userDetails.storeId
-      );
-      if (response) {
-        const roledata = response.data || [];
-        setRole(roledata);
-      } else {
-        console.error("Unexpected response format:", response);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchRoleAndPermissions();
-  }, [userDetails?.userId]);
 
   // For Update Data
 
@@ -531,7 +536,7 @@ const SectionAdminUser = () => {
                         : COLORS.textPrimary,
                   }}
                 >
-                  {store.name}
+                  {store.store_name}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -542,7 +547,7 @@ const SectionAdminUser = () => {
                         : COLORS.subtitle,
                   }}
                 >
-                  Total Users: {store.totalUsers}
+                  Total Users: {store.user_count}
                 </Typography>
               </Box>
 
@@ -592,7 +597,7 @@ const SectionAdminUser = () => {
                         : COLORS.textPrimary,
                   }}
                 >
-                  {store.totalUsers} {""}
+                  {store.user_count} {""}
                   User
                 </Typography>
               </Box>
@@ -857,6 +862,7 @@ const SectionAdminUser = () => {
       <A_PopupAddUser
         open={openPopupAddUser}
         onClose={handleClosePopupAddUser}
+        roleData={roles}
       />
 
       <A_PopupAddRole

@@ -80,8 +80,21 @@ router.post(
 );
 
 // USER MANAGEMENT SECTION
+// #For role and permissions
 router.post(
-  "/user/:id/set-role-permisions",
+  "/usermanage/:id/set-role-permisions",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetRolesPermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #For add user
+router.post(
+  "/usermanage/:id/set-new-user",
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleSetRolesPermissions(req, res, connection);

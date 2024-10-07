@@ -33,13 +33,13 @@ router.post(
   })
 );
 
+// UNIT MONITORED SECTION
 router.put(
   "/user/:id/update-assignment",
   withDatabaseConnection(async (req, res, connection) => {
     await handlePutAssignment(req, res, connection);
   })
 );
-
 router.put(
   "/user/:id/remove-request",
   withDatabaseConnection(async (req, res, connection) => {
@@ -47,24 +47,65 @@ router.put(
   })
 );
 
+// USER MANAGEMENT SECTION
+// #For role and permisson
+router.put(
+  "/usermanage/:id/update-role-permission",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      // await handleSetRolesPermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #For user
+router.put(
+  "/usermanage/:id/update-user",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      // await handleSetRolesPermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/usermanage/:id/delete-user",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      // await handleSetRolesPermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 // SETTINGS SECTION
+// #For tab dashboard config
 
-// -> TAB DASHBOARD CONFIG <-
-// router.post('/settings/set-dashboard-config', withDatabaseConnection(async (req, res, connection) => {
-// }));
-
-// -> TAB SERVICE TYPES <-
+// #For tab services type
 router.put(
   "/settings/:id/update-service-types",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleUpdateServiceType(req, res, connection);
+    try {
+      await handleUpdateServiceType(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 
 router.put(
   "/settings/:id/delete-service-types",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleDeleteServiceType(req, res, connection);
+    try {
+      await handleDeleteServiceType(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

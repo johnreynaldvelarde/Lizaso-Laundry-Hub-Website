@@ -193,7 +193,6 @@ export const handleSetRolesPermissions = async (req, res, connection) => {
 };
 
 // GET
-// GET
 export const handleGetRolesPermissions = async (req, res, connection) => {
   const { id } = req.params; // user id
 
@@ -271,39 +270,147 @@ export const handleGetRolesPermissions = async (req, res, connection) => {
   }
 };
 
+// #For getting store the user count related to it
+export const handleGetStoresBasedAdmin = async (req, res, connection) => {
+  const { id } = req.params; // user id
+
+  try {
+    await connection.beginTransaction();
+    const userQuery = `
+      SELECT role_permissions_id 
+      FROM User_Account 
+      WHERE id = ? AND isArchive = 0
+    `;
+    const [userResults] = await connection.execute(userQuery, [id]);
+    if (userResults.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    const { role_permissions_id } = userResults[0];
+    const roleQuery = `
+      SELECT role_name, can_read, can_write, can_edit, can_delete 
+      FROM Roles_Permissions 
+      WHERE id = ? AND isArchive = 0
+    `;
+    const [roleResults] = await connection.execute(roleQuery, [
+      role_permissions_id,
+    ]);
+
+    if (roleResults.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Role not found" });
+    }
+
+    const role = roleResults[0];
+
+    if (role.role_name === "Administrator") {
+      const allStoresQuery = `
+        SELECT s.id, s.store_no, s.store_name, s.store_contact, s.store_email, s.is_main_store, s.updated_at, s.date_created, s.isStatus, s.isArchive,
+          (SELECT COUNT(*) 
+          FROM User_Account ua 
+          WHERE ua.store_id = s.id 
+          AND ua.isArchive = 0) AS user_count
+        FROM Stores s
+        WHERE s.isArchive = 0
+      `;
+
+      const [allStoresResults] = await connection.execute(allStoresQuery);
+
+      return res.status(200).json({
+        success: true,
+        message: "Store list retrieved successfully",
+        data: allStoresResults,
+      });
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Only Administrators can view all stores",
+      });
+    }
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching roles and permissions:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
 // PUT
+export const handleUpdateRolePermission = async (req, res, connection) => {
+  const { id } = req.params;
+  const { store_id, service_name, default_price } = req.body;
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Service_Type 
+      SET service_name = ?, default_price = ?
+      WHERE id = ?
+    `;
+
+    await connection.query(updateQuery, [service_name, default_price, id]);
+    await connection.commit();
+    res
+      .status(200)
+      .json({ success: true, message: "Service type update successfully." });
+  } catch (error) {
+    await connection.rollback();
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the service type." });
+  }
+};
 
 // DELETE
+export const handleDeleteRole = async (req, res, connection) => {
+  const { id } = req.params;
 
-// export const handleSetRolesPermissions = async (req, res, connection) => {
-//   const { id } = req.params; // user id
-//   const { role_name } = req.body;
+  try {
+    await connection.beginTransaction();
 
-//   try {
-//     await connection.beginTransaction();
+    const userCountQuery = `
+      SELECT COUNT(*) as user_count 
+      FROM User_Account 
+      WHERE role_permissions_id = ? AND isArchive = 0
+    `;
+    const [userCountResults] = await connection.execute(userCountQuery, [id]);
 
-//     const userQuery = `
-//     SELECT role_permissions_id
-//     FROM User_Account
-//     WHERE id = ? AND isArchive = 0
-//   `;
+    const { user_count } = userCountResults[0];
 
-//     const [userResults] = await connection.execute(userQuery, [id]);
+    if (user_count === 0) {
+      const updateQuery = `
+        UPDATE Roles_Permissions
+        SET isArchive = 1
+        WHERE id = ? AND isArchive = 0
+      `;
+      await connection.execute(updateQuery, [id]);
 
-//     if (userResults.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
-
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching roles and permissions:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching data.",
-//     });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// };
+      await connection.commit();
+      1;
+      return res.status(200).json({
+        success: true,
+        message: `Role with id ${id} was successfully archived.`,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: `Role with id ${id} cannot be archived because there are users associated with it.`,
+      });
+    }
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error archiving role:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while trying to archive the role.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};

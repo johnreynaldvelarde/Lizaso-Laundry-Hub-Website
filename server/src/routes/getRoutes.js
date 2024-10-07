@@ -20,6 +20,7 @@ import { getPool } from "../db/dbConfig.js";
 import {
   handleAdminGetUser,
   handleGetRolesPermissions,
+  handleGetStoresBasedAdmin,
 } from "../services/admin/useUser.js";
 import { handleGetServiceTypeAndStore } from "../services/admin/useSettings.js";
 
@@ -140,11 +141,35 @@ router.get(
   })
 );
 
+// For role and permission
 router.get(
-  "/user/:id/admin-get-role-permissions",
+  "/usermanage/:id/admin-get-role-permissions",
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetRolesPermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// For stores and user
+router.get(
+  "/usermanage/:id/admin-get-store",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetStoresBasedAdmin(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/usermanage/:id/admin-get-user",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      // await handleGetRolesPermissions(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

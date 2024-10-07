@@ -123,7 +123,7 @@ export const createNewRoleAndPermissions = {
   setRoleAndPermissons: async (userId, data) => {
     try {
       const response = await axiosPrivate.post(
-        `/user/${userId}/set-role-permisions`,
+        `/usermanage/${userId}/set-role-permisions`,
         data
       );
       return response.data;

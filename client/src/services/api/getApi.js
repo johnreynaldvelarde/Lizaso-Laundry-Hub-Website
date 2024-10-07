@@ -148,7 +148,7 @@ export const getServiceType = {
   },
 };
 
-// Inventory Section
+// INVENTORY SECTION
 export const getCategoryItem = {
   getCategory: async () => {
     try {
@@ -221,7 +221,7 @@ export const viewStore = {
   },
 };
 
-// User Management
+// USER MANAGEMENT
 export const viewUser = {
   getUser: async (userId) => {
     try {
@@ -234,11 +234,27 @@ export const viewUser = {
   },
 };
 
+// #For get role and permission
 export const viewRolesAndPermissions = {
   getRoleAndPermission: async (userId) => {
     try {
       const response = await axiosPrivate.get(
-        `/user/${userId}/admin-get-role-permissions`
+        `/usermanage/${userId}/admin-get-role-permissions`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+// #For get store list based admin
+export const viewAdminBasedStore = {
+  getAdminBasedStore: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/usermanage/${userId}/admin-get-store`
       );
       return response.data;
     } catch (error) {

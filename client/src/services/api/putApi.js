@@ -25,7 +25,7 @@ export const updateRemoveInQueue = {
   putRemoveInQueue: async (inqueueID) => {
     try {
       const response = await axiosPrivate.put(
-        `/user/${inqueueID}/remove-request`,
+        `/user/${inqueueID}/remove-request`
       );
       return response.data;
     } catch (error) {
@@ -34,13 +34,12 @@ export const updateRemoveInQueue = {
     }
   },
 };
-
 
 export const updateRemoveAssignment = {
   putAssignment: async (assignmentID) => {
     try {
       const response = await axiosPrivate.put(
-        `/user/${assignmentID}/update-assignment`,
+        `/user/${assignmentID}/update-assignment`
       );
       return response.data;
     } catch (error) {
@@ -49,7 +48,6 @@ export const updateRemoveAssignment = {
     }
   },
 };
-
 
 // SETTINGS SECTION
 //  <----- Service Type Section ----->
@@ -58,7 +56,7 @@ export const updateServiceType = {
     try {
       const response = await axiosPrivate.put(
         `/settings/${serviceId}/update-service-types`,
-        data  
+        data
       );
       return response.data;
     } catch (error) {
@@ -71,7 +69,7 @@ export const updateDeleteServiceType = {
   putDeleteServiceType: async (id) => {
     try {
       const response = await axiosPrivate.put(
-        `/settings/${id}/delete-service-types`,
+        `/settings/${id}/delete-service-types`
       );
       return response.data;
     } catch (error) {

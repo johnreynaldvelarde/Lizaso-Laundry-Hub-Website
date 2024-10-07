@@ -16,7 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 
-const A_PopupAddUser = ({ open, onClose }) => {
+const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
   const { userDetails } = useAuth();
   const [username, setUsername] = useState("");
   const [defaultPassword, setDefaultPassword] = useState("");
@@ -26,14 +26,10 @@ const A_PopupAddUser = ({ open, onClose }) => {
   const [number, setNumber] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedPermissions, setSelectedPermissions] = useState("");
+  const [selectedStore, setSelectedStore] = useState("");
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
-  const handleRoleChange = (event) => {
-    setSelectedRole(event.target.value); // Update the state with the selected value
-  };
 
   const validateFields = () => {
     const newErrors = {};
@@ -58,8 +54,8 @@ const A_PopupAddUser = ({ open, onClose }) => {
     if (!selectedStatus) {
       newErrors.selectedStatus = "Status is required";
     }
-    if (!selectedPermissions) {
-      newErrors.selectedPermissions = "Permissions is required";
+    if (!selectedStore) {
+      newErrors.selectedStore = "Store is required";
     }
     return newErrors;
   };
@@ -83,8 +79,8 @@ const A_PopupAddUser = ({ open, onClose }) => {
       setSelectedRole(value);
     } else if (field === "selectedStatus") {
       setSelectedStatus(value);
-    } else if (field === "selectedPermissions") {
-      setSelectedPermissions(value);
+    } else if (field === "selectedStore") {
+      setSelectedStore(value);
     }
 
     setErrors((prevErrors) => ({
@@ -100,44 +96,7 @@ const A_PopupAddUser = ({ open, onClose }) => {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
-      setTimeout(async () => {
-        // const data = {
-        //   store_id: storeId || userDetails.storeId,
-        //   service_name: serviceName,
-        //   default_price: defaultPrice,
-        // };
-        // try {
-        //   let response;
-        //   if (serviceData) {
-        //     response = await updateServiceType.putServiceType(
-        //       serviceData.id,
-        //       data
-        //     );
-        //   } else {
-        //     response = await createNewServiceType.setServiceType(data);
-        //   }
-        //   if (response.success) {
-        //     toast.success(response.message);
-        //     handleClear();
-        //     if (onSuccess) onSuccess(); // Call the onSuccess callback to refresh the data
-        //   } else {
-        //     setErrors((prevErrors) => ({
-        //       ...prevErrors,
-        //       serviceName: response.message,
-        //     }));
-        //   }
-        // } catch (error) {
-        //   if (error.response && error.response.data) {
-        //     toast.error(error.response.data.message);
-        //   } else {
-        //     toast.error(
-        //       "An unexpected error occurred while creating the service type."
-        //     );
-        //   }
-        // } finally {
-        //   setLoading(false);
-        // }
-      }, 500);
+      setTimeout(async () => {}, 500);
     }
   };
 
@@ -148,7 +107,7 @@ const A_PopupAddUser = ({ open, onClose }) => {
     setNumber("");
     setSelectedRole("");
     setSelectedStatus("");
-    setSelectedPermissions("");
+    setSelectedStore("");
 
     setErrors({});
 
@@ -311,14 +270,6 @@ const A_PopupAddUser = ({ open, onClose }) => {
               target: { value: value.replace(/[^0-9]/g, "") },
             });
           }}
-          // onChange={(e) => {
-          //   const { value } = e.target;
-          //   if (/^[0-9]*$/.test(value) || value === "") {
-          //     handleInputChange("number", value);
-          //   } else {
-          //     e.target.value = value.replace(/[^0-9]/g, "");
-          //   }
-          // }}
           inputProps={{
             inputMode: "numeric",
           }}
@@ -357,14 +308,14 @@ const A_PopupAddUser = ({ open, onClose }) => {
             },
           }}
         >
-          {/* Add your role options here */}
           <MenuItem value="" disabled>
             Select a role
           </MenuItem>
-          <MenuItem value="admin">Admin</MenuItem>
-          <MenuItem value="manager">Manager</MenuItem>
-          <MenuItem value="user">User</MenuItem>
-          <MenuItem value="delivery">Delivery Personnel</MenuItem>
+          {roleData.map((role) => (
+            <MenuItem key={role.id} value={role.id}>
+              {role.role_name}
+            </MenuItem>
+          ))}
         </TextField>
         {/* Status and Permission */}
         <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
@@ -392,25 +343,24 @@ const A_PopupAddUser = ({ open, onClose }) => {
           >
             {/* Add your role options here */}
             <MenuItem value="" disabled>
-              Select a role
+              Select a status
             </MenuItem>
-            <MenuItem value="admin">Admin</MenuItem>
-            <MenuItem value="manager">Manager</MenuItem>
-            <MenuItem value="user">User</MenuItem>
-            <MenuItem value="delivery">Delivery Personnel</MenuItem>
+            <MenuItem value={0}>Activate</MenuItem>
+            <MenuItem value={1}>Deactivate</MenuItem>
+            <MenuItem value={2}>Pending</MenuItem>
           </TextField>
 
-          {/* Select a permissions*/}
+          {/* Select a store*/}
           <TextField
             select
             margin="dense"
-            label="Permissions"
+            label="Store"
             fullWidth
             variant="outlined"
-            value={selectedPermissions}
-            onChange={handleInputChange("selectedPermissions")}
-            error={Boolean(errors.selectedPermissions)}
-            helperText={errors.selectedPermissions}
+            value={selectedStore}
+            onChange={handleInputChange("selectedStore")}
+            error={Boolean(errors.selectedStore)}
+            helperText={errors.selectedStore}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&.Mui-focused fieldset": {
@@ -424,7 +374,7 @@ const A_PopupAddUser = ({ open, onClose }) => {
           >
             {/* Add your role options here */}
             <MenuItem value="" disabled>
-              Select a permissions
+              Select a store
             </MenuItem>
             <MenuItem value="admin">Admin</MenuItem>
             <MenuItem value="manager">Manager</MenuItem>
