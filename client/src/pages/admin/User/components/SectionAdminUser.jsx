@@ -34,6 +34,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import noData from "../../../../assets/images/no_data.png";
 import { COLORS } from "../../../../constants/color";
 import A_PopupAddUser from "./A_PopupAddUser";
+import A_PopupAddRole from "./A_PopupAddRole";
 
 const roles = [
   { id: 1, name: "Admin" },
@@ -111,11 +112,20 @@ const SectionAdminUser = () => {
 
   // For Popup
   const [openPopupAddUser, setOpenPopupAddUser] = useState(false);
+  const [openPopupAddRole, setOpenPopupAddRole] = useState(false);
+
   const handleOpenPopupAddUser = () => {
     setOpenPopupAddUser(true);
   };
   const handleClosePopupAddUser = () => {
     setOpenPopupAddUser(false);
+  };
+
+  const handleOpenPopupAddRole = () => {
+    setOpenPopupAddRole(true);
+  };
+  const handleClosePopupAddRole = () => {
+    setOpenPopupAddRole(false);
   };
 
   // For Role and Permission Section
@@ -165,6 +175,7 @@ const SectionAdminUser = () => {
 
   const handleStoreClick = (id) => {
     setSelectedStore(id);
+    setSelected([]);
   };
 
   const filteredUsers = selectedStore
@@ -173,7 +184,7 @@ const SectionAdminUser = () => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = users.map((user) => user.id);
+      const newSelecteds = filteredUsers.map((user) => user.id);
       setSelected(newSelecteds);
       return;
     }
@@ -255,17 +266,18 @@ const SectionAdminUser = () => {
         </Box>
 
         <Button
+          onClick={handleOpenPopupAddRole}
           variant="contained"
           startIcon={
             <PlusCircle
               size={24}
-              color="#fcfcfc"
+              color={COLORS.white}
               weight="duotone"
               sx={{ display: { xs: "none", sm: "inline" } }}
             />
           }
           sx={{
-            backgroundColor: "#5787C8",
+            backgroundColor: COLORS.secondary,
             borderRadius: "5px",
             fontWeight: 500,
             textTransform: "none",
@@ -281,7 +293,6 @@ const SectionAdminUser = () => {
           Add new role
         </Button>
       </Box>
-
       {/* List of roles */}
       <Box
         sx={{
@@ -400,7 +411,6 @@ const SectionAdminUser = () => {
       </Box>
 
       {/* Store and Permission Section */}
-
       {/* Store List */}
       <Box
         sx={{
@@ -715,10 +725,12 @@ const SectionAdminUser = () => {
                 <TableCell padding="checkbox">
                   <Checkbox
                     indeterminate={
-                      selected.length > 0 && selected.length < users.length
+                      selected.length > 0 &&
+                      selected.length < filteredUsers.length
                     }
                     checked={
-                      users.length > 0 && selected.length === users.length
+                      filteredUsers.length > 0 &&
+                      selected.length === filteredUsers.length
                     }
                     onChange={handleSelectAllClick}
                     inputProps={{ "aria-label": "select all users" }}
@@ -816,6 +828,11 @@ const SectionAdminUser = () => {
       <A_PopupAddUser
         open={openPopupAddUser}
         onClose={handleClosePopupAddUser}
+      />
+
+      <A_PopupAddRole
+        open={openPopupAddRole}
+        onClose={handleClosePopupAddRole}
       />
 
       {/* Menu Section */}

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useAuth from "../../../../contexts/AuthContext";
 import {
   Dialog,
   DialogTitle,
@@ -16,44 +17,148 @@ import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 
 const A_PopupAddUser = ({ open, onClose }) => {
+  const { userDetails } = useAuth();
+  const [username, setUsername] = useState("");
+  const [defaultPassword, setDefaultPassword] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [middlename, setMiddlename] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [number, setNumber] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedPermissions, setSelectedPermissions] = useState("");
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(""); // Initialize the state
 
   const handleRoleChange = (event) => {
     setSelectedRole(event.target.value); // Update the state with the selected value
   };
-  // const validateFields = () => {
-  //   const newErrors = {};
-  //   if (!serviceName) {
-  //     newErrors.serviceName = "Service name is required";
-  //   }
-  //   if (!defaultPrice) {
-  //     newErrors.defaultPrice = "Price is required";
-  //   } else if (defaultPrice <= 0) {
-  //     newErrors.defaultPrice = "Price must be greater than 0";
-  //   }
-  //   return newErrors;
-  // };
 
-  // const handleInputChange = (field) => (e) => {
-  //   const value = e.target.value;
+  const validateFields = () => {
+    const newErrors = {};
+    if (!username) {
+      newErrors.username = "Username is required";
+    }
+    if (!defaultPassword) {
+      newErrors.defaultPassword = "Password is required";
+    }
+    if (!firstname) {
+      newErrors.firstname = "Firstname is required";
+    }
+    if (!lastname) {
+      newErrors.lastname = "Lastname is required";
+    }
+    if (!number) {
+      newErrors.number = "Mobile number is required";
+    }
+    if (!selectedRole) {
+      newErrors.selectedRole = "Role is required";
+    }
+    if (!selectedStatus) {
+      newErrors.selectedStatus = "Status is required";
+    }
+    if (!selectedPermissions) {
+      newErrors.selectedPermissions = "Permissions is required";
+    }
+    return newErrors;
+  };
 
-  //   if (field === "serviceName") {
-  //     setServiceName(value);
-  //   } else if (field === "defaultPrice") {
-  //     setDefaultPrice(value);
-  //   }
+  const handleInputChange = (field) => (e) => {
+    const value = e.target.value;
 
-  //   setErrors((prevErrors) => ({
-  //     ...prevErrors,
-  //     [field]: "",
-  //   }));
-  // };
+    if (field === "username") {
+      setUsername(value);
+    } else if (field === "defaultPassword") {
+      setDefaultPassword(value);
+    } else if (field === "firstname") {
+      setFirstname(value);
+    } else if (field === "lastname") {
+      setLastname(value);
+    } else if (field === "middlename") {
+      setMiddlename(value);
+    } else if (field === "number") {
+      setNumber(value);
+    } else if (field === "selectedRole") {
+      setSelectedRole(value);
+    } else if (field === "selectedStatus") {
+      setSelectedStatus(value);
+    } else if (field === "selectedPermissions") {
+      setSelectedPermissions(value);
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: "",
+    }));
+  };
+
+  const handleCreateUser = async () => {
+    const newErrors = validateFields();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+
+      setTimeout(async () => {
+        // const data = {
+        //   store_id: storeId || userDetails.storeId,
+        //   service_name: serviceName,
+        //   default_price: defaultPrice,
+        // };
+        // try {
+        //   let response;
+        //   if (serviceData) {
+        //     response = await updateServiceType.putServiceType(
+        //       serviceData.id,
+        //       data
+        //     );
+        //   } else {
+        //     response = await createNewServiceType.setServiceType(data);
+        //   }
+        //   if (response.success) {
+        //     toast.success(response.message);
+        //     handleClear();
+        //     if (onSuccess) onSuccess(); // Call the onSuccess callback to refresh the data
+        //   } else {
+        //     setErrors((prevErrors) => ({
+        //       ...prevErrors,
+        //       serviceName: response.message,
+        //     }));
+        //   }
+        // } catch (error) {
+        //   if (error.response && error.response.data) {
+        //     toast.error(error.response.data.message);
+        //   } else {
+        //     toast.error(
+        //       "An unexpected error occurred while creating the service type."
+        //     );
+        //   }
+        // } finally {
+        //   setLoading(false);
+        // }
+      }, 500);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setUsername("");
+    setFirstname("");
+    setLastname("");
+    setNumber("");
+    setSelectedRole("");
+    setSelectedStatus("");
+    setSelectedPermissions("");
+
+    setErrors({});
+
+    onClose();
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleDialogClose}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -68,7 +173,7 @@ const A_PopupAddUser = ({ open, onClose }) => {
             <span className="text-lg font-semibold">Add a new user</span>
           </div>
           <IconButton
-            onClick={onClose}
+            onClick={handleDialogClose}
             className="text-[#5787C8] hover:text-[#5787C8]"
           >
             <CloseIcon />
@@ -86,8 +191,34 @@ const A_PopupAddUser = ({ open, onClose }) => {
           type="text"
           fullWidth
           variant="outlined"
-          error={Boolean(errors.serviceName)}
-          helperText={errors.serviceName}
+          value={username}
+          onChange={handleInputChange("username")}
+          error={Boolean(errors.username)}
+          helperText={errors.username}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        />
+
+        {/* Default Password */}
+        <TextField
+          margin="dense"
+          label="Password"
+          type="password"
+          fullWidth
+          variant="outlined"
+          value={defaultPassword}
+          onChange={handleInputChange("defaultPassword")}
+          error={Boolean(errors.defaultPassword)}
+          helperText={errors.defaultPassword}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -108,8 +239,10 @@ const A_PopupAddUser = ({ open, onClose }) => {
             type="text"
             fullWidth
             variant="outlined"
-            error={Boolean(errors.serviceName)}
-            helperText={errors.serviceName}
+            value={firstname}
+            onChange={handleInputChange("firstname")}
+            error={Boolean(errors.firstname)}
+            helperText={errors.firstname}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&.Mui-focused fieldset": {
@@ -127,8 +260,10 @@ const A_PopupAddUser = ({ open, onClose }) => {
             type="text"
             fullWidth
             variant="outlined"
-            error={Boolean(errors.serviceName)}
-            helperText={errors.serviceName}
+            value={lastname}
+            onChange={handleInputChange("lastname")}
+            error={Boolean(errors.lastname)}
+            helperText={errors.lastname}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&.Mui-focused fieldset": {
@@ -145,8 +280,8 @@ const A_PopupAddUser = ({ open, onClose }) => {
             label="Middle Initial"
             type="text"
             variant="outlined"
-            error={Boolean(errors.serviceName)}
-            helperText={errors.serviceName}
+            value={middlename}
+            onChange={handleInputChange("middlename")}
             sx={{
               width: "400px",
               "& .MuiOutlinedInput-root": {
@@ -160,24 +295,30 @@ const A_PopupAddUser = ({ open, onClose }) => {
             }}
           />
         </Box>
-
-        {/* Phone Number */}
+        {/* Mobile Number */}
         <TextField
           margin="dense"
-          label="Phone Number"
+          label="Mobile Number"
           type="tel"
           fullWidth
           variant="outlined"
-          error={Boolean(errors.serviceName)}
-          helperText={errors.serviceName}
+          value={number}
+          error={Boolean(errors.number)}
+          helperText={errors.number}
           onChange={(e) => {
             const { value } = e.target;
-            if (/^[0-9]*$/.test(value) || value === "") {
-              e.target.value = value;
-            } else {
-              e.target.value = value.replace(/[^0-9]/g, "");
-            }
+            handleInputChange("number")({
+              target: { value: value.replace(/[^0-9]/g, "") },
+            });
           }}
+          // onChange={(e) => {
+          //   const { value } = e.target;
+          //   if (/^[0-9]*$/.test(value) || value === "") {
+          //     handleInputChange("number", value);
+          //   } else {
+          //     e.target.value = value.replace(/[^0-9]/g, "");
+          //   }
+          // }}
           inputProps={{
             inputMode: "numeric",
           }}
@@ -201,9 +342,9 @@ const A_PopupAddUser = ({ open, onClose }) => {
           fullWidth
           variant="outlined"
           value={selectedRole}
-          onChange={handleRoleChange}
-          error={Boolean(errors.role)} // Update error handling
-          helperText={errors.role} // Update helper text
+          onChange={handleInputChange("selectedRole")}
+          error={Boolean(errors.selectedRole)}
+          helperText={errors.selectedRole}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -234,10 +375,10 @@ const A_PopupAddUser = ({ open, onClose }) => {
             label="Status"
             fullWidth
             variant="outlined"
-            value={selectedRole}
-            onChange={handleRoleChange}
-            error={Boolean(errors.role)}
-            helperText={errors.role}
+            value={selectedStatus}
+            onChange={handleInputChange("selectedStatus")}
+            error={Boolean(errors.selectedStatus)}
+            helperText={errors.selectedStatus}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&.Mui-focused fieldset": {
@@ -266,10 +407,10 @@ const A_PopupAddUser = ({ open, onClose }) => {
             label="Permissions"
             fullWidth
             variant="outlined"
-            value={selectedRole}
-            onChange={handleRoleChange}
-            error={Boolean(errors.role)} // Update error handling
-            helperText={errors.role} // Update helper text
+            value={selectedPermissions}
+            onChange={handleInputChange("selectedPermissions")}
+            error={Boolean(errors.selectedPermissions)}
+            helperText={errors.selectedPermissions}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "&.Mui-focused fieldset": {
@@ -312,6 +453,7 @@ const A_PopupAddUser = ({ open, onClose }) => {
           Cancel
         </Button>
         <Button
+          onClick={handleCreateUser}
           variant="contained"
           disableElevation
           sx={{
@@ -329,7 +471,7 @@ const A_PopupAddUser = ({ open, onClose }) => {
           {loading ? (
             <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
           ) : (
-            "Submit"
+            "Create User"
           )}
         </Button>
       </DialogActions>
