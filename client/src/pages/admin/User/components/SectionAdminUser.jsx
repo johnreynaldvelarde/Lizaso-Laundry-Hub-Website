@@ -40,6 +40,9 @@ import {
   viewAdminBasedStore,
   viewRolesAndPermissions,
 } from "../../../../services/api/getApi";
+import Permission from "../../../../components/common/PermissionBox";
+import PermissionBox from "../../../../components/common/PermissionBox";
+import StatusCell from "../../../../components/common/StatusCell";
 
 const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
@@ -48,38 +51,101 @@ const stores = [
   { id: 4, name: "South Branch", totalUsers: 4 },
 ];
 
+// const users = [
+//   {
+//     id: 1,
+//     name: "John Doe",
+//     username: "johndoe123",
+//     role: "Admin",
+//     store: "LIZASO Main",
+//     storeId: 2,
+//   },
+//   {
+//     id: 2,
+//     name: "Jane Smith",
+//     username: "janesmith456",
+//     role: "User",
+//     store: "LIZASO Main",
+//     storeId: 1,
+//   },
+//   {
+//     id: 3,
+//     name: "Mike Johnson",
+//     username: "mikejohnson789",
+//     role: "Delivery",
+//     store: "LIZASO Main",
+//     storeId: 1,
+//   },
+//   {
+//     id: 4,
+//     name: "Alice Brown",
+//     username: "alicebrown101",
+//     role: "Admin",
+//     store: "LIZASO Branch A",
+//     storeId: 1,
+//   },
+// ];
+
 const users = [
   {
     id: 1,
     name: "John Doe",
     username: "johndoe123",
     role: "Admin",
-    store: "LIZASO Main",
-    storeId: 2,
+    storeId: 1, // Updated to follow your preferred store ID format
+    dateCreated: "2024-01-15", // Example date
+    permissions: {
+      read: true,
+      write: true,
+      edit: true,
+      delete: true,
+    },
+    status: "Active", // Options: pending, active, deactivated
   },
   {
     id: 2,
     name: "Jane Smith",
     username: "janesmith456",
     role: "User",
-    store: "LIZASO Main",
     storeId: 1,
+    dateCreated: "2024-01-20",
+    permissions: {
+      read: true,
+      write: false,
+      edit: false,
+      delete: false,
+    },
+    status: "Pending",
   },
   {
     id: 3,
     name: "Mike Johnson",
     username: "mikejohnson789",
     role: "Delivery",
-    store: "LIZASO Main",
-    storeId: 1,
+    storeId: 2,
+    dateCreated: "2024-02-05",
+    permissions: {
+      read: true,
+      write: false,
+      edit: false,
+      delete: false,
+    },
+    status: "Pending", // Example status
   },
   {
     id: 4,
     name: "Alice Brown",
     username: "alicebrown101",
     role: "Admin",
-    store: "LIZASO Branch A",
     storeId: 1,
+    dateCreated: "2024-02-10",
+    permissions: {
+      read: true,
+      write: true,
+      edit: true,
+      delete: true,
+    },
+    status: "Deactivated", // Example status
   },
 ];
 
@@ -749,6 +815,142 @@ const SectionAdminUser = () => {
           }}
         >
           <Table>
+            <TableHead className="bg-[#F1F1F1] border-b">
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={
+                      selected.length > 0 &&
+                      selected.length < filteredUsers.length
+                    }
+                    checked={
+                      filteredUsers.length > 0 &&
+                      selected.length === filteredUsers.length
+                    }
+                    onChange={handleSelectAllClick}
+                    inputProps={{ "aria-label": "select all users" }}
+                    disabled={filteredUsers.length === 0}
+                  />
+                </TableCell>
+                <TableCell sx={cellHeadStyles}>ID</TableCell>
+                <TableCell sx={cellHeadStyles}>Name</TableCell>
+                <TableCell sx={cellHeadStyles}>Role</TableCell>
+                <TableCell sx={cellHeadStyles}>Date Created</TableCell>
+                <TableCell sx={cellHeadStyles}>Permissions</TableCell>
+                <TableCell sx={cellHeadStyles}>Status</TableCell>
+                <TableCell sx={cellHeadStyles}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    align="center"
+                    sx={{ paddingY: 3, paddingX: 4 }}
+                  >
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      alignItems="center"
+                    >
+                      <img
+                        src={noData}
+                        alt="No data"
+                        style={{ width: "150px", marginBottom: "10px" }}
+                      />
+                      <Typography variant="body1" color="textSecondary">
+                        No available data
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredUsers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((user) => {
+                    const isItemSelected = isSelected(user.id);
+                    return (
+                      <TableRow
+                        key={user.id}
+                        className="border-b"
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        selected={isItemSelected}
+                        tabIndex={-1}
+                      >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selected.includes(user.id)}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleClickCheckbox(user.id);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                          {user.id}
+                        </TableCell>
+                        <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                          {user.name}
+                          <div className="text-gray-500 text-sm">
+                            {user.username}
+                          </div>
+                        </TableCell>
+                        <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                          {user.role}
+                        </TableCell>
+                        <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                          {user.dateCreated}
+                        </TableCell>
+                        <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                          <Box display="flex" gap={1}>
+                            {user.permissions.read && (
+                              <PermissionBox label="Read" />
+                            )}
+                            {user.permissions.write && (
+                              <PermissionBox label="Write" />
+                            )}
+                            {user.permissions.edit && (
+                              <PermissionBox label="Edit" />
+                            )}
+                            {user.permissions.delete && (
+                              <PermissionBox label="Delete" />
+                            )}
+                          </Box>
+                        </TableCell>
+                        <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                          <StatusCell status={user.status} />
+                        </TableCell>
+                        <TableCell sx={{ paddingY: 3, paddingX: 4 }}>
+                          <IconButton>
+                            <VisibilityIcon />
+                          </IconButton>
+                          <IconButton>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton>
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* <TableContainer
+          component={Paper}
+          sx={{
+            overflowX: "auto",
+            borderRadius: 2, // No rounded corners
+            boxShadow: "none", // No shadow
+            border: `1px solid ${COLORS.border2}`,
+          }}
+        >
+          <Table>
             <TableHead className="bg-gray-100 border-b">
               <TableRow>
                 <TableCell padding="checkbox">
@@ -819,7 +1021,7 @@ const SectionAdminUser = () => {
                         <TableCell className="py-3 px-4">{user.id}</TableCell>
                         <TableCell className="py-5 px-4">
                           {user.name}
-                          <div className="text-green-100 text-sm">
+                          <div className="text-green- text-sm">
                             {user.username}
                           </div>
                         </TableCell>
@@ -844,7 +1046,7 @@ const SectionAdminUser = () => {
               )}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> */}
 
         {/* Pagination */}
         <TablePagination
@@ -911,6 +1113,16 @@ const SectionAdminUser = () => {
       </Snackbar>
     </>
   );
+};
+
+const cellHeadStyles = {
+  paddingY: 2,
+  paddingX: 4,
+  textAlign: "left",
+  color: "#595959",
+  fontSize: "1",
+  fontWeight: 600, // Changed to semi-bold
+  textTransform: "uppercase",
 };
 
 export default SectionAdminUser;

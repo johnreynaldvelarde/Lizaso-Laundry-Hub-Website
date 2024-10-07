@@ -41,6 +41,7 @@ export const COLORS = {
   text1: "#161616",
   text2: "#2C2C2C",
   text3: "#393939",
+  text4: "#666666",
   subtitle: "#666666",
 
   // Primary and Secondary colors
@@ -82,6 +83,9 @@ export const COLORS = {
   // Disable Button
   disableButtonBg: "#E5E5E5",
   disableButtonTxt: "#B0B0B0",
+
+  // Status
+  active: "#11A849",
 };
 
 // .btn-grad {
