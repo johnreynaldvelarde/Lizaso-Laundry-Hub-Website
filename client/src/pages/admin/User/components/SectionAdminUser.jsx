@@ -586,9 +586,31 @@ const SectionAdminUser = () => {
       {/* User List */}
       <Box mt={5}>
         {/* Button Header */}
-        <Box mb={2} className="flex items-center justify-between mb-8">
-          <Box className="flex items-center mr-4">
-            <FormControl sx={{ minWidth: 200 }} size="small">
+        <Box
+          mb={2}
+          className="flex items-center justify-between mb-8"
+          sx={{
+            flexDirection: {
+              xs: "column", // Stack vertically on small screens
+              sm: "row", // Horizontal on larger screens
+            },
+          }}
+        >
+          {/* Filter by Role */}
+          <Box
+            className="flex items-center"
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              marginBottom: {
+                xs: 2,
+                sm: 0,
+              },
+            }}
+          >
+            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
               <InputLabel id="role-select-label">Filter by Role</InputLabel>
               <Select
                 labelId="role-select-label"
@@ -606,8 +628,30 @@ const SectionAdminUser = () => {
             </FormControl>
           </Box>
 
-          {/* Button Delete Selected */}
-          <Box className="flex items-center">
+          {/* Buttons: Delete Selected and Add New User */}
+          <Box
+            className="flex items-center"
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+              },
+              "& button": {
+                width: {
+                  xs: "100%",
+                  sm: "auto",
+                },
+                marginBottom: {
+                  xs: 2,
+                  sm: 0,
+                },
+              },
+            }}
+          >
             <Button
               onClick={handleCheckBoxDelete}
               variant="contained"
@@ -621,7 +665,7 @@ const SectionAdminUser = () => {
                 paddingLeft: "23px",
                 paddingRight: "23px",
                 fontSize: "16px",
-                marginLeft: 2, // Add spacing between buttons
+                marginLeft: { sm: 2 }, // Spacing between buttons for larger screens
                 "&:hover": {
                   backgroundColor: COLORS.errorHover,
                 },
@@ -629,6 +673,7 @@ const SectionAdminUser = () => {
             >
               Delete Selected
             </Button>
+
             <Button
               variant="contained"
               startIcon={
@@ -642,7 +687,7 @@ const SectionAdminUser = () => {
                 paddingLeft: "23px",
                 paddingRight: "23px",
                 fontSize: "16px",
-                marginLeft: 2, // Add spacing between buttons
+                marginLeft: { sm: 2 }, // Spacing between buttons for larger screens
                 "&:hover": {
                   backgroundColor: COLORS.secondaryHover,
                 },
