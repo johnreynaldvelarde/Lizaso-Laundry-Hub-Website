@@ -1,12 +1,21 @@
 import React from "react";
+import useAuth from "../../../contexts/AuthContext";
 import { Box } from "@mui/material";
-
 import SectionAdminUser from "./components/SectionAdminUser";
+import SectionManager from "./components/SectionManager";
+import AccessDenied from "./components/AccessDenied";
 
 const User = () => {
+  const { userDetails } = useAuth();
   return (
     <Box sx={{ pt: "100px", pb: "20px", px: "20px" }}>
-      <SectionAdminUser />
+      {userDetails?.roleName === "Administrator" ? (
+        <SectionAdminUser />
+      ) : userDetails?.roleName === "Manager" ? (
+        <SectionManager />
+      ) : (
+        <AccessDenied />
+      )}
     </Box>
   );
 };

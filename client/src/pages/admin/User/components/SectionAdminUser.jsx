@@ -41,18 +41,7 @@ import {
   viewRolesAndPermissions,
 } from "../../../../services/api/getApi";
 
-// const roles = [
-//   { id: 1, name: "Admin" },
-//   { id: 2, name: "Manager" },
-//   { id: 3, name: "User" },
-//   { id: 4, name: "Delivery Personnel" },
-//   { id: 5, name: "Support" },
-//   { id: 6, name: "User" },
-//   { id: 7, name: "Delivery Personnel" },
-//   { id: 8, name: "Support" },
-// ];
-
-const store = [
+const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
   { id: 2, name: "East Branch", totalUsers: 5 },
   { id: 3, name: "West Branch", totalUsers: 7 },
@@ -63,6 +52,7 @@ const users = [
   {
     id: 1,
     name: "John Doe",
+    username: "johndoe123",
     role: "Admin",
     store: "LIZASO Main",
     storeId: 2,
@@ -70,6 +60,7 @@ const users = [
   {
     id: 2,
     name: "Jane Smith",
+    username: "janesmith456",
     role: "User",
     store: "LIZASO Main",
     storeId: 1,
@@ -77,6 +68,7 @@ const users = [
   {
     id: 3,
     name: "Mike Johnson",
+    username: "mikejohnson789",
     role: "Delivery",
     store: "LIZASO Main",
     storeId: 1,
@@ -84,6 +76,7 @@ const users = [
   {
     id: 4,
     name: "Alice Brown",
+    username: "alicebrown101",
     role: "Admin",
     store: "LIZASO Branch A",
     storeId: 1,
@@ -94,8 +87,8 @@ const SectionAdminUser = () => {
   const { userDetails } = useAuth();
   const [roles, setRole] = useState([]);
   const [stores, setStores] = useState([]);
-  const [selectedRole, setSelectedRole] = React.useState(null);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   // For fetching data for role and permissions
   const fetchRoleAndPermissions = async () => {
@@ -127,6 +120,9 @@ const SectionAdminUser = () => {
       if (response) {
         const storeData = response.data || [];
         setStores(storeData);
+        if (storeData.length > 0) {
+          setSelectedStore(storeData[0].id);
+        }
       } else {
         console.error("Unexpected response format:", response);
       }
@@ -174,10 +170,7 @@ const SectionAdminUser = () => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
-  const [selectedStore, setSelectedStore] = useState(
-    stores.length > 0 ? stores[0].id : null
-  );
-  // const [selectedStore, setSelectedStore] = useState(stores[0]);
+  const [selectedStore, setSelectedStore] = useState(null);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -190,11 +183,11 @@ const SectionAdminUser = () => {
   };
 
   useEffect(() => {
-    checkOverflow(); // Initial check on mount
+    checkOverflow();
 
     const ref = scrollRef.current;
-    ref.addEventListener("scroll", checkOverflow); // Check overflow on scroll
-    window.addEventListener("resize", checkOverflow); // Check overflow on resize
+    ref.addEventListener("scroll", checkOverflow);
+    window.addEventListener("resize", checkOverflow);
 
     return () => {
       ref.removeEventListener("scroll", checkOverflow);
@@ -204,7 +197,7 @@ const SectionAdminUser = () => {
 
   const scrollTo = (direction) => {
     if (!scrollRef.current) return;
-    const scrollAmount = direction === "left" ? -300 : 300; // Adjust scroll amount as needed
+    const scrollAmount = direction === "left" ? -300 : 300;
     scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
@@ -215,7 +208,7 @@ const SectionAdminUser = () => {
 
   const filteredUsers = selectedStore
     ? users.filter((user) => user.storeId === selectedStore)
-    : users;
+    : [];
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -266,7 +259,6 @@ const SectionAdminUser = () => {
   };
 
   // For Update Data
-
   return (
     <>
       {/* Role and Permission Section */}
@@ -817,15 +809,20 @@ const SectionAdminUser = () => {
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
-                            checked={selected.includes(user.id)} // Updated to use 'selected' array
+                            checked={selected.includes(user.id)}
                             onClick={(event) => {
-                              event.stopPropagation(); // Prevent row selection
-                              handleClickCheckbox(user.id); // Pass the user id
+                              event.stopPropagation();
+                              handleClickCheckbox(user.id);
                             }}
                           />
                         </TableCell>
                         <TableCell className="py-3 px-4">{user.id}</TableCell>
-                        <TableCell className="py-3 px-4">{user.name}</TableCell>
+                        <TableCell className="py-5 px-4">
+                          {user.name}
+                          <div className="text-green-100 text-sm">
+                            {user.username}
+                          </div>
+                        </TableCell>
                         <TableCell className="py-3 px-4">{user.role}</TableCell>
                         <TableCell className="py-3 px-4">
                           {user.store}
@@ -917,3 +914,7 @@ const SectionAdminUser = () => {
 };
 
 export default SectionAdminUser;
+
+// const [selectedStore, setSelectedStore] = useState(
+//   stores.length > 0 ? stores[0].id : null
+// );
