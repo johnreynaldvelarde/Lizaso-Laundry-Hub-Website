@@ -16,6 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
+import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
 
 const A_PopupAddRole = ({ open, onClose }) => {
   const { userDetails } = useAuth();
@@ -60,21 +61,35 @@ const A_PopupAddRole = ({ open, onClose }) => {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
-      const permissionsStatus = {
-        Read: selectedPermissions.includes("Read"),
-        Write: selectedPermissions.includes("Write"),
-        Edit: selectedPermissions.includes("Edit"),
-        Delete: selectedPermissions.includes("Delete"),
+      const roleData = {
+        role_name: rolename,
+        permissionsStatus: {
+          Read: selectedPermissions.includes("Read"),
+          Write: selectedPermissions.includes("Write"),
+          Edit: selectedPermissions.includes("Edit"),
+          Delete: selectedPermissions.includes("Delete"),
+        },
       };
 
-      console.log("Creating role with the following data:", {
-        rolename,
-        permissions: permissionsStatus,
-      });
+      try {
+        const response = await createNewRoleAndPermissions.setRoleAndPermissons(
+          userDetails.userId,
+          roleData
+        );
 
-      setTimeout(async () => {
+        if (response.success) {
+          toast.success(response.message);
+          onClose();
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error with service request: ${error.message || error}`);
+      } finally {
         setLoading(false);
-      }, 500);
+      }
+    } else {
+      setLoading(false);
     }
   };
 

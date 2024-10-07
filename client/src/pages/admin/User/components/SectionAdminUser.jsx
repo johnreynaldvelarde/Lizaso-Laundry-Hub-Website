@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import useAuth from "../../../../contexts/AuthContext";
 import {
   Box,
   Typography,
@@ -35,17 +36,18 @@ import noData from "../../../../assets/images/no_data.png";
 import { COLORS } from "../../../../constants/color";
 import A_PopupAddUser from "./A_PopupAddUser";
 import A_PopupAddRole from "./A_PopupAddRole";
+import { viewRolesAndPermissions } from "../../../../services/api/getApi";
 
-const roles = [
-  { id: 1, name: "Admin" },
-  { id: 2, name: "Manager" },
-  { id: 3, name: "User" },
-  { id: 4, name: "Delivery Personnel" },
-  { id: 5, name: "Support" },
-  { id: 6, name: "User" },
-  { id: 7, name: "Delivery Personnel" },
-  { id: 8, name: "Support" },
-];
+// const roles = [
+//   { id: 1, name: "Admin" },
+//   { id: 2, name: "Manager" },
+//   { id: 3, name: "User" },
+//   { id: 4, name: "Delivery Personnel" },
+//   { id: 5, name: "Support" },
+//   { id: 6, name: "User" },
+//   { id: 7, name: "Delivery Personnel" },
+//   { id: 8, name: "Support" },
+// ];
 
 const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
@@ -107,6 +109,8 @@ const users = [
 ];
 
 const SectionAdminUser = () => {
+  const { userDetails } = useAuth();
+  const [roles, setRole] = useState([]);
   const [selectedRole, setSelectedRole] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -230,6 +234,31 @@ const SectionAdminUser = () => {
     setSnackbarOpen(false);
   };
 
+  // For fetching data for role and permissions
+  const fetchRoleAndPermissions = async () => {
+    if (!userDetails?.userId) return;
+
+    try {
+      const response = await viewRolesAndPermissions.getRoleAndPermission(
+        userDetails.storeId
+      );
+      if (response) {
+        const roledata = response.data || [];
+        setRole(roledata);
+      } else {
+        console.error("Unexpected response format:", response);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoleAndPermissions();
+  }, [userDetails?.userId]);
+
+  // For Update Data
+
   return (
     <>
       {/* Role and Permission Section */}
@@ -342,7 +371,7 @@ const SectionAdminUser = () => {
                   marginLeft: "8px",
                 }}
               >
-                {role.name}
+                {role.role_name}
               </Typography>
             </Box>
             <Box
@@ -377,7 +406,7 @@ const SectionAdminUser = () => {
                   textAlign: { xs: "center", sm: "left" }, // Center text on small screens
                 }}
               >
-                Total Users: {role.totalUsers}
+                Total Users: {role.user_count}
               </Typography>
             </Box>
 

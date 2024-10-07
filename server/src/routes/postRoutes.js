@@ -12,6 +12,7 @@ import {
 import { handleCustomerServiceRequest } from "../services/admin/useCustomer.js";
 import { getPool } from "../db/dbConfig.js";
 import { handleSetNewServiceType } from "../services/admin/useSettings.js";
+import { handleSetRolesPermissions } from "../services/admin/useUser.js";
 
 const router = express.Router();
 
@@ -78,8 +79,19 @@ router.post(
   })
 );
 
-// SETTINGS SECTION
+// USER MANAGEMENT SECTION
+router.post(
+  "/user/:id/set-role-permisions",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetRolesPermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
+// SETTINGS SECTION
 // -> TAB DASHBOARD CONFIG <-
 router.post(
   "/settings/set-dashboard-config",

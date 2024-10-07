@@ -17,7 +17,10 @@ import {
   handleViewListCategory,
 } from "../services/admin/useInventory.js";
 import { getPool } from "../db/dbConfig.js";
-import { handleAdminGetUser } from "../services/admin/useUser.js";
+import {
+  handleAdminGetUser,
+  handleGetRolesPermissions,
+} from "../services/admin/useUser.js";
 import { handleGetServiceTypeAndStore } from "../services/admin/useSettings.js";
 
 const router = express.Router();
@@ -134,6 +137,17 @@ router.get(
   "/user/:id/admin-get-user",
   withDatabaseConnection(async (req, res, connection) => {
     await handleAdminGetUser(req, res, connection);
+  })
+);
+
+router.get(
+  "/user/:id/admin-get-role-permissions",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetRolesPermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

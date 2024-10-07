@@ -118,19 +118,16 @@ export const createItemCategory = {
   },
 };
 
-// Customer Section
-
-// Activity Log Section
-export const createActivityLog = {
-  setActivtyLog: async (userId, data) => {
+// USER MANAGEMENT SECTION
+export const createNewRoleAndPermissions = {
+  setRoleAndPermissons: async (userId, data) => {
     try {
       const response = await axiosPrivate.post(
-        `/activity/${userId}/post-log`,
+        `/user/${userId}/set-role-permisions`,
         data
       );
       return response.data;
     } catch (error) {
-      console.error("Error:", error);
       throw error;
     }
   },
@@ -152,35 +149,20 @@ export const createNewServiceType = {
   },
 };
 
-// export const createNewServiceType = {
-//   setServiceType: async (data) => {
-//     try {
-//       const response = await axiosPrivate.post(`/settings/set-service-types`, data);
-//       return response.data;
-//     } catch (error) {
-//       // Error handling will use interceptors to avoid unnecessary console logs
-//       if (error.response && error.response.data) {
-//         throw error.response.data; // Ensure error has a consistent structure
-//       }
-//       throw new Error("An unexpected error occurred.");
-//     }
-//   },
-// };
+// Customer Section
 
-// export const createNewServiceType = {
-//   setServiceType: async (data) => {
-//     try {
-//       const response = await axiosPrivate.post(
-//         `/settings/set-service-types`,
-//         data
-//       );
-//       return response.data;
-//     } catch (error) {
-//       // Handle error gracefully
-//       if (error.response && error.response.data) {
-//         throw error.response.data; // Ensure error has a consistent structure
-//       }
-//       throw new Error("An unexpected error occurred.");
-//     }
-//   },
-// };
+// Activity Log Section
+export const createActivityLog = {
+  setActivtyLog: async (userId, data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/activity/${userId}/post-log`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  },
+};

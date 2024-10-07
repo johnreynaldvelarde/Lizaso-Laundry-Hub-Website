@@ -234,6 +234,20 @@ export const viewUser = {
   },
 };
 
+export const viewRolesAndPermissions = {
+  getRoleAndPermission: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/user/${userId}/admin-get-role-permissions`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 // SETTINGS SECTION
 //  <----- Service Type Section ----->
 export const getServiceTypeAndStore = {
