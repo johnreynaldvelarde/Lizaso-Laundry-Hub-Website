@@ -18,46 +18,17 @@ import { COLORS } from "../../../../constants/color";
 
 const A_PopupAddRole = ({ open, onClose }) => {
   const { userDetails } = useAuth();
-  const [username, setUsername] = useState("");
-  const [defaultPassword, setDefaultPassword] = useState("");
-  const [firstname, setFirstname] = useState("");
-  const [middlename, setMiddlename] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [number, setNumber] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [rolename, setRolename] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState("");
-
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const handleRoleChange = (event) => {
-    setSelectedRole(event.target.value); // Update the state with the selected value
-  };
-
   const validateFields = () => {
     const newErrors = {};
-    if (!username) {
-      newErrors.username = "Username is required";
+    if (!rolename) {
+      newErrors.rolename = "Role name is required";
     }
-    if (!defaultPassword) {
-      newErrors.defaultPassword = "Password is required";
-    }
-    if (!firstname) {
-      newErrors.firstname = "Firstname is required";
-    }
-    if (!lastname) {
-      newErrors.lastname = "Lastname is required";
-    }
-    if (!number) {
-      newErrors.number = "Mobile number is required";
-    }
-    if (!selectedRole) {
-      newErrors.selectedRole = "Role is required";
-    }
-    if (!selectedStatus) {
-      newErrors.selectedStatus = "Status is required";
-    }
+
     if (!selectedPermissions) {
       newErrors.selectedPermissions = "Permissions is required";
     }
@@ -67,22 +38,8 @@ const A_PopupAddRole = ({ open, onClose }) => {
   const handleInputChange = (field) => (e) => {
     const value = e.target.value;
 
-    if (field === "username") {
-      setUsername(value);
-    } else if (field === "defaultPassword") {
-      setDefaultPassword(value);
-    } else if (field === "firstname") {
-      setFirstname(value);
-    } else if (field === "lastname") {
-      setLastname(value);
-    } else if (field === "middlename") {
-      setMiddlename(value);
-    } else if (field === "number") {
-      setNumber(value);
-    } else if (field === "selectedRole") {
-      setSelectedRole(value);
-    } else if (field === "selectedStatus") {
-      setSelectedStatus(value);
+    if (field === "rolename") {
+      setRolename(value);
     } else if (field === "selectedPermissions") {
       setSelectedPermissions(value);
     }
@@ -142,12 +99,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
   };
 
   const handleDialogClose = () => {
-    setUsername("");
-    setFirstname("");
-    setLastname("");
-    setNumber("");
-    setSelectedRole("");
-    setSelectedStatus("");
+    setRolename("");
     setSelectedPermissions("");
 
     setErrors({});
@@ -159,7 +111,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
     <Dialog
       open={open}
       onClose={handleDialogClose}
-      maxWidth="sm"
+      maxWidth="xs"
       fullWidth
       PaperProps={{
         style: {
@@ -191,10 +143,10 @@ const A_PopupAddRole = ({ open, onClose }) => {
           type="text"
           fullWidth
           variant="outlined"
-          value={username}
-          onChange={handleInputChange("username")}
-          error={Boolean(errors.username)}
-          helperText={errors.username}
+          value={rolename}
+          onChange={handleInputChange("rolename")}
+          error={Boolean(errors.rolename)}
+          helperText={errors.rolename}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -208,58 +160,18 @@ const A_PopupAddRole = ({ open, onClose }) => {
           }}
         />
 
-        {/* Mobile Number */}
-        <TextField
-          margin="dense"
-          label="Mobile Number"
-          type="tel"
-          fullWidth
-          variant="outlined"
-          value={number}
-          error={Boolean(errors.number)}
-          helperText={errors.number}
-          onChange={(e) => {
-            const { value } = e.target;
-            handleInputChange("number")({
-              target: { value: value.replace(/[^0-9]/g, "") },
-            });
-          }}
-          // onChange={(e) => {
-          //   const { value } = e.target;
-          //   if (/^[0-9]*$/.test(value) || value === "") {
-          //     handleInputChange("number", value);
-          //   } else {
-          //     e.target.value = value.replace(/[^0-9]/g, "");
-          //   }
-          // }}
-          inputProps={{
-            inputMode: "numeric",
-          }}
-          sx={{
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: COLORS.secondary,
-              },
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: COLORS.secondary,
-            },
-          }}
-        />
-        {/* Select a role */}
+        {/* Select a permissions*/}
         <TextField
           select
           margin="dense"
-          label="Role"
+          label="Permissions"
           fullWidth
           variant="outlined"
-          value={selectedRole}
-          onChange={handleInputChange("selectedRole")}
-          error={Boolean(errors.selectedRole)}
-          helperText={errors.selectedRole}
+          value={selectedPermissions}
+          onChange={handleInputChange("selectedPermissions")}
+          error={Boolean(errors.selectedPermissions)}
+          helperText={errors.selectedPermissions}
           sx={{
-            mb: 2,
             "& .MuiOutlinedInput-root": {
               "&.Mui-focused fieldset": {
                 borderColor: COLORS.secondary,
@@ -272,80 +184,15 @@ const A_PopupAddRole = ({ open, onClose }) => {
         >
           {/* Add your role options here */}
           <MenuItem value="" disabled>
-            Select a role
+            Select a permissions
           </MenuItem>
           <MenuItem value="admin">Admin</MenuItem>
           <MenuItem value="manager">Manager</MenuItem>
           <MenuItem value="user">User</MenuItem>
           <MenuItem value="delivery">Delivery Personnel</MenuItem>
         </TextField>
-        {/* Status and Permission */}
-        <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-          {/* Select a status */}
-          <TextField
-            select
-            margin="dense"
-            label="Status"
-            fullWidth
-            variant="outlined"
-            value={selectedStatus}
-            onChange={handleInputChange("selectedStatus")}
-            error={Boolean(errors.selectedStatus)}
-            helperText={errors.selectedStatus}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": {
-                  borderColor: COLORS.secondary,
-                },
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: COLORS.secondary,
-              },
-            }}
-          >
-            {/* Add your role options here */}
-            <MenuItem value="" disabled>
-              Select a role
-            </MenuItem>
-            <MenuItem value="admin">Admin</MenuItem>
-            <MenuItem value="manager">Manager</MenuItem>
-            <MenuItem value="user">User</MenuItem>
-            <MenuItem value="delivery">Delivery Personnel</MenuItem>
-          </TextField>
-
-          {/* Select a permissions*/}
-          <TextField
-            select
-            margin="dense"
-            label="Permissions"
-            fullWidth
-            variant="outlined"
-            value={selectedPermissions}
-            onChange={handleInputChange("selectedPermissions")}
-            error={Boolean(errors.selectedPermissions)}
-            helperText={errors.selectedPermissions}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "&.Mui-focused fieldset": {
-                  borderColor: COLORS.secondary,
-                },
-              },
-              "& .MuiInputLabel-root.Mui-focused": {
-                color: COLORS.secondary,
-              },
-            }}
-          >
-            {/* Add your role options here */}
-            <MenuItem value="" disabled>
-              Select a permissions
-            </MenuItem>
-            <MenuItem value="admin">Admin</MenuItem>
-            <MenuItem value="manager">Manager</MenuItem>
-            <MenuItem value="user">User</MenuItem>
-            <MenuItem value="delivery">Delivery Personnel</MenuItem>
-          </TextField>
-        </Box>
       </DialogContent>
+      {/* Footer */}
       <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
         <Button
           variant="outlined"
@@ -384,7 +231,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
           {loading ? (
             <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
           ) : (
-            "Create User"
+            "Create Role"
           )}
         </Button>
       </DialogActions>

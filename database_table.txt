@@ -13,6 +13,16 @@ isStatus
 isArchive
 date_created
 
+Roles_Permissions
+id
+role_name
+can_read
+can_write
+can_edit
+can_delete
+date_created
+isArchive
+
 User_Securty
 id
 user_id (Foregin Key)
