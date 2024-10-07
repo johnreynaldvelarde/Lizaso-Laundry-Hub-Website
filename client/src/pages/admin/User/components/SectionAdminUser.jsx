@@ -174,7 +174,10 @@ const SectionAdminUser = () => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
-  const [selectedStore, setSelectedStore] = useState(stores[0]);
+  const [selectedStore, setSelectedStore] = useState(
+    stores.length > 0 ? stores[0].id : null
+  );
+  // const [selectedStore, setSelectedStore] = useState(stores[0]);
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);

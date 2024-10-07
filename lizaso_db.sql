@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 07, 2024 at 11:27 AM
+-- Generation Time: Oct 07, 2024 at 04:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -62,7 +62,10 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (24, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 16:47:09'),
 (25, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 16:47:36'),
 (26, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 16:49:19'),
-(28, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 17:01:34');
+(28, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 17:01:34'),
+(29, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 17:47:29'),
+(30, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 18:59:11'),
+(31, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 19:00:31');
 
 -- --------------------------------------------------------
 
@@ -258,7 +261,10 @@ CREATE TABLE `roles_permissions` (
 --
 
 INSERT INTO `roles_permissions` (`id`, `role_name`, `can_read`, `can_write`, `can_edit`, `can_delete`, `date_created`, `isArchive`) VALUES
-(1, 'Administrator', 1, 1, 1, 1, '2024-10-07 16:10:31', 0);
+(1, 'Administrator', 1, 1, 1, 1, '2024-10-07 16:10:31', 0),
+(7, 'Manager', 1, 1, 1, 0, '2024-10-07 20:07:58', 0),
+(8, 'Delivery  Staff', 1, 1, 0, 0, '2024-10-07 20:10:06', 0),
+(9, 'Store Staff', 1, 0, 0, 0, '2024-10-07 20:35:29', 0);
 
 -- --------------------------------------------------------
 
@@ -538,7 +544,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `addresses`
@@ -592,7 +598,7 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `roles_permissions`
 --
 ALTER TABLE `roles_permissions`
-  MODIFY `id` bigint(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `service_promotions`
