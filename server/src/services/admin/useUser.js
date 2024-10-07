@@ -134,6 +134,27 @@ export const handleAdminGetUser = async (req, res, connection) => {
 };
 
 // POST
+export const handleSetRolesPermissions = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    //   const  = `
+
+    // `;
+    const [] = await connection.execute([id]);
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching roles and permissions:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};
 
 // GET
 // export const handleGetRolesPermissions = async (req, res, connection) => {

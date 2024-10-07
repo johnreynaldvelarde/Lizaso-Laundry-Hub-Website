@@ -333,6 +333,8 @@ export const getUserDetails = async (req, res, db) => {
             storeId: customer.store_id,
             fullName: `${customer.c_firstname} ${customer.c_lastname}`,
             username: customer.c_username,
+            phone: customer.c_number,
+            userType: "Customer",
           },
         });
       } else {

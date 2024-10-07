@@ -10,16 +10,17 @@ import {
   Typography,
   IconButton,
   Box,
-  MenuItem,
+  Grid,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 
 const A_PopupAddRole = ({ open, onClose }) => {
   const { userDetails } = useAuth();
   const [rolename, setRolename] = useState("");
-  const [selectedPermissions, setSelectedPermissions] = useState("");
+  const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -29,9 +30,6 @@ const A_PopupAddRole = ({ open, onClose }) => {
       newErrors.rolename = "Role name is required";
     }
 
-    if (!selectedPermissions) {
-      newErrors.selectedPermissions = "Permissions is required";
-    }
     return newErrors;
   };
 
@@ -40,14 +38,19 @@ const A_PopupAddRole = ({ open, onClose }) => {
 
     if (field === "rolename") {
       setRolename(value);
-    } else if (field === "selectedPermissions") {
-      setSelectedPermissions(value);
     }
-
     setErrors((prevErrors) => ({
       ...prevErrors,
       [field]: "",
     }));
+  };
+
+  const handlePermissionToggle = (permission) => {
+    setSelectedPermissions((prev) =>
+      prev.includes(permission)
+        ? prev.filter((p) => p !== permission)
+        : [...prev, permission]
+    );
   };
 
   const handleCreateUser = async () => {
@@ -57,53 +60,28 @@ const A_PopupAddRole = ({ open, onClose }) => {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
+      const permissionsStatus = {
+        Read: selectedPermissions.includes("Read"),
+        Write: selectedPermissions.includes("Write"),
+        Edit: selectedPermissions.includes("Edit"),
+        Delete: selectedPermissions.includes("Delete"),
+      };
+
+      console.log("Creating role with the following data:", {
+        rolename,
+        permissions: permissionsStatus,
+      });
+
       setTimeout(async () => {
-        // const data = {
-        //   store_id: storeId || userDetails.storeId,
-        //   service_name: serviceName,
-        //   default_price: defaultPrice,
-        // };
-        // try {
-        //   let response;
-        //   if (serviceData) {
-        //     response = await updateServiceType.putServiceType(
-        //       serviceData.id,
-        //       data
-        //     );
-        //   } else {
-        //     response = await createNewServiceType.setServiceType(data);
-        //   }
-        //   if (response.success) {
-        //     toast.success(response.message);
-        //     handleClear();
-        //     if (onSuccess) onSuccess(); // Call the onSuccess callback to refresh the data
-        //   } else {
-        //     setErrors((prevErrors) => ({
-        //       ...prevErrors,
-        //       serviceName: response.message,
-        //     }));
-        //   }
-        // } catch (error) {
-        //   if (error.response && error.response.data) {
-        //     toast.error(error.response.data.message);
-        //   } else {
-        //     toast.error(
-        //       "An unexpected error occurred while creating the service type."
-        //     );
-        //   }
-        // } finally {
-        //   setLoading(false);
-        // }
+        setLoading(false);
       }, 500);
     }
   };
 
   const handleDialogClose = () => {
     setRolename("");
-    setSelectedPermissions("");
-
+    setSelectedPermissions([]);
     setErrors({});
-
     onClose();
   };
 
@@ -136,7 +114,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
-        {/* Role Name*/}
+        {/* Role Name */}
         <TextField
           margin="dense"
           label="Role Name"
@@ -160,43 +138,47 @@ const A_PopupAddRole = ({ open, onClose }) => {
           }}
         />
 
-        {/* Select a permissions*/}
-        <TextField
-          select
-          margin="dense"
-          label="Permissions"
-          fullWidth
-          variant="outlined"
-          value={selectedPermissions}
-          onChange={handleInputChange("selectedPermissions")}
-          error={Boolean(errors.selectedPermissions)}
-          helperText={errors.selectedPermissions}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: COLORS.secondary,
-              },
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: COLORS.secondary,
-            },
-          }}
-        >
-          {/* Add your role options here */}
-          <MenuItem value="" disabled>
-            Select a permissions
-          </MenuItem>
-          <MenuItem value="admin">Admin</MenuItem>
-          <MenuItem value="manager">Manager</MenuItem>
-          <MenuItem value="user">User</MenuItem>
-          <MenuItem value="delivery">Delivery Personnel</MenuItem>
-        </TextField>
+        {/* Permission Selection */}
+        <Typography variant="subtitle1" color="textSecondary" sx={{ mt: 1 }}>
+          Select Permissions:
+        </Typography>
+        <Grid container spacing={1} sx={{ mt: 0.5 }}>
+          {["Read", "Write", "Edit", "Delete"].map((permission) => (
+            <Grid item xs={6} sm={4} md={3} key={permission}>
+              <Button
+                variant={
+                  selectedPermissions.includes(permission)
+                    ? "contained"
+                    : "outlined"
+                }
+                onClick={() => handlePermissionToggle(permission)}
+                sx={{
+                  color: selectedPermissions.includes(permission)
+                    ? "#fff"
+                    : COLORS.secondary,
+                  backgroundColor: selectedPermissions.includes(permission)
+                    ? COLORS.secondary
+                    : "#fff",
+                  width: "100%", // Make the button full width
+                  "&:hover": {
+                    backgroundColor: selectedPermissions.includes(permission)
+                      ? "#3A5A85"
+                      : "rgba(144, 144, 144, 0.1)",
+                  },
+                }}
+              >
+                {selectedPermissions.includes(permission) && <CheckIcon />}
+                {permission}
+              </Button>
+            </Grid>
+          ))}
+        </Grid>
       </DialogContent>
       {/* Footer */}
       <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
         <Button
           variant="outlined"
-          onClick={onClose}
+          onClick={handleDialogClose}
           sx={{
             marginRight: 1,
             borderColor: "#595959",

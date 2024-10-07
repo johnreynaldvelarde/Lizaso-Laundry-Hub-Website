@@ -67,24 +67,38 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         const user = response.data.user;
-        setUserDetails({
-          userId: user.userId,
-          storeId: user.storeId,
-          firstname: user.firstname,
-          middlename: user.middlename,
-          lastname: user.lastname,
-          email: user.email,
-          phone: user.phone,
-          fullName: user.fullName,
-          username: user.username,
-          roleName: user.roleName,
-          permissions: {
-            canRead: user.permissions.canRead,
-            canWrite: user.permissions.canWrite,
-            canEdit: user.permissions.canEdit,
-            canDelete: user.permissions.canDelete,
-          },
-        });
+        if (user.userType === "Customer") {
+          setUserDetails({
+            userId: user.userId,
+            storeId: user.storeId,
+            firstname: user.firstname,
+            middlename: user.middlename,
+            lastname: user.lastname,
+            email: user.email,
+            phone: user.phone,
+            fullName: user.fullName,
+            username: user.username,
+          });
+        } else {
+          setUserDetails({
+            userId: user.userId,
+            storeId: user.storeId,
+            firstname: user.firstname,
+            middlename: user.middlename,
+            lastname: user.lastname,
+            email: user.email,
+            phone: user.phone,
+            fullName: user.fullName,
+            username: user.username,
+            roleName: user.roleName,
+            permissions: {
+              canRead: user.permissions.canRead,
+              canWrite: user.permissions.canWrite,
+              canEdit: user.permissions.canEdit,
+              canDelete: user.permissions.canDelete,
+            },
+          });
+        }
       } else {
         console.error("Error fetching user details:", response.data.message);
       }
