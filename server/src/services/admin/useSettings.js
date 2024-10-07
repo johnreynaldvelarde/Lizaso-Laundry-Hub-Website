@@ -96,14 +96,17 @@ export const handleDeleteServiceType = async (req, res, connection) => {
 
 // Get the service type
 export const handleGetServiceTypeAndStore = async (req, res, connection) => {
-  const { id } = req.params; // User ID from the request params
+  const { id } = req.params;
 
   try {
-    // Start a transaction
     await connection.beginTransaction();
 
-    // Get the user's store ID and role
-    const userQuery = "SELECT store_id, isRole FROM User_Account WHERE id = ?";
+    const userQuery = `
+      SELECT ua.store_id, rp.role_name
+      FROM User_Account ua
+      JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
+      WHERE ua.id = ? AND rp.role_name = 'Administrator'
+  `;
     const [userResults] = await connection.execute(userQuery, [id]);
 
     if (userResults.length === 0) {
@@ -113,16 +116,12 @@ export const handleGetServiceTypeAndStore = async (req, res, connection) => {
         .json({ success: false, message: "User not found." });
     }
 
-    const { store_id, isRole } = userResults[0];
+    const { store_id, role_name } = userResults[0];
 
-    if (isRole === 0) {
-      // Admin or Manager: Get all stores and their service types
-
-      // Get all stores
+    if (role_name === "Administrator") {
       const storesQuery = "SELECT * FROM Stores WHERE isArchive = 0";
       const [stores] = await connection.execute(storesQuery);
 
-      // Get service types for these stores
       const storeIds = stores.map((store) => store.id);
       const serviceTypesQuery = `
         SELECT * FROM Service_Type 
@@ -137,8 +136,7 @@ export const handleGetServiceTypeAndStore = async (req, res, connection) => {
         stores,
         serviceTypes,
       });
-    } else if (isRole === 1) {
-      // User: Get service types based on the store_id
+    } else {
       const serviceTypesQuery =
         "SELECT * FROM Service_Type WHERE store_id = ? AND isArchive = 0";
       const [serviceTypes] = await connection.execute(serviceTypesQuery, [
@@ -150,11 +148,6 @@ export const handleGetServiceTypeAndStore = async (req, res, connection) => {
         success: true,
         serviceTypes,
       });
-    } else {
-      await connection.rollback();
-      return res
-        .status(403)
-        .json({ success: false, message: "Access forbidden." });
     }
   } catch (error) {
     await connection.rollback();
@@ -164,7 +157,6 @@ export const handleGetServiceTypeAndStore = async (req, res, connection) => {
       message: "An error occurred while fetching data.",
     });
   } finally {
-    // Release the connection back to the pool
     if (connection) connection.release();
   }
 };

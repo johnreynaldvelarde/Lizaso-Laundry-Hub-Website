@@ -24,7 +24,13 @@ export const AuthProvider = ({ children }) => {
     phone: "",
     fullName: "",
     username: "",
-    user_type: "",
+    roleName: "",
+    permissions: {
+      canRead: false,
+      canWrite: false,
+      canEdit: false,
+      canDelete: false,
+    },
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,7 +77,13 @@ export const AuthProvider = ({ children }) => {
           phone: user.phone,
           fullName: user.fullName,
           username: user.username,
-          user_type: user.userType,
+          roleName: user.roleName,
+          permissions: {
+            canRead: user.permissions.canRead,
+            canWrite: user.permissions.canWrite,
+            canEdit: user.permissions.canEdit,
+            canDelete: user.permissions.canDelete,
+          },
         });
       } else {
         console.error("Error fetching user details:", response.data.message);
