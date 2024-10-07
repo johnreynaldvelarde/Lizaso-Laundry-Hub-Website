@@ -22,6 +22,7 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
     handleForgotPassword,
     handleInputChange,
     isVisible,
+    loading,
   } = useLoginForm(setLoginShowPopup, showLoginPopup);
 
   return (
@@ -125,7 +126,11 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
                 className="w-full py-2 px-4 text-white font-semibold rounded-lg flex items-center justify-center mb-4"
                 style={{ background: styles.buttonColor1 }}
               >
-                Sign in
+                {loading ? (
+                  <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                ) : (
+                  "Sign in"
+                )}
               </button>
             </form>
             <div className="text-center mb-4">

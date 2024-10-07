@@ -47,33 +47,30 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
         setLoginUsername("");
         setLoginPassword("");
 
-        setTimeout(async () => {
-          if (userType === "Customer") {
-            const customerDetails =
-              await checkCustomerDetails.getCheckCustomerDetails(loginUsername);
+        if (userType === "Customer") {
+          const customerDetails =
+            await checkCustomerDetails.getCheckCustomerDetails(loginUsername);
 
-            if (customerDetails.success !== false) {
-              // Navigate based on customer details
-              if (
-                customerDetails.storeIdIsNull ||
-                customerDetails.cNumberIsNull ||
-                customerDetails.cEmailIsNull
-              ) {
-                navigate("/complete-details");
-              } else {
-                navigate("/customer-page");
-              }
+          if (customerDetails.success !== false) {
+            // Navigate based on customer details
+            if (
+              customerDetails.storeIdIsNull ||
+              customerDetails.cNumberIsNull ||
+              customerDetails.cEmailIsNull
+            ) {
+              navigate("/complete-details");
             } else {
-              // Handle the case where checking customer details fails
-              toast.error("Failed to check customer details.");
+              navigate("/customer-page");
             }
           } else {
-            if (roleName === "Administrator") {
-              navigate("/main");
-            } else {
-            }
+            toast.error("Failed to check customer details.");
           }
-        }, 1000);
+        } else {
+          if (roleName === "Administrator") {
+            navigate("/main");
+          } else {
+          }
+        }
       } else {
         setErrorMessage("Unexpected error occurred.");
       }
@@ -108,6 +105,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     handleForgotPassword,
     handleInputChange,
     isVisible,
+    loading,
   };
 };
 
