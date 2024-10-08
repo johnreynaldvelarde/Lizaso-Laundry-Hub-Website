@@ -264,6 +264,21 @@ export const viewAdminBasedStore = {
   },
 };
 
+// #For get users list based admin
+export const viewAdminBasedUser = {
+  getAdminBasedUser: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/usermanage/${userId}/admin-get-user`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 // SETTINGS SECTION
 //  <----- Service Type Section ----->
 export const getServiceTypeAndStore = {

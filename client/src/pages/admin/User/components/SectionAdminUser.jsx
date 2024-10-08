@@ -42,6 +42,7 @@ import A_PopupAddUser from "./A_PopupAddUser";
 import A_PopupAddRole from "./A_PopupAddRole";
 import {
   viewAdminBasedStore,
+  viewAdminBasedUser,
   viewRolesAndPermissions,
 } from "../../../../services/api/getApi";
 import PermissionBox from "../../../../components/table/PermissionBox";
@@ -58,73 +59,74 @@ const stores = [
   { id: 4, name: "South Branch", totalUsers: 4 },
 ];
 
-const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    username: "johndoe123",
-    role: "Admin",
-    storeId: 1, // Updated to follow your preferred store ID format
-    dateCreated: "2024-02-05T14:30:00",
-    permissions: {
-      read: true,
-      write: true,
-      edit: true,
-      delete: true,
-    },
-    status: "Active", // Options: pending, active, deactivated
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    username: "janesmith456",
-    role: "User",
-    storeId: 1,
-    dateCreated: "2024-02-06T09:15:00",
-    permissions: {
-      read: true,
-      write: false,
-      edit: false,
-      delete: false,
-    },
-    status: "Pending",
-  },
-  {
-    id: 3,
-    name: "Mike Johnson",
-    username: "mikejohnson789",
-    role: "Delivery",
-    storeId: 2,
-    dateCreated: "2024-02-07T11:45:00",
-    permissions: {
-      read: true,
-      write: false,
-      edit: false,
-      delete: false,
-    },
-    status: "Pending", // Example status
-  },
-  {
-    id: 4,
-    name: "Alice Brown",
-    username: "alicebrown101",
-    role: "Admin",
-    storeId: 1,
-    dateCreated: "2024-02-08T08:00:00",
-    permissions: {
-      read: true,
-      write: true,
-      edit: true,
-      delete: true,
-    },
-    status: "Deactivated", // Example status
-  },
-];
+// const users = [
+//   {
+//     id: 1,
+//     name: "John Doe",
+//     username: "johndoe123",
+//     role: "Admin",
+//     storeId: 1, // Updated to follow your preferred store ID format
+//     dateCreated: "2024-02-05T14:30:00",
+//     permissions: {
+//       read: true,
+//       write: true,
+//       edit: true,
+//       delete: true,
+//     },
+//     status: "Active", // Options: pending, active, deactivated
+//   },
+//   {
+//     id: 2,
+//     name: "Jane Smith",
+//     username: "janesmith456",
+//     role: "User",
+//     storeId: 1,
+//     dateCreated: "2024-02-06T09:15:00",
+//     permissions: {
+//       read: true,
+//       write: false,
+//       edit: false,
+//       delete: false,
+//     },
+//     status: "Pending",
+//   },
+//   {
+//     id: 3,
+//     name: "Mike Johnson",
+//     username: "mikejohnson789",
+//     role: "Delivery",
+//     storeId: 2,
+//     dateCreated: "2024-02-07T11:45:00",
+//     permissions: {
+//       read: true,
+//       write: false,
+//       edit: false,
+//       delete: false,
+//     },
+//     status: "Pending", // Example status
+//   },
+//   {
+//     id: 4,
+//     name: "Alice Brown",
+//     username: "alicebrown101",
+//     role: "Admin",
+//     storeId: 1,
+//     dateCreated: "2024-02-08T08:00:00",
+//     permissions: {
+//       read: true,
+//       write: true,
+//       edit: true,
+//       delete: true,
+//     },
+//     status: "Deactivated", // Example status
+//   },
+// ];
 
 const SectionAdminUser = () => {
   const { userDetails } = useAuth();
   const [roles, setRole] = useState([]);
   const [stores, setStores] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -170,10 +172,36 @@ const SectionAdminUser = () => {
     }
   };
 
+  // For fetching data of users
+  const fetchAdminBasedUser = async () => {
+    if (!userDetails?.userId) return;
+
+    try {
+      const response = await viewAdminBasedUser.getAdminBasedUser(
+        userDetails.storeId
+      );
+      // if (response) {
+      //   const userData = response.data || [];
+      //   setUsers(userData);
+      // } else {
+      //   console.error("Unexpected response format:", response);
+      // }
+      if (response && Array.isArray(response.data)) {
+        setUsers(response.data);
+      } else {
+        console.error("Unexpected response format:", response);
+        setUsers([]); // Ensure users is an empty array if the response is not as expected
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
     if (userDetails?.userId) {
       fetchRoleAndPermissions();
       fetchAdminBasedStores();
+      fetchAdminBasedUser();
     }
   }, [userDetails?.userId]);
 
@@ -246,12 +274,12 @@ const SectionAdminUser = () => {
   };
 
   const filteredUsers = selectedStore
-    ? users.filter((user) => user.storeId === selectedStore)
+    ? users.filter((user) => user.store_id === selectedStore)
     : [];
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = filteredUsers.map((user) => user.id);
+      const newSelecteds = filteredUsers.map((user) => user.user_id);
       setSelected(newSelecteds);
       return;
     }
@@ -498,6 +526,7 @@ const SectionAdminUser = () => {
             </Box>
 
             <Button
+              onClick={handleDialogDelete}
               variant="outlined"
               sx={{
                 padding: 1,
@@ -888,7 +917,7 @@ const SectionAdminUser = () => {
                 filteredUsers
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((user) => {
-                    const isItemSelected = isSelected(user.id);
+                    const isItemSelected = isSelected(user.user_id);
                     return (
                       <TableRow
                         key={user.id}
@@ -1037,7 +1066,7 @@ const SectionAdminUser = () => {
           Rename
         </MenuItem>
         <MenuItem
-          onClick={handleCloseMenu}
+          onClick={() => handleRemoveRole(selectedRole.id)}
           sx={{ fontSize: "14px", color: COLORS.error }}
         >
           Remove Role
