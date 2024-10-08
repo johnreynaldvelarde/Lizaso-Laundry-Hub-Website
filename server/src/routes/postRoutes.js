@@ -12,7 +12,10 @@ import {
 import { handleCustomerServiceRequest } from "../services/admin/useCustomer.js";
 import { getPool } from "../db/dbConfig.js";
 import { handleSetNewServiceType } from "../services/admin/useSettings.js";
-import { handleSetRolesPermissions } from "../services/admin/useUser.js";
+import {
+  handleAdminBasedSetNewUser,
+  handleSetRolesPermissions,
+} from "../services/admin/useUser.js";
 
 const router = express.Router();
 
@@ -94,10 +97,10 @@ router.post(
 
 // #For add user
 router.post(
-  "/usermanage/:id/set-new-user",
+  "/usermanage/set-new-user",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleSetRolesPermissions(req, res, connection);
+      await handleAdminBasedSetNewUser(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

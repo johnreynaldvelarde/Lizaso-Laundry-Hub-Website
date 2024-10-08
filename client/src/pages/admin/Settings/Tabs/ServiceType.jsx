@@ -15,6 +15,7 @@ import PopupServiceType from "./PopupServiceType";
 import { getServiceTypeAndStore } from "../../../../services/api/getApi";
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import { updateDeleteServiceType } from "../../../../services/api/putApi";
+import { COLORS } from "../../../../constants/color";
 
 const ServiceType = () => {
   const { userDetails } = useAuth();
@@ -193,8 +194,8 @@ const ServiceType = () => {
                 boxShadow: "none",
                 borderRadius: "12px",
                 border: "1px solid",
-                borderColor: "divider",
-                p: { xs: 1.5, sm: 2, md: 3 }, // Adjust padding for different screen sizes
+                borderColor: COLORS.border2,
+                p: { xs: 1.5, sm: 2, md: 3 },
               }}
             >
               <Typography

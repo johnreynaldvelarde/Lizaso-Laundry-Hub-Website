@@ -51,6 +51,7 @@ import DateCell from "../../../../components/table/DateCell";
 import OutlinedIconButton from "../../../../components/table/OutlinedIconButton";
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import toast from "react-hot-toast";
+import A_PopupEditUser from "./A_PopupEditUser";
 
 const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
@@ -65,7 +66,7 @@ const stores = [
 //     name: "John Doe",
 //     username: "johndoe123",
 //     role: "Admin",
-//     storeId: 1, // Updated to follow your preferred store ID format
+//     store_id: 1, // Updated to follow your preferred store ID format
 //     dateCreated: "2024-02-05T14:30:00",
 //     permissions: {
 //       read: true,
@@ -80,7 +81,7 @@ const stores = [
 //     name: "Jane Smith",
 //     username: "janesmith456",
 //     role: "User",
-//     storeId: 1,
+//     store_id: 1,
 //     dateCreated: "2024-02-06T09:15:00",
 //     permissions: {
 //       read: true,
@@ -95,7 +96,7 @@ const stores = [
 //     name: "Mike Johnson",
 //     username: "mikejohnson789",
 //     role: "Delivery",
-//     storeId: 2,
+//     store_id: 2,
 //     dateCreated: "2024-02-07T11:45:00",
 //     permissions: {
 //       read: true,
@@ -110,7 +111,7 @@ const stores = [
 //     name: "Alice Brown",
 //     username: "alicebrown101",
 //     role: "Admin",
-//     storeId: 1,
+//     store_id: 1,
 //     dateCreated: "2024-02-08T08:00:00",
 //     permissions: {
 //       read: true,
@@ -180,40 +181,81 @@ const SectionAdminUser = () => {
       const response = await viewAdminBasedUser.getAdminBasedUser(
         userDetails.storeId
       );
-      // if (response) {
-      //   const userData = response.data || [];
-      //   setUsers(userData);
-      // } else {
-      //   console.error("Unexpected response format:", response);
-      // }
-      if (response && Array.isArray(response.data)) {
-        setUsers(response.data);
+
+      if (response) {
+        const userData =
+          response.data && typeof response.data === "object"
+            ? Array.isArray(response.data)
+              ? response.data
+              : [response.data]
+            : [];
+
+        setUsers(userData);
       } else {
         console.error("Unexpected response format:", response);
-        setUsers([]); // Ensure users is an empty array if the response is not as expected
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
+  // useEffect(() => {
+  //   if (userDetails?.userId) {
+  //     fetchRoleAndPermissions();
+  //     fetchAdminBasedStores();
+  //     fetchAdminBasedUser();
+  //   }
+  // }, [userDetails?.userId]);
+
   useEffect(() => {
     if (userDetails?.userId) {
       fetchRoleAndPermissions();
       fetchAdminBasedStores();
       fetchAdminBasedUser();
+
+      const roleIntervalId = setInterval(() => {
+        fetchRoleAndPermissions();
+      }, 5000);
+
+      // Set up polling for stores
+      const storeIntervalId = setInterval(() => {
+        fetchAdminBasedStores();
+      }, 5000);
+
+      // Set up polling for users
+      const userIntervalId = setInterval(() => {
+        fetchAdminBasedUser();
+      }, 5000);
+
+      // Cleanup on unmount
+      return () => {
+        clearInterval(roleIntervalId);
+        clearInterval(storeIntervalId);
+        clearInterval(userIntervalId);
+      };
     }
   }, [userDetails?.userId]);
 
   // For Popup
   const [openPopupAddUser, setOpenPopupAddUser] = useState(false);
+  const [openPopupEditUser, setOpenPopupEditUser] = useState(false);
   const [openPopupAddRole, setOpenPopupAddRole] = useState(false);
+  const [selectedEditData, setSelectedEditData] = useState(false);
 
   const handleOpenPopupAddUser = () => {
     setOpenPopupAddUser(true);
   };
   const handleClosePopupAddUser = () => {
     setOpenPopupAddUser(false);
+  };
+
+  const handleOpenPopupEditUser = (data) => {
+    setOpenPopupEditUser(true);
+    setSelectedEditData(data);
+  };
+  const handleClosePopupEditUser = () => {
+    setOpenPopupEditUser(false);
+    setSelectedEditData(null);
   };
 
   const handleOpenPopupAddRole = () => {
@@ -273,9 +315,15 @@ const SectionAdminUser = () => {
     setSelected([]);
   };
 
-  const filteredUsers = selectedStore
-    ? users.filter((user) => user.store_id === selectedStore)
-    : [];
+  // Filtering users based on the selected store
+  const filteredUsers =
+    selectedStore && Array.isArray(users)
+      ? users.filter((user) => user.store_id === selectedStore)
+      : []; // Default to an empty array if no selected store
+
+  // const filteredUsers = selectedStore
+  //   ? users.filter((user) => user.store_id === selectedStore)
+  //   : [];
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -774,9 +822,11 @@ const SectionAdminUser = () => {
                 <MenuItem value="">
                   <em>All</em>
                 </MenuItem>
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="user">User</MenuItem>
-                <MenuItem value="delivery">Delivery Personnel</MenuItem>
+                {roles.map((role) => (
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.role_name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
@@ -920,7 +970,7 @@ const SectionAdminUser = () => {
                     const isItemSelected = isSelected(user.user_id);
                     return (
                       <TableRow
-                        key={user.id}
+                        key={user.user_id}
                         className="border-b"
                         role="checkbox"
                         aria-checked={isItemSelected}
@@ -929,10 +979,10 @@ const SectionAdminUser = () => {
                       >
                         <TableCell padding="checkbox">
                           <Checkbox
-                            checked={selected.includes(user.id)}
+                            checked={selected.includes(user.user_id)}
                             onClick={(event) => {
                               event.stopPropagation();
-                              handleClickCheckbox(user.id);
+                              handleClickCheckbox(user.user_id);
                             }}
                           />
                         </TableCell>
@@ -941,7 +991,7 @@ const SectionAdminUser = () => {
                             variant="body2"
                             sx={{ fontWeight: "600", color: COLORS.secondary }}
                           >
-                            #{user.id}
+                            #{user.user_id}
                           </Typography>
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
@@ -949,7 +999,9 @@ const SectionAdminUser = () => {
                             variant="body2"
                             sx={{ fontWeight: "600", color: COLORS.text5 }}
                           >
-                            {user.name}
+                            {user.first_name}{" "}
+                            {user.middle_name && `${user.middle_name} `}
+                            {user.last_name}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -963,42 +1015,42 @@ const SectionAdminUser = () => {
                             variant="body2"
                             sx={{ fontWeight: "500", color: COLORS.text4 }}
                           >
-                            {user.role}
+                            {user.role_name}
                           </Typography>
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                          <DateCell dateCreated={user.dateCreated} />
+                          <DateCell dateCreated={user.date_created} />
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                           <Box display="flex" gap={1}>
-                            {user.permissions.read && (
+                            {user.can_read ? (
                               <PermissionBox label="Read" />
-                            )}
-                            {user.permissions.write && (
+                            ) : null}
+                            {user.can_write ? (
                               <PermissionBox label="Write" />
-                            )}
-                            {user.permissions.edit && (
+                            ) : null}
+                            {user.can_edit ? (
                               <PermissionBox label="Edit" />
-                            )}
-                            {user.permissions.delete && (
+                            ) : null}
+                            {user.can_delete ? (
                               <PermissionBox label="Delete" />
-                            )}
+                            ) : null}
                           </Box>
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                          <StatusCell status={user.status} />
+                          <StatusCell status={user.isStatus} />
                         </TableCell>
                         <TableCell sx={{ paddingY: 3, paddingX: 4 }}>
                           <Tooltip title="View User" arrow>
                             <OutlinedIconButton
-                              onClick={() => handleOpenPopupAddUser()}
+                            // onClick={() => handleOpenPopupUser()}
                             >
                               <Eye color={COLORS.primary} weight="duotone" />
                             </OutlinedIconButton>
                           </Tooltip>
                           <Tooltip title="Edit User" arrow>
                             <OutlinedIconButton
-                              onClick={() => handleOpenPopupAddUser(users)}
+                              onClick={() => handleOpenPopupEditUser(user)}
                             >
                               <PencilLine
                                 color={COLORS.secondary}
@@ -1040,6 +1092,14 @@ const SectionAdminUser = () => {
         onClose={handleClosePopupAddUser}
         roleData={roles}
         storeData={stores}
+      />
+
+      <A_PopupEditUser
+        open={openPopupEditUser}
+        onClose={handleClosePopupEditUser}
+        roleData={roles}
+        storeData={stores}
+        userData={selectedEditData}
       />
 
       <A_PopupAddRole
@@ -1108,6 +1168,11 @@ const cellHeadStyles = {
 };
 
 export default SectionAdminUser;
+
+// const userData =
+//   response.data && typeof response.data === "object"
+//     ? [response.data]
+//     : [];
 
 // const [selectedStore, setSelectedStore] = useState(
 //   stores.length > 0 ? stores[0].id : null

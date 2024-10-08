@@ -133,6 +133,20 @@ export const createNewRoleAndPermissions = {
   },
 };
 
+export const createAdminBasedNewUser = {
+  setAdminBasedNewUser: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/usermanage/set-new-user`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // SETTINGS SECTION
 //  <----- Service Type Section ----->
 export const createNewServiceType = {

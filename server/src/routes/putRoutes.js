@@ -10,6 +10,7 @@ import {
   handleDeleteServiceType,
   handleUpdateServiceType,
 } from "../services/admin/useSettings.js";
+import { handleUpdateAdminBasedUser } from "../services/admin/useUser.js";
 
 const router = express.Router();
 
@@ -62,10 +63,21 @@ router.put(
 
 // #For user
 router.put(
-  "/usermanage/:id/update-user",
+  "/usermanage/:id/update-admin-based-user",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      // await handleSetRolesPermissions(req, res, connection);
+      await handleUpdateAdminBasedUser(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/usermanage/:id/update-manager-based-user",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      // await handleUpdateAdminBasedUser(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

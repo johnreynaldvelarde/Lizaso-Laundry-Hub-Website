@@ -1,3 +1,5 @@
+import { generatePasswordSalt, hashPassword } from "../../helpers/auth.js";
+
 // POST
 export const handleSetRolesPermissions = async (req, res, connection) => {
   const { id } = req.params;
@@ -51,6 +53,87 @@ export const handleSetRolesPermissions = async (req, res, connection) => {
     res.status(500).json({
       success: false,
       message: "An error occurred while creating role permissions.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+// POST
+export const handleAdminBasedSetNewUser = async (req, res, connection) => {
+  const {
+    store_id,
+    role_permissions_id,
+    username,
+    password,
+    mobile_number,
+    first_name,
+    middle_name,
+    last_name,
+    isStatus,
+  } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const checkQuery = `
+      SELECT username FROM User_Account 
+      WHERE username = ? AND isArchive = 0
+    `;
+
+    const [existingUser] = await connection.execute(checkQuery, [username]);
+
+    if (existingUser.length > 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Username already exists." });
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const passwordSalt = await generatePasswordSalt();
+
+    const userAccountQuery = `
+     INSERT INTO User_Account 
+     (store_id, role_permissions_id, username, email, mobile_number, first_name, middle_name, last_name, isStatus, date_created)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+   `;
+
+    const [insertUserResult] = await connection.execute(userAccountQuery, [
+      store_id,
+      role_permissions_id,
+      username,
+      "",
+      mobile_number,
+      first_name,
+      middle_name,
+      last_name,
+      isStatus,
+    ]);
+
+    const newUserId = insertUserResult.insertId;
+
+    const userSecurityQuery = `
+     INSERT INTO User_Security 
+     (user_id, password, password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
+     VALUES (?, ?, ?, 0, 0, 0, null, null, NOW())
+   `;
+    await connection.execute(userSecurityQuery, [
+      newUserId,
+      hashedPassword,
+      passwordSalt,
+    ]);
+
+    await connection.commit();
+
+    return res
+      .status(201)
+      .json({ success: true, message: "User created successfully." });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error creating user:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while creating the user.",
     });
   } finally {
     if (connection) connection.release();
@@ -206,16 +289,41 @@ export const handleGetStoresBasedAdmin = async (req, res, connection) => {
   }
 };
 
-// #For getting the user list
 export const handleGetBasedUser = async (req, res, connection) => {
-  try {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const query = `
+  try {
+    await connection.beginTransaction();
+
+    // Check if the user exists and their role
+    const checkQuery = `
       SELECT 
+        UA.id, UA.username, UA.role_permissions_id, RP.role_name
+      FROM 
+        User_Account UA
+      JOIN 
+        Roles_Permissions RP ON UA.role_permissions_id = RP.id
+      WHERE 
+        UA.id = ? AND UA.isArchive = 0
+    `;
+
+    const [existingUser] = await connection.execute(checkQuery, [id]);
+
+    if (existingUser.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    const user = existingUser[0];
+
+    // Check if the user is an administrator
+    if (user.role_name === "Administrator") {
+      const getQuery = `
+      SELECT
         ua.id AS user_id,
         ua.store_id,
-        ua.role_permissions_id,
         ua.username,
         ua.email,
         ua.mobile_number,
@@ -223,7 +331,12 @@ export const handleGetBasedUser = async (req, res, connection) => {
         ua.middle_name,
         ua.last_name,
         ua.isOnline,
-        ua.isStatus,
+        CASE
+            WHEN ua.isStatus = 0 THEN 'Active'
+            WHEN ua.isStatus = 1 THEN 'Deactivated'
+            WHEN ua.isStatus = 2 THEN 'Pending'
+            ELSE 'Unknown'
+        END AS isStatus,
         ua.isArchive,
         ua.date_created,
         rp.role_name,
@@ -233,28 +346,29 @@ export const handleGetBasedUser = async (req, res, connection) => {
         rp.can_delete
       FROM User_Account ua
       JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
-      WHERE ua.id = ? AND ua.isArchive = 0;
-    `;
+      WHERE ua.id != ? AND ua.isArchive = 0
+      `;
 
-    const [results] = await connection.execute(query, [id]);
+      const [users] = await connection.execute(getQuery, [id]);
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: "User not found or archived" });
+      await connection.commit();
+
+      return res.status(200).json({
+        success: true,
+        data: users,
+      });
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "The user account is not an administrator.",
+      });
     }
-
-    const user = results[0];
-
-    // Check if the user is an Administrator
-    if (user.role_name !== "Administrator") {
-      return res
-        .status(403)
-        .json({ error: "Access denied. Not an Administrator." });
-    }
-
-    res.status(200).json({ message: "User is an Administrator", data: user });
   } catch (error) {
     console.error("Error fetching user", error);
+    await connection.rollback();
     res.status(500).json({ error: "Server error" });
+  } finally {
+    if (connection) connection.release();
   }
 };
 
@@ -281,6 +395,66 @@ export const handleUpdateRolePermission = async (req, res, connection) => {
     res
       .status(500)
       .json({ error: "An error occurred while creating the service type." });
+  }
+};
+
+export const handleUpdateAdminBasedUser = async (req, res, connection) => {
+  const { id } = req.params;
+  const {
+    store_id,
+    role_permissions_id,
+    username,
+    mobile_number,
+    first_name,
+    middle_name,
+    last_name,
+    isStatus,
+  } = req.body;
+
+  console.log(id);
+
+  try {
+    await connection.beginTransaction();
+
+    // Update query for User_Account
+    const updateQuery = `
+      UPDATE User_Account 
+      SET 
+        store_id = ?,
+        role_permissions_id = ?,
+        username = ?,
+        mobile_number = ?,
+        first_name = ?,
+        middle_name = ?,
+        last_name = ?,
+        isStatus = ?
+      WHERE id = ?
+    `;
+
+    const params = [
+      store_id,
+      role_permissions_id,
+      username,
+      mobile_number,
+      first_name,
+      middle_name,
+      last_name,
+      isStatus,
+      id,
+    ];
+
+    await connection.query(updateQuery, params);
+    await connection.commit();
+
+    res
+      .status(200)
+      .json({ success: true, message: "User updated successfully." });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating user:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the user." });
   }
 };
 

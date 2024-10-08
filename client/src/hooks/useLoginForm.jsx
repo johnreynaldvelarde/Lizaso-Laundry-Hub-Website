@@ -100,7 +100,6 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     rememberMe,
     setRememberMe,
     errorMessage,
-    loading, // Expose loading state
     handleLogin,
     handleForgotPassword,
     handleInputChange,

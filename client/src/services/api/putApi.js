@@ -49,6 +49,51 @@ export const updateRemoveAssignment = {
   },
 };
 
+// USER MANAGEMENT SECTION
+// #Admin
+export const updateAdminBasedUser = {
+  putAdminBasedUser: async (userId, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/usermanage/${userId}/update-admin-based-user`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateRemoveUser = {
+  putRemoveUser: async (userId, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/usermanage/${userId}/update-remove-user`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+// #Manager
+export const updateManagerBasedUser = {
+  putManagerBasedUser: async (userId, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/usermanage/${userId}/update-manager-based-user`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // SETTINGS SECTION
 //  <----- Service Type Section ----->
 export const updateServiceType = {
