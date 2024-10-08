@@ -24,14 +24,18 @@ import {
   InputLabel,
   Menu,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
-import { PlusCircle, FolderUser } from "@phosphor-icons/react";
+import {
+  PlusCircle,
+  FolderUser,
+  Trash,
+  PencilLine,
+  Eye,
+} from "@phosphor-icons/react";
 import { MoreVert } from "@mui/icons-material";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import noData from "../../../../assets/images/no_data.png";
 import { COLORS } from "../../../../constants/color";
 import A_PopupAddUser from "./A_PopupAddUser";
@@ -40,9 +44,10 @@ import {
   viewAdminBasedStore,
   viewRolesAndPermissions,
 } from "../../../../services/api/getApi";
-import Permission from "../../../../components/common/PermissionBox";
-import PermissionBox from "../../../../components/common/PermissionBox";
-import StatusCell from "../../../../components/common/StatusCell";
+import PermissionBox from "../../../../components/table/PermissionBox";
+import StatusCell from "../../../../components/table/StatusCell";
+import DateCell from "../../../../components/table/DateCell";
+import OutlinedIconButton from "../../../../components/table/OutlinedIconButton";
 
 const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
@@ -51,41 +56,6 @@ const stores = [
   { id: 4, name: "South Branch", totalUsers: 4 },
 ];
 
-// const users = [
-//   {
-//     id: 1,
-//     name: "John Doe",
-//     username: "johndoe123",
-//     role: "Admin",
-//     store: "LIZASO Main",
-//     storeId: 2,
-//   },
-//   {
-//     id: 2,
-//     name: "Jane Smith",
-//     username: "janesmith456",
-//     role: "User",
-//     store: "LIZASO Main",
-//     storeId: 1,
-//   },
-//   {
-//     id: 3,
-//     name: "Mike Johnson",
-//     username: "mikejohnson789",
-//     role: "Delivery",
-//     store: "LIZASO Main",
-//     storeId: 1,
-//   },
-//   {
-//     id: 4,
-//     name: "Alice Brown",
-//     username: "alicebrown101",
-//     role: "Admin",
-//     store: "LIZASO Branch A",
-//     storeId: 1,
-//   },
-// ];
-
 const users = [
   {
     id: 1,
@@ -93,7 +63,7 @@ const users = [
     username: "johndoe123",
     role: "Admin",
     storeId: 1, // Updated to follow your preferred store ID format
-    dateCreated: "2024-01-15", // Example date
+    dateCreated: "2024-02-05T14:30:00",
     permissions: {
       read: true,
       write: true,
@@ -108,7 +78,7 @@ const users = [
     username: "janesmith456",
     role: "User",
     storeId: 1,
-    dateCreated: "2024-01-20",
+    dateCreated: "2024-02-06T09:15:00",
     permissions: {
       read: true,
       write: false,
@@ -123,7 +93,7 @@ const users = [
     username: "mikejohnson789",
     role: "Delivery",
     storeId: 2,
-    dateCreated: "2024-02-05",
+    dateCreated: "2024-02-07T11:45:00",
     permissions: {
       read: true,
       write: false,
@@ -138,7 +108,7 @@ const users = [
     username: "alicebrown101",
     role: "Admin",
     storeId: 1,
-    dateCreated: "2024-02-10",
+    dateCreated: "2024-02-08T08:00:00",
     permissions: {
       read: true,
       write: true,
@@ -889,19 +859,37 @@ const SectionAdminUser = () => {
                           />
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                          {user.id}
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "600", color: COLORS.secondary }}
+                          >
+                            #{user.id}
+                          </Typography>
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                          {user.name}
-                          <div className="text-gray-500 text-sm">
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "600", color: COLORS.text5 }}
+                          >
+                            {user.name}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "500", color: COLORS.text4 }}
+                          >
                             {user.username}
-                          </div>
+                          </Typography>
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                          {user.role}
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "500", color: COLORS.text4 }}
+                          >
+                            {user.role}
+                          </Typography>
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                          {user.dateCreated}
+                          <DateCell dateCreated={user.dateCreated} />
                         </TableCell>
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                           <Box display="flex" gap={1}>
@@ -923,15 +911,30 @@ const SectionAdminUser = () => {
                           <StatusCell status={user.status} />
                         </TableCell>
                         <TableCell sx={{ paddingY: 3, paddingX: 4 }}>
-                          <IconButton>
-                            <VisibilityIcon />
-                          </IconButton>
-                          <IconButton>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton>
-                            <DeleteIcon />
-                          </IconButton>
+                          <Tooltip title="View User" arrow>
+                            <OutlinedIconButton
+                              onClick={() => handleOpenPopupAddUser()}
+                            >
+                              <Eye color={COLORS.primary} weight="duotone" />
+                            </OutlinedIconButton>
+                          </Tooltip>
+                          <Tooltip title="Edit User" arrow>
+                            <OutlinedIconButton
+                              onClick={() => handleOpenPopupAddUser(users)}
+                            >
+                              <PencilLine
+                                color={COLORS.secondary}
+                                weight="duotone"
+                              />
+                            </OutlinedIconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete User" arrow>
+                            <OutlinedIconButton
+                              onClick={() => alert("Delete clicked")}
+                            >
+                              <Trash color={COLORS.error} weight="duotone" />
+                            </OutlinedIconButton>
+                          </Tooltip>
                         </TableCell>
                       </TableRow>
                     );

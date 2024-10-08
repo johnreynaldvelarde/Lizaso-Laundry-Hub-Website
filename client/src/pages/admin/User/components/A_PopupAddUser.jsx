@@ -31,6 +31,8 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  console.log(storeData);
+
   const validateFields = () => {
     const newErrors = {};
     if (!username) {
