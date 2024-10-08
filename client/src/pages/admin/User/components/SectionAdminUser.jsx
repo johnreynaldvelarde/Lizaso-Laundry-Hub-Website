@@ -48,6 +48,8 @@ import PermissionBox from "../../../../components/table/PermissionBox";
 import StatusCell from "../../../../components/table/StatusCell";
 import DateCell from "../../../../components/table/DateCell";
 import OutlinedIconButton from "../../../../components/table/OutlinedIconButton";
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
+import toast from "react-hot-toast";
 
 const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
@@ -125,6 +127,7 @@ const SectionAdminUser = () => {
   const [stores, setStores] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // For fetching data for role and permissions
   const fetchRoleAndPermissions = async () => {
@@ -294,7 +297,56 @@ const SectionAdminUser = () => {
     setSnackbarOpen(false);
   };
 
-  // For Update Data
+  // FOR DELETE ACTIONS
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedRoles, setSelectedRoles] = useState(null);
+
+  const handleDialogDelete = (id, options) => {
+    if (options === "Role") {
+      setSelectedRoles(id);
+    } else {
+      setSelectedUser(id);
+    }
+
+    setDialogOpen(true);
+  };
+
+  const handleRemoveRole = async (id) => {
+    if (id) {
+      console.log(id);
+      // try {
+      //   const response = await updateDeleteServiceType.putDeleteServiceType(id);
+      //   if (response.success) {
+      //     toast.success(response.message);
+      //     refreshData();
+      //   } else {
+      //     toast.error(response.message);
+      //   }
+      // } catch (error) {
+      //   toast.error(`Error: ${error.message || "Something went wrong"}`);
+      // }
+    } else {
+      toast.error("Error Action!!!");
+    }
+  };
+  const handleDeleteUser = async (id) => {
+    if (id) {
+      console.log(id);
+      // try {
+      //   const response = await updateDeleteServiceType.putDeleteServiceType(id);
+      //   if (response.success) {
+      //     toast.success(response.message);
+      //     refreshData();
+      //   } else {
+      //     toast.error(response.message);
+      //   }
+      // } catch (error) {
+      //   toast.error(`Error: ${error.message || "Something went wrong"}`);
+      // }
+    } else {
+      toast.error("Error Action!!!");
+    }
+  };
   return (
     <>
       {/* Role and Permission Section */}
@@ -329,7 +381,6 @@ const SectionAdminUser = () => {
             Role Management & Permission
           </Typography>
         </Box>
-
         <Button
           onClick={handleOpenPopupAddRole}
           variant="contained"
@@ -347,7 +398,7 @@ const SectionAdminUser = () => {
             fontWeight: 500,
             textTransform: "none",
             paddingX: { xs: 1, sm: 2, md: 3 },
-            fontSize: { xs: "12px", sm: "14px", md: "16px" },
+            fontSize: { xs: "14px", sm: "14px", md: "16px" },
             "&:hover": {
               backgroundColor: COLORS.secondaryHover,
             },
@@ -474,7 +525,6 @@ const SectionAdminUser = () => {
           </Box>
         ))}
       </Box>
-
       {/* Store and Permission Section */}
       {/* Store List */}
       <Box
@@ -657,7 +707,6 @@ const SectionAdminUser = () => {
           </Box>
         )}
       </Box>
-
       {/* User List */}
       <Box mt={5}>
         {/* Button Header */}
@@ -702,7 +751,6 @@ const SectionAdminUser = () => {
               </Select>
             </FormControl>
           </Box>
-
           {/* Buttons: Delete Selected and Add New User */}
           <Box
             className="flex items-center"
@@ -733,39 +781,40 @@ const SectionAdminUser = () => {
               disableElevation
               disabled={selected.length === 0}
               sx={{
+                marginLeft: { sm: 2 },
                 backgroundColor: COLORS.error,
                 borderRadius: "5px",
                 fontWeight: 500,
                 textTransform: "none",
-                paddingLeft: "23px",
-                paddingRight: "23px",
-                fontSize: "16px",
-                marginLeft: { sm: 2 }, // Spacing between buttons for larger screens
+                paddingX: { xs: 1, sm: 2, md: 3 },
+                fontSize: { xs: "14px", sm: "14px", md: "16px" },
                 "&:hover": {
                   backgroundColor: COLORS.errorHover,
                 },
+                width: { xs: "100%", sm: "auto" },
+                mt: { xs: 0, sm: 0 },
               }}
             >
               Delete Selected
             </Button>
-
             <Button
               variant="contained"
               startIcon={
                 <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
               }
               sx={{
+                marginLeft: { sm: 2 },
                 backgroundColor: COLORS.secondary,
                 borderRadius: "5px",
-                fontWeight: 600,
+                fontWeight: 500,
                 textTransform: "none",
-                paddingLeft: "23px",
-                paddingRight: "23px",
-                fontSize: "16px",
-                marginLeft: { sm: 2 }, // Spacing between buttons for larger screens
+                paddingX: { xs: 1, sm: 2, md: 3 },
+                fontSize: { xs: "14px", sm: "14px", md: "16px" },
                 "&:hover": {
                   backgroundColor: COLORS.secondaryHover,
                 },
+                width: { xs: "100%", sm: "auto" },
+                mt: { xs: 0, sm: 0 },
               }}
               onClick={handleOpenPopupAddUser}
             >
@@ -930,7 +979,7 @@ const SectionAdminUser = () => {
                           </Tooltip>
                           <Tooltip title="Delete User" arrow>
                             <OutlinedIconButton
-                              onClick={() => alert("Delete clicked")}
+                              onClick={() => handleDialogDelete(user.id)}
                             >
                               <Trash color={COLORS.error} weight="duotone" />
                             </OutlinedIconButton>
@@ -944,7 +993,99 @@ const SectionAdminUser = () => {
           </Table>
         </TableContainer>
 
-        {/* <TableContainer
+        {/* Pagination */}
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredUsers.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Box>
+
+      {/* PopupSection */}
+      <A_PopupAddUser
+        open={openPopupAddUser}
+        onClose={handleClosePopupAddUser}
+        roleData={roles}
+        storeData={stores}
+      />
+
+      <A_PopupAddRole
+        open={openPopupAddRole}
+        onClose={handleClosePopupAddRole}
+      />
+
+      <ConfirmationDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleDeleteUser}
+        itemId={selectedUser}
+      />
+
+      {/* Menu Section */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem onClick={handleCloseMenu} sx={{ fontSize: "14px" }}>
+          Rename
+        </MenuItem>
+        <MenuItem
+          onClick={handleCloseMenu}
+          sx={{ fontSize: "14px", color: COLORS.error }}
+        >
+          Remove Role
+        </MenuItem>
+      </Menu>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }} // Fixed "below" to "bottom"
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{
+            width: "100%",
+            color: COLORS.white,
+            backgroundColor: COLORS.secondary,
+            "& .MuiAlert-icon": {
+              color: "white", // Change icon color to white
+            },
+          }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
+  );
+};
+
+const cellHeadStyles = {
+  paddingY: 2,
+  paddingX: 4,
+  textAlign: "left",
+  color: "#595959",
+  fontSize: "1",
+  fontWeight: 600, // Changed to semi-bold
+  textTransform: "uppercase",
+};
+
+export default SectionAdminUser;
+
+// const [selectedStore, setSelectedStore] = useState(
+//   stores.length > 0 ? stores[0].id : null
+// );
+
+{
+  /* <TableContainer
           component={Paper}
           sx={{
             overflowX: "auto",
@@ -1049,87 +1190,5 @@ const SectionAdminUser = () => {
               )}
             </TableBody>
           </Table>
-        </TableContainer> */}
-
-        {/* Pagination */}
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={filteredUsers.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
-
-      {/* PopupSection */}
-      <A_PopupAddUser
-        open={openPopupAddUser}
-        onClose={handleClosePopupAddUser}
-        roleData={roles}
-      />
-
-      <A_PopupAddRole
-        open={openPopupAddRole}
-        onClose={handleClosePopupAddRole}
-      />
-
-      {/* Menu Section */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseMenu}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      >
-        <MenuItem onClick={handleCloseMenu} sx={{ fontSize: "14px" }}>
-          Rename
-        </MenuItem>
-        <MenuItem
-          onClick={handleCloseMenu}
-          sx={{ fontSize: "14px", color: COLORS.error }}
-        >
-          Remove Role
-        </MenuItem>
-      </Menu>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={2000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }} // Fixed "below" to "bottom"
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity="success"
-          sx={{
-            width: "100%",
-            color: COLORS.white,
-            backgroundColor: COLORS.secondary,
-            "& .MuiAlert-icon": {
-              color: "white", // Change icon color to white
-            },
-          }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </>
-  );
-};
-
-const cellHeadStyles = {
-  paddingY: 2,
-  paddingX: 4,
-  textAlign: "left",
-  color: "#595959",
-  fontSize: "1",
-  fontWeight: 600, // Changed to semi-bold
-  textTransform: "uppercase",
-};
-
-export default SectionAdminUser;
-
-// const [selectedStore, setSelectedStore] = useState(
-//   stores.length > 0 ? stores[0].id : null
-// );
+        </TableContainer> */
+}

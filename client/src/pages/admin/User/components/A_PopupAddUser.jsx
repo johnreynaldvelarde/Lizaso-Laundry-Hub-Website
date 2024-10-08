@@ -31,58 +31,50 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  console.log(storeData);
-
   const validateFields = () => {
     const newErrors = {};
-    if (!username) {
-      newErrors.username = "Username is required";
+    const fields = {
+      username: "Username is required",
+      defaultPassword: "Password is required",
+      firstname: "Firstname is required",
+      lastname: "Lastname is required",
+      number: "Mobile number is required",
+      selectedRole: "Role is required",
+      selectedStatus: "Status is required",
+      selectedStore: "Store is required",
+    };
+
+    for (const [field, errorMessage] of Object.entries(fields)) {
+      if (
+        (field === "selectedStatus" &&
+          (selectedStatus === undefined || selectedStatus === "")) ||
+        (!["selectedStatus", "selectedRole"].includes(field) && !eval(field))
+      ) {
+        newErrors[field] = errorMessage;
+      }
     }
-    if (!defaultPassword) {
-      newErrors.defaultPassword = "Password is required";
-    }
-    if (!firstname) {
-      newErrors.firstname = "Firstname is required";
-    }
-    if (!lastname) {
-      newErrors.lastname = "Lastname is required";
-    }
-    if (!number) {
-      newErrors.number = "Mobile number is required";
-    }
-    if (!selectedRole) {
-      newErrors.selectedRole = "Role is required";
-    }
-    if (!selectedStatus) {
-      newErrors.selectedStatus = "Status is required";
-    }
-    if (!selectedStore) {
-      newErrors.selectedStore = "Store is required";
-    }
+
     return newErrors;
   };
 
   const handleInputChange = (field) => (e) => {
     const value = e.target.value;
 
-    if (field === "username") {
-      setUsername(value);
-    } else if (field === "defaultPassword") {
-      setDefaultPassword(value);
-    } else if (field === "firstname") {
-      setFirstname(value);
-    } else if (field === "lastname") {
-      setLastname(value);
-    } else if (field === "middlename") {
-      setMiddlename(value);
-    } else if (field === "number") {
-      setNumber(value);
-    } else if (field === "selectedRole") {
-      setSelectedRole(value);
-    } else if (field === "selectedStatus") {
-      setSelectedStatus(value);
-    } else if (field === "selectedStore") {
-      setSelectedStore(value);
+    const fieldToStateMap = {
+      username: setUsername,
+      defaultPassword: setDefaultPassword,
+      firstname: setFirstname,
+      lastname: setLastname,
+      middlename: setMiddlename,
+      number: setNumber,
+      selectedRole: setSelectedRole,
+      selectedStatus: setSelectedStatus,
+      selectedStore: setSelectedStore,
+    };
+
+    const setFieldValue = fieldToStateMap[field];
+    if (setFieldValue) {
+      setFieldValue(value);
     }
 
     setErrors((prevErrors) => ({
@@ -96,7 +88,9 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setLoading(true);
+      // setLoading(true);
+
+      console.log(selectedStatus);
 
       setTimeout(async () => {}, 500);
     }
@@ -343,7 +337,6 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
               },
             }}
           >
-            {/* Add your role options here */}
             <MenuItem value="" disabled>
               Select a status
             </MenuItem>
@@ -378,10 +371,11 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
             <MenuItem value="" disabled>
               Select a store
             </MenuItem>
-            <MenuItem value="admin">Admin</MenuItem>
-            <MenuItem value="manager">Manager</MenuItem>
-            <MenuItem value="user">User</MenuItem>
-            <MenuItem value="delivery">Delivery Personnel</MenuItem>
+            {storeData.map((store) => (
+              <MenuItem key={store.id} value={store.id}>
+                {store.store_name}
+              </MenuItem>
+            ))}
           </TextField>
         </Box>
       </DialogContent>
@@ -432,3 +426,32 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
 };
 
 export default A_PopupAddUser;
+
+// const handleInputChange = (field) => (e) => {
+//   const value = e.target.value;
+
+//   if (field === "username") {
+//     setUsername(value);
+//   } else if (field === "defaultPassword") {
+//     setDefaultPassword(value);
+//   } else if (field === "firstname") {
+//     setFirstname(value);
+//   } else if (field === "lastname") {
+//     setLastname(value);
+//   } else if (field === "middlename") {
+//     setMiddlename(value);
+//   } else if (field === "number") {
+//     setNumber(value);
+//   } else if (field === "selectedRole") {
+//     setSelectedRole(value);
+//   } else if (field === "selectedStatus") {
+//     setSelectedStatus(value);
+//   } else if (field === "selectedStore") {
+//     setSelectedStore(value);
+//   }
+
+//   setErrors((prevErrors) => ({
+//     ...prevErrors,
+//     [field]: "",
+//   }));
+// };

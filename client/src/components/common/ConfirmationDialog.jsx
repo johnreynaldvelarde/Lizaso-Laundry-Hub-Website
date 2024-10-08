@@ -30,7 +30,7 @@ function ConfirmationDialog({ open, onClose, onConfirm, itemId }) {
           Are you absolutely sure?
         </DialogTitle>
         <DialogContent className="text-sm text-gray-700 mb-1">
-          Are you sure you want to remove this?
+          Are you sure you want to delete this?
         </DialogContent>
         <DialogActions className="flex justify-end space-x-2">
           <Button
