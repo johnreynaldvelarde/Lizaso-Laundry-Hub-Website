@@ -1,6 +1,7 @@
 import express from "express";
 import {
   handleGetLaundryPickup,
+  handlePostNewMessages,
   handleUpdateServiceRequestBackToPending,
 } from "../../services/user/staff.js";
 import { getPool } from "../../db/dbConfig.js";
@@ -30,6 +31,16 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 
 // STAFF SECTION
 // #POST
+router.post(
+  "/message/:id/set-new-messages",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handlePostNewMessages(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 // #GET
 router.get(

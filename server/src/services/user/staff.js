@@ -1,4 +1,26 @@
 import { haversineDistance } from "../../helpers/distanceComputing.js";
+// POST
+export const handlePostNewMessages = async (req, res, connection) => {
+  const { id } = req.params;
+  const { recieverId, text, senderType } = req.body;
+
+  console.log(recieverId);
+  console.log(text);
+  console.log(senderType);
+
+  // try {
+  //   await connection.beginTransaction();
+  // } catch (error) {
+  //   await connection.rollback();
+  //   console.error("Error updating service request status:", error);
+  //   res.status(500).json({
+  //     success: false,
+  //     message: "An error occurred while updating the request.",
+  //   });
+  // } finally {
+  //   connection.release();
+  // }
+};
 
 // GET
 export const handleGetLaundryPickup = async (req, res, connection) => {
