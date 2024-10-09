@@ -381,10 +381,11 @@ export const handleUpdateRenameRole = async (req, res, connection) => {
     await connection.beginTransaction();
 
     const checkQuery = `
-      SELECT COUNT(*) as count 
-      FROM Roles_Permissions 
-      WHERE role_name = ? AND id != ? AND isArchive = 0;
-    `;
+     SELECT COUNT(*) AS count
+     FROM Roles_Permissions
+     WHERE role_name = ? AND id != ? AND isArchive = 0;
+   `;
+
     const [checkResult] = await connection.execute(checkQuery, [role_name, id]);
 
     if (checkResult[0].count > 0) {
@@ -396,8 +397,8 @@ export const handleUpdateRenameRole = async (req, res, connection) => {
     }
 
     const updateQuery = `
-      UPDATE Roles_Permissions 
-      SET role_name = ? 
+      UPDATE Roles_Permissions
+      SET role_name = ?
       WHERE id = ? AND isArchive = 0;
     `;
 

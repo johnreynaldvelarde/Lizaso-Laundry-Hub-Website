@@ -58,6 +58,7 @@ import {
 } from "../../../../services/api/putApi";
 import A_PopupViewUser from "./A_PopupViewUser";
 import A_PopupEditPermissions from "./A_PopupEditPermissions";
+import A_PopupRenameRole from "./A_PopupRenameRole";
 
 const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
@@ -65,69 +66,6 @@ const stores = [
   { id: 3, name: "West Branch", totalUsers: 7 },
   { id: 4, name: "South Branch", totalUsers: 4 },
 ];
-
-// const users = [
-//   {
-//     id: 1,
-//     name: "John Doe",
-//     username: "johndoe123",
-//     role: "Admin",
-//     store_id: 1, // Updated to follow your preferred store ID format
-//     dateCreated: "2024-02-05T14:30:00",
-//     permissions: {
-//       read: true,
-//       write: true,
-//       edit: true,
-//       delete: true,
-//     },
-//     status: "Active", // Options: pending, active, deactivated
-//   },
-//   {
-//     id: 2,
-//     name: "Jane Smith",
-//     username: "janesmith456",
-//     role: "User",
-//     store_id: 1,
-//     dateCreated: "2024-02-06T09:15:00",
-//     permissions: {
-//       read: true,
-//       write: false,
-//       edit: false,
-//       delete: false,
-//     },
-//     status: "Pending",
-//   },
-//   {
-//     id: 3,
-//     name: "Mike Johnson",
-//     username: "mikejohnson789",
-//     role: "Delivery",
-//     store_id: 2,
-//     dateCreated: "2024-02-07T11:45:00",
-//     permissions: {
-//       read: true,
-//       write: false,
-//       edit: false,
-//       delete: false,
-//     },
-//     status: "Pending", // Example status
-//   },
-//   {
-//     id: 4,
-//     name: "Alice Brown",
-//     username: "alicebrown101",
-//     role: "Admin",
-//     store_id: 1,
-//     dateCreated: "2024-02-08T08:00:00",
-//     permissions: {
-//       read: true,
-//       write: true,
-//       edit: true,
-//       delete: true,
-//     },
-//     status: "Deactivated", // Example status
-//   },
-// ];
 
 const SectionAdminUser = () => {
   const { userDetails } = useAuth();
@@ -273,8 +211,10 @@ const SectionAdminUser = () => {
   };
 
   // #For rename role
-  const handleOpenPopupRenameRole = () => {
+  const handleOpenPopupRenameRole = (data) => {
     setOpenPopupRenameRole(true);
+    setAnchorEl(null);
+    setSelectedRenameRole(data);
   };
   const handleClosePopupRenameRole = () => {
     setOpenPopupRenameRole(false);
@@ -864,14 +804,13 @@ const SectionAdminUser = () => {
       </Box>
       {/* User List */}
       <Box mt={5}>
-        {/* Button Header */}
         <Box
           mb={2}
           className="flex items-center justify-between mb-8"
           sx={{
             flexDirection: {
-              xs: "column", // Stack vertically on small screens
-              sm: "row", // Horizontal on larger screens
+              xs: "column",
+              sm: "row",
             },
           }}
         >
@@ -908,7 +847,6 @@ const SectionAdminUser = () => {
               </Select>
             </FormControl>
           </Box>
-          {/* Buttons: Delete Selected and Add New User */}
           <Box
             className="flex items-center"
             sx={{
@@ -1199,6 +1137,12 @@ const SectionAdminUser = () => {
         permissionsData={selectedPermissionsData}
       />
 
+      <A_PopupRenameRole
+        open={openPopupRenameRole}
+        onClose={handleClosePopupRenameRole}
+        roleData={selectedRenameRole}
+      />
+
       <ConfirmationDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
@@ -1220,7 +1164,10 @@ const SectionAdminUser = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleCloseMenu} sx={{ fontSize: "14px" }}>
+        <MenuItem
+          onClick={() => handleOpenPopupRenameRole(selectedRole)}
+          sx={{ fontSize: "14px" }}
+        >
           Rename
         </MenuItem>
         <MenuItem
@@ -1266,121 +1213,3 @@ const cellHeadStyles = {
 };
 
 export default SectionAdminUser;
-
-// const userData =
-//   response.data && typeof response.data === "object"
-//     ? [response.data]
-//     : [];
-
-// const [selectedStore, setSelectedStore] = useState(
-//   stores.length > 0 ? stores[0].id : null
-// );
-
-{
-  /* <TableContainer
-          component={Paper}
-          sx={{
-            overflowX: "auto",
-            borderRadius: 2, // No rounded corners
-            boxShadow: "none", // No shadow
-            border: `1px solid ${COLORS.border2}`,
-          }}
-        >
-          <Table>
-            <TableHead className="bg-gray-100 border-b">
-              <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={
-                      selected.length > 0 &&
-                      selected.length < filteredUsers.length
-                    }
-                    checked={
-                      filteredUsers.length > 0 &&
-                      selected.length === filteredUsers.length
-                    }
-                    onChange={handleSelectAllClick}
-                    inputProps={{ "aria-label": "select all users" }}
-                    disabled={filteredUsers.length === 0}
-                  />
-                </TableCell>
-                <TableCell className="text-left py-3 px-4">ID</TableCell>
-                <TableCell className="text-left py-3 px-4">Name</TableCell>
-                <TableCell className="text-left py-3 px-4">Role</TableCell>
-                <TableCell className="text-left py-3 px-4">Store</TableCell>
-                <TableCell className="text-left py-3 px-4">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" className="py-3 px-4">
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      alignItems="center"
-                    >
-                      <img
-                        src={noData}
-                        alt="No data"
-                        style={{ width: "150px", marginBottom: "10px" }}
-                      />
-                      <Typography variant="body1" color="textSecondary">
-                        No available data
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredUsers
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((user) => {
-                    const isItemSelected = isSelected(user.id);
-                    return (
-                      <TableRow
-                        key={user.id}
-                        className="border-b"
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        selected={isItemSelected}
-                        tabIndex={-1}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selected.includes(user.id)}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              handleClickCheckbox(user.id);
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell className="py-3 px-4">{user.id}</TableCell>
-                        <TableCell className="py-5 px-4">
-                          {user.name}
-                          <div className="text-green- text-sm">
-                            {user.username}
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-3 px-4">{user.role}</TableCell>
-                        <TableCell className="py-3 px-4">
-                          {user.store}
-                        </TableCell>
-                        <TableCell className="py-3 px-4">
-                          <IconButton>
-                            <VisibilityIcon />
-                          </IconButton>
-                          <IconButton>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton>
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer> */
-}

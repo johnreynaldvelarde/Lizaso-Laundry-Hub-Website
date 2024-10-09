@@ -79,6 +79,20 @@ export const updatePermissions = {
   },
 };
 
+export const updateRenameRole = {
+  putRenameRole: async (roleId, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/usermanage/${roleId}/update-rename-role`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // #Admin
 export const updateAdminBasedUser = {
   putAdminBasedUser: async (userId, data) => {
