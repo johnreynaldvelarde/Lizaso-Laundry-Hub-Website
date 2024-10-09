@@ -804,7 +804,7 @@ const SectionAdminUser = () => {
       </Box>
       {/* User List */}
       <Box mt={5}>
-        <Box
+        {/* <Box
           mb={2}
           className="flex items-center justify-between mb-8"
           sx={{
@@ -814,7 +814,6 @@ const SectionAdminUser = () => {
             },
           }}
         >
-          {/* Filter by Role */}
           <Box
             className="flex items-center"
             sx={{
@@ -870,6 +869,123 @@ const SectionAdminUser = () => {
               },
             }}
           >
+            <Button
+              onClick={openDialogForMultiple}
+              variant="contained"
+              disableElevation
+              disabled={selected.length === 0}
+              sx={{
+                marginLeft: { sm: 2 },
+                backgroundColor: COLORS.error,
+                borderRadius: "5px",
+                fontWeight: 500,
+                textTransform: "none",
+                paddingX: { xs: 1, sm: 2, md: 3 },
+                fontSize: { xs: "14px", sm: "14px", md: "16px" },
+                "&:hover": {
+                  backgroundColor: COLORS.errorHover,
+                },
+                width: { xs: "100%", sm: "auto" },
+                mt: { xs: 0, sm: 0 },
+              }}
+            >
+              Delete Selected
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={
+                <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
+              }
+              sx={{
+                marginLeft: { sm: 2 },
+                backgroundColor: COLORS.secondary,
+                borderRadius: "5px",
+                fontWeight: 500,
+                textTransform: "none",
+                paddingX: { xs: 1, sm: 2, md: 3 },
+                fontSize: { xs: "14px", sm: "14px", md: "16px" },
+                "&:hover": {
+                  backgroundColor: COLORS.secondaryHover,
+                },
+                width: { xs: "100%", sm: "auto" },
+                mt: { xs: 0, sm: 0 },
+              }}
+              onClick={handleOpenPopupAddUser}
+            >
+              Add new user
+            </Button>
+          </Box>
+        </Box> */}
+        <Box
+          mb={2}
+          className="flex items-center justify-between mb-8"
+          sx={{
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+          }}
+        >
+          {/* Title */}
+          <Typography variant="h6" sx={{ marginRight: 2 }}>
+            All Users
+          </Typography>
+
+          <Box
+            className="flex items-center"
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+              },
+              "& button": {
+                width: {
+                  xs: "100%",
+                  sm: "auto",
+                },
+                marginBottom: {
+                  xs: 2,
+                  sm: 0,
+                },
+              },
+            }}
+          >
+            <Box
+              className="flex items-center"
+              sx={{
+                width: {
+                  xs: "100%",
+                  sm: "auto",
+                },
+                marginBottom: {
+                  xs: 2,
+                  sm: 0,
+                },
+              }}
+            >
+              <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
+                <InputLabel id="role-select-label">Filter by Role</InputLabel>
+                <Select
+                  labelId="role-select-label"
+                  id="role-select"
+                  label="Filter by Role"
+                  defaultValue=""
+                >
+                  <MenuItem value="">
+                    <em>All</em>
+                  </MenuItem>
+                  {roles.map((role) => (
+                    <MenuItem key={role.id} value={role.id}>
+                      {role.role_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
             <Button
               onClick={openDialogForMultiple}
               variant="contained"
