@@ -44,3 +44,27 @@ export const handleAdminBasedSetNewUser = async (req, res, connection) => {
   
 
 
+
+
+ <Button
+          variant="outlined"
+          onClick={onClose}
+          sx={{
+            marginRight: 1,
+            borderColor: COLORS.border2,
+            borderRadius: "5px",
+            fontWeight: 500,
+            textTransform: "none",
+            color: COLORS.text4,
+            "&:hover": {
+              borderColor: COLORS.border2,
+              backgroundColor: COLORS.light,
+            },
+          }}
+        >
+          Cancel
+        </Button>
+
+        finally {
+    if (connection) connection.release();
+  }

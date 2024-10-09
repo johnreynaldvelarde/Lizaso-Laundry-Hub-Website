@@ -372,29 +372,58 @@ export const handleGetBasedUser = async (req, res, connection) => {
   }
 };
 
-// PUT
-export const handleUpdateRolePermission = async (req, res, connection) => {
+// PUT UPDATE
+export const handleUpdateRenameRole = async (req, res, connection) => {
   const { id } = req.params;
-  const { store_id, service_name, default_price } = req.body;
+  const { role_name } = req.body;
+
   try {
     await connection.beginTransaction();
 
+    const checkQuery = `
+      SELECT COUNT(*) as count 
+      FROM Roles_Permissions 
+      WHERE role_name = ? AND id != ? AND isArchive = 0;
+    `;
+    const [checkResult] = await connection.execute(checkQuery, [role_name, id]);
+
+    if (checkResult[0].count > 0) {
+      await connection.rollback();
+      return res.json({
+        success: false,
+        message: "Role name already exists for a different role.",
+      });
+    }
+
     const updateQuery = `
-      UPDATE Service_Type 
-      SET service_name = ?, default_price = ?
-      WHERE id = ?
+      UPDATE Roles_Permissions 
+      SET role_name = ? 
+      WHERE id = ? AND isArchive = 0;
     `;
 
-    await connection.query(updateQuery, [service_name, default_price, id]);
-    await connection.commit();
-    res
-      .status(200)
-      .json({ success: true, message: "Service type update successfully." });
+    const values = [role_name, id];
+    const [result] = await connection.execute(updateQuery, values);
+
+    if (result.affectedRows > 0) {
+      await connection.commit();
+      return res
+        .status(200)
+        .json({ success: true, message: "Role name updated successfully." });
+    } else {
+      await connection.rollback();
+      return res.status(404).json({
+        success: false,
+        message: "Role not found or already archived.",
+      });
+    }
   } catch (error) {
     await connection.rollback();
-    res
+    console.error("Error updating role name:", error);
+    return res
       .status(500)
-      .json({ error: "An error occurred while creating the service type." });
+      .json({ error: "An error occurred while updating the role name." });
+  } finally {
+    if (connection) connection.release();
   }
 };
 
@@ -411,12 +440,19 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
     isStatus,
   } = req.body;
 
-  console.log(id);
-
   try {
     await connection.beginTransaction();
 
-    // Update query for User_Account
+    const checkQuery = `
+     SELECT id FROM User_Account 
+     WHERE username = ? AND isArchive = 0 AND id != ?
+   `;
+    const [existingUser] = await connection.query(checkQuery, [username, id]);
+
+    if (existingUser.length > 0) {
+      return res.json({ success: false, message: "Username already exists." });
+    }
+
     const updateQuery = `
       UPDATE User_Account 
       SET 
@@ -455,83 +491,188 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
     res
       .status(500)
       .json({ error: "An error occurred while updating the user." });
-  }
-};
-
-// DELETE
-export const handleDeleteRole = async (req, res, connection) => {
-  const { id } = req.params;
-
-  try {
-    await connection.beginTransaction();
-
-    const userCountQuery = `
-      SELECT COUNT(*) as user_count 
-      FROM User_Account 
-      WHERE role_permissions_id = ? AND isArchive = 0
-    `;
-    const [userCountResults] = await connection.execute(userCountQuery, [id]);
-
-    const { user_count } = userCountResults[0];
-
-    if (user_count === 0) {
-      const updateQuery = `
-        UPDATE Roles_Permissions
-        SET isArchive = 1
-        WHERE id = ? AND isArchive = 0
-      `;
-      await connection.execute(updateQuery, [id]);
-
-      await connection.commit();
-      1;
-      return res.status(200).json({
-        success: true,
-        message: `Role with id ${id} was successfully archived.`,
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: `Role with id ${id} cannot be archived because there are users associated with it.`,
-      });
-    }
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error archiving role:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while trying to archive the role.",
-    });
   } finally {
     if (connection) connection.release();
   }
 };
 
-// export const handleGetBasedUser = async (req, res, connection) => {
+export const handleUpdatePermissions = async (req, res, connection) => {
+  const { id } = req.params;
+  const { permissionsStatus } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Roles_Permissions 
+      SET 
+        can_read = ?,
+        can_write = ?,
+        can_edit = ?,
+        can_delete = ?
+      WHERE id = ? AND isArchive = 0;
+    `;
+
+    const permissions = [
+      permissionsStatus.Read ? 1 : 0,
+      permissionsStatus.Write ? 1 : 0,
+      permissionsStatus.Edit ? 1 : 0,
+      permissionsStatus.Delete ? 1 : 0,
+      id,
+    ];
+
+    const [result] = await connection.execute(updateQuery, permissions);
+
+    if (result.affectedRows > 0) {
+      await connection.commit();
+      return res
+        .status(200)
+        .json({ success: true, message: "Permissions updated successfully." });
+    } else {
+      await connection.rollback();
+      return res.status(404).json({
+        success: false,
+        message: "Role permissions not found or already archived.",
+      });
+    }
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating permissions:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the permissions." });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+// #REMOVE UPDATE
+export const handleUpdateRemoveUser = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE User_Account 
+      SET isArchive = 1 
+      WHERE id = ?
+    `;
+
+    const [result] = await connection.query(updateQuery, [id]);
+
+    if (result.affectedRows > 0) {
+      await connection.commit();
+      res
+        .status(200)
+        .json({ success: true, message: "User removed successfully." });
+    } else {
+      await connection.rollback();
+      res.status(404).json({ success: false, message: "User not found." });
+    }
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error removing user:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while removing the user." });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+export const handleUpdateRemoveRole = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const checkQuery = `
+    SELECT *
+    FROM User_Account
+    WHERE role_permissions_id = ? AND isArchive = 0
+  `;
+
+    const [existData] = await connection.query(checkQuery, [id]);
+
+    if (existData.length > 0) {
+      return res.json({
+        success: false,
+        message: "The role is in use by an active user account.",
+      });
+    }
+
+    const updateQuery = `
+      UPDATE Roles_Permissions 
+      SET isArchive = 1 
+      WHERE id = ?
+    `;
+
+    const [result] = await connection.query(updateQuery, [id]);
+
+    if (result.affectedRows > 0) {
+      await connection.commit();
+      res
+        .status(200)
+        .json({ success: true, message: "Role removed successfully." });
+    } else {
+      await connection.rollback();
+      res.status(404).json({ success: false, message: "Role not found." });
+    }
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error removing user:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while removing the user." });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+// export const handleDeleteRole = async (req, res, connection) => {
+//   const { id } = req.params;
+
 //   try {
-//     const { id } = req.params;
+//     await connection.beginTransaction();
 
-//     const query = `
-//       SELECT rp.role_name
-//       FROM User_Account ua
-//       JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
-//       WHERE ua.id = ? AND ua.isArchive = 0;
+//     const userCountQuery = `
+//       SELECT COUNT(*) as user_count
+//       FROM User_Account
+//       WHERE role_permissions_id = ? AND isArchive = 0
 //     `;
+//     const [userCountResults] = await connection.execute(userCountQuery, [id]);
 
-//     const [results] = await connection.execute(query, [id]);
+//     const { user_count } = userCountResults[0];
 
-//     if (!results.length) {
-//       return res.status(404).json({ error: "User not found or archived" });
+//     if (user_count === 0) {
+//       const updateQuery = `
+//         UPDATE Roles_Permissions
+//         SET isArchive = 1
+//         WHERE id = ? AND isArchive = 0
+//       `;
+//       await connection.execute(updateQuery, [id]);
+
+//       await connection.commit();
+//       1;
+//       return res.status(200).json({
+//         success: true,
+//         message: `Role with id ${id} was successfully archived.`,
+//       });
+//     } else {
+//       return res.status(400).json({
+//         success: false,
+//         message: `Role with id ${id} cannot be archived because there are users associated with it.`,
+//       });
 //     }
-
-//     if (results[0].role_name !== "Administrator") {
-//       return res
-//         .status(403)
-//         .json({ error: "Access denied. Not an Administrator." });
-//     }
-
-//     res.status(200).json({ message: "User is an Administrator" });
 //   } catch (error) {
-//     console.error("Error fetching user", error);
-//     res.status(500).json({ error: "Server error" });
+//     await connection.rollback();
+//     console.error("Error archiving role:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while trying to archive the role.",
+//     });
+//   } finally {
+//     if (connection) connection.release();
 //   }
 // };

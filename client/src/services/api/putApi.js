@@ -50,6 +50,35 @@ export const updateRemoveAssignment = {
 };
 
 // USER MANAGEMENT SECTION
+// #For role and permission
+export const updateRemoveRole = {
+  putRemoveRole: async (roleId, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/usermanage/${roleId}/update-remove-role`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updatePermissions = {
+  putPermissions: async (roleId, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/usermanage/${roleId}/update-permissions`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // #Admin
 export const updateAdminBasedUser = {
   putAdminBasedUser: async (userId, data) => {

@@ -1,7 +1,6 @@
 import express from "express";
 import { handleCreateStore } from "../services/admin/useStore.js";
 import {
-  handleCreateUnits,
   handlePutAssignment,
   handlePutRemoveInQueue,
 } from "../services/admin/useUnits.js";
@@ -10,7 +9,13 @@ import {
   handleDeleteServiceType,
   handleUpdateServiceType,
 } from "../services/admin/useSettings.js";
-import { handleUpdateAdminBasedUser } from "../services/admin/useUser.js";
+import {
+  handleUpdateAdminBasedUser,
+  handleUpdatePermissions,
+  handleUpdateRemoveRole,
+  handleUpdateRemoveUser,
+  handleUpdateRenameRole,
+} from "../services/admin/useUser.js";
 
 const router = express.Router();
 
@@ -51,10 +56,21 @@ router.put(
 // USER MANAGEMENT SECTION
 // #For role and permisson
 router.put(
-  "/usermanage/:id/update-role-permission",
+  "/usermanage/:id/update-permissions",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      // await handleSetRolesPermissions(req, res, connection);
+      await handleUpdatePermissions(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/usermanage/:id/update-rename-role",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateRenameRole(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
@@ -85,10 +101,21 @@ router.put(
 );
 
 router.put(
-  "/usermanage/:id/delete-user",
+  "/usermanage/:id/update-remove-user",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      // await handleSetRolesPermissions(req, res, connection);
+      await handleUpdateRemoveUser(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/usermanage/:id/update-remove-role",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateRemoveRole(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

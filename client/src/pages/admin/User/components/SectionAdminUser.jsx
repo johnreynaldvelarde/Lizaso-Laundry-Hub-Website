@@ -52,6 +52,12 @@ import OutlinedIconButton from "../../../../components/table/OutlinedIconButton"
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import toast from "react-hot-toast";
 import A_PopupEditUser from "./A_PopupEditUser";
+import {
+  updateRemoveRole,
+  updateRemoveUser,
+} from "../../../../services/api/putApi";
+import A_PopupViewUser from "./A_PopupViewUser";
+import A_PopupEditPermissions from "./A_PopupEditPermissions";
 
 const stores = [
   { id: 1, name: "Main Branch", totalUsers: 10 },
@@ -215,17 +221,17 @@ const SectionAdminUser = () => {
 
       const roleIntervalId = setInterval(() => {
         fetchRoleAndPermissions();
-      }, 5000);
+      }, 1000);
 
       // Set up polling for stores
       const storeIntervalId = setInterval(() => {
         fetchAdminBasedStores();
-      }, 5000);
+      }, 1000);
 
       // Set up polling for users
       const userIntervalId = setInterval(() => {
         fetchAdminBasedUser();
-      }, 5000);
+      }, 1000);
 
       // Cleanup on unmount
       return () => {
@@ -239,9 +245,42 @@ const SectionAdminUser = () => {
   // For Popup
   const [openPopupAddUser, setOpenPopupAddUser] = useState(false);
   const [openPopupEditUser, setOpenPopupEditUser] = useState(false);
+  const [openPopupViewUser, setOpenPopupViewUser] = useState(false);
   const [openPopupAddRole, setOpenPopupAddRole] = useState(false);
+  const [openPopupEditPermission, setOpenPopupEditPermissions] =
+    useState(false);
+  const [openPopupRenameRole, setOpenPopupRenameRole] = useState(false);
+  const [selectedPermissionsData, setSelectedPermissionsData] = useState(false);
+  const [selectedRenameRole, setSelectedRenameRole] = useState(false);
   const [selectedEditData, setSelectedEditData] = useState(false);
+  const [selectedViewData, setSelectedViewData] = useState(false);
 
+  // #For add role and permission
+  const handleOpenPopupAddRole = () => {
+    setOpenPopupAddRole(true);
+  };
+  const handleClosePopupAddRole = () => {
+    setOpenPopupAddRole(false);
+  };
+
+  // #For edit permissions
+  const handleOpenPopupEditPermission = (data) => {
+    setOpenPopupEditPermissions(true);
+    setSelectedPermissionsData(data);
+  };
+  const handleClosePopupEditPermissions = () => {
+    setOpenPopupEditPermissions(false);
+  };
+
+  // #For rename role
+  const handleOpenPopupRenameRole = () => {
+    setOpenPopupRenameRole(true);
+  };
+  const handleClosePopupRenameRole = () => {
+    setOpenPopupRenameRole(false);
+  };
+
+  // #For add user
   const handleOpenPopupAddUser = () => {
     setOpenPopupAddUser(true);
   };
@@ -249,6 +288,7 @@ const SectionAdminUser = () => {
     setOpenPopupAddUser(false);
   };
 
+  // #For edit user
   const handleOpenPopupEditUser = (data) => {
     setOpenPopupEditUser(true);
     setSelectedEditData(data);
@@ -258,11 +298,14 @@ const SectionAdminUser = () => {
     setSelectedEditData(null);
   };
 
-  const handleOpenPopupAddRole = () => {
-    setOpenPopupAddRole(true);
+  // #For view user
+  const handleOpenPopupViewUser = (data) => {
+    setOpenPopupViewUser(true);
+    setSelectedViewData(data);
   };
-  const handleClosePopupAddRole = () => {
-    setOpenPopupAddRole(false);
+  const handleClosePopupViewtUser = () => {
+    setOpenPopupViewUser(false);
+    setSelectedViewData(null);
   };
 
   // For Role and Permission Section
@@ -315,7 +358,6 @@ const SectionAdminUser = () => {
     setSelected([]);
   };
 
-  // Filtering users based on the selected store
   const filteredUsers =
     selectedStore && Array.isArray(users)
       ? users.filter((user) => user.store_id === selectedStore)
@@ -345,37 +387,10 @@ const SectionAdminUser = () => {
     setPage(0);
   };
 
-  const handleClickCheckbox = (id) => {
-    setSelected((prevSelected) => {
-      const selectedIndex = prevSelected.indexOf(id);
-      if (selectedIndex === -1) {
-        return [...prevSelected, id];
-      } else {
-        return prevSelected.filter((selectedId) => selectedId !== id);
-      }
-    });
-  };
-
-  const handleCheckBoxDelete = () => {
-    selected.forEach((id) => {
-      console.log(`Deleting user with ID: ${id}`);
-    });
-    setSnackbarMessage("Selected users have been deleted.");
-    setSnackbarOpen(true);
-    setSelected([]);
-  };
-
-  // For snackbar
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
   // FOR DELETE ACTIONS
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState(null);
+  const [isDialogOpenForMultiple, setIsDialogOpenForMultiple] = useState(false);
 
   const handleDialogDelete = (id, options) => {
     if (options === "Role") {
@@ -387,42 +402,105 @@ const SectionAdminUser = () => {
     setDialogOpen(true);
   };
 
+  const openDialogForMultiple = () => {
+    if (selected.length === 0) {
+      toast.error("No users selected for deletion.");
+    } else {
+      setIsDialogOpenForMultiple(true);
+    }
+  };
+
+  // Close confirmation dialog
+  const closeDialogForMultiple = () => {
+    setIsDialogOpenForMultiple(false);
+  };
+
+  const handleClickCheckbox = (id) => {
+    setSelected((prevSelected) => {
+      const selectedIndex = prevSelected.indexOf(id);
+      if (selectedIndex === -1) {
+        return [...prevSelected, id];
+      } else {
+        return prevSelected.filter((selectedId) => selectedId !== id);
+      }
+    });
+  };
+
+  const handleCheckBoxDelete = async () => {
+    if (selected.length === 0) {
+      toast.error("No users selected for deletion.");
+      return;
+    }
+    const deletePromises = selected.map(async (id) => {
+      if (id) {
+        try {
+          const response = await updateRemoveUser.putRemoveUser(id);
+          if (response.success) {
+          } else {
+            toast.error(response.message);
+          }
+        } catch (error) {
+          toast.error(`Error: ${error.message || "Something went wrong"}`);
+        }
+      }
+    });
+
+    await Promise.all(deletePromises);
+    setSnackbarMessage("Selected users have been deleted.");
+    setSnackbarOpen(true);
+    setSelected([]);
+  };
+
+  const handleConfirmMultipleDelete = () => {
+    handleCheckBoxDelete();
+    closeDialogForMultiple();
+  };
+
   const handleRemoveRole = async (id) => {
     if (id) {
       console.log(id);
-      // try {
-      //   const response = await updateDeleteServiceType.putDeleteServiceType(id);
-      //   if (response.success) {
-      //     toast.success(response.message);
-      //     refreshData();
-      //   } else {
-      //     toast.error(response.message);
-      //   }
-      // } catch (error) {
-      //   toast.error(`Error: ${error.message || "Something went wrong"}`);
-      // }
+      try {
+        const response = await updateRemoveRole.putRemoveRole(id);
+        if (response.success) {
+          handleCloseMenu();
+          toast.success(response.message);
+        } else {
+          handleCloseMenu();
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
     } else {
       toast.error("Error Action!!!");
     }
   };
+
   const handleDeleteUser = async (id) => {
     if (id) {
-      console.log(id);
-      // try {
-      //   const response = await updateDeleteServiceType.putDeleteServiceType(id);
-      //   if (response.success) {
-      //     toast.success(response.message);
-      //     refreshData();
-      //   } else {
-      //     toast.error(response.message);
-      //   }
-      // } catch (error) {
-      //   toast.error(`Error: ${error.message || "Something went wrong"}`);
-      // }
+      try {
+        const response = await updateRemoveUser.putRemoveUser(id);
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
     } else {
       toast.error("Error Action!!!");
     }
   };
+
+  // For snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <>
       {/* Role and Permission Section */}
@@ -574,7 +652,7 @@ const SectionAdminUser = () => {
             </Box>
 
             <Button
-              onClick={handleDialogDelete}
+              onClick={() => handleOpenPopupEditPermission(role)}
               variant="outlined"
               sx={{
                 padding: 1,
@@ -619,10 +697,10 @@ const SectionAdminUser = () => {
           sx={{
             fontSize: { xs: "18px", sm: "24px", md: "28px" },
             fontWeight: 500,
-            marginBottom: "16px",
+            color: COLORS.primary,
           }}
         >
-          Stores List
+          Stores Overview
         </Typography>
 
         {/* Left Arrow */}
@@ -855,7 +933,7 @@ const SectionAdminUser = () => {
             }}
           >
             <Button
-              onClick={handleCheckBoxDelete}
+              onClick={openDialogForMultiple}
               variant="contained"
               disableElevation
               disabled={selected.length === 0}
@@ -1043,7 +1121,7 @@ const SectionAdminUser = () => {
                         <TableCell sx={{ paddingY: 3, paddingX: 4 }}>
                           <Tooltip title="View User" arrow>
                             <OutlinedIconButton
-                            // onClick={() => handleOpenPopupUser()}
+                              onClick={() => handleOpenPopupViewUser(user)}
                             >
                               <Eye color={COLORS.primary} weight="duotone" />
                             </OutlinedIconButton>
@@ -1060,7 +1138,9 @@ const SectionAdminUser = () => {
                           </Tooltip>
                           <Tooltip title="Delete User" arrow>
                             <OutlinedIconButton
-                              onClick={() => handleDialogDelete(user.id)}
+                              onClick={() =>
+                                handleDialogDelete(user.user_id, "")
+                              }
                             >
                               <Trash color={COLORS.error} weight="duotone" />
                             </OutlinedIconButton>
@@ -1087,6 +1167,12 @@ const SectionAdminUser = () => {
       </Box>
 
       {/* PopupSection */}
+      <A_PopupViewUser
+        open={openPopupViewUser}
+        onClose={handleClosePopupViewtUser}
+        userData={selectedViewData}
+      />
+
       <A_PopupAddUser
         open={openPopupAddUser}
         onClose={handleClosePopupAddUser}
@@ -1107,11 +1193,23 @@ const SectionAdminUser = () => {
         onClose={handleClosePopupAddRole}
       />
 
+      <A_PopupEditPermissions
+        open={openPopupEditPermission}
+        onClose={handleClosePopupEditPermissions}
+        permissionsData={selectedPermissionsData}
+      />
+
       <ConfirmationDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onConfirm={handleDeleteUser}
         itemId={selectedUser}
+      />
+
+      <ConfirmationDialog
+        open={isDialogOpenForMultiple}
+        onClose={closeDialogForMultiple}
+        onConfirm={handleConfirmMultipleDelete}
       />
 
       {/* Menu Section */}

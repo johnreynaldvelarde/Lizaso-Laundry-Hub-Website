@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAuth from "../../../../contexts/AuthContext";
 import {
   Dialog,
@@ -6,45 +6,29 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
   Typography,
   IconButton,
-  Box,
   Grid,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
-import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
+import { updatePermissions } from "../../../../services/api/putApi";
 
-const A_PopupAddRole = ({ open, onClose }) => {
-  const { userDetails } = useAuth();
-  const [rolename, setRolename] = useState("");
+const A_PopupEditPermissions = ({ open, onClose, permissionsData }) => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
-  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const validateFields = () => {
-    const newErrors = {};
-    if (!rolename) {
-      newErrors.rolename = "Role name is required";
-    }
+  useEffect(() => {
+    const initialPermissions = [];
+    if (permissionsData.can_read) initialPermissions.push("Read");
+    if (permissionsData.can_write) initialPermissions.push("Write");
+    if (permissionsData.can_edit) initialPermissions.push("Edit");
+    if (permissionsData.can_delete) initialPermissions.push("Delete");
 
-    return newErrors;
-  };
-
-  const handleInputChange = (field) => (e) => {
-    const value = e.target.value;
-
-    if (field === "rolename") {
-      setRolename(value);
-    }
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: "",
-    }));
-  };
+    setSelectedPermissions(initialPermissions);
+  }, [permissionsData]);
 
   const handlePermissionToggle = (permission) => {
     setSelectedPermissions((prev) =>
@@ -54,56 +38,41 @@ const A_PopupAddRole = ({ open, onClose }) => {
     );
   };
 
-  const handleCreateUser = async () => {
-    const newErrors = validateFields();
-    setErrors(newErrors);
+  const handleUpdatePermissions = async () => {
+    setLoading(true);
+    const id = permissionsData.id; // Ensure permissionsData is defined in the parent scope
+    const updatedPermissionsData = {
+      permissionsStatus: {
+        Read: selectedPermissions.includes("Read"),
+        Write: selectedPermissions.includes("Write"),
+        Edit: selectedPermissions.includes("Edit"),
+        Delete: selectedPermissions.includes("Delete"),
+      },
+    };
 
-    if (Object.keys(newErrors).length === 0) {
-      setLoading(true);
+    try {
+      const response = await updatePermissions.putPermissions(
+        id,
+        updatedPermissionsData
+      );
 
-      const roleData = {
-        role_name: rolename,
-        permissionsStatus: {
-          Read: selectedPermissions.includes("Read"),
-          Write: selectedPermissions.includes("Write"),
-          Edit: selectedPermissions.includes("Edit"),
-          Delete: selectedPermissions.includes("Delete"),
-        },
-      };
-
-      try {
-        const response = await createNewRoleAndPermissions.setRoleAndPermissons(
-          userDetails.userId,
-          roleData
-        );
-
-        if (response.success) {
-          toast.success(response.message);
-          onClose();
-        } else {
-          toast.error(response.message);
-        }
-      } catch (error) {
-        toast.error(`Error with service request: ${error.message || error}`);
-      } finally {
-        setLoading(false);
+      if (response.success) {
+        toast.success(response.message);
+        onClose();
+      } else {
+        toast.error(response.message);
       }
-    } else {
+    } catch (error) {
+      toast.error(`Error with service request: ${error.message || error}`);
+    } finally {
       setLoading(false);
     }
-  };
-
-  const handleDialogClose = () => {
-    setRolename("");
-    setSelectedPermissions([]);
-    setErrors({});
-    onClose();
   };
 
   return (
     <Dialog
       open={open}
-      onClose={handleDialogClose}
+      onClose={onClose}
       maxWidth="xs"
       fullWidth
       PaperProps={{
@@ -115,44 +84,20 @@ const A_PopupAddRole = ({ open, onClose }) => {
       <DialogTitle className="flex flex-col">
         <div className="flex justify-between items-center mt-2">
           <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold">Add a New Role</span>
+            <span className="text-lg font-semibold">Edit Role Permission</span>
           </div>
           <IconButton
-            onClick={handleDialogClose}
+            onClick={onClose}
             className="text-[#5787C8] hover:text-[#5787C8]"
           >
             <CloseIcon />
           </IconButton>
         </div>
         <Typography variant="body2" color="textSecondary" className="mt-1">
-          Provide the details for the new role below.
+          Select permissions for this role
         </Typography>
       </DialogTitle>
       <DialogContent>
-        {/* Role Name */}
-        <TextField
-          margin="dense"
-          label="Role Name"
-          type="text"
-          fullWidth
-          variant="outlined"
-          value={rolename}
-          onChange={handleInputChange("rolename")}
-          error={Boolean(errors.rolename)}
-          helperText={errors.rolename}
-          sx={{
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: COLORS.secondary,
-              },
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: COLORS.secondary,
-            },
-          }}
-        />
-
         {/* Permission Selection */}
         <Typography variant="subtitle1" color="textSecondary" sx={{ mt: 1 }}>
           Select Permissions:
@@ -193,7 +138,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
       <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
         <Button
           variant="outlined"
-          onClick={handleDialogClose}
+          onClick={onClose}
           sx={{
             marginRight: 1,
             borderColor: COLORS.border2,
@@ -210,7 +155,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
           Cancel
         </Button>
         <Button
-          onClick={handleCreateUser}
+          onClick={handleUpdatePermissions}
           variant="contained"
           disableElevation
           sx={{
@@ -228,7 +173,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
           {loading ? (
             <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
           ) : (
-            "Create Role"
+            "Update Permission"
           )}
         </Button>
       </DialogActions>
@@ -236,4 +181,4 @@ const A_PopupAddRole = ({ open, onClose }) => {
   );
 };
 
-export default A_PopupAddRole;
+export default A_PopupEditPermissions;

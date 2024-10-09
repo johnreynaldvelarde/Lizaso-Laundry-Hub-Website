@@ -452,14 +452,14 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
           onClick={handleDialogClose}
           sx={{
             marginRight: 1,
-            borderColor: "#595959",
+            borderColor: COLORS.border2,
             borderRadius: "5px",
             fontWeight: 500,
             textTransform: "none",
-            color: "#595959",
+            color: COLORS.text4,
             "&:hover": {
-              borderColor: "#595959",
-              backgroundColor: "rgba(144, 144, 144, 0.1)",
+              borderColor: COLORS.border2,
+              backgroundColor: COLORS.light,
             },
           }}
         >

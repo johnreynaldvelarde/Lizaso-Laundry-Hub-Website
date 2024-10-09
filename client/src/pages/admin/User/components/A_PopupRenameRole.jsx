@@ -18,7 +18,7 @@ import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
 
-const A_PopupAddRole = ({ open, onClose }) => {
+const A_PopupEditRole = ({ open, onClose, selectRoleData }) => {
   const { userDetails } = useAuth();
   const [rolename, setRolename] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState([]);
@@ -54,7 +54,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
     );
   };
 
-  const handleCreateUser = async () => {
+  const handleUpdateRole = async () => {
     const newErrors = validateFields();
     setErrors(newErrors);
 
@@ -115,7 +115,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
       <DialogTitle className="flex flex-col">
         <div className="flex justify-between items-center mt-2">
           <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold">Add a New Role</span>
+            <span className="text-lg font-semibold">Edit Role Permission</span>
           </div>
           <IconButton
             onClick={handleDialogClose}
@@ -125,7 +125,7 @@ const A_PopupAddRole = ({ open, onClose }) => {
           </IconButton>
         </div>
         <Typography variant="body2" color="textSecondary" className="mt-1">
-          Provide the details for the new role below.
+          Select permissions for this role
         </Typography>
       </DialogTitle>
       <DialogContent>
@@ -196,21 +196,21 @@ const A_PopupAddRole = ({ open, onClose }) => {
           onClick={handleDialogClose}
           sx={{
             marginRight: 1,
-            borderColor: COLORS.border2,
+            borderColor: "#595959",
             borderRadius: "5px",
             fontWeight: 500,
             textTransform: "none",
-            color: COLORS.text4,
+            color: "#595959",
             "&:hover": {
-              borderColor: COLORS.border2,
-              backgroundColor: COLORS.light,
+              borderColor: "#595959",
+              backgroundColor: "rgba(144, 144, 144, 0.1)",
             },
           }}
         >
           Cancel
         </Button>
         <Button
-          onClick={handleCreateUser}
+          onClick={handleUpdateRole}
           variant="contained"
           disableElevation
           sx={{
@@ -236,4 +236,4 @@ const A_PopupAddRole = ({ open, onClose }) => {
   );
 };
 
-export default A_PopupAddRole;
+export default A_PopupEditRole;
