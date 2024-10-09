@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 09, 2024 at 09:23 AM
+-- Generation Time: Oct 09, 2024 at 06:41 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -75,7 +75,8 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (38, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 09:33:48'),
 (44, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:10:15'),
 (46, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:24:11'),
-(48, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:37:52');
+(48, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:37:52'),
+(49, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 18:43:01');
 
 -- --------------------------------------------------------
 
@@ -252,6 +253,25 @@ INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUn
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `message`
+--
+
+CREATE TABLE `message` (
+  `id` bigint(20) NOT NULL,
+  `sender_customer_id` bigint(20) DEFAULT NULL,
+  `sender_user_account_id` bigint(20) DEFAULT NULL,
+  `recipient_customer_id` bigint(20) DEFAULT NULL,
+  `recipient_user_account_id` bigint(20) DEFAULT NULL,
+  `message` text NOT NULL,
+  `sender_type` varchar(100) NOT NULL,
+  `receiver_type` varchar(100) NOT NULL,
+  `isRead` tinyint(1) NOT NULL,
+  `date_sent` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `roles_permissions`
 --
 
@@ -317,6 +337,13 @@ CREATE TABLE `service_request` (
   `qr_code` varchar(255) NOT NULL,
   `qr_code_generated` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_request`
+--
+
+INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `customer_fullname`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`) VALUES
+(1, 1, NULL, 1, 1, 'Rose Oriana', '', '2024-10-09 12:14:31', NULL, NULL, 'Ongoing Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK/SURBVO3BQY7cQAwEwSxC//9y2keeGhCk2fXQjIh/scYo1ijFGqVYoxRrlGKNUqxRijVKsUYp1ijFGqVYoxRrlGKNUqxRijXKxUNJ+EkqXRLepNIl4SepPFGsUYo1SrFGuXiZypuScKJykoROpUvCHSpvSsKbijVKsUYp1', 1);
 
 -- --------------------------------------------------------
 
@@ -400,7 +427,7 @@ INSERT INTO `user_account` (`id`, `store_id`, `role_permissions_id`, `username`,
 (2, 1, 9, 'junjun12', '', '09124646061', 'Junjun', '', 'Di Magiba', 0, 0, 0, '2024-10-09 03:42:24'),
 (3, 1, 8, 'juan', '', '09124747067', 'Juan', 'A', 'Tamad', 0, 2, 0, '2024-10-09 04:15:17'),
 (4, 1, 7, 'danilo12', '', '09279595061', 'Danilio', '', 'De Guzman', 0, 2, 0, '2024-10-09 05:25:00'),
-(5, 1, 10, 'juan12', '', '121212121', '12', '', '12', 0, 1, 0, '2024-10-09 07:25:48');
+(5, 1, 10, 'juan12', '', '121212121', '12', '', '12', 0, 0, 0, '2024-10-09 07:25:48');
 
 -- --------------------------------------------------------
 
@@ -504,6 +531,16 @@ ALTER TABLE `laundry_unit`
   ADD KEY `Laundry_Unit_Stores` (`store_id`);
 
 --
+-- Indexes for table `message`
+--
+ALTER TABLE `message`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Message_Sender_Customer` (`sender_customer_id`),
+  ADD KEY `Message_Sender_User` (`sender_user_account_id`),
+  ADD KEY `Message_Reciept_Customer` (`recipient_customer_id`),
+  ADD KEY `Message_Reciept_User` (`recipient_user_account_id`);
+
+--
 -- Indexes for table `roles_permissions`
 --
 ALTER TABLE `roles_permissions`
@@ -563,7 +600,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `addresses`
@@ -614,6 +651,12 @@ ALTER TABLE `laundry_unit`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT for table `message`
+--
+ALTER TABLE `message`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `roles_permissions`
 --
 ALTER TABLE `roles_permissions`
@@ -629,7 +672,7 @@ ALTER TABLE `service_promotions`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `service_type`
@@ -704,6 +747,15 @@ ALTER TABLE `laundry_assignment`
 --
 ALTER TABLE `laundry_unit`
   ADD CONSTRAINT `Laundry_Unit_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `message`
+--
+ALTER TABLE `message`
+  ADD CONSTRAINT `Message_Reciept_Customer` FOREIGN KEY (`recipient_customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `Message_Reciept_User` FOREIGN KEY (`recipient_user_account_id`) REFERENCES `user_account` (`id`),
+  ADD CONSTRAINT `Message_Sender_Customer` FOREIGN KEY (`sender_customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `Message_Sender_User` FOREIGN KEY (`sender_user_account_id`) REFERENCES `user_account` (`id`);
 
 --
 -- Constraints for table `service_promotions`

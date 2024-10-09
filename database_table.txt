@@ -196,6 +196,18 @@ payment_method,
 isStatus
 isArhive
 
+--> Message <--
+id (Primary Key)
+sender_customer_id (NULL) (Foregin Key)
+sender_user_account_id (NULL)
+recipient_customer_id (NULL)
+recipient_user_account_id (NULL)
+message
+sender_type
+receiver_type
+isRead
+date_sent
+
 
 
 
