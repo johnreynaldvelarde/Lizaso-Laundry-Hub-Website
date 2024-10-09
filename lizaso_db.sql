@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 07, 2024 at 04:55 PM
+-- Generation Time: Oct 09, 2024 at 09:23 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -65,7 +65,17 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (28, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 17:01:34'),
 (29, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 17:47:29'),
 (30, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 18:59:11'),
-(31, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 19:00:31');
+(31, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-07 19:00:31'),
+(32, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-08 05:16:04'),
+(33, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-08 10:48:18'),
+(34, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-08 12:30:20'),
+(35, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 03:05:28'),
+(36, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 03:42:48'),
+(37, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 04:00:46'),
+(38, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 09:33:48'),
+(44, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:10:15'),
+(46, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:24:11'),
+(48, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:37:52');
 
 -- --------------------------------------------------------
 
@@ -263,8 +273,9 @@ CREATE TABLE `roles_permissions` (
 INSERT INTO `roles_permissions` (`id`, `role_name`, `can_read`, `can_write`, `can_edit`, `can_delete`, `date_created`, `isArchive`) VALUES
 (1, 'Administrator', 1, 1, 1, 1, '2024-10-07 16:10:31', 0),
 (7, 'Manager', 1, 1, 1, 0, '2024-10-07 20:07:58', 0),
-(8, 'Delivery  Staff', 1, 1, 0, 0, '2024-10-07 20:10:06', 0),
-(9, 'Store Staff', 1, 0, 0, 0, '2024-10-07 20:35:29', 0);
+(8, 'Delivery  Staff', 1, 0, 0, 0, '2024-10-07 20:10:06', 0),
+(9, 'Store Staff', 1, 0, 1, 0, '2024-10-07 20:35:29', 0),
+(10, 'Inventory Staff', 1, 0, 0, 0, '2024-10-09 06:54:48', 0);
 
 -- --------------------------------------------------------
 
@@ -327,7 +338,7 @@ CREATE TABLE `service_type` (
 --
 
 INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `default_price`, `date_created`, `isArchive`) VALUES
-(1, 1, 'Wash', 65.00, '2024-10-07 16:10:31', 0),
+(1, 1, 'Wash', 60.00, '2024-10-07 16:10:31', 0),
 (2, 1, 'Dry', 55.00, '2024-10-07 16:10:31', 0),
 (3, 1, 'Fold', 30.00, '2024-10-07 16:10:31', 0);
 
@@ -385,7 +396,11 @@ CREATE TABLE `user_account` (
 --
 
 INSERT INTO `user_account` (`id`, `store_id`, `role_permissions_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
-(1, 1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 1, 0, 0, '2024-10-07 16:10:31');
+(1, 1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 1, 0, 0, '2024-10-07 16:10:31'),
+(2, 1, 9, 'junjun12', '', '09124646061', 'Junjun', '', 'Di Magiba', 0, 0, 0, '2024-10-09 03:42:24'),
+(3, 1, 8, 'juan', '', '09124747067', 'Juan', 'A', 'Tamad', 0, 2, 0, '2024-10-09 04:15:17'),
+(4, 1, 7, 'danilo12', '', '09279595061', 'Danilio', '', 'De Guzman', 0, 2, 0, '2024-10-09 05:25:00'),
+(5, 1, 10, 'juan12', '', '121212121', '12', '', '12', 0, 1, 0, '2024-10-09 07:25:48');
 
 -- --------------------------------------------------------
 
@@ -413,7 +428,11 @@ CREATE TABLE `user_security` (
 --
 
 INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$10$IO6WzkgUUqM7lsgxNvvBz.Kr20U.JngTP5NRivci4oaw.zSu3U6BK', '$2b$10$Vs6ToZQr/kumhWQ490rfge', 0, '', 0, 0, '2024-10-07 08:10:31', NULL, NULL, NULL);
+(1, 1, '$2b$10$IO6WzkgUUqM7lsgxNvvBz.Kr20U.JngTP5NRivci4oaw.zSu3U6BK', '$2b$10$Vs6ToZQr/kumhWQ490rfge', 0, '', 0, 0, '2024-10-07 08:10:31', NULL, NULL, NULL),
+(2, 2, '$2b$12$VO1Yy0JLuQ4/PM4fV26zhuZI4mKksdFiY0yduLyijB0AZuHrOlrLu', '$2b$12$gkdqj0sdFh9Nrr8cgm8oGO', 0, '', 0, 0, '2024-10-08 19:42:24', NULL, NULL, '2024-10-08 19:42:24'),
+(3, 3, '$2b$12$FGXjh98pYgzkYQ2kJ.lVlOYKi/yJSbQ8393mI4HGWTpKbEinQUBQO', '$2b$12$2XZlCVoPIaCJf6ack/Xd4.', 0, '', 0, 0, '2024-10-08 20:15:17', NULL, NULL, '2024-10-08 20:15:17'),
+(4, 4, '$2b$12$W/W2roYNSzudW68IxqHZhekKTh/GM3AcfnFFgfYkfxi9Jg48/DP32', '$2b$12$X0GYt.Jvv3fKZr/lGvmUs.', 0, '', 0, 0, '2024-10-08 21:25:00', NULL, NULL, '2024-10-08 21:25:00'),
+(5, 5, '$2b$12$OoGkK1B.N7nQWLPbZjoYY.CUigpTi3N.ZmbyOPybm77YYcViD12RK', '$2b$12$sfRoJ/bOs6NeCgawhqTZ3O', 0, '', 0, 0, '2024-10-08 23:25:48', NULL, NULL, '2024-10-08 23:25:48');
 
 --
 -- Indexes for dumped tables
@@ -544,7 +563,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `addresses`
@@ -598,7 +617,7 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `roles_permissions`
 --
 ALTER TABLE `roles_permissions`
-  MODIFY `id` bigint(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `service_promotions`
@@ -628,13 +647,13 @@ ALTER TABLE `stores`
 -- AUTO_INCREMENT for table `user_account`
 --
 ALTER TABLE `user_account`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `user_security`
 --
 ALTER TABLE `user_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
