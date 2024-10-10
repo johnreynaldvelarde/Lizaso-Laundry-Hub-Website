@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 09, 2024 at 06:41 PM
+-- Generation Time: Oct 10, 2024 at 07:10 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -76,7 +76,8 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (44, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:10:15'),
 (46, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:24:11'),
 (48, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:37:52'),
-(49, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 18:43:01');
+(49, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 18:43:01'),
+(50, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-10 08:13:07');
 
 -- --------------------------------------------------------
 
@@ -103,7 +104,25 @@ CREATE TABLE `addresses` (
 
 INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
 (1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-07 08:10:31'),
-(2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-07 08:48:58');
+(2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-07 08:48:58'),
+(3, 'Balagtas, Bulacan', 'Balagtas, Bulacan', 'PH', 'Bulacan', 'Balagtas', '3016', 14.834012, 120.901617, '2024-10-10 01:16:10');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `conversations`
+--
+
+CREATE TABLE `conversations` (
+  `id` bigint(20) NOT NULL,
+  `customer_id` bigint(20) DEFAULT NULL,
+  `user_id1` bigint(20) NOT NULL,
+  `user_id2` bigint(20) DEFAULT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `last_message_at` datetime NOT NULL,
+  `is_archived` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -132,7 +151,8 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
-(1, 1, 2, 'Rose', '', 'Oriana', 'rose16', '09672525061', 'rose@gmail.com', 1, 1, 0, '2024-10-07 16:48:11');
+(1, 1, 2, 'Rose', '', 'Oriana', 'rose16', '09672525061', 'rose@gmail.com', 1, 1, 0, '2024-10-07 16:48:11'),
+(2, 1, 3, 'Junjun', 'Santos', 'P.', 'junjun12', '0947272761', 'junjun12@gmail.com', 1, 1, 0, '2024-10-10 09:14:37');
 
 -- --------------------------------------------------------
 
@@ -160,7 +180,8 @@ CREATE TABLE `customer_security` (
 --
 
 INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$12$5fs5dLhzVeEwONABi2kBlum6fOdNsvm85MH5HxeIE9Uk7QKLTgWdi', '$2b$12$B0osXUsq9CIlU5DEoYWwa.', 0, '', 0, 0, NULL, NULL, NULL, NULL);
+(1, 1, '$2b$12$5fs5dLhzVeEwONABi2kBlum6fOdNsvm85MH5HxeIE9Uk7QKLTgWdi', '$2b$12$B0osXUsq9CIlU5DEoYWwa.', 0, '', 0, 0, NULL, NULL, NULL, NULL),
+(2, 2, '$2b$12$Y5KsZjgtW9rBbtI66ojMn.62rm86cz3QCkNAQhrmoYgsvycWFtO0q', '$2b$12$5ARniHHdbvV4k3kIrCMA7.', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -253,20 +274,17 @@ INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUn
 -- --------------------------------------------------------
 
 --
--- Table structure for table `message`
+-- Table structure for table `messages`
 --
 
-CREATE TABLE `message` (
+CREATE TABLE `messages` (
   `id` bigint(20) NOT NULL,
-  `sender_customer_id` bigint(20) DEFAULT NULL,
-  `sender_user_account_id` bigint(20) DEFAULT NULL,
-  `recipient_customer_id` bigint(20) DEFAULT NULL,
-  `recipient_user_account_id` bigint(20) DEFAULT NULL,
-  `message` text NOT NULL,
-  `sender_type` varchar(100) NOT NULL,
-  `receiver_type` varchar(100) NOT NULL,
-  `isRead` tinyint(1) NOT NULL,
-  `date_sent` datetime NOT NULL
+  `conversation_id` bigint(20) NOT NULL,
+  `sender_id` bigint(20) NOT NULL,
+  `sender_type` varchar(50) NOT NULL,
+  `content` text NOT NULL,
+  `sent_at` datetime NOT NULL,
+  `is_read` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -343,7 +361,11 @@ CREATE TABLE `service_request` (
 --
 
 INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `customer_fullname`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`) VALUES
-(1, 1, NULL, 1, 1, 'Rose Oriana', '', '2024-10-09 12:14:31', NULL, NULL, 'Ongoing Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK/SURBVO3BQY7cQAwEwSxC//9y2keeGhCk2fXQjIh/scYo1ijFGqVYoxRrlGKNUqxRijVKsUYp1ijFGqVYoxRrlGKNUqxRijXKxUNJ+EkqXRLepNIl4SepPFGsUYo1SrFGuXiZypuScKJykoROpUvCHSpvSsKbijVKsUYp1', 1);
+(1, 1, NULL, 1, 1, 'Rose Oriana', '', '2024-10-09 12:14:31', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK/SURBVO3BQY7cQAwEwSxC//9y2keeGhCk2fXQjIh/scYo1ijFGqVYoxRrlGKNUqxRijVKsUYp1ijFGqVYoxRrlGKNUqxRijXKxUNJ+EkqXRLepNIl4SepPFGsUYo1SrFGuXiZypuScKJykoROpUvCHSpvSsKbijVKsUYp1', 1),
+(2, 1, NULL, 1, 2, 'Rose Oriana', '', '2024-10-10 00:44:57', NULL, NULL, 'Cancelled', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAKmSURBVO3BQW7sWAwEwSxC979yjpdcPUCQuv3NYUT8wRqjWKMUa5RijVKsUYo1SrFGKdYoxRqlWKMUa5RijVKsUYo1SrFGKdYoFw8l4ZtUuiTcoXJHEr5J5YlijVKsUYo1ysXLVN6UhBOVLgl3JKFTOVF5UxLeVKxRijVKs', 1),
+(3, 1, NULL, 1, 1, 'Rose Oriana', '', '2024-10-10 01:11:18', NULL, NULL, 'Cancelled', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK6SURBVO3BQY7cWAwFwXyE7n/lHO/M1QcEqcrdHEbEP1hjFGuUYo1SrFGKNUqxRinWKMUapVijFGuUYo1SrFGKNUqxRinWKMUa5eKhJHyTSpeEJ1ROkvBNKk8Ua5RijVKsUS5epvKmJNyh0iWhU+mS0KmcqLwpCW8q1ijFG', 1),
+(4, 1, NULL, 2, 1, 'Junjun P.', '', '2024-10-10 01:16:17', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAALKSURBVO3BQW7kQAwEwUxC//9yrY88NSBIM2sTjDA/WGMUa5RijVKsUYo1SrFGKdYoxRqlWKMUa5RijVKsUYo1SrFGKdYoxRrl4iGVb0pCp/JEEk5UvikJTxRrlGKNUqxRLl6WhDepnCThRKVLQqfSJeEkCW9SeVOxRinWK', 1),
+(5, 1, NULL, 2, 1, 'Junjun P.', '', '2024-10-10 01:29:56', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK8SURBVO3BQW7kQAwEwUxC//9yrY88NSBIM2sTjDA/WGMUa5RijVKsUYo1SrFGKdYoxRqlWKMUa5RijVKsUYo1SrFGKdYoxRrl4iGVb0pCp9IloVO5Iwmdyjcl4YlijVKsUYo1ysXLkvAmlZMkfFMS3qTypmKNUqxRijXKx', 1);
 
 -- --------------------------------------------------------
 
@@ -424,10 +446,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`id`, `store_id`, `role_permissions_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
 (1, 1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 1, 0, 0, '2024-10-07 16:10:31'),
-(2, 1, 9, 'junjun12', '', '09124646061', 'Junjun', '', 'Di Magiba', 0, 0, 0, '2024-10-09 03:42:24'),
-(3, 1, 8, 'juan', '', '09124747067', 'Juan', 'A', 'Tamad', 0, 2, 0, '2024-10-09 04:15:17'),
-(4, 1, 7, 'danilo12', '', '09279595061', 'Danilio', '', 'De Guzman', 0, 2, 0, '2024-10-09 05:25:00'),
-(5, 1, 10, 'juan12', '', '121212121', '12', '', '12', 0, 0, 0, '2024-10-09 07:25:48');
+(6, 1, 8, 'juan12', '', '09123456789', 'Juan', '', 'Tamad', 0, 0, 0, '2024-10-10 08:13:43');
 
 -- --------------------------------------------------------
 
@@ -459,7 +478,8 @@ INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_
 (2, 2, '$2b$12$VO1Yy0JLuQ4/PM4fV26zhuZI4mKksdFiY0yduLyijB0AZuHrOlrLu', '$2b$12$gkdqj0sdFh9Nrr8cgm8oGO', 0, '', 0, 0, '2024-10-08 19:42:24', NULL, NULL, '2024-10-08 19:42:24'),
 (3, 3, '$2b$12$FGXjh98pYgzkYQ2kJ.lVlOYKi/yJSbQ8393mI4HGWTpKbEinQUBQO', '$2b$12$2XZlCVoPIaCJf6ack/Xd4.', 0, '', 0, 0, '2024-10-08 20:15:17', NULL, NULL, '2024-10-08 20:15:17'),
 (4, 4, '$2b$12$W/W2roYNSzudW68IxqHZhekKTh/GM3AcfnFFgfYkfxi9Jg48/DP32', '$2b$12$X0GYt.Jvv3fKZr/lGvmUs.', 0, '', 0, 0, '2024-10-08 21:25:00', NULL, NULL, '2024-10-08 21:25:00'),
-(5, 5, '$2b$12$OoGkK1B.N7nQWLPbZjoYY.CUigpTi3N.ZmbyOPybm77YYcViD12RK', '$2b$12$sfRoJ/bOs6NeCgawhqTZ3O', 0, '', 0, 0, '2024-10-08 23:25:48', NULL, NULL, '2024-10-08 23:25:48');
+(5, 5, '$2b$12$OoGkK1B.N7nQWLPbZjoYY.CUigpTi3N.ZmbyOPybm77YYcViD12RK', '$2b$12$sfRoJ/bOs6NeCgawhqTZ3O', 0, '', 0, 0, '2024-10-08 23:25:48', NULL, NULL, '2024-10-08 23:25:48'),
+(6, 6, '$2b$12$cGRJfYvOkXk0Ys.ob1MaIeNjcbk40xtFSld29n/3/XqtUpGyDTrzK', '$2b$12$9cJx1w1I/7znFvqqnRxhNu', 0, '', 0, 0, '2024-10-10 00:13:43', NULL, NULL, '2024-10-10 00:13:43');
 
 --
 -- Indexes for dumped tables
@@ -476,6 +496,12 @@ ALTER TABLE `activity_log`
 -- Indexes for table `addresses`
 --
 ALTER TABLE `addresses`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `conversations`
+--
+ALTER TABLE `conversations`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -531,14 +557,11 @@ ALTER TABLE `laundry_unit`
   ADD KEY `Laundry_Unit_Stores` (`store_id`);
 
 --
--- Indexes for table `message`
+-- Indexes for table `messages`
 --
-ALTER TABLE `message`
+ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `Message_Sender_Customer` (`sender_customer_id`),
-  ADD KEY `Message_Sender_User` (`sender_user_account_id`),
-  ADD KEY `Message_Reciept_Customer` (`recipient_customer_id`),
-  ADD KEY `Message_Reciept_User` (`recipient_user_account_id`);
+  ADD KEY `Messages_Conversation` (`conversation_id`);
 
 --
 -- Indexes for table `roles_permissions`
@@ -600,25 +623,31 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `conversations`
+--
+ALTER TABLE `conversations`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customer_security`
 --
 ALTER TABLE `customer_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -651,9 +680,9 @@ ALTER TABLE `laundry_unit`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `message`
+-- AUTO_INCREMENT for table `messages`
 --
-ALTER TABLE `message`
+ALTER TABLE `messages`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
@@ -672,7 +701,7 @@ ALTER TABLE `service_promotions`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `service_type`
@@ -690,13 +719,13 @@ ALTER TABLE `stores`
 -- AUTO_INCREMENT for table `user_account`
 --
 ALTER TABLE `user_account`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `user_security`
 --
 ALTER TABLE `user_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -749,13 +778,10 @@ ALTER TABLE `laundry_unit`
   ADD CONSTRAINT `Laundry_Unit_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
 
 --
--- Constraints for table `message`
+-- Constraints for table `messages`
 --
-ALTER TABLE `message`
-  ADD CONSTRAINT `Message_Reciept_Customer` FOREIGN KEY (`recipient_customer_id`) REFERENCES `customer` (`id`),
-  ADD CONSTRAINT `Message_Reciept_User` FOREIGN KEY (`recipient_user_account_id`) REFERENCES `user_account` (`id`),
-  ADD CONSTRAINT `Message_Sender_Customer` FOREIGN KEY (`sender_customer_id`) REFERENCES `customer` (`id`),
-  ADD CONSTRAINT `Message_Sender_User` FOREIGN KEY (`sender_user_account_id`) REFERENCES `user_account` (`id`);
+ALTER TABLE `messages`
+  ADD CONSTRAINT `Messages_Conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`);
 
 --
 -- Constraints for table `service_promotions`
