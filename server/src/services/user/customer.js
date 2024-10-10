@@ -131,6 +131,58 @@ export const handleGetServiceTypeAndPromotions = async (
   }
 };
 
+export const handleGetCustomerMessages = async (req, res, connection) => {
+  const { id } = req.params; // 'id' is the Customer ID (e.g., customer ID)
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        m.id,
+        m.message,
+        m.sender_type,
+        m.receiver_type,
+        m.isRead,
+        m.date_sent,
+        CASE
+          WHEN m.sender_customer_id IS NOT NULL THEN CONCAT(c.c_firstname, ' ', c.c_middlename, ' ', c.c_lastname)
+          WHEN m.sender_user_account_id IS NOT NULL THEN CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)
+        END AS sender_full_name,
+        CASE
+          WHEN m.recipient_customer_id IS NOT NULL THEN CONCAT(c2.c_firstname, ' ', c2.c_middlename, ' ', c2.c_lastname)
+          WHEN m.recipient_user_account_id IS NOT NULL THEN CONCAT(u2.first_name, ' ', u2.middle_name, ' ', u2.last_name)
+        END AS recipient_full_name
+      FROM Message m
+      LEFT JOIN Customer c ON m.sender_customer_id = c.id OR m.recipient_customer_id = c.id
+      LEFT JOIN User_Account u ON m.sender_user_account_id = u.id OR m.recipient_user_account_id = u.id
+      WHERE (
+        m.sender_customer_id = ? OR
+        m.recipient_customer_id = ?
+      )
+      ORDER BY m.date_sent DESC
+    `;
+
+    const [rows] = await connection.execute(query, [id, id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      messages: rows,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching customer messages:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching the customer messages.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
 // PUT
 export const handleUpdateCustomerBasicInformation = async (
   req,
