@@ -68,6 +68,8 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
         } else {
           if (roleName === "Administrator") {
             navigate("/main");
+          } else if (roleName === "Manager") {
+            navigate("/main");
           } else {
           }
         }

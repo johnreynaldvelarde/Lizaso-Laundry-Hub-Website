@@ -3,7 +3,7 @@ import useAuth from "../../../contexts/AuthContext";
 import { Box } from "@mui/material";
 import SectionAdminUser from "./components/SectionAdminUser";
 import SectionManager from "./components/SectionManager";
-import AccessDenied from "./components/AccessDenied";
+import AccessDenied from "../../../components/pages/AccessDenied";
 
 const User = () => {
   const { userDetails } = useAuth();

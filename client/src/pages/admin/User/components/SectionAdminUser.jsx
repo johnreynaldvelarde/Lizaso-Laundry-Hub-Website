@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import useAuth from "../../../../contexts/AuthContext";
 import {
   Box,
@@ -59,126 +59,83 @@ import {
 import A_PopupViewUser from "./A_PopupViewUser";
 import A_PopupEditPermissions from "./A_PopupEditPermissions";
 import A_PopupRenameRole from "./A_PopupRenameRole";
-
-const stores = [
-  { id: 1, name: "Main Branch", totalUsers: 10 },
-  { id: 2, name: "East Branch", totalUsers: 5 },
-  { id: 3, name: "West Branch", totalUsers: 7 },
-  { id: 4, name: "South Branch", totalUsers: 4 },
-];
+import CustomAddButton from "../../../../components/common/CustomAddButton";
+import useFetchData from "../../../../hooks/common/useFetchData";
 
 const SectionAdminUser = () => {
   const { userDetails } = useAuth();
-  const [roles, setRole] = useState([]);
-  const [stores, setStores] = useState([]);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
+  const [selectedStore, setSelectedStore] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // For fetching data for role and permissions
-  const fetchRoleAndPermissions = async () => {
-    if (!userDetails?.userId) return;
+  const { data: roles, fetchData: fetchRoles } = useFetchData();
+  const { data: stores, fetchData: fetchStores } = useFetchData();
+  const { data: users, fetchData: fetchUsers } = useFetchData();
 
-    try {
-      const response = await viewRolesAndPermissions.getRoleAndPermission(
-        userDetails.storeId
-      );
-      if (response) {
-        const roledata = response.data || [];
-        setRole(roledata);
-      } else {
-        console.error("Unexpected response format:", response);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const fetchRolesData = useCallback(() => {
+    fetchRoles(
+      viewRolesAndPermissions.getRoleAndPermission,
+      userDetails.storeId
+    );
+  }, [fetchRoles, userDetails?.storeId]);
 
-  // For fetching data of stores
-  const fetchAdminBasedStores = async () => {
-    if (!userDetails?.userId) return;
+  const fetchStoresData = useCallback(() => {
+    fetchStores(viewAdminBasedStore.getAdminBasedStore, userDetails.storeId);
+  }, [fetchStores, userDetails?.storeId]);
 
-    try {
-      const response = await viewAdminBasedStore.getAdminBasedStore(
-        userDetails.storeId
-      );
-      if (response) {
-        const storeData = response.data || [];
-        setStores(storeData);
-        if (storeData.length > 0) {
-          setSelectedStore(storeData[0].id);
-        }
-      } else {
-        console.error("Unexpected response format:", response);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  const fetchUsersData = useCallback(() => {
+    fetchUsers(viewAdminBasedUser.getAdminBasedUser, userDetails.storeId);
+  }, [fetchUsers, userDetails?.storeId]);
 
   // For fetching data of users
-  const fetchAdminBasedUser = async () => {
-    if (!userDetails?.userId) return;
+  // const fetchAdminBasedUser = async () => {
+  //   if (!userDetails?.userId) return;
 
-    try {
-      const response = await viewAdminBasedUser.getAdminBasedUser(
-        userDetails.storeId
-      );
+  //   try {
+  //     const response = await viewAdminBasedUser.getAdminBasedUser(
+  //       userDetails.storeId
+  //     );
 
-      if (response) {
-        const userData =
-          response.data && typeof response.data === "object"
-            ? Array.isArray(response.data)
-              ? response.data
-              : [response.data]
-            : [];
+  //     if (response) {
+  //       const userData =
+  //         response.data && typeof response.data === "object"
+  //           ? Array.isArray(response.data)
+  //             ? response.data
+  //             : [response.data]
+  //           : [];
 
-        setUsers(userData);
-      } else {
-        console.error("Unexpected response format:", response);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  // useEffect(() => {
-  //   if (userDetails?.userId) {
-  //     fetchRoleAndPermissions();
-  //     fetchAdminBasedStores();
-  //     fetchAdminBasedUser();
+  //       setUsers(userData);
+  //     } else {
+  //       console.error("Unexpected response format:", response);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
   //   }
-  // }, [userDetails?.userId]);
+  // };
 
   useEffect(() => {
-    if (userDetails?.userId) {
-      fetchRoleAndPermissions();
-      fetchAdminBasedStores();
-      fetchAdminBasedUser();
+    fetchRolesData();
+    fetchStoresData();
+    fetchUsersData();
 
-      const roleIntervalId = setInterval(() => {
-        fetchRoleAndPermissions();
-      }, 1000);
+    const intervalId = setInterval(() => {
+      fetchRolesData();
+      fetchStoresData();
+      fetchUsersData();
+    }, 1000);
 
-      // Set up polling for stores
-      const storeIntervalId = setInterval(() => {
-        fetchAdminBasedStores();
-      }, 1000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fetchRolesData, fetchStoresData, fetchUsersData]);
 
-      // Set up polling for users
-      const userIntervalId = setInterval(() => {
-        fetchAdminBasedUser();
-      }, 1000);
-
-      // Cleanup on unmount
-      return () => {
-        clearInterval(roleIntervalId);
-        clearInterval(storeIntervalId);
-        clearInterval(userIntervalId);
-      };
+  useEffect(() => {
+    if (stores.length > 0) {
+      setSelectedStore(stores[0].id);
     }
-  }, [userDetails?.userId]);
+  }, [stores]);
 
   // For Popup
   const [openPopupAddUser, setOpenPopupAddUser] = useState(false);
@@ -262,7 +219,7 @@ const SectionAdminUser = () => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
-  const [selectedStore, setSelectedStore] = useState(null);
+
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -329,7 +286,7 @@ const SectionAdminUser = () => {
 
   // FOR DELETE ACTIONS
   const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedRoles, setSelectedRoles] = useState(null);
+
   const [isDialogOpenForMultiple, setIsDialogOpenForMultiple] = useState(false);
 
   const handleDialogDelete = (id, options) => {
@@ -443,7 +400,7 @@ const SectionAdminUser = () => {
 
   return (
     <>
-      {/* Role and Permission Section */}
+      {/* Header */}
       <Box
         className="flex items-center justify-between mb-8"
         sx={{
@@ -475,10 +432,10 @@ const SectionAdminUser = () => {
             Role Management & Permission
           </Typography>
         </Box>
-        <Button
+        <CustomAddButton
+          label={"Add new role"}
           onClick={handleOpenPopupAddRole}
-          variant="contained"
-          startIcon={
+          icon={
             <PlusCircle
               size={24}
               color={COLORS.white}
@@ -486,22 +443,7 @@ const SectionAdminUser = () => {
               sx={{ display: { xs: "none", sm: "inline" } }}
             />
           }
-          sx={{
-            backgroundColor: COLORS.secondary,
-            borderRadius: "5px",
-            fontWeight: 500,
-            textTransform: "none",
-            paddingX: { xs: 1, sm: 2, md: 3 },
-            fontSize: { xs: "14px", sm: "14px", md: "16px" },
-            "&:hover": {
-              backgroundColor: COLORS.secondaryHover,
-            },
-            width: { xs: "100%", sm: "auto" },
-            mt: { xs: 2, sm: 0 },
-          }}
-        >
-          Add new role
-        </Button>
+        />
       </Box>
       {/* List of roles */}
       <Box
