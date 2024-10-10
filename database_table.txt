@@ -196,6 +196,8 @@ payment_method,
 isStatus
 isArhive
 
+
+
 --> Message <--
 id (Primary Key)
 sender_customer_id (NULL) (Foregin Key)
@@ -203,12 +205,69 @@ sender_user_account_id (NULL)
 recipient_customer_id (NULL)
 recipient_user_account_id (NULL)
 message
-sender_type
-receiver_type
+
 isRead
 date_sent
 
+--> User_Account <--
+id
+store_id (Foregin Key)
+role_permissions_id (Foregin Key)
+username
+email
+mobile_number
+first_name
+middle_name
+last_name
+isOnline
+isStatus
+isArchive
+date_created
 
+--> Customer <--
+id (Primary Key)
+store_id (Foregin Key)
+address_id (Foregin Key)  
+c_firstname
+c_middlename
+c_lastname
+c_username
+c_number
+c_email
+isAgreement
+isOnline
+isArchive
+date_created
+
+sender_type
+receiver_type
+
+
+// #MESSAGE
+--> Conversations <--
+id (Primary Key)
+customer_id (Foregin Key, Nullable) From Customer  
+user_id1 (Foregin Key)  From User_Account
+user_id2 (Foregin Key , Nullable)  From User_Account
+created_at
+updated_at
+last_message_at
+is_archived
+
+--> Messages <--
+id (Primary Key)
+conversation_id (Foregin Key) From Conversations  
+sender_id (Foregin Key)   References either the User_Account or Customer table
+sender_type
+content
+sent_at
+is_read
+
+--> Message_Status <--
+id (Primary Key)
+message_id (Foregin Key)   References from Messages table
+status
+updated_at
 
 
 
