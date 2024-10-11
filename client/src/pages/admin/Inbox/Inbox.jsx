@@ -14,6 +14,7 @@ import {
 import { COLORS } from "../../../constants/color";
 
 const Inbox = () => {
+  const [searchTerm, setSearchTerm] = useState(""); // State to hold search input
   const conversations = [
     {
       id: 1,
@@ -44,6 +45,10 @@ const Inbox = () => {
   );
   const [newMessage, setNewMessage] = useState("");
 
+  const filteredConversations = conversations.filter((conversation) =>
+    conversation.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Function to handle sending messages
   const handleSendMessage = () => {
     if (newMessage.trim() !== "") {
@@ -71,11 +76,13 @@ const Inbox = () => {
         {!isSmallScreen && (
           <Box
             sx={{
-              width: "30%", // Adjust width based on preference
-              overflowY: "auto", //
+              width: "30%",
+              overflowY: "auto",
               border: `1px solid ${COLORS.border2}`,
               borderRadius: "10px",
               padding: "10px",
+              backgroundColor: COLORS.white,
+              boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
             }}
           >
             <Typography
@@ -91,38 +98,52 @@ const Inbox = () => {
 
             <Divider />
 
+            <TextField
+              variant="outlined"
+              placeholder="Search name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{
+                margin: "16px",
+                borderRadius: "8px",
+                width: "90%",
+              }}
+            />
             <List>
-              {conversations.map((conversation) => (
-                <ListItem
-                  button
-                  key={conversation.id}
-                  onClick={() => setSelectedConversation(conversation)} // Update selected conversation
-                  selected={selectedConversation.id === conversation.id} // Highlight selected
-                  sx={{
-                    borderRadius: "10px", // Rounded corners for list item
-                    padding: "10px 16px",
-                    mb: "8px", // Space between items
-                    "&.Mui-selected": {
-                      backgroundColor: "#D2E3FC", // Selected background
-                    },
-                    "&:hover": {
-                      backgroundColor: "#E8F0FE", // Hover effect
-                    },
-                  }}
-                >
-                  <Avatar
-                    src={conversation.avatar}
-                    alt={conversation.name}
-                    sx={{ marginRight: "10px" }}
-                  />
-                  <ListItemText
-                    primary={conversation.name}
-                    secondary={conversation.lastMessage}
-                    primaryTypographyProps={{ fontWeight: "500" }}
-                    secondaryTypographyProps={{ color: "gray" }}
-                  />
-                </ListItem>
-              ))}
+              {conversations.map((conversation) => {
+                const isSelected = selectedConversation.id === conversation.id; // Check if this conversation is selected
+
+                return (
+                  <ListItem
+                    component="button"
+                    key={conversation.id}
+                    onClick={() => setSelectedConversation(conversation)} // Update selected conversation
+                    sx={{
+                      borderRadius: "10px", // Rounded corners for list item
+                      padding: "10px 16px",
+                      mb: "8px", // Space between items
+                      backgroundColor: isSelected
+                        ? COLORS.secondaryLight
+                        : "transparent", // Change background based on selection
+                      "&:hover": {
+                        backgroundColor: "#E8F0FE", // Hover effect
+                      },
+                    }}
+                  >
+                    <Avatar
+                      src={conversation.avatar}
+                      alt={conversation.name}
+                      sx={{ marginRight: "10px" }}
+                    />
+                    <ListItemText
+                      primary={conversation.name}
+                      secondary={conversation.lastMessage}
+                      primaryTypographyProps={{ fontWeight: "500" }}
+                      secondaryTypographyProps={{ color: "gray" }}
+                    />
+                  </ListItem>
+                );
+              })}
             </List>
           </Box>
         )}
@@ -139,6 +160,7 @@ const Inbox = () => {
             padding: "16px",
             marginLeft: isSmallScreen ? "0" : "10px",
             backgroundColor: COLORS.white,
+            boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
           }}
         >
           {/* Chat header */}

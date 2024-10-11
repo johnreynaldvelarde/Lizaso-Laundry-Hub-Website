@@ -39,7 +39,7 @@ export { default as Settings } from "./admin/Settings/Settings";
 export { default as Inbox } from "./admin/Inbox/Inbox";
 
 // Section Reviews
-export { default as Reviews } from "./admin/Reviews/Reviews";
+export { default as Reviews } from "./admin/Review/Reviews";
 
 // Section Delivery Man
 

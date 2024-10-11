@@ -18,6 +18,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 import { createAdminBasedNewUser } from "../../../../services/api/postApi";
+import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
 const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
   const { userDetails } = useAuth();
@@ -446,48 +447,12 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
         </Box>
       </DialogContent>
       {/* Footer */}
-      <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
-        <Button
-          variant="outlined"
-          onClick={handleDialogClose}
-          sx={{
-            marginRight: 1,
-            borderColor: COLORS.border2,
-            borderRadius: "5px",
-            fontWeight: 500,
-            textTransform: "none",
-            color: COLORS.text4,
-            "&:hover": {
-              borderColor: COLORS.border2,
-              backgroundColor: COLORS.light,
-            },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleCreateUser}
-          variant="contained"
-          disableElevation
-          sx={{
-            backgroundColor: "#5787C8",
-            borderRadius: "5px",
-            fontWeight: 500,
-            minWidth: "90px",
-            textTransform: "none",
-            "&:hover": {
-              backgroundColor: "#3A5A85",
-            },
-          }}
-          disabled={loading}
-        >
-          {loading ? (
-            <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-          ) : (
-            "Create User"
-          )}
-        </Button>
-      </DialogActions>
+      <CustomPopFooterButton
+        label={"Creater User"}
+        onClose={onClose}
+        onSubmit={handleCreateUser}
+        loading={loading}
+      />
     </Dialog>
   );
 };

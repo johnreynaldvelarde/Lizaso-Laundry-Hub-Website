@@ -37,14 +37,12 @@ import {
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import useFetchData from "../../../../hooks/common/useFetchData";
-import {
-  viewCategory,
-  viewInventory,
-  viewRolesAndPermissions,
-} from "../../../../services/api/getApi";
+import { viewCategory, viewInventory } from "../../../../services/api/getApi";
 import usePopup from "../../../../hooks/common/usePopup";
 import PopAddCategory from "./PopAddCategory";
 import PopAddNewItem from "./PopAddNewItem";
+import { inventoryColumns } from "../../../../data/columns/inventory";
+import CustomTable from "../../../../components/common/CustomTable";
 
 const SectionAdminInventory = () => {
   const { userDetails } = useAuth();
@@ -67,13 +65,14 @@ const SectionAdminInventory = () => {
 
     const intervalId = setInterval(() => {
       fetchCategoryData();
-      fetchInventoryData;
+      fetchInventoryData();
     }, 1000);
 
     return () => {
       clearInterval(intervalId);
     };
   }, [fetchCategoryData, fetchInventoryData]);
+
   return (
     <>
       {/* Header */}
@@ -230,9 +229,11 @@ const SectionAdminInventory = () => {
             },
           }}
         >
-          {/* Title */}
-          <Typography variant="h6" sx={{ marginRight: 2 }}>
-            All Users
+          <Typography
+            variant="h6"
+            sx={{ marginRight: 2, color: COLORS.primary, fontWeight: 600 }}
+          >
+            All Inventory Items
           </Typography>
 
           <Box
@@ -258,84 +259,31 @@ const SectionAdminInventory = () => {
               },
             }}
           >
-            <Box
-              className="flex items-center"
-              sx={{
-                width: {
-                  xs: "100%",
-                  sm: "auto",
-                },
-                marginBottom: {
-                  xs: 2,
-                  sm: 0,
-                },
-              }}
-            >
-              <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
-                <InputLabel id="role-select-label">Filter by Role</InputLabel>
-                <Select
-                  labelId="role-select-label"
-                  id="role-select"
-                  label="Filter by Role"
-                  defaultValue=""
-                >
-                  <MenuItem value="">
-                    <em>All</em>
-                  </MenuItem>
-                  {/* {roles.map((role) => (
-                    <MenuItem key={role.id} value={role.id}>
-                      {role.role_name}
-                    </MenuItem>
-                  ))}*/}
-                </Select>
-              </FormControl>
-            </Box>
-            <Button
-              variant="contained"
-              disableElevation
-              sx={{
-                marginLeft: { sm: 2 },
-                backgroundColor: COLORS.error,
-                borderRadius: "5px",
-                fontWeight: 500,
-                textTransform: "none",
-                paddingX: { xs: 1, sm: 2, md: 3 },
-                fontSize: { xs: "14px", sm: "14px", md: "16px" },
-                "&:hover": {
-                  backgroundColor: COLORS.errorHover,
-                },
-                width: { xs: "100%", sm: "auto" },
-                mt: { xs: 0, sm: 0 },
-              }}
-            >
-              Delete Selected
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={
-                <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
-              }
-              sx={{
-                marginLeft: { sm: 2 },
-                backgroundColor: COLORS.secondary,
-                borderRadius: "5px",
-                fontWeight: 500,
-                textTransform: "none",
-                paddingX: { xs: 1, sm: 2, md: 3 },
-                fontSize: { xs: "14px", sm: "14px", md: "16px" },
-                "&:hover": {
-                  backgroundColor: COLORS.secondaryHover,
-                },
-                width: { xs: "100%", sm: "auto" },
-                mt: { xs: 0, sm: 0 },
-              }}
-            >
-              Add new user
-            </Button>
+            <CustomAddButton
+              onClick={() => openPopup("addItem")}
+              label={"Add new item"}
+              icon={<PlusCircle size={24} color="#fcfcfc" weight="duotone" />}
+            />
           </Box>
         </Box>
 
         {/* Table */}
+        <Box mt={2}>
+          <CustomTable
+            data={inventoryData}
+            fields={inventoryColumns}
+            numberOfRows={inventoryData.length}
+            enableTopToolBar={true}
+            enableBottomToolBar={true}
+            enablePagination={true}
+            enableRowSelection={true}
+            enableColumnFilters={true}
+            enableEditing={true}
+            enableColumnDragging={true}
+            showPreview={true}
+            routeLink="products"
+          />
+        </Box>
       </Box>
 
       {/* Popup */}
@@ -343,7 +291,7 @@ const SectionAdminInventory = () => {
         <PopAddCategory open={isOpen} onClose={closePopup} />
       )}
       {isOpen && popupType === "addItem" && (
-        <PopAddNewItem open={isOpen} onClose={closePopup} />
+        <PopAddNewItem open={isOpen} onClose={closePopup} data={categoryData} />
       )}
     </>
   );

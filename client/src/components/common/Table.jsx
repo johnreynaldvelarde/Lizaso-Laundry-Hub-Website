@@ -125,7 +125,7 @@ import { FiEye, FiTrash } from "react-icons/fi";
 import { Box } from "@mui/system";
 import { Link } from "react-router-dom";
 
-export const Table = ({
+const Table = ({
   data,
   fields,
   numberOfRows,

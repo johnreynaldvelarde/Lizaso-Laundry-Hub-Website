@@ -11,17 +11,22 @@ import {
   IconButton,
   Grid,
   Menu,
+  MenuItem,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
+import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
+import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
-const PopAddNewItem = ({ open, onClose }) => {
+const PopAddNewItem = ({ open, onClose, data }) => {
   const { userDetails } = useAuth();
-  const [rolename, setRolename] = useState("");
-  const [selectedPermissions, setSelectedPermissions] = useState([]);
+  const [itemCode, setItemCode] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [itemPrice, setItemPrice] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -103,7 +108,7 @@ const PopAddNewItem = ({ open, onClose }) => {
   return (
     <Dialog
       open={open}
-      onClose={handleDialogClose}
+      onClose={onClose}
       maxWidth="xs"
       fullWidth
       PaperProps={{
@@ -112,22 +117,11 @@ const PopAddNewItem = ({ open, onClose }) => {
         },
       }}
     >
-      <DialogTitle className="flex flex-col">
-        <div className="flex justify-between items-center mt-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold">Add a New Role</span>
-          </div>
-          <IconButton
-            onClick={handleDialogClose}
-            className="text-[#5787C8] hover:text-[#5787C8]"
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Typography variant="body2" color="textSecondary" className="mt-1">
-          Provide the details for the new role below.
-        </Typography>
-      </DialogTitle>
+      <CustomPopHeaderTitle
+        title={"Add New Item"}
+        subtitle={"Provide the details for the new item"}
+        onClose={onClose}
+      />
       <DialogContent>
         {/* Item Generated Code */}
         <TextField
@@ -136,10 +130,10 @@ const PopAddNewItem = ({ open, onClose }) => {
           type="text"
           fullWidth
           variant="outlined"
-          value={rolename}
+          value={itemCode}
           onChange={handleInputChange("rolename")}
-          error={Boolean(errors.rolename)}
-          helperText={errors.rolename}
+          error={Boolean(errors.itemCode)}
+          helperText={errors.itemCode}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -159,10 +153,33 @@ const PopAddNewItem = ({ open, onClose }) => {
           type="text"
           fullWidth
           variant="outlined"
-          value={rolename}
+          value={itemName}
           onChange={handleInputChange("rolename")}
-          error={Boolean(errors.rolename)}
-          helperText={errors.rolename}
+          error={Boolean(errors.itemName)}
+          helperText={errors.itemName}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        />
+        {/* Item Price */}
+        <TextField
+          margin="dense"
+          label="Price"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={itemPrice}
+          onChange={handleInputChange("rolename")}
+          error={Boolean(errors.itemPrice)}
+          helperText={errors.itemPrice}
           sx={{
             mb: 2,
             "& .MuiOutlinedInput-root": {
@@ -179,11 +196,14 @@ const PopAddNewItem = ({ open, onClose }) => {
         <TextField
           select
           margin="dense"
-          label="Role"
+          label="Category"
           fullWidth
           variant="outlined"
+          value={selectedCategory}
+          onChange={handleInputChange("selectedStore")}
+          error={Boolean(errors.selectedCategory)}
+          helperText={errors.selectedCategory}
           sx={{
-            mb: 2,
             "& .MuiOutlinedInput-root": {
               "&.Mui-focused fieldset": {
                 borderColor: COLORS.secondary,
@@ -194,59 +214,23 @@ const PopAddNewItem = ({ open, onClose }) => {
             },
           }}
         >
-          <Menu value="" disabled>
+          {/* Add your role options here */}
+          <MenuItem value="" disabled>
             Select a category
-          </Menu>
-          {/* {roleData.map((role) => (
-            <MenuItem key={role.id} value={role.id}>
-              {role.role_name}
+          </MenuItem>
+          {data.map((category) => (
+            <MenuItem key={category.category_id} value={category.category_id}>
+              {category.category_name}
             </MenuItem>
-          ))} */}
+          ))}
         </TextField>
       </DialogContent>
       {/* Footer */}
-      <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
-        <Button
-          variant="outlined"
-          onClick={handleDialogClose}
-          sx={{
-            marginRight: 1,
-            borderColor: COLORS.border2,
-            borderRadius: "5px",
-            fontWeight: 500,
-            textTransform: "none",
-            color: COLORS.text4,
-            "&:hover": {
-              borderColor: COLORS.border2,
-              backgroundColor: COLORS.light,
-            },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleCreateUser}
-          variant="contained"
-          disableElevation
-          sx={{
-            backgroundColor: "#5787C8",
-            borderRadius: "5px",
-            fontWeight: 500,
-            minWidth: "90px",
-            textTransform: "none",
-            "&:hover": {
-              backgroundColor: "#3A5A85",
-            },
-          }}
-          disabled={loading}
-        >
-          {loading ? (
-            <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-          ) : (
-            "Create Role"
-          )}
-        </Button>
-      </DialogActions>
+      <CustomPopFooterButton
+        label={"Create Item"}
+        onClose={onClose}
+        loading={loading}
+      />
     </Dialog>
   );
 };
