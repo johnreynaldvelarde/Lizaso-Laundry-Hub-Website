@@ -191,6 +191,7 @@ export const handleGetRolesPermissions = async (req, res, connection) => {
           (SELECT COUNT(*) FROM User_Account ua WHERE ua.role_permissions_id = rp.id AND ua.isArchive = 0) AS user_count
         FROM Roles_Permissions rp
         WHERE rp.isArchive = 0
+        AND rp.role_name != 'Administrator'
       `;
       const [allRolesResults] = await connection.execute(allRolesQuery);
 
@@ -258,8 +259,10 @@ export const handleGetStoresBasedAdmin = async (req, res, connection) => {
         SELECT s.id, s.store_no, s.store_name, s.store_contact, s.store_email, s.is_main_store, s.updated_at, s.date_created, s.isStatus, s.isArchive,
           (SELECT COUNT(*) 
           FROM User_Account ua 
+          JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
           WHERE ua.store_id = s.id 
-          AND ua.isArchive = 0) AS user_count
+          AND ua.isArchive = 0
+          AND rp.role_name != 'Administrator') AS user_count
         FROM Stores s
         WHERE s.isArchive = 0
       `;

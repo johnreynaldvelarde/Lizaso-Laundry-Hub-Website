@@ -61,6 +61,7 @@ import A_PopupEditPermissions from "./A_PopupEditPermissions";
 import A_PopupRenameRole from "./A_PopupRenameRole";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import useFetchData from "../../../../hooks/common/useFetchData";
+import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 
 const SectionAdminUser = () => {
   const { userDetails } = useAuth();
@@ -409,29 +410,10 @@ const SectionAdminUser = () => {
           width: "100%",
         }}
       >
-        <Box sx={{ textAlign: { xs: "center", sm: "left" } }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontSize: { xs: "18px", sm: "24px", md: "28px" },
-              fontWeight: 500,
-              marginBottom: { xs: "8px", sm: "0" },
-            }}
-          >
-            User Management
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              color: COLORS.subtitle,
-              fontSize: { xs: "12px", sm: "14px", md: "16px" },
-              fontWeight: 500,
-              marginBottom: { xs: "16px", sm: "0" },
-            }}
-          >
-            Role Management & Permission
-          </Typography>
-        </Box>
+        <CustomHeaderTitle
+          title={"User Management"}
+          subtitle={" Role Management & Permission"}
+        />
         <CustomAddButton
           label={"Add new role"}
           onClick={handleOpenPopupAddRole}
@@ -489,9 +471,10 @@ const SectionAdminUser = () => {
               <Typography
                 variant="body1"
                 sx={{
-                  fontSize: { xs: "16px", md: "18px" },
-                  fontWeight: 500,
+                  fontSize: { xs: "18px", md: "20px" },
+                  fontWeight: 700,
                   marginLeft: "8px",
+                  color: COLORS.primary,
                 }}
               >
                 {role.role_name}
@@ -541,6 +524,7 @@ const SectionAdminUser = () => {
                 marginBottom: "8px",
                 textTransform: "none",
                 color: COLORS.primary,
+                fontWeight: 600,
                 borderColor: COLORS.border,
                 "&:hover": {
                   borderColor: COLORS.secondary,
@@ -746,118 +730,6 @@ const SectionAdminUser = () => {
       </Box>
       {/* User List */}
       <Box mt={5}>
-        {/* <Box
-          mb={2}
-          className="flex items-center justify-between mb-8"
-          sx={{
-            flexDirection: {
-              xs: "column",
-              sm: "row",
-            },
-          }}
-        >
-          <Box
-            className="flex items-center"
-            sx={{
-              width: {
-                xs: "100%",
-                sm: "auto",
-              },
-              marginBottom: {
-                xs: 2,
-                sm: 0,
-              },
-            }}
-          >
-            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
-              <InputLabel id="role-select-label">Filter by Role</InputLabel>
-              <Select
-                labelId="role-select-label"
-                id="role-select"
-                label="Filter by Role"
-                defaultValue=""
-              >
-                <MenuItem value="">
-                  <em>All</em>
-                </MenuItem>
-                {roles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.role_name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-          <Box
-            className="flex items-center"
-            sx={{
-              width: {
-                xs: "100%",
-                sm: "auto",
-              },
-              flexDirection: {
-                xs: "column",
-                sm: "row",
-              },
-              "& button": {
-                width: {
-                  xs: "100%",
-                  sm: "auto",
-                },
-                marginBottom: {
-                  xs: 2,
-                  sm: 0,
-                },
-              },
-            }}
-          >
-            <Button
-              onClick={openDialogForMultiple}
-              variant="contained"
-              disableElevation
-              disabled={selected.length === 0}
-              sx={{
-                marginLeft: { sm: 2 },
-                backgroundColor: COLORS.error,
-                borderRadius: "5px",
-                fontWeight: 500,
-                textTransform: "none",
-                paddingX: { xs: 1, sm: 2, md: 3 },
-                fontSize: { xs: "14px", sm: "14px", md: "16px" },
-                "&:hover": {
-                  backgroundColor: COLORS.errorHover,
-                },
-                width: { xs: "100%", sm: "auto" },
-                mt: { xs: 0, sm: 0 },
-              }}
-            >
-              Delete Selected
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={
-                <PlusCircle size={24} color="#fcfcfc" weight="duotone" />
-              }
-              sx={{
-                marginLeft: { sm: 2 },
-                backgroundColor: COLORS.secondary,
-                borderRadius: "5px",
-                fontWeight: 500,
-                textTransform: "none",
-                paddingX: { xs: 1, sm: 2, md: 3 },
-                fontSize: { xs: "14px", sm: "14px", md: "16px" },
-                "&:hover": {
-                  backgroundColor: COLORS.secondaryHover,
-                },
-                width: { xs: "100%", sm: "auto" },
-                mt: { xs: 0, sm: 0 },
-              }}
-              onClick={handleOpenPopupAddUser}
-            >
-              Add new user
-            </Button>
-          </Box>
-        </Box> */}
         <Box
           mb={2}
           className="flex items-center justify-between mb-8"

@@ -36,7 +36,8 @@ import {
 } from "@phosphor-icons/react";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
-const SectionManagerInventory = () => {
+
+const SectionManagerUser = () => {
   return (
     <>
       {/* Header */}
@@ -49,11 +50,11 @@ const SectionManagerInventory = () => {
         }}
       >
         <CustomHeaderTitle
-          title={"Inventory Management"}
-          subtitle={"All item overview"}
+          title={"User Management"}
+          subtitle={"All Users & Permission"}
         />
         <CustomAddButton
-          label={"Add new item"}
+          label={"Add new user"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
         />
       </Box>
@@ -61,4 +62,4 @@ const SectionManagerInventory = () => {
   );
 };
 
-export default SectionManagerInventory;
+export default SectionManagerUser;
