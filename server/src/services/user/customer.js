@@ -53,7 +53,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     const newRequestId = result.insertId;
 
     // Generate a unique QR code based on the service request ID
-    const qrCodeData = `SR-${newRequestId}-${Date.now()}`; // Unique string for QR code (e.g., Service Request ID and timestamp)
+    const qrCodeData = `SR-${newRequestId}-${trackingCode}`; // Unique string for QR code (e.g., Service Request ID and timestamp)
 
     const qrCodeString = await QRCode.toDataURL(qrCodeData);
 
@@ -258,6 +258,30 @@ export const handleUpdateCustomerBasicInformation = async (
   } finally {
     // Release the database connection
     connection.release();
+  }
+};
+
+export const handleUpdateServiceRequestUsingQrCode = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+  const { code } = req.body;
+
+  console.log(id);
+  console.log(code);
+
+  try {
+    await connection.beginTransaction();
+
+    // const [] = await connection.execute();
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ message: "Error updating customer information" });
+  } finally {
+    if (connection) connection.release();
   }
 };
 

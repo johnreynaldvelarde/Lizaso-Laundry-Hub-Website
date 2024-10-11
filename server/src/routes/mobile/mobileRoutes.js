@@ -10,7 +10,10 @@ import {
   handleUpdateServiceRequestCancel,
   handleUpdateServiceRequestOngoing,
 } from "../../services/user/staff.js";
-import { handleGetCustomerMessages } from "../../services/user/customer.js";
+import {
+  handleGetCustomerMessages,
+  handleUpdateServiceRequestUsingQrCode,
+} from "../../services/user/customer.js";
 
 const router = express.Router();
 
@@ -111,6 +114,18 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateServiceRequestBackToPending(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/staff/:id/update-request-qr-code",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestUsingQrCode(req, res, connection);
     } catch (error) {
       console.error("Error retrieving service request:", error);
       res.status(500).json({ error: "Internal Server Error" });
