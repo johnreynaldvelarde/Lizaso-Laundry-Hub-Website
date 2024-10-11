@@ -35,6 +35,12 @@ export { default as AddUser } from "./admin/User/AddUser";
 // Section Settings
 export { default as Settings } from "./admin/Settings/Settings";
 
+// Section Inbox
+export { default as Inbox } from "./admin/Inbox/Inbox";
+
+// Section Reviews
+export { default as Reviews } from "./admin/Reviews/Reviews";
+
 // Section Delivery Man
 
 // Customer => Page

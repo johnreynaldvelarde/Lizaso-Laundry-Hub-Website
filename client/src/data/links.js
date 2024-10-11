@@ -4,7 +4,7 @@ import { FaHandshake, FaShare } from "react-icons/fa";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { MdLocalLaundryService, MdOutlineWarehouse } from "react-icons/md";
 import { AiOutlineSchedule } from "react-icons/ai";
-import { IoStorefrontOutline } from "react-icons/io5"
+import { IoStorefrontOutline } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa6";
 import {
   FiHome,
@@ -34,7 +34,7 @@ export const links = [
       },
       {
         name: "Add new laundry units",
-        url: "/main/add-unit",  
+        url: "/main/add-unit",
       },
       {
         name: "Units Statistic",
@@ -57,7 +57,7 @@ export const links = [
       },
       {
         name: "Add new store",
-        url: "/main/add-store",  
+        url: "/main/add-store",
       },
       {
         name: "Branch Statistic",
@@ -93,6 +93,16 @@ export const links = [
     name: "Customers",
     icon: React.createElement(FiUsers),
     url: "/main/customers",
+  },
+  {
+    name: "Inbox",
+    icon: React.createElement(FiMail),
+    url: "/main/inbox",
+  },
+  {
+    name: "Reviews",
+    icon: React.createElement(FiMessageCircle),
+    url: "/main/reviews",
   },
   {
     name: "Settings",
@@ -131,22 +141,12 @@ export const links = [
   {
     name: "Transactions",
     icon: React.createElement(FaHandshake),
-    url: "/",
-  },
-  {
-    name: "Configuration",
-    icon: React.createElement(FiLayers),
-    url: "",
-  },
-  {
-    name: "Reviews",
-    icon: React.createElement(FiMessageCircle),
     url: "",
   },
 
   {
-    name: "Inbox",
-    icon: React.createElement(FiMail),
+    name: "Configuration",
+    icon: React.createElement(FiLayers),
     url: "",
   },
 
@@ -171,4 +171,3 @@ export const links = [
   //   ],
   // },
 ];
-

@@ -34,6 +34,14 @@ const Store = lazy(() =>
   import("../../pages").then((module) => ({ default: module.Store }))
 );
 
+const Inbox = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.Inbox }))
+);
+
+const Reviews = lazy(() =>
+  import("../../pages").then((module) => ({ default: module.Reviews }))
+);
+
 // Add Section
 // --> Laundry Units <--
 
@@ -100,6 +108,8 @@ const Main = () => {
             // User Section
             <Route path="all-user" element={<User />} />
             <Route path="add-user" element={<AddUser />} />
+            <Route path="inbox" element={<Inbox />} />
+            <Route path="reviews" element={<Reviews />} />
             {/* Catch all undefined routes and redirect to dashboard */}
             <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>
