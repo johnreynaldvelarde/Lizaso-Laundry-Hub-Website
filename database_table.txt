@@ -138,6 +138,7 @@ store_id (Foregin Key)
 user_id (Foregin Key)
 customer_id (Foregin Key)
 service_type_id (Foregin Key)
+tracking_code
 customer_fullname
 customer_type
 notes
@@ -146,7 +147,10 @@ pickup_date
 delivery_date
 request_status
 qr_code
-qr_code_generated
+qr_code_generated (BOOLEAN)
+isPickup (BOOLEAN)
+isDelivery  (BOOLEAN)
+
 
 --> Service_Type <--
 id (Primary Key)

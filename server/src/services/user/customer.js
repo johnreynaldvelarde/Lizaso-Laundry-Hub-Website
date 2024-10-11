@@ -1,4 +1,5 @@
 import QRCode from "qrcode";
+import { generateTrackingCode } from "../../helpers/generateCode.js";
 // POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
@@ -18,6 +19,9 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
 
   try {
     await connection.beginTransaction();
+
+    const trackingCode = generateTrackingCode();
+
     const query = `
       INSERT INTO Service_Request (
           store_id,
@@ -28,9 +32,10 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
           notes,
           request_date,
           request_status,
+          tracking_code,  
           qr_code_generated
         ) 
-      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)`;
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?)`;
 
     const [result] = await connection.execute(query, [
       store_id,
@@ -40,6 +45,8 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       "Online",
       notes,
       "Pending Pickup",
+      trackingCode,
+      0,
     ]);
 
     // Get the ID of the newly created service request
@@ -68,12 +75,11 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       qr_code: qrCodeData,
     });
   } catch (error) {
-    // Rollback the transaction if any error occurs
     await connection.rollback();
-
     console.error("Error creating service request:", error);
-
     res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    if (connection) connection.release();
   }
 };
 
