@@ -24,18 +24,20 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
           customer_id,
           service_type_id,
           customer_fullname,
+          customer_type,
           notes,
           request_date,
           request_status,
           qr_code_generated
         ) 
-      VALUES (?, ?, ?, ?, ?, NOW(), ?, 0)`;
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, 0)`;
 
     const [result] = await connection.execute(query, [
       store_id,
       id,
       service_type_id,
       customer_name,
+      "Online",
       notes,
       "Pending Pickup",
     ]);
@@ -46,7 +48,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     // Generate a unique QR code based on the service request ID
     const qrCodeData = `SR-${newRequestId}-${Date.now()}`; // Unique string for QR code (e.g., Service Request ID and timestamp)
 
-    const qrCodeString = await QRCode.toDataURL(qrCodeData); // Generates a data URL for the QR code
+    const qrCodeString = await QRCode.toDataURL(qrCodeData);
 
     // Update the Service_Request table with the generated QR code
     const updateQuery = `
@@ -63,7 +65,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     res.status(201).json({
       message: "Service request created!",
       service_request_id: newRequestId,
-      qr_code: qrCodeString,
+      qr_code: qrCodeData,
     });
   } catch (error) {
     // Rollback the transaction if any error occurs
@@ -90,6 +92,7 @@ export const handleGetServiceTypeAndPromotions = async (
       SELECT 
         st.id AS service_id,
         st.service_name,
+        st.description,
         st.default_price,
         sp.id AS promotion_id,
         sp.discount_percentage,

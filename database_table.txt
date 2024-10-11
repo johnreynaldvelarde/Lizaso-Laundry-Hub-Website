@@ -139,6 +139,7 @@ user_id (Foregin Key)
 customer_id (Foregin Key)
 service_type_id (Foregin Key)
 customer_fullname
+customer_type
 notes
 request_date
 pickup_date

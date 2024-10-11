@@ -10,7 +10,13 @@ import {
   Paper,
   IconButton,
 } from "@mui/material";
-import { PlusCircle, MinusSquare } from "@phosphor-icons/react";
+import {
+  PlusCircle,
+  MinusSquare,
+  FolderUser,
+  WashingMachine,
+  Sliders,
+} from "@phosphor-icons/react";
 import PopupServiceType from "./PopupServiceType";
 import { getServiceTypeAndStore } from "../../../../services/api/getApi";
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
@@ -128,12 +134,44 @@ const ServiceType = () => {
       }}
     >
       {/* Header */}
-      <Typography variant="h5" gutterBottom>
-        Service Types
-      </Typography>
-      <Typography variant="body2" sx={{ opacity: 0.8, pb: 2 }}>
-        Configure your laundry service types and default prices.
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box>
+          <Typography variant="h5" gutterBottom>
+            Service Types
+          </Typography>
+          <Typography variant="body2" sx={{ opacity: 0.8, pb: 2 }}>
+            Configure your laundry service types and default prices.
+          </Typography>
+        </Box>
+
+        <Button
+          variant="contained"
+          startIcon={
+            <Sliders size={24} color={COLORS.white} weight="duotone" />
+          }
+          sx={{
+            backgroundColor: COLORS.error,
+            borderRadius: "5px",
+            fontWeight: 600,
+            textTransform: "none",
+            paddingLeft: "23px",
+            paddingRight: "23px",
+            fontSize: "16px",
+            "&:hover": {
+              backgroundColor: COLORS.errorHover,
+            },
+          }}
+        >
+          Promo Configuration
+        </Button>
+      </Box>
+
       <Divider sx={{ mb: 3 }} />
 
       {/* Conditionally show the list of stores if storeData is available */}
@@ -168,13 +206,23 @@ const ServiceType = () => {
                   boxShadow: "none",
                 }}
               >
+                <WashingMachine
+                  size={30}
+                  color={COLORS.secondary}
+                  weight="duotone"
+                  className="mr-1"
+                />
                 <Typography
                   variant="body2"
                   sx={{
+                    fontWeight: 600,
                     textAlign: "center",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    color: selectedStoreId === store.id ? "#5787C8" : "inherit",
+                    color:
+                      selectedStoreId === store.id
+                        ? COLORS.secondary
+                        : "inherit",
                   }}
                 >
                   {store.store_name}
@@ -186,15 +234,14 @@ const ServiceType = () => {
       )}
 
       {/* Service List */}
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {serviceTypes.map((service) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={service.id}>
             <Paper
               sx={{
                 boxShadow: "none",
                 borderRadius: "12px",
-                border: "1px solid",
-                borderColor: COLORS.border2,
+                border: `1px solid ${COLORS.border2}`,
                 p: { xs: 1.5, sm: 2, md: 3 },
               }}
             >
@@ -202,11 +249,13 @@ const ServiceType = () => {
                 variant="h6"
                 gutterBottom
                 sx={{
+                  color: COLORS.primary,
+                  fontWeight: 700,
                   fontSize: {
                     xs: "1.2rem",
                     sm: "1.15rem",
                     md: "1.4rem",
-                    lg: "1.3rem",
+                    lg: "1.5rem",
                   }, // Responsive font size
                   wordBreak: "break-word",
                 }}
@@ -214,16 +263,73 @@ const ServiceType = () => {
                 {service.service_name}
               </Typography>
               <Typography
+                variant="caption"
+                gutterBottom
+                sx={{
+                  color: COLORS.subtitle,
+                  fontWeight: 500,
+                  fontSize: {
+                    xs: "0.9rem",
+                    sm: "1rem",
+                  },
+                  wordBreak: "break-word",
+                }}
+              >
+                <span
+                  style={{
+                    color: COLORS.secondary,
+                    marginRight: 5,
+                    fontWeight: 600,
+                  }}
+                >
+                  Description:
+                </span>
+                <span style={{ color: COLORS.subtitle, fontWeight: 400 }}>
+                  {service.description}
+                </span>
+              </Typography>
+              <Typography
                 variant="body1"
                 sx={{
+                  color: COLORS.subtitle,
                   fontSize: { xs: "0.9rem", sm: "1rem" },
                   wordBreak: "break-word",
                 }}
               >
-                Price: ₱{service.default_price}
+                <span
+                  style={{
+                    color: COLORS.secondary,
+                    marginRight: 5,
+                    fontWeight: 600,
+                  }}
+                >
+                  Price:
+                </span>
+                <span style={{ color: COLORS.subtitle, fontWeight: 600 }}>
+                  PHP {service.default_price}
+                </span>
               </Typography>
               <Divider sx={{ my: 2 }} />
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+                {(service.isActive === null || service.isActive) && (
+                  <Button
+                    onClick={() => handleEditService(service)}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      textDecoration: "none",
+                      padding: "6px 12px",
+                      borderColor: "primary.main",
+                      color: "primary.main",
+                      "&:hover": {
+                        borderColor: "primary.dark",
+                        backgroundColor: "primary.light",
+                      },
+                    }}
+                  >
+                    Edit
+                  </Button>
+                )}
                 <Button
                   onClick={() => handleEditService(service)}
                   variant="outlined"
@@ -232,7 +338,11 @@ const ServiceType = () => {
                   Edit
                 </Button>
                 <IconButton onClick={() => handleDialogDelete(service.id)}>
-                  <MinusSquare size={20} color="#DB524B" weight="duotone" />
+                  <MinusSquare
+                    size={20}
+                    color={COLORS.error}
+                    weight="duotone"
+                  />
                 </IconButton>
               </Box>
             </Paper>
@@ -244,9 +354,11 @@ const ServiceType = () => {
       <Box sx={{ mt: 4, textAlign: "center" }}>
         <Button
           variant="contained"
-          startIcon={<PlusCircle size={24} color="#fcfcfc" weight="duotone" />}
+          startIcon={
+            <PlusCircle size={24} color={COLORS.white} weight="duotone" />
+          }
           sx={{
-            backgroundColor: "#5787C8",
+            backgroundColor: COLORS.secondary,
             borderRadius: "5px",
             fontWeight: 600,
             textTransform: "none",
@@ -254,7 +366,7 @@ const ServiceType = () => {
             paddingRight: "23px",
             fontSize: "16px",
             "&:hover": {
-              backgroundColor: "#3b5c9f",
+              backgroundColor: COLORS.secondaryHover,
             },
           }}
           onClick={handleAddService}
@@ -289,52 +401,3 @@ const ServiceType = () => {
 };
 
 export default ServiceType;
-
-{
-  /* <Grid container spacing={3}>
-        {serviceTypes.map((service) => (
-          <Grid item xs={12} sm={6} md={4} key={service.id}>
-            <Paper
-              sx={{
-                boxShadow: "none",
-                borderRadius: "12px",
-                border: "1px solid",
-                borderColor: "divider",
-                p: 2,
-              }}
-            >
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{
-                  fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.3rem" },
-                  wordBreak: "break-word",
-                }}
-              >
-                {service.service_name}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  fontSize: { xs: "0.9rem", sm: "1rem" },
-                  wordBreak: "break-word",
-                }}
-              >
-                Price: ₱{service.default_price}
-              </Typography>
-              <Divider sx={{ my: 2 }} />
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Button variant="outlined" size="small">
-                  Edit
-                </Button>
-                <IconButton
-                // onClick={}
-                >
-                  <MinusSquare size={20} color="#DB524B" weight="duotone" />
-                </IconButton>
-              </Box>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid> */
-}

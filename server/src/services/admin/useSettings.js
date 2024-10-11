@@ -1,7 +1,7 @@
 // <----- Service Type Section ----->
 // Set new service type
 export const handleSetNewServiceType = async (req, res, connection) => {
-  const { store_id, service_name, default_price } = req.body;
+  const { store_id, service_name, default_price, description } = req.body;
 
   try {
     await connection.beginTransaction();
@@ -22,13 +22,14 @@ export const handleSetNewServiceType = async (req, res, connection) => {
     }
 
     const insertQuery = `
-        INSERT INTO Service_Type (store_id, service_name, default_price, date_created, isArchive)
-        VALUES (?, ?, ?, NOW(), 0)
+        INSERT INTO Service_Type (store_id, service_name, description, default_price, date_created, isArchive)
+        VALUES (?, ?, ?, ?, NOW(), 0)
       `;
 
     await connection.query(insertQuery, [
       store_id,
       service_name,
+      description,
       default_price,
     ]);
     await connection.commit();
@@ -46,17 +47,22 @@ export const handleSetNewServiceType = async (req, res, connection) => {
 // Put the service type
 export const handleUpdateServiceType = async (req, res, connection) => {
   const { id } = req.params;
-  const { store_id, service_name, default_price } = req.body;
+  const { service_name, description, default_price } = req.body;
   try {
     await connection.beginTransaction();
 
     const updateQuery = `
       UPDATE Service_Type 
-      SET service_name = ?, default_price = ?
+      SET service_name = ?, description = ?, default_price = ?
       WHERE id = ?
     `;
 
-    await connection.query(updateQuery, [service_name, default_price, id]);
+    await connection.query(updateQuery, [
+      service_name,
+      description,
+      default_price,
+      id,
+    ]);
     await connection.commit();
     res
       .status(200)
