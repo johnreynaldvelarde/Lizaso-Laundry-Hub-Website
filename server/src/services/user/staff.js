@@ -91,7 +91,7 @@ export const handleGetLaundryPickup = async (req, res, connection) => {
           Addresses store_address ON s.address_id = store_address.id 
         WHERE 
           sr.store_id = ? 
-          AND sr.request_status IN ('Pending Pickup', 'Ongoing Pickup', 'Cancelled')
+          AND sr.request_status IN ('Pending Pickup', 'Ongoing Pickup', 'Canceled')
           AND st.isArchive = 0
           AND c.isArchive = 0
       `;
@@ -197,7 +197,7 @@ export const handleUpdateServiceRequestCancel = async (
 
     const updateQuery = `
         UPDATE Service_Request
-        SET request_status = 'Cancelled'
+        SET request_status = 'Canceled'
         WHERE id = ?`;
 
     const [result] = await connection.execute(updateQuery, [id]);
@@ -306,6 +306,153 @@ export const handleUpdateServiceRequestBackToPending = async (
     connection.release();
   }
 };
+
+export const handleUpdateServiceRequestUsingQrCode = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+  const { code } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    // Step 1: Check if the tracking code exists in the Service_Request table
+    const [existingRequest] = await connection.execute(
+      `SELECT request_status, isPickup, isDelivery FROM Service_Request WHERE id = ? AND tracking_code = ?`,
+      [id, code]
+    );
+
+    if (existingRequest.length === 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Service request not found." });
+    }
+
+    const { request_status, isPickup, isDelivery } = existingRequest[0];
+
+    // Step 2: Check the request_status to determine availability
+    if (
+      request_status === "Canceled" ||
+      request_status === "Complete Delivery"
+    ) {
+      return res.status(200).json({
+        success: false,
+        message: "This service request is not available anymore.",
+      });
+    }
+
+    // Step 3: Check if isPickup is false and update the status to "Complete Pickup"
+    if (
+      !isPickup &&
+      (request_status === "Pending Pickup" ||
+        request_status === "Ongoing Pickup")
+    ) {
+      await connection.execute(
+        `UPDATE Service_Request SET request_status = ?,  pickup_date = NOW(), isPickup = ? WHERE id = ?`,
+        ["Complete Pickup", true, id]
+      );
+    }
+    // New Step: If isPickup is true and request_status is "Complete Pickup"
+    else if (
+      isPickup && // Only check if pickup is completed
+      (request_status === "Ready for Delivery" ||
+        request_status === "Out for Delivery")
+    ) {
+      await connection.execute(
+        `UPDATE Service_Request SET request_status = ?,  delivery_date = NOW(), isDelivery = ? WHERE id = ?`,
+        ["Complete Delivery", true, id]
+      );
+    } else {
+      return res.status(200).json({
+        success: false,
+        message: "Invalid request status or pickup/delivery already completed.",
+      });
+    }
+
+    // Step 4: Commit the transaction if everything is fine
+    await connection.commit();
+    res.status(200).json({
+      success: true,
+      message: "Service request updated successfully.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ message: "Error updating service request." });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+// export const handleUpdateServiceRequestUsingQrCode = async (
+//   req,
+//   res,
+//   connection
+// ) => {
+//   const { id } = req.params;
+//   const { code } = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     // Step 1: Check if the tracking code exists in the Service_Request table
+//     const [existingRequest] = await connection.execute(
+//       `SELECT request_status, isPickup FROM Service_Request WHERE id = ? AND tracking_code = ?`,
+//       [id, code]
+//     );
+
+//     if (existingRequest.length === 0) {
+//       return res
+//         .status(200)
+//         .json({ success: false, message: "Service request not found." });
+//     }
+
+//     const { request_status, isPickup } = existingRequest[0];
+
+//     // Step 2: Check the request_status to determine availability
+//     if (
+//       request_status === "Canceled" ||
+//       request_status === "Complete Delivery"
+//     ) {
+//       return res.status(200).json({
+//         success: false,
+//         message: "This service request is not available anymore.",
+//       });
+//     }
+
+//     // Step 3: Check if isPickup is false and update the status
+//     if (
+//       !isPickup &&
+//       (request_status === "Pending Pickup" ||
+//         request_status === "Ongoing Pickup")
+//     ) {
+//       await connection.execute(
+//         `UPDATE Service_Request SET request_status = ?, isPickup = ? WHERE id = ?`,
+//         ["Complete Pickup", true, id]
+//       );
+//     } else {
+//       return res.status(200).json({
+//         success: false,
+//         message: "Invalid request status or pickup already completed.",
+//       });
+//     }
+
+//     // Step 4: Commit the transaction if everything is fine
+//     await connection.commit();
+//     res.status(200).json({
+//       success: true,
+//       message: "Service request updated successfully.",
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Database operation error:", error);
+//     res.status(500).json({ message: "Error updating service request." });
+//   } finally {
+//     if (connection) connection.release();
+//   }
+// };
 
 export const handleGetStaffMessages = async (req, res, connection) => {
   const { id } = req.params; // This is the staff ID

@@ -1,3 +1,5 @@
+import { generateTrackingCode } from "../../helpers/generateCode.js";
+
 // SET SECTION
 export const handleCreateUnits = async (req, res, db) => {
   try {
@@ -74,6 +76,8 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
   try {
     await connection.beginTransaction();
 
+    const trackingCode = generateTrackingCode();
+
     // Step 1: Insert into Service_Request
     const serviceRequestQuery = `
       INSERT INTO Service_Request (
@@ -84,19 +88,24 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
         customer_fullname,
         notes,
         request_date,
-        request_status
-      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'In Laundry')
+        request_status,
+        tracking_code,
+        customer_type,
+        isPickup
+      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'In Laundry', ?, 'Walk-In', ?)
     `;
 
     const [serviceRequestResult] = await connection.execute(
       serviceRequestQuery,
       [
-        id, // store_id
-        userId, // user_id
-        customerId, // customer_id
-        serviceId, // service_type
-        fullname, // customer_fullname
-        customerNotes, // notes
+        id,
+        userId,
+        customerId,
+        serviceId,
+        fullname,
+        customerNotes,
+        trackingCode,
+        1,
       ]
     );
 
@@ -258,7 +267,7 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
         JOIN 
           Service_Type st ON sr.service_type_id = st.id
         WHERE 
-          sr.store_id = ? AND sr.request_status = 'In Queue'
+          sr.store_id = ? AND sr.request_status = 'Complete Pickup'
       `;
 
     const [results] = await connection.execute(query, [id]);

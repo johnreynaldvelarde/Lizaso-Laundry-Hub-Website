@@ -294,9 +294,9 @@ Ready for Delivery – The clothes are ready to be delivered back to the custome
 Out for Delivery – The delivery staff is on the way to deliver the clothes to the customer.
 Complete Delivery – The clothes have been delivered to the customer, and payment has been confirmed.
 	
-Cancelled - its cancel the service request of the customer
+Canceled - its cancel the service request of the customer
 
-
+ sr.store_id = ? AND sr.request_status = 'In Queue'
 
 
 --> Service_Request <--

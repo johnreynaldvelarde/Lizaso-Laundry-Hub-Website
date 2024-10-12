@@ -4,16 +4,14 @@ import {
   handleGetStaffMessages,
   handlePostNewMessages,
   handleUpdateServiceRequestBackToPending,
+  handleUpdateServiceRequestUsingQrCode,
 } from "../../services/user/staff.js";
 import { getPool } from "../../db/dbConfig.js";
 import {
   handleUpdateServiceRequestCancel,
   handleUpdateServiceRequestOngoing,
 } from "../../services/user/staff.js";
-import {
-  handleGetCustomerMessages,
-  handleUpdateServiceRequestUsingQrCode,
-} from "../../services/user/customer.js";
+import { handleGetCustomerMessages } from "../../services/user/customer.js";
 
 const router = express.Router();
 
