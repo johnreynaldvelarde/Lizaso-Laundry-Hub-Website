@@ -282,14 +282,85 @@ https://isomorphic-furyroad.vercel.app/logistics
 // Hard Part
 Pending Pickup – The customer has placed a service request, but the clothes have not been picked up yet.
 Ongoing Pickup – The delivery staff has picked up the clothes from the customer's location.
-Picked Up – The delivery staff has picked up the clothes from the customer's location.
+Complete Pickup – The delivery staff has picked up the clothes from the customer's location.
+
+
 At Store – The clothes have been dropped off at the laundry store.
 In Queue – The clothes are waiting for an available laundry unit.
 In Laundry – The clothes have been assigned to a laundry unit and are currently being washed/dried.
 Laundry Completed – The clothes have finished the washing/drying process.
+
 Ready for Delivery – The clothes are ready to be delivered back to the customer.
 Out for Delivery – The delivery staff is on the way to deliver the clothes to the customer.
-Delivered – The clothes have been delivered to the customer, and payment has been confirmed.
+Complete Delivery – The clothes have been delivered to the customer, and payment has been confirmed.
+	
+Cancelled - its cancel the service request of the customer
+
+
+
+
+--> Service_Request <--
+id (Primary Key)
+store_id (Foregin Key)
+user_id (Foregin Key)
+customer_id (Foregin Key)
+service_type_id (Foregin Key)
+tracking_code
+customer_fullname
+customer_type
+notes
+request_date
+pickup_date
+delivery_date
+request_status
+qr_code
+qr_code_generated (BOOLEAN)
+isPickup (BOOLEAN)
+isDelivery  (BOOLEAN)
+
+--> Laundry_Assignment <--
+id (Primary Key)
+service_request_id (Foregin Key)
+unit_id (Foregin Key)
+assigned_by (Foregin Key)
+weight
+assigned_at 
+completed_at
+isAssignmentStatus 0 = In Progress, 1 = Completed, 2 = Canceled
+isCompleted
+
+--> Transaction <--
+id (Primary Key)
+assigment_id (Foregin Key)
+qr_code
+total_amount,
+transaction_date,
+payment_method,
+isStatus
+isArhive
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 CREATE TABLE Messages (

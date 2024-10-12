@@ -269,21 +269,86 @@ export const handleUpdateServiceRequestUsingQrCode = async (
   const { id } = req.params;
   const { code } = req.body;
 
-  console.log(id);
-  console.log(code);
-
   try {
     await connection.beginTransaction();
 
-    // const [] = await connection.execute();
+    // Step 1: Check if the tracking code exists in the Service_Request table
+    const [existingRequest] = await connection.execute(
+      `SELECT request_status, isPickup FROM Service_Request WHERE id = ? AND tracking_code = ?`,
+      [id, code]
+    );
+
+    if (existingRequest.length === 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Service request not found." });
+    }
+
+    const { request_status, isPickup } = existingRequest[0];
+
+    // Step 2: Check the request_status to determine availability
+    if (
+      request_status === "Cancelled" ||
+      request_status === "Complete Delivery"
+    ) {
+      return res.status(200).json({
+        success: false,
+        message: "This service request is not available anymore.",
+      });
+    }
+
+    // Step 3: Check if isPickup is false and update the status
+    if (
+      !isPickup &&
+      (request_status === "Pending Pickup" ||
+        request_status === "Ongoing Pickup")
+    ) {
+      await connection.execute(
+        `UPDATE Service_Request SET request_status = ?, isPickup = ? WHERE id = ?`,
+        ["Complete Pickup", true, id]
+      );
+    } else {
+      return res.status(200).json({
+        success: false,
+        message: "Invalid request status or pickup already completed.",
+      });
+    }
+
+    // Step 4: Commit the transaction if everything is fine
+    await connection.commit();
+    res.status(200).json({
+      success: true,
+      message: "Service request updated successfully.",
+    });
   } catch (error) {
     await connection.rollback();
     console.error("Database operation error:", error);
-    res.status(500).json({ message: "Error updating customer information" });
+    res.status(500).json({ message: "Error updating service request." });
   } finally {
     if (connection) connection.release();
   }
 };
+
+// export const handleUpdateServiceRequestUsingQrCode = async (
+//   req,
+//   res,
+//   connection
+// ) => {
+//   const { id } = req.params;
+//   const { code } = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     // const [] = await connection.execute();
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Database operation error:", error);
+//     res.status(500).json({ message: "Error " });
+//   } finally {
+//     if (connection) connection.release();
+//   }
+// };
 
 // export const handleSetCustomerServiceRequest = async (req, res, connection) => {
 //   const { id } = req.params; // Customer ID
