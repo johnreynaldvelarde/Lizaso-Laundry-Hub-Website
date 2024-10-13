@@ -298,6 +298,14 @@ Canceled - its cancel the service request of the customer
 
  sr.store_id = ? AND sr.request_status = 'In Queue'
 
+--> Service_Progress <--
+id (Primary Key)
+service_request_id (Foregin Key)
+stage
+description
+status_date
+completed
+false_description
 
 --> Service_Request <--
 id (Primary Key)

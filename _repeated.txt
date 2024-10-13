@@ -17,3 +17,40 @@
      
     }
   };
+
+
+  //API POST
+  //API GET
+  export const handleGetCustomerTrackOrderAndProgress = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error customer track order and progress:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};

@@ -23,7 +23,8 @@ const MainCustomer = () => {
       <LoadingBar />
       <main className=" flex-grow bg-[#f1f1f1]">
         <section>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<LoadingBar />}>
+            {/* <Suspense fallback={<div>Loading...</div>}> */}
             <Routes>
               <Route path="/" element={<Navigate to="laundry-services" />} />
               <Route path="laundry-services" element={<LaundryServices />} />

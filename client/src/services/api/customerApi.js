@@ -6,7 +6,7 @@ import { axiosPrivate } from "../../api/axios";
 //   return new Error(message);
 // };
 
-// POST
+// #POST
 export const createCustomerServiceRequest = {
   setCustomerServiceRequest: async (customerId, data) => {
     try {
@@ -45,7 +45,7 @@ export const createCustomerServiceRequest = {
 //   },
 // };
 
-// GET
+// #GET
 export const getCustomerServiceAndPromotions = {
   getServiceWithPromotions: async (storeId) => {
     try {
@@ -61,11 +61,11 @@ export const getCustomerServiceAndPromotions = {
 };
 
 //  <----- Track Order Section ----->
-export const getCustomerTrackOrder = {
-  getServiceType: async (userId) => {
+export const getCustomerTrackOrderAndProgress = {
+  getCustomerTrackOrder: async (userId) => {
     try {
       const response = await axiosPrivate.get(
-        `/settings/${userId}/get-service-types`
+        `/customers/${userId}/get-track-order`
       );
       return response.data;
     } catch (error) {
@@ -74,4 +74,5 @@ export const getCustomerTrackOrder = {
     }
   },
 };
-// PUT
+
+// #PUT

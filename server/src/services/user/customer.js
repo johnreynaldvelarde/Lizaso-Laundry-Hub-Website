@@ -1,5 +1,6 @@
 import QRCode from "qrcode";
 import { generateTrackingCode } from "../../helpers/generateCode.js";
+import { progress } from "./_progress.js";
 // POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
@@ -65,10 +66,31 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
 
     await connection.execute(updateQuery, [qrCodeString, newRequestId]);
 
-    // Commit the transaction
+    // Insert initial progress entry into Service_Progress table
+    const progressQuery = `
+      INSERT INTO Service_Progress (
+          service_request_id,
+          stage,
+          description,
+          status_date,
+          completed,
+          false_description
+        ) 
+      VALUES (?, ?, ?, ?, ?, ?)`;
+
+    for (const item of progress) {
+      await connection.execute(progressQuery, [
+        newRequestId,
+        item.stage,
+        item.description,
+        item.completed ? new Date() : null,
+        item.completed,
+        item.falseDescription,
+      ]);
+    }
+
     await connection.commit();
 
-    // Respond with the created service request ID and success message
     res.status(201).json({
       message: "Service request created!",
       service_request_id: newRequestId,
@@ -140,6 +162,41 @@ export const handleGetServiceTypeAndPromotions = async (
   }
 };
 
+// export const handleGetCustomerTrackOrderAndProgress = async (
+//   req,
+//   res,
+//   connection
+// ) => {
+//   const { id } = req.params; // customer id
+//   console.log(id);
+
+//   try {
+//     await connection.beginTransaction();
+
+//     // const query = `
+
+//     // `;
+
+//     // const [rows] = await connection.execute(query, [id]);
+
+//     // await connection.commit();
+
+//     // res.status(200).json({
+//     //   success: true,
+//     //   data: rows,
+//     // });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error customer track order and progress:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching data.",
+//     });
+//   } finally {
+//     if (connection) connection.release();
+//   }
+// };
+
 export const handleGetCustomerMessages = async (req, res, connection) => {
   const { id } = req.params; // 'id' is the Customer ID (e.g., customer ID)
 
@@ -189,6 +246,117 @@ export const handleGetCustomerMessages = async (req, res, connection) => {
     });
   } finally {
     connection.release();
+  }
+};
+
+export const handleGetCustomerTrackOrderAndProgress = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params; // customer id
+  console.log(id);
+
+  try {
+    await connection.beginTransaction();
+
+    // SQL query to get service requests along with progress
+    const query = `
+      SELECT 
+        sr.id AS service_request_id,
+        sr.store_id,
+        sr.customer_id,
+        sr.service_type_id,
+        sr.tracking_code,
+        sr.customer_fullname,
+        sr.customer_type,
+        sr.notes,
+        COALESCE(sr.user_id, 'Waiting to assign') AS user_id,
+        sr.request_date,
+        COALESCE(sr.pickup_date, 'Waiting') AS pickup_date,
+        COALESCE(sr.delivery_date, 'Waiting') AS delivery_date,
+        sr.request_status,
+        sr.qr_code,
+        sr.qr_code_generated,
+        sr.isPickup,
+        sr.isDelivery,
+        sp.stage,
+        sp.description,
+        sp.completed,
+        sp.status_date
+      FROM 
+        Service_Request sr
+      LEFT JOIN 
+        Service_Progress sp ON sr.id = sp.service_request_id
+      WHERE 
+        sr.customer_id = ? 
+        AND sr.request_status != 'Canceled'
+      ORDER BY 
+        sr.request_date DESC;
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    // Structure the response data
+    const responseData = rows.reduce((acc, row) => {
+      // Check if the service request already exists in the accumulator
+      let serviceRequest = acc.find(
+        (req) => req.service_request.id === row.service_request_id
+      );
+
+      // If it doesn't exist, create a new entry
+      if (!serviceRequest) {
+        serviceRequest = {
+          service_request: {
+            id: row.service_request_id,
+            store_id: row.store_id,
+            user_id: row.user_id,
+            customer_id: row.customer_id,
+            service_type_id: row.service_type_id,
+            tracking_code: row.tracking_code,
+            customer_fullname: row.customer_fullname,
+            customer_type: row.customer_type,
+            notes: row.notes,
+            request_date: row.request_date,
+            pickup_date: row.pickup_date,
+            delivery_date: row.delivery_date,
+            request_status: row.request_status,
+            qr_code: row.qr_code,
+            qr_code_generated: row.qr_code_generated,
+            isPickup: row.isPickup,
+            isDelivery: row.isDelivery,
+          },
+          progress: [], // Initialize the progress array
+        };
+        acc.push(serviceRequest);
+      }
+
+      // Add the progress information for this service request
+      serviceRequest.progress.push({
+        stage: row.stage,
+        description: row.description,
+        completed: row.completed,
+        status_date: row.status_date,
+      });
+
+      return acc;
+    }, []);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: responseData,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error customer track order and progress:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
+  } finally {
+    if (connection) connection.release();
   }
 };
 

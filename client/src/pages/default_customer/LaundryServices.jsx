@@ -1,42 +1,51 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import useAuth from "../../contexts/AuthContext";
 import PopupServiceSelect from "./PopupServiceSelect";
-import m_1 from "../../assets/images/1636.jpg";
 import background_1 from "../../assets/images/background_2.jpg";
 import styles from "../../styles/style";
 import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { getCustomerServiceAndPromotions } from "../../services/api/customerApi";
 import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
-import { useNavigate } from "react-router-dom";
+import useFetchData from "../../hooks/common/useFetchData";
 
 const LaundryServices = () => {
   const { userDetails } = useAuth();
-  const navigate = useNavigate();
-  const [services, setService] = useState([]);
   const { selectedService, setSelectedService } = useLaundryPlans();
 
-  const fetchServiceTypeAndPromotions = async () => {
-    if (!userDetails?.storeId) return;
+  const { data: services, fetchData: fetchServiceTypeAndPromotions } =
+    useFetchData();
 
-    try {
-      const response =
-        await getCustomerServiceAndPromotions.getServiceWithPromotions(
-          userDetails.storeId
-        );
-      if (response) {
-        const service = response.data || [];
-        setService(service);
-      } else {
-        console.error("Unexpected response format:", response);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const fetchServiceAndPromotionsData = useCallback(() => {
+    if (userDetails?.storeId) {
+      fetchServiceTypeAndPromotions(
+        getCustomerServiceAndPromotions.getServiceWithPromotions,
+        userDetails.storeId
+      );
     }
-  };
+  }, [fetchServiceTypeAndPromotions, userDetails?.storeId]);
 
   useEffect(() => {
-    fetchServiceTypeAndPromotions();
-  }, [userDetails?.storeId]);
+    fetchServiceAndPromotionsData();
+  }, [fetchServiceAndPromotionsData]);
+
+  // const fetchServiceTypeAndPromotions = async () => {
+  //   if (!userDetails?.storeId) return;
+
+  //   try {
+  //     const response =
+  //       await getCustomerServiceAndPromotions.getServiceWithPromotions(
+  //         userDetails.storeId
+  //       );
+  //     if (response) {
+  //       const service = response.data || [];
+  //       setService(service);
+  //     } else {
+  //       console.error("Unexpected response format:", response);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
   // Example of promotional services
   const specialPromos = [
