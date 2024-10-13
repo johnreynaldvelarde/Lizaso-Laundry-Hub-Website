@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 13, 2024 at 09:04 AM
+-- Generation Time: Oct 13, 2024 at 05:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -90,7 +90,10 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (60, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-12 22:13:34'),
 (61, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 00:47:55'),
 (62, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 11:18:44'),
-(63, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 11:30:03');
+(63, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 11:30:03'),
+(64, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 19:03:25'),
+(65, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 22:45:00'),
+(66, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 22:46:47');
 
 -- --------------------------------------------------------
 
@@ -356,6 +359,48 @@ INSERT INTO `roles_permissions` (`id`, `role_name`, `can_read`, `can_write`, `ca
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `service_progress`
+--
+
+CREATE TABLE `service_progress` (
+  `id` bigint(20) NOT NULL,
+  `service_request_id` bigint(20) NOT NULL,
+  `stage` varchar(100) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `status_date` datetime DEFAULT NULL,
+  `completed` tinyint(1) DEFAULT 0,
+  `false_description` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_progress`
+--
+
+INSERT INTO `service_progress` (`id`, `service_request_id`, `stage`, `description`, `status_date`, `completed`, `false_description`) VALUES
+(41, 51, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-13 22:35:29', 1, 'Pickup request received; waiting for staff assignment.'),
+(42, 51, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
+(43, 51, 'Complete Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
+(44, 51, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(45, 51, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(46, 51, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(47, 51, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(48, 51, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(49, 51, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(50, 51, 'Complete Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(51, 53, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-13 22:48:56', 1, 'Pickup request received; waiting for staff assignment.'),
+(52, 53, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
+(53, 53, 'Complete Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
+(54, 53, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(55, 53, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(56, 53, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(57, 53, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(58, 53, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(59, 53, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(60, 53, 'Complete Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `service_promotions`
 --
 
@@ -403,9 +448,8 @@ CREATE TABLE `service_request` (
 --
 
 INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `tracking_code`, `customer_fullname`, `customer_type`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`, `isPickup`, `isDelivery`) VALUES
-(40, 1, NULL, 1, 1, '#51847753CFE64E4EB3CD', 'Rose Oriana', 'Online', '', '2024-10-12 23:03:09', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAOPSURBVO3BwaocSQIEQfek//+XY3UY2DglFNVPGg1hZn5h5h+HmXKYKYeZcpgph5lymCmHmXKYKYeZcpgph5lymCmHmXKYKYeZ8uElld8pCU2lJaGptCQ0lZskNJWbJDSV3ykJbxxmymGmHGbKhy9Lwjep3CShqdyo3CThJ', 1, 0, 0),
-(41, 1, NULL, 1, 1, '#98D04F68EC9E42C0B2AB', 'Rose Oriana', 'Online', '', '2024-10-13 01:31:41', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAORSURBVO3BMa5bCxYDweaB9r/lHgc/YHQBQXoe22BV/IWZ/xwz5Zgpx0w5ZsoxU46ZcsyUY6YcM+WYKcdMOWbKMVOOmXLMlBcfSsLvpPIkCU9U3pGEpvKOJPxOKp84ZsoxU46Z8uLLVL4pCd+UhKbSkvCTVL4pCd90zJRjp', 1, 0, 0),
-(42, 1, NULL, 1, 1, '#A907E5A8EF04434C855A', 'Rose Oriana', 'Online', '', '2024-10-13 04:45:21', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAOpSURBVO3BQa5bRwADweZA979yx4ssuBrgQdKP7bAq/sLMvw4z5TBTDjPlMFMOM+UwUw4z5TBTDjPlMFMOM+UwUw4z5TBTDjPlxZuS8JNUWhJuVJ5IQlO5SUJTaUn4SSrvOMyUw0w5zJQXH6bySUl4QqUl4Ualqdwkoak8o', 1, 0, 0);
+(51, 1, NULL, 1, 1, '#7530A07D003E405386C9', 'Rose Oriana', 'Online', '', '2024-10-13 14:35:29', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAPHSURBVO3BMY7sVgADQfbD3P/K7Q0cMBIsSLP2N1iFPzLzt5OZcjJTTmbKyUw5mSknM+VkppzMlJOZcjJTTmbKyUw5mSknM+VkpnzyEJDfpOYOIE3NE0CuqGlAfpOaJ05myslMOZkpn7xMzZuAXAFyRU0D0tQ0IFfUPKHmT', 1, 0, 0),
+(53, 1, NULL, 1, 2, '#79067530FEF24667971B', 'Rose Oriana', 'Online', '', '2024-10-13 14:48:56', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAOFSURBVO3BQY4jSQIDQfeA/v9lbh/mwFMAQko1XbM0M38w84/DTDnMlMNMOcyUw0w5zJTDTDnMlMNMOcyUw0w5zJTDTDnMlMNMefGQyk9KQlNpSWgqTyShqbQk3Kj8pCQ8cZgph5lymCkvPiwJn6TyRBLeodJUblRaEm6S8', 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -615,6 +659,13 @@ ALTER TABLE `roles_permissions`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `service_progress`
+--
+ALTER TABLE `service_progress`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Service_Progress_Service_Request` (`service_request_id`);
+
+--
 -- Indexes for table `service_promotions`
 --
 ALTER TABLE `service_promotions`
@@ -668,7 +719,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `addresses`
@@ -716,7 +767,7 @@ ALTER TABLE `item_category`
 -- AUTO_INCREMENT for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
@@ -737,6 +788,12 @@ ALTER TABLE `roles_permissions`
   MODIFY `id` bigint(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
+-- AUTO_INCREMENT for table `service_progress`
+--
+ALTER TABLE `service_progress`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+
+--
 -- AUTO_INCREMENT for table `service_promotions`
 --
 ALTER TABLE `service_promotions`
@@ -746,7 +803,7 @@ ALTER TABLE `service_promotions`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `service_type`
@@ -829,6 +886,12 @@ ALTER TABLE `messages`
   ADD CONSTRAINT `Messages_Conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`);
 
 --
+-- Constraints for table `service_progress`
+--
+ALTER TABLE `service_progress`
+  ADD CONSTRAINT `Service_Progress_Service_Request` FOREIGN KEY (`service_request_id`) REFERENCES `service_request` (`id`);
+
+--
 -- Constraints for table `service_promotions`
 --
 ALTER TABLE `service_promotions`
@@ -861,12 +924,6 @@ ALTER TABLE `stores`
 ALTER TABLE `user_account`
   ADD CONSTRAINT `User_Account_Roles_Permissions` FOREIGN KEY (`role_permissions_id`) REFERENCES `roles_permissions` (`id`),
   ADD CONSTRAINT `User_Account_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
-
---
--- Constraints for table `user_security`
---
-ALTER TABLE `user_security`
-  ADD CONSTRAINT `User_Security_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
