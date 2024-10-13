@@ -3,6 +3,10 @@ import { motion } from "framer-motion";
 import norequest from "../../assets/images/nodata.jpg";
 import { useNavigate } from "react-router-dom";
 import styles from "../../styles/style";
+import { ChartPie, CheckCircle, LinkBreak } from "@phosphor-icons/react";
+import { COLORS } from "../../constants/color";
+import PopMessageStaff from "./components/PopMessageStaff";
+import usePopup from "../../hooks/common/usePopup";
 
 // Sample QR code image URL
 const qrCodeImageUrl = "https://via.placeholder.com/150"; // Replace this URL with your actual QR code image URL
@@ -20,36 +24,133 @@ const orders = [
     assignedUnit: "Unit 5",
     progress: [
       {
-        title: "Order Placed",
-        description: "Your order has been placed.",
+        title: "Pending Pickup",
+        description: "Pickup requested; staff on the way.",
         completed: true,
+        falseDescription:
+          "Pickup request received; waiting for staff assignment.",
       },
       {
-        title: "Pickup Scheduled",
-        description: "Pickup has been scheduled for 12:00 PM.",
+        title: "Ongoing Pickup",
+        description: "Pickup in progress.",
         completed: true,
+        falseDescription: "Pickup has not yet started.",
       },
       {
-        title: "Picked Up",
-        description: "Your laundry has been picked up.",
-        completed: false,
+        title: "Complete Pickup",
+        description: "Pickup completed successfully.",
+        completed: true,
+        falseDescription: "Pickup has not been completed.",
       },
       {
-        title: "In Progress",
-        description: "Laundry is being processed.",
-        completed: false,
+        title: "At Store",
+        description: "Dropped off at the laundry store.",
+        completed: true,
+        falseDescription: "The clothes have not yet arrived at the store.",
       },
       {
-        title: "Delivered",
-        description: "Your laundry will be delivered soon.",
-        completed: false,
+        title: "In Queue",
+        description: "Waiting for processing.",
+        completed: true,
+        falseDescription: "Not yet in queue for processing.",
+      },
+      {
+        title: "In Laundry",
+        description: "Currently being washed/dried.",
+        completed: true,
+        falseDescription: "Laundry has not started processing yet.",
+      },
+      {
+        title: "Laundry Completed",
+        description: "Washing/drying finished.",
+        completed: true,
+        falseDescription: "Laundry processing has not been completed.",
+      },
+      {
+        title: "Ready for Delivery",
+        description: "Ready to be delivered.",
+        completed: true,
+        falseDescription: "Laundry is not yet ready for delivery.",
+      },
+      {
+        title: "Out for Delivery",
+        description: "On the way to you.",
+        completed: true,
+        falseDescription: "Laundry has not been dispatched yet.",
+      },
+      {
+        title: "Complete Delivery",
+        description: "Delivered and payment confirmed.",
+        completed: true,
+        falseDescription: "Delivery has not been completed.",
       },
     ],
+
+    // progress: [
+    //   {
+    //     title: "Pending Pickup",
+    //     description: "Waiting for pickup staff to be assigned.",
+    //     completed: true,
+    //   },
+    //   {
+    //     title: "Ongoing Pickup",
+    //     description:
+    //       "A pickup staff has been assigned but is not yet en route.",
+    //     // description: "Pickup staff has been assigned and is on the way.",
+    //     completed: false,
+    //   },
+    //   {
+    //     title: "Complete Pickup",
+    //     description: "Pickup has been successfully completed at 12:00 PM.",
+    //     completed: true,
+    //   },
+    //   {
+    //     title: "Picked Up",
+    //     description: "Your laundry has been picked up.",
+    //     completed: false,
+    //   },
+    //   {
+    //     title: "In Progress",
+    //     description: "Laundry is being processed.",
+    //     completed: false,
+    //   },
+    //   {
+    //     title: "Delivered",
+    //     description: "Your laundry will be delivered soon.",
+    //     completed: false,
+    //   },
+    //   {
+    //     title: "Order Placed",
+    //     description: "Your order has been placed.",
+    //     completed: true,
+    //   },
+    //   {
+    //     title: "Pickup Scheduled",
+    //     description: "Pickup has been scheduled for 12:00 PM.",
+    //     completed: true,
+    //   },
+    //   {
+    //     title: "Picked Up",
+    //     description: "Your laundry has been picked up.",
+    //     completed: false,
+    //   },
+    //   {
+    //     title: "In Progress",
+    //     description: "Laundry is being processed.",
+    //     completed: false,
+    //   },
+    //   {
+    //     title: "Delivered",
+    //     description: "Your laundry will be delivered soon.",
+    //     completed: false,
+    //   },
+    // ],
   },
 ];
 
 const TrackOrders = () => {
   const navigate = useNavigate();
+  const { isOpen, popupType, openPopup, closePopup } = usePopup();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextOrder = () => {
@@ -163,9 +264,7 @@ const TrackOrders = () => {
                     </p>
                     <button
                       className="bg-[#5787C8] text-white px-4 py-2 rounded mt-2 hover:bg-[#3E5B8C]"
-                      onClick={() =>
-                        alert(`Messaging ${orders[currentIndex].deliveryStaff}`)
-                      }
+                      onClick={() => openPopup("messageStaff")}
                     >
                       Message the Delivery Staff
                     </button>
@@ -198,12 +297,48 @@ const TrackOrders = () => {
                     className="w-80 h-80"
                   />
                   <p
-                    className=" mt-4 text-center font-semibold"
-                    style={{ color: styles.secondary }}
+                    className="mt-4 text-center font-normal"
+                    style={{ color: styles.primary }}
                   >
                     Wait for the staff to scan this QR code to update the
                     progress of your laundry order.
                   </p>
+
+                  <div className=" mt-12 w-full flex flex-col md:flex-row justify-between items-center">
+                    <p
+                      className="text-2xl font-bold text-center md:text-left"
+                      style={{ color: styles.text3 }}
+                    >
+                      Total Amount:
+                      <span
+                        className="ml-2"
+                        style={{ color: styles.secondary }}
+                      >
+                        ₱{1000}
+                      </span>
+                    </p>
+                    <div className="flex flex-col md:flex-row items-center mt-4 md:mt-0">
+                      <button
+                        className="ml-4 bg-[#5787C8] text-white px-6 py-2 rounded hover:bg-[#3E5B8C] w-full md:w-auto mb-2 md:mb-0"
+                        onClick={() => alert("Proceeding to payment...")}
+                      >
+                        Pay Now
+                      </button>
+                      <button
+                        className="ml-4 bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 flex items-center w-full md:w-auto"
+                        onClick={() =>
+                          alert("Showing breakdown of total amount...")
+                        }
+                      >
+                        <LinkBreak
+                          size={24}
+                          color={COLORS.primary}
+                          className="mr-2"
+                        />
+                        <span style={{ color: styles.primary }}>Breakdown</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -216,17 +351,35 @@ const TrackOrders = () => {
                   Service Request Progress
                 </h3>
                 <div className="relative pt-2">
-                  <div className="border-l-2 border-blue-500 pl-4 space-y-4">
+                  <div className="border-l-2 border-[#5787C8] pl-4 space-y-4">
                     {orders[currentIndex].progress.map((step, index) => (
                       <div key={index} className="flex items-center space-x-4">
                         <div
-                          className={`h-6 w-6 rounded-full ${
-                            step.completed ? "bg-blue-500" : "bg-gray-300"
+                          className={`h-6 w-6 rounded-full flex items-center justify-center ${
+                            step.completed ? "bg-[#5787C8]" : "bg-gray-300"
                           }`}
-                        ></div>
+                        >
+                          {step.completed && (
+                            <CheckCircle
+                              size={20}
+                              color={COLORS.white}
+                              weight="duotone"
+                            />
+                          )}
+                        </div>
                         <div>
-                          <p className="font-semibold">{step.title}</p>
-                          <p className="text-gray-500">{step.description}</p>
+                          <p
+                            className="font-bold"
+                            style={{ color: styles.text3 }}
+                          >
+                            {step.title}
+                          </p>
+                          <p
+                            className="text-gray-500"
+                            style={{ color: styles.primary }}
+                          >
+                            {step.description}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -245,6 +398,16 @@ const TrackOrders = () => {
           </div>
         )}
       </div>
+      {/* Popup */}
+      {isOpen && popupType === "messageStaff" && (
+        <PopMessageStaff open={isOpen} onClose={closePopup} />
+      )}
+      {/* {isOpen && popupType === "addItem" && (
+        <PopAddNewItem open={isOpen} onClose={closePopup} />
+      )}
+      {isOpen && popupType === "addItem" && (
+        <PopAddNewItem open={isOpen} onClose={closePopup} />
+      )} */}
     </div>
   );
 };
