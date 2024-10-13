@@ -53,7 +53,8 @@ const styles = {
   // Primary and Secondary colors
   primary: "#595959",
   secondary: "#5787C8",
-  secondaryHover: "#3D6F9B",
+  secondaryHover1: "#3D6F9B",
+  secondaryHover: "#3E5B8C",
 
   // Status Colors
   success: "#28a745", // For success messages or indicators

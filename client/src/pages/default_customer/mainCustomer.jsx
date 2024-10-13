@@ -21,7 +21,7 @@ const MainCustomer = () => {
     <div className="flex flex-col min-h-screen">
       <C_Navbar />
       <LoadingBar />
-      <main className="bg-[#f1f1f1]">
+      <main className=" flex-grow bg-[#f1f1f1]">
         <section>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>

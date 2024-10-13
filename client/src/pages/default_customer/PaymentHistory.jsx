@@ -27,7 +27,7 @@ function PaymentHistory() {
   ];
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gray-100">
       {/* Header */}
       <div className="text-3xl font-semibold text-center mb-6">
         Payment History
