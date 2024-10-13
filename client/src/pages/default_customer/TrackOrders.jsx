@@ -7,6 +7,8 @@ import { ChartPie, CheckCircle, LinkBreak } from "@phosphor-icons/react";
 import { COLORS } from "../../constants/color";
 import PopMessageStaff from "./components/PopMessageStaff";
 import usePopup from "../../hooks/common/usePopup";
+import PopAmountBreakDown from "./components/PopAmountBreakDown";
+import PopPay from "./components/PopPay";
 
 // Sample QR code image URL
 const qrCodeImageUrl = "https://via.placeholder.com/150"; // Replace this URL with your actual QR code image URL
@@ -320,15 +322,13 @@ const TrackOrders = () => {
                     <div className="flex flex-col md:flex-row items-center mt-4 md:mt-0">
                       <button
                         className="ml-4 bg-[#5787C8] text-white px-6 py-2 rounded hover:bg-[#3E5B8C] w-full md:w-auto mb-2 md:mb-0"
-                        onClick={() => alert("Proceeding to payment...")}
+                        onClick={() => openPopup("showPay")}
                       >
                         Pay Now
                       </button>
                       <button
                         className="ml-4 bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 flex items-center w-full md:w-auto"
-                        onClick={() =>
-                          alert("Showing breakdown of total amount...")
-                        }
+                        onClick={() => openPopup("showBreakDown")}
                       >
                         <LinkBreak
                           size={24}
@@ -402,12 +402,12 @@ const TrackOrders = () => {
       {isOpen && popupType === "messageStaff" && (
         <PopMessageStaff open={isOpen} onClose={closePopup} />
       )}
-      {/* {isOpen && popupType === "addItem" && (
-        <PopAddNewItem open={isOpen} onClose={closePopup} />
+      {isOpen && popupType === "showBreakDown" && (
+        <PopAmountBreakDown open={isOpen} onClose={closePopup} />
       )}
-      {isOpen && popupType === "addItem" && (
-        <PopAddNewItem open={isOpen} onClose={closePopup} />
-      )} */}
+      {isOpen && popupType === "showPay" && (
+        <PopPay open={isOpen} onClose={closePopup} />
+      )}
     </div>
   );
 };

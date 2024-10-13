@@ -34,7 +34,7 @@ const CustomPopFooterButton = ({ label, onClose, onSubmit, loading }) => {
           minWidth: "90px",
           textTransform: "none",
           "&:hover": {
-            backgroundColor: "#3A5A85",
+            backgroundColor: COLORS.secondaryHover,
           },
         }}
         disabled={loading}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, TextField, Button } from "@mui/material";
 import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitle";
+import { COLORS } from "../../../constants/color";
 
 const PopMessageStaff = ({ open, onClose }) => {
   // Sample conversation data
@@ -29,13 +30,13 @@ const PopMessageStaff = ({ open, onClose }) => {
       PaperProps={{
         style: {
           borderRadius: 16,
-          height: "500px", // Set a fixed height for the dialog
+          height: "600px", // Set a fixed height for the dialog
         },
       }}
     >
       {/* Header */}
       <CustomPopHeaderTitle
-        title={"Chat with Delivery Staff"}
+        title={"Chat with Pickup or Delivery Staff"}
         subtitle={"Send your inquiries or updates"}
         onClose={onClose}
       />
@@ -53,7 +54,7 @@ const PopMessageStaff = ({ open, onClose }) => {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={`my-2 p-2 rounded-full ${
+              className={`my-2 p-2 rounded ${
                 msg.sender === "customer"
                   ? "bg-[#5787C8] text-white self-end"
                   : "bg-gray-300 text-[#393939] self-start"
@@ -77,12 +78,30 @@ const PopMessageStaff = ({ open, onClose }) => {
                 handleSendMessage();
               }
             }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: COLORS.secondary,
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: COLORS.secondary,
+              },
+            }}
           />
           <Button
+            disableElevation
             variant="contained"
             color="primary"
             onClick={handleSendMessage}
-            style={{ marginLeft: 8 }}
+            sx={{
+              marginLeft: 1,
+              textTransform: "none",
+              backgroundColor: COLORS.secondary,
+              "&:hover": {
+                backgroundColor: COLORS.secondaryHover,
+              },
+            }}
           >
             Send
           </Button>
