@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 10, 2024 at 07:10 AM
+-- Generation Time: Oct 13, 2024 at 09:04 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,7 +77,20 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (46, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:24:11'),
 (48, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 13:37:52'),
 (49, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-09 18:43:01'),
-(50, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-10 08:13:07');
+(50, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-10 08:13:07'),
+(51, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-11 03:12:59'),
+(52, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-11 03:13:47'),
+(53, 7, 'Manager', 'authentication', 'reynald12 logged in.', '2024-10-11 06:24:14'),
+(54, 7, 'Manager', 'authentication', 'reynald12 logged in.', '2024-10-11 06:25:14'),
+(55, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-11 06:33:52'),
+(56, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-11 11:53:35'),
+(57, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-11 15:55:09'),
+(58, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-11 19:58:48'),
+(59, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-11 21:44:25'),
+(60, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-12 22:13:34'),
+(61, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 00:47:55'),
+(62, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 11:18:44'),
+(63, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 11:30:03');
 
 -- --------------------------------------------------------
 
@@ -115,13 +128,12 @@ INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `pro
 
 CREATE TABLE `conversations` (
   `id` bigint(20) NOT NULL,
-  `customer_id` bigint(20) DEFAULT NULL,
-  `user_id1` bigint(20) NOT NULL,
-  `user_id2` bigint(20) DEFAULT NULL,
+  `participant_1` bigint(20) NOT NULL,
+  `participant_2` bigint(20) NOT NULL,
+  `is_user_1` tinyint(1) NOT NULL,
+  `is_user_2` tinyint(1) NOT NULL,
   `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
-  `last_message_at` datetime NOT NULL,
-  `is_archived` tinyint(1) NOT NULL
+  `last_message_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -198,6 +210,14 @@ CREATE TABLE `inventory` (
   `isStatus` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `inventory`
+--
+
+INSERT INTO `inventory` (`id`, `store_id`, `item_id`, `price`, `quantity`, `isStatus`) VALUES
+(1, 1, 1, 1.00, 0, 0),
+(2, 1, 2, 2.00, 0, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -214,6 +234,14 @@ CREATE TABLE `item` (
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `item`
+--
+
+INSERT INTO `item` (`id`, `category_id`, `item_code`, `item_name`, `isArchive`, `updated_at`, `date_created`) VALUES
+(1, 1, '1', '1', 0, '2024-10-11 08:31:46', '2024-10-11 08:31:46'),
+(2, 2, '2', '2', 0, '2024-10-11 08:47:20', '2024-10-11 08:47:20');
+
 -- --------------------------------------------------------
 
 --
@@ -227,6 +255,15 @@ CREATE TABLE `item_category` (
   `updated_at` datetime NOT NULL,
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `item_category`
+--
+
+INSERT INTO `item_category` (`id`, `category_name`, `isArchive`, `updated_at`, `date_created`) VALUES
+(1, '121212121212', 0, '2024-10-11 07:12:53', '2024-10-11 07:12:53'),
+(2, 'Detergent', 0, '2024-10-11 08:38:49', '2024-10-11 08:38:49'),
+(3, 'Soap Powder', 0, '2024-10-11 10:57:53', '2024-10-11 10:57:53');
 
 -- --------------------------------------------------------
 
@@ -281,8 +318,9 @@ CREATE TABLE `messages` (
   `id` bigint(20) NOT NULL,
   `conversation_id` bigint(20) NOT NULL,
   `sender_id` bigint(20) NOT NULL,
-  `sender_type` varchar(50) NOT NULL,
+  `is_sender_user` tinyint(1) NOT NULL,
   `content` text NOT NULL,
+  `message_type` varchar(100) NOT NULL,
   `sent_at` datetime NOT NULL,
   `is_read` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -346,26 +384,28 @@ CREATE TABLE `service_request` (
   `user_id` bigint(20) DEFAULT NULL,
   `customer_id` bigint(20) NOT NULL,
   `service_type_id` bigint(20) NOT NULL,
+  `tracking_code` varchar(255) NOT NULL,
   `customer_fullname` varchar(255) NOT NULL,
+  `customer_type` varchar(10) NOT NULL,
   `notes` varchar(255) DEFAULT NULL,
   `request_date` timestamp NULL DEFAULT current_timestamp(),
   `pickup_date` timestamp NULL DEFAULT NULL,
   `delivery_date` timestamp NULL DEFAULT NULL,
   `request_status` varchar(100) DEFAULT NULL,
   `qr_code` varchar(255) NOT NULL,
-  `qr_code_generated` tinyint(1) NOT NULL
+  `qr_code_generated` tinyint(1) NOT NULL,
+  `isPickup` tinyint(1) NOT NULL DEFAULT 0,
+  `isDelivery` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `service_request`
 --
 
-INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `customer_fullname`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`) VALUES
-(1, 1, NULL, 1, 1, 'Rose Oriana', '', '2024-10-09 12:14:31', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK/SURBVO3BQY7cQAwEwSxC//9y2keeGhCk2fXQjIh/scYo1ijFGqVYoxRrlGKNUqxRijVKsUYp1ijFGqVYoxRrlGKNUqxRijXKxUNJ+EkqXRLepNIl4SepPFGsUYo1SrFGuXiZypuScKJykoROpUvCHSpvSsKbijVKsUYp1', 1),
-(2, 1, NULL, 1, 2, 'Rose Oriana', '', '2024-10-10 00:44:57', NULL, NULL, 'Cancelled', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAKmSURBVO3BQW7sWAwEwSxC979yjpdcPUCQuv3NYUT8wRqjWKMUa5RijVKsUYo1SrFGKdYoxRqlWKMUa5RijVKsUYo1SrFGKdYoFw8l4ZtUuiTcoXJHEr5J5YlijVKsUYo1ysXLVN6UhBOVLgl3JKFTOVF5UxLeVKxRijVKs', 1),
-(3, 1, NULL, 1, 1, 'Rose Oriana', '', '2024-10-10 01:11:18', NULL, NULL, 'Cancelled', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK6SURBVO3BQY7cWAwFwXyE7n/lHO/M1QcEqcrdHEbEP1hjFGuUYo1SrFGKNUqxRinWKMUapVijFGuUYo1SrFGKNUqxRinWKMUa5eKhJHyTSpeEJ1ROkvBNKk8Ua5RijVKsUS5epvKmJNyh0iWhU+mS0KmcqLwpCW8q1ijFG', 1),
-(4, 1, NULL, 2, 1, 'Junjun P.', '', '2024-10-10 01:16:17', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAALKSURBVO3BQW7kQAwEwUxC//9yrY88NSBIM2sTjDA/WGMUa5RijVKsUYo1SrFGKdYoxRqlWKMUa5RijVKsUYo1SrFGKdYoxRrl4iGVb0pCp/JEEk5UvikJTxRrlGKNUqxRLl6WhDepnCThRKVLQqfSJeEkCW9SeVOxRinWK', 1),
-(5, 1, NULL, 2, 1, 'Junjun P.', '', '2024-10-10 01:29:56', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAB0CAYAAABUmhYnAAAAAklEQVR4AewaftIAAAK8SURBVO3BQW7kQAwEwUxC//9yrY88NSBIM2sTjDA/WGMUa5RijVKsUYo1SrFGKdYoxRqlWKMUa5RijVKsUYo1SrFGKdYoxRrl4iGVb0pCp9IloVO5Iwmdyjcl4YlijVKsUYo1ysXLkvAmlZMkfFMS3qTypmKNUqxRijXKx', 1);
+INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `tracking_code`, `customer_fullname`, `customer_type`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`, `isPickup`, `isDelivery`) VALUES
+(40, 1, NULL, 1, 1, '#51847753CFE64E4EB3CD', 'Rose Oriana', 'Online', '', '2024-10-12 23:03:09', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAOPSURBVO3BwaocSQIEQfek//+XY3UY2DglFNVPGg1hZn5h5h+HmXKYKYeZcpgph5lymCmHmXKYKYeZcpgph5lymCmHmXKYKYeZ8uElld8pCU2lJaGptCQ0lZskNJWbJDSV3ykJbxxmymGmHGbKhy9Lwjep3CShqdyo3CThJ', 1, 0, 0),
+(41, 1, NULL, 1, 1, '#98D04F68EC9E42C0B2AB', 'Rose Oriana', 'Online', '', '2024-10-13 01:31:41', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAORSURBVO3BMa5bCxYDweaB9r/lHgc/YHQBQXoe22BV/IWZ/xwz5Zgpx0w5ZsoxU46ZcsyUY6YcM+WYKcdMOWbKMVOOmXLMlBcfSsLvpPIkCU9U3pGEpvKOJPxOKp84ZsoxU46Z8uLLVL4pCd+UhKbSkvCTVL4pCd90zJRjp', 1, 0, 0),
+(42, 1, NULL, 1, 1, '#A907E5A8EF04434C855A', 'Rose Oriana', 'Online', '', '2024-10-13 04:45:21', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAOpSURBVO3BQa5bRwADweZA979yx4ssuBrgQdKP7bAq/sLMvw4z5TBTDjPlMFMOM+UwUw4z5TBTDjPlMFMOM+UwUw4z5TBTDjPlxZuS8JNUWhJuVJ5IQlO5SUJTaUn4SSrvOMyUw0w5zJQXH6bySUl4QqUl4Ualqdwkoak8o', 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -377,6 +417,7 @@ CREATE TABLE `service_type` (
   `id` bigint(20) NOT NULL,
   `store_id` bigint(20) NOT NULL,
   `service_name` varchar(100) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `default_price` decimal(10,2) NOT NULL,
   `date_created` datetime NOT NULL,
   `isArchive` tinyint(1) NOT NULL
@@ -386,10 +427,12 @@ CREATE TABLE `service_type` (
 -- Dumping data for table `service_type`
 --
 
-INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `default_price`, `date_created`, `isArchive`) VALUES
-(1, 1, 'Wash', 60.00, '2024-10-07 16:10:31', 0),
-(2, 1, 'Dry', 55.00, '2024-10-07 16:10:31', 0),
-(3, 1, 'Fold', 30.00, '2024-10-07 16:10:31', 0);
+INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `description`, `default_price`, `date_created`, `isArchive`) VALUES
+(1, 1, 'Wash', 'Basic wash services', 60.00, '2024-10-07 16:10:31', 0),
+(2, 1, 'Dry', '1', 55.00, '2024-10-07 16:10:31', 0),
+(3, 1, 'Fold', '', 30.00, '2024-10-07 16:10:31', 0),
+(5, 1, 'Wash/Dry', '', 120.00, '2024-10-11 20:00:51', 0),
+(6, 1, 'Wash/Dry/Fold', '', 100.00, '2024-10-11 20:16:13', 0);
 
 -- --------------------------------------------------------
 
@@ -446,7 +489,8 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`id`, `store_id`, `role_permissions_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
 (1, 1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 1, 0, 0, '2024-10-07 16:10:31'),
-(6, 1, 8, 'juan12', '', '09123456789', 'Juan', '', 'Tamad', 0, 0, 0, '2024-10-10 08:13:43');
+(6, 1, 8, 'juan12', '', '09123456789', 'Juan', '', 'Tamad', 0, 1, 0, '2024-10-10 08:13:43'),
+(7, 1, 7, 'reynald12', '', '09472727061', 'John Reynald', 'P', 'Velarde', 1, 0, 0, '2024-10-11 06:22:58');
 
 -- --------------------------------------------------------
 
@@ -479,7 +523,8 @@ INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_
 (3, 3, '$2b$12$FGXjh98pYgzkYQ2kJ.lVlOYKi/yJSbQ8393mI4HGWTpKbEinQUBQO', '$2b$12$2XZlCVoPIaCJf6ack/Xd4.', 0, '', 0, 0, '2024-10-08 20:15:17', NULL, NULL, '2024-10-08 20:15:17'),
 (4, 4, '$2b$12$W/W2roYNSzudW68IxqHZhekKTh/GM3AcfnFFgfYkfxi9Jg48/DP32', '$2b$12$X0GYt.Jvv3fKZr/lGvmUs.', 0, '', 0, 0, '2024-10-08 21:25:00', NULL, NULL, '2024-10-08 21:25:00'),
 (5, 5, '$2b$12$OoGkK1B.N7nQWLPbZjoYY.CUigpTi3N.ZmbyOPybm77YYcViD12RK', '$2b$12$sfRoJ/bOs6NeCgawhqTZ3O', 0, '', 0, 0, '2024-10-08 23:25:48', NULL, NULL, '2024-10-08 23:25:48'),
-(6, 6, '$2b$12$cGRJfYvOkXk0Ys.ob1MaIeNjcbk40xtFSld29n/3/XqtUpGyDTrzK', '$2b$12$9cJx1w1I/7znFvqqnRxhNu', 0, '', 0, 0, '2024-10-10 00:13:43', NULL, NULL, '2024-10-10 00:13:43');
+(6, 6, '$2b$12$cGRJfYvOkXk0Ys.ob1MaIeNjcbk40xtFSld29n/3/XqtUpGyDTrzK', '$2b$12$9cJx1w1I/7znFvqqnRxhNu', 0, '', 0, 0, '2024-10-10 00:13:43', NULL, NULL, '2024-10-10 00:13:43'),
+(7, 7, '$2b$12$CcwIT62DatnrKSyPU5VnC.etPd6PgO5.IarDPYx1OSIM05PqaVW0K', '$2b$12$v.VRK1HvEqord/gwdLKCGu', 0, '', 0, 0, '2024-10-10 22:22:58', NULL, NULL, '2024-10-10 22:22:58');
 
 --
 -- Indexes for dumped tables
@@ -623,7 +668,7 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `addresses`
@@ -653,25 +698,25 @@ ALTER TABLE `customer_security`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `item_category`
 --
 ALTER TABLE `item_category`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
@@ -701,13 +746,13 @@ ALTER TABLE `service_promotions`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `service_type`
 --
 ALTER TABLE `service_type`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `stores`
@@ -719,13 +764,13 @@ ALTER TABLE `stores`
 -- AUTO_INCREMENT for table `user_account`
 --
 ALTER TABLE `user_account`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `user_security`
 --
 ALTER TABLE `user_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
