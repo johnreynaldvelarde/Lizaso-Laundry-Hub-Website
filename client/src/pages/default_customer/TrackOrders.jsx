@@ -4,7 +4,12 @@ import { motion } from "framer-motion";
 import norequest from "../../assets/images/nodata.jpg";
 import { useNavigate } from "react-router-dom";
 import styles from "../../styles/style";
-import { ChartPie, CheckCircle, LinkBreak } from "@phosphor-icons/react";
+import {
+  ChartPie,
+  CheckCircle,
+  LinkBreak,
+  XCircle,
+} from "@phosphor-icons/react";
 import { COLORS } from "../../constants/color";
 import PopMessageStaff from "./components/PopMessageStaff";
 import usePopup from "../../hooks/common/usePopup";
@@ -13,9 +18,6 @@ import PopPay from "./components/PopPay";
 import useFetchData from "../../hooks/common/useFetchData";
 import { getCustomerTrackOrderAndProgress } from "../../services/api/customerApi";
 import { QRCodeCanvas } from "qrcode.react";
-
-// Sample QR code image URL
-const qrCodeImageUrl = "https://via.placeholder.com/150"; // Replace this URL with your actual QR code image URL
 
 const TrackOrders = () => {
   const navigate = useNavigate();
@@ -34,6 +36,12 @@ const TrackOrders = () => {
 
   useEffect(() => {
     fetchCustomerTrackOrderData();
+    const intervalId = setInterval(() => {
+      fetchCustomerTrackOrderData();
+    }, 1000);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [fetchCustomerTrackOrderData]);
 
   const nextOrder = () => {
@@ -120,52 +128,80 @@ const TrackOrders = () => {
 
                 <div className="flex flex-col md:flex-row justify-between mb-4">
                   <div className="mb-4 md:mb-0">
-                    <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Status:</strong>
+                    <p className="mb-2" style={{ color: styles.text3 }}>
+                      <span className="font-bold">Status:</span>
                       <span
                         className={`ml-2 inline-block px-3 py-1 rounded-full text-sm font-semibold ${
                           orders[currentIndex].service_request
                             .request_status === "Pending Pickup"
-                            ? "bg-yellow-200 text-yellow-800"
-                            : orders[currentIndex].status === "Picked Up"
-                            ? "bg-blue-200 text-blue-800"
+                            ? "bg-[#ff7f50] text-white"
+                            : orders[currentIndex].service_request
+                                .request_status === "Ongoing Pickup"
+                            ? "bg-[#28a745] text-white"
+                            : orders[currentIndex].service_request
+                                .request_status === "Completed Pickup"
+                            ? "bg-[#5787C8] text-white"
                             : "bg-gray-200 text-gray-800"
                         }`}
                       >
                         {orders[currentIndex].service_request.request_status}
                       </span>
                     </p>
-                    <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Pickup Time:</strong>{" "}
-                      {orders[currentIndex].service_request.pickup_date}
+                    <p className="mb-2 flex" style={{ color: styles.text3 }}>
+                      <span className="font-bold">Pickup Time:</span>
+                      <span className="ml-2">
+                        {orders[currentIndex].service_request.pickup_date}
+                      </span>
                     </p>
-                    <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Delivery Time:</strong>{" "}
-                      {orders[currentIndex].service_request.delivery_date}
+                    <p className="mb-2 flex" style={{ color: styles.text3 }}>
+                      <span className="font-bold">Delivery Time:</span>
+                      <span
+                        className="ml-2"
+                        style={{ color: styles.secondary }}
+                      >
+                        {orders[currentIndex].service_request.delivery_date}
+                      </span>
                     </p>
-                    <p className=" mb-2" style={{ color: styles.primary }}>
-                      <strong>Pickup or Delivery Staff:</strong>{" "}
-                      {orders[currentIndex].service_request.user_id}
+                    <p className="mb-2 flex" style={{ color: styles.text3 }}>
+                      <span className="font-bold">
+                        Pickup or Delivery Staff:
+                      </span>
+                      <span
+                        className="ml-2 font-normal"
+                        style={{ color: styles.secondary }}
+                      >
+                        {orders[currentIndex].service_request.user_name}
+                      </span>
                     </p>
                     <button
-                      className="bg-[#5787C8] text-white px-4 py-2 rounded mt-2 hover:bg-[#3E5B8C]"
+                      className={`bg-[#5787C8] text-white px-4 py-2 rounded mt-2 ${
+                        orders[currentIndex].service_request.user_id
+                          ? "hover:bg-[#3E5B8C]"
+                          : "opacity-50 cursor-not-allowed"
+                      }`}
                       onClick={() => openPopup("messageStaff")}
+                      disabled={!orders[currentIndex].service_request.user_id} // Disable if user_id is false
                     >
                       Message the Delivery Staff
                     </button>
                   </div>
                   <div>
+                    <p className="mb-2 flex" style={{ color: styles.primary }}>
+                      <span className="font-bold">Selected Service:</span>
+                      <span className="ml-2">
+                        {orders[currentIndex].service_request.service_name}
+                      </span>
+                    </p>
                     <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Store Status:</strong>{" "}
-                      {orders[currentIndex].storeStatus}
+                      <strong>Base Price:</strong>{" "}
+                      {
+                        orders[currentIndex].service_request
+                          .service_default_price
+                      }
                     </p>
                     <p className="mb-2" style={{ color: styles.primary }}>
                       <strong>Assessment:</strong>{" "}
                       {orders[currentIndex].assessmentStatus}
-                    </p>
-                    <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Initial Payment:</strong>{" "}
-                      {orders[currentIndex].initialPayment}
                     </p>
                     <p className="mb-2" style={{ color: styles.primary }}>
                       <strong>Assigned Unit:</strong>{" "}
@@ -177,7 +213,7 @@ const TrackOrders = () => {
                 {/* QR Code Below Timeline */}
                 <div className="flex flex-col items-center mt-10">
                   <QRCodeCanvas
-                    value={orders[currentIndex].service_request.qr_code} // Use qrCode if you have a dynamic QR code
+                    value={orders[currentIndex].service_request.qr_code}
                     alt="QR Code"
                     size={300}
                   />
@@ -242,8 +278,14 @@ const TrackOrders = () => {
                             step.completed ? "bg-[#5787C8]" : "bg-gray-300"
                           }`}
                         >
-                          {step.completed && (
+                          {step.completed ? (
                             <CheckCircle
+                              size={20}
+                              color={COLORS.white}
+                              weight="duotone"
+                            />
+                          ) : (
+                            <XCircle
                               size={20}
                               color={COLORS.white}
                               weight="duotone"
@@ -261,7 +303,9 @@ const TrackOrders = () => {
                             className="text-gray-500"
                             style={{ color: styles.primary }}
                           >
-                            {step.description}
+                            {step.completed
+                              ? step.description
+                              : step.false_description}
                           </p>
                         </div>
                       </div>

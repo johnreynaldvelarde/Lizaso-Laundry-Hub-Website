@@ -64,7 +64,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       SET qr_code = ?, qr_code_generated = 1
       WHERE id = ?`;
 
-    await connection.execute(updateQuery, [qrCodeString, newRequestId]);
+    await connection.execute(updateQuery, [qrCodeData, newRequestId]);
 
     // Insert initial progress entry into Service_Progress table
     const progressQuery = `
@@ -249,6 +249,7 @@ export const handleGetCustomerMessages = async (req, res, connection) => {
   }
 };
 
+//# TRACKING ORDER
 export const handleGetCustomerTrackOrderAndProgress = async (
   req,
   res,
@@ -265,13 +266,13 @@ export const handleGetCustomerTrackOrderAndProgress = async (
       SELECT 
         sr.id AS service_request_id,
         sr.store_id,
+        IF(sr.user_id IS NULL, false, sr.user_id) AS user_id,
         sr.customer_id,
-        sr.service_type_id,
         sr.tracking_code,
         sr.customer_fullname,
         sr.customer_type,
         sr.notes,
-        COALESCE(sr.user_id, 'Waiting to assign') AS user_id,
+        COALESCE(ua.username, 'Waiting') AS username,
         sr.request_date,
         COALESCE(sr.pickup_date, 'Waiting') AS pickup_date,
         COALESCE(sr.delivery_date, 'Waiting') AS delivery_date,
@@ -280,14 +281,22 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         sr.qr_code_generated,
         sr.isPickup,
         sr.isDelivery,
+        sp.id AS progress_id,
         sp.stage,
         sp.description,
         sp.completed,
-        sp.status_date
+        sp.false_description,
+        sp.status_date,
+        st.service_name,
+        st.default_price
       FROM 
         Service_Request sr
       LEFT JOIN 
         Service_Progress sp ON sr.id = sp.service_request_id
+      LEFT JOIN 
+        User_Account ua ON sr.user_id = ua.id
+      LEFT JOIN 
+        Service_Type st ON sr.service_type_id = st.id
       WHERE 
         sr.customer_id = ? 
         AND sr.request_status != 'Canceled'
@@ -298,7 +307,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
     const [rows] = await connection.execute(query, [id]);
 
     // Structure the response data
-    const responseData = rows.reduce((acc, row) => {
+    const result = rows.reduce((acc, row) => {
       // Check if the service request already exists in the accumulator
       let serviceRequest = acc.find(
         (req) => req.service_request.id === row.service_request_id
@@ -311,8 +320,11 @@ export const handleGetCustomerTrackOrderAndProgress = async (
             id: row.service_request_id,
             store_id: row.store_id,
             user_id: row.user_id,
+            user_name: row.username,
             customer_id: row.customer_id,
             service_type_id: row.service_type_id,
+            service_name: row.service_name,
+            service_default_price: row.default_price,
             tracking_code: row.tracking_code,
             customer_fullname: row.customer_fullname,
             customer_type: row.customer_type,
@@ -333,20 +345,26 @@ export const handleGetCustomerTrackOrderAndProgress = async (
 
       // Add the progress information for this service request
       serviceRequest.progress.push({
+        id: row.progress_id,
         stage: row.stage,
         description: row.description,
         completed: row.completed,
         status_date: row.status_date,
+        false_description: row.false_description,
       });
 
       return acc;
     }, []);
 
+    result.forEach((serviceRequest) => {
+      serviceRequest.progress.sort((a, b) => a.id - b.id);
+    });
+
     await connection.commit();
 
     res.status(200).json({
       success: true,
-      data: responseData,
+      data: result,
     });
   } catch (error) {
     await connection.rollback();

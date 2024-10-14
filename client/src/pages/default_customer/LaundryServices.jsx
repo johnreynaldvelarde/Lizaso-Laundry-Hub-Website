@@ -28,25 +28,6 @@ const LaundryServices = () => {
     fetchServiceAndPromotionsData();
   }, [fetchServiceAndPromotionsData]);
 
-  // const fetchServiceTypeAndPromotions = async () => {
-  //   if (!userDetails?.storeId) return;
-
-  //   try {
-  //     const response =
-  //       await getCustomerServiceAndPromotions.getServiceWithPromotions(
-  //         userDetails.storeId
-  //       );
-  //     if (response) {
-  //       const service = response.data || [];
-  //       setService(service);
-  //     } else {
-  //       console.error("Unexpected response format:", response);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-
   // Example of promotional services
   const specialPromos = [
     { id: 1, label: "Wash & Fold", price: 18, promo: "20% Off Today!" },

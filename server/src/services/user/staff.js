@@ -351,7 +351,7 @@ export const handleUpdateServiceRequestUsingQrCode = async (
     ) {
       await connection.execute(
         `UPDATE Service_Request SET request_status = ?,  pickup_date = NOW(), isPickup = ? WHERE id = ?`,
-        ["Complete Pickup", true, id]
+        ["Completed Pickup", true, id]
       );
     }
     // New Step: If isPickup is true and request_status is "Complete Pickup"
@@ -362,7 +362,7 @@ export const handleUpdateServiceRequestUsingQrCode = async (
     ) {
       await connection.execute(
         `UPDATE Service_Request SET request_status = ?,  delivery_date = NOW(), isDelivery = ? WHERE id = ?`,
-        ["Complete Delivery", true, id]
+        ["Completed Delivery", true, id]
       );
     } else {
       return res.status(200).json({
