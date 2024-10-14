@@ -39,7 +39,7 @@ const TrackOrders = () => {
     fetchCustomerTrackOrderData();
     const intervalId = setInterval(() => {
       fetchCustomerTrackOrderData();
-    }, 1000);
+    }, 3000);
     return () => {
       clearInterval(intervalId);
     };

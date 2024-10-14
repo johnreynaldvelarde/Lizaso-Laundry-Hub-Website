@@ -12,7 +12,7 @@ import {
   handleUpdateServiceRequestCancel,
   handleUpdateServiceRequestOngoing,
 } from "../../services/user/staff.js";
-import { handleGetCustomerMessages } from "../../services/user/customer.js";
+import { handleGetCustomerConvo } from "../../services/user/customer.js";
 
 const router = express.Router();
 
@@ -75,7 +75,7 @@ router.get(
   "/customer/:id/get-customer-list-convo",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleGetCustomerMessages(req, res, connection);
+      await handleGetCustomerConvo(req, res, connection);
     } catch (error) {
       console.error("Error retrieving customer request:", error);
       res.status(500).json({ error: "Internal Server Error" });

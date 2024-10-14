@@ -251,6 +251,54 @@ export const handleGetServiceTypeAndPromotions = async (
   }
 };
 
+export const handleGetCustomerConvo = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT
+        m.id AS message_id,
+        m.conversation_id,
+        m.sender_id,
+        m.receiver_id,
+        m.sender_type,
+        m.receiver_type,
+        m.message,
+        m.created_at,
+        c.last_message,
+        c.last_message_date
+      FROM
+        Messages m
+      JOIN
+        Conversations c ON m.conversation_id = c.id
+      WHERE
+        c.customer_sender_id = ? OR c.customer_receiver_id = ?
+      ORDER BY
+        m.created_at ASC
+    `;
+
+    const [rows] = await connection.execute(query, [id, id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching messages:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching messages.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
 // export const handleGetCustomerTrackOrderAndProgress = async (
 //   req,
 //   res,
@@ -286,57 +334,33 @@ export const handleGetServiceTypeAndPromotions = async (
 //   }
 // };
 
-export const handleGetCustomerMessages = async (req, res, connection) => {
-  const { id } = req.params; // 'id' is the Customer ID (e.g., customer ID)
+// export const handleGetMessagesForCustomers = async (req, res, connection) => {
+//   try {
+//     await connection.beginTransaction();
 
-  try {
-    await connection.beginTransaction();
+//     const query = `
 
-    const query = `
-      SELECT 
-        m.id,
-        m.message,
-        m.sender_type,
-        m.receiver_type,
-        m.isRead,
-        m.date_sent,
-        CASE
-          WHEN m.sender_customer_id IS NOT NULL THEN CONCAT(c.c_firstname, ' ', c.c_middlename, ' ', c.c_lastname)
-          WHEN m.sender_user_account_id IS NOT NULL THEN CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)
-        END AS sender_full_name,
-        CASE
-          WHEN m.recipient_customer_id IS NOT NULL THEN CONCAT(c2.c_firstname, ' ', c2.c_middlename, ' ', c2.c_lastname)
-          WHEN m.recipient_user_account_id IS NOT NULL THEN CONCAT(u2.first_name, ' ', u2.middle_name, ' ', u2.last_name)
-        END AS recipient_full_name
-      FROM Message m
-      LEFT JOIN Customer c ON m.sender_customer_id = c.id OR m.recipient_customer_id = c.id
-      LEFT JOIN User_Account u ON m.sender_user_account_id = u.id OR m.recipient_user_account_id = u.id
-      WHERE (
-        m.sender_customer_id = ? OR
-        m.recipient_customer_id = ?
-      )
-      ORDER BY m.date_sent DESC
-    `;
+//     `;
 
-    const [rows] = await connection.execute(query, [id, id]);
+//     const [rows] = await connection.execute(query);
 
-    await connection.commit();
+//     await connection.commit();
 
-    res.status(200).json({
-      success: true,
-      messages: rows,
-    });
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error fetching customer messages:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching the customer messages.",
-    });
-  } finally {
-    connection.release();
-  }
-};
+//     res.status(200).json({
+//       success: true,
+//       messages: rows,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fees.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
 
 //# TRACKING ORDER
 export const handleGetCustomerTrackOrderAndProgress = async (
@@ -772,6 +796,58 @@ export const handleUpdateCustomerBasicInformation = async (
 //     res.status(500).json({
 //       success: false,
 //       message: "An error occurred while updating the request.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+// export const handleGetCustomerMessages = async (req, res, connection) => {
+//   const { id } = req.params; // 'id' is the Customer ID (e.g., customer ID)
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+//       SELECT
+//         m.id,
+//         m.message,
+//         m.sender_type,
+//         m.receiver_type,
+//         m.isRead,
+//         m.date_sent,
+//         CASE
+//           WHEN m.sender_customer_id IS NOT NULL THEN CONCAT(c.c_firstname, ' ', c.c_middlename, ' ', c.c_lastname)
+//           WHEN m.sender_user_account_id IS NOT NULL THEN CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)
+//         END AS sender_full_name,
+//         CASE
+//           WHEN m.recipient_customer_id IS NOT NULL THEN CONCAT(c2.c_firstname, ' ', c2.c_middlename, ' ', c2.c_lastname)
+//           WHEN m.recipient_user_account_id IS NOT NULL THEN CONCAT(u2.first_name, ' ', u2.middle_name, ' ', u2.last_name)
+//         END AS recipient_full_name
+//       FROM Message m
+//       LEFT JOIN Customer c ON m.sender_customer_id = c.id OR m.recipient_customer_id = c.id
+//       LEFT JOIN User_Account u ON m.sender_user_account_id = u.id OR m.recipient_user_account_id = u.id
+//       WHERE (
+//         m.sender_customer_id = ? OR
+//         m.recipient_customer_id = ?
+//       )
+//       ORDER BY m.date_sent DESC
+//     `;
+
+//     const [rows] = await connection.execute(query, [id, id]);
+
+//     await connection.commit();
+
+//     res.status(200).json({
+//       success: true,
+//       messages: rows,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching customer messages:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching the customer messages.",
 //     });
 //   } finally {
 //     connection.release();

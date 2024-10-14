@@ -348,19 +348,20 @@ isStatus
 isArhive
 
 
---> Messages <--
+--> Conversations <--
 id (Primary Key)
-user_sender_id (Foregin Key)
-customer_sender_id (Foregin Key)
-user_receiver_id (Foregin Key)
-customer_receiver_id (Foregin Key)
+user_sender_id (Foregin Key) NULL
+customer_sender_id (Foregin Key)  NULL
+user_receiver_id (Foregin Key)  NULL
+customer_receiver_id (Foregin Key)  NULL
 last_message
 last_message_date
 created_at
 updated_at
 
---> Conversations <--
+--> Messages <--
 id (Primary Key)
+conversation_id (FOREIGN)
 sender_id 
 receiver_id
 sender_type

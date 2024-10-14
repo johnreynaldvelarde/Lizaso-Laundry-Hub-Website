@@ -1,6 +1,7 @@
 import express from "express";
 import { getPool } from "../db/dbConfig.js";
 import {
+  handleGetCustomerConvo,
   handleGetCustomerTrackOrderAndProgress,
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
@@ -54,6 +55,18 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetServiceTypeAndPromotions(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service types:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/customers/:id/get-customer-convo",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetCustomerConvo(req, res, connection);
     } catch (error) {
       console.error("Error retrieving service types:", error);
       res.status(500).json({ error: "Internal Server Error" });

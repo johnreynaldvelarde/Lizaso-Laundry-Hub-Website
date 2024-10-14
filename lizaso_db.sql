@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 13, 2024 at 05:08 PM
+-- Generation Time: Oct 14, 2024 at 03:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -93,7 +93,8 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (63, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 11:30:03'),
 (64, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 19:03:25'),
 (65, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 22:45:00'),
-(66, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 22:46:47');
+(66, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-13 22:46:47'),
+(67, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-14 20:06:56');
 
 -- --------------------------------------------------------
 
@@ -121,7 +122,8 @@ CREATE TABLE `addresses` (
 INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
 (1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-07 08:10:31'),
 (2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-07 08:48:58'),
-(3, 'Balagtas, Bulacan', 'Balagtas, Bulacan', 'PH', 'Bulacan', 'Balagtas', '3016', 14.834012, 120.901617, '2024-10-10 01:16:10');
+(3, 'Balagtas, Bulacan', 'Balagtas, Bulacan', 'PH', 'Bulacan', 'Balagtas', '3016', 14.834012, 120.901617, '2024-10-10 01:16:10'),
+(4, 'Balagtas, Bulacan', 'Balagtas, Bulacan', 'PH', 'Bulacan', 'Balagtas', '3017', 14.824583, 120.906787, '2024-10-14 05:55:39');
 
 -- --------------------------------------------------------
 
@@ -131,12 +133,14 @@ INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `pro
 
 CREATE TABLE `conversations` (
   `id` bigint(20) NOT NULL,
-  `participant_1` bigint(20) NOT NULL,
-  `participant_2` bigint(20) NOT NULL,
-  `is_user_1` tinyint(1) NOT NULL,
-  `is_user_2` tinyint(1) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `last_message_at` datetime NOT NULL
+  `user_sender_id` bigint(20) DEFAULT NULL,
+  `customer_sender_id` bigint(20) DEFAULT NULL,
+  `user_receiver_id` bigint(20) DEFAULT NULL,
+  `customer_receiver_id` bigint(20) DEFAULT NULL,
+  `last_message` text DEFAULT NULL,
+  `last_message_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -167,7 +171,8 @@ CREATE TABLE `customer` (
 
 INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
 (1, 1, 2, 'Rose', '', 'Oriana', 'rose16', '09672525061', 'rose@gmail.com', 1, 1, 0, '2024-10-07 16:48:11'),
-(2, 1, 3, 'Junjun', 'Santos', 'P.', 'junjun12', '0947272761', 'junjun12@gmail.com', 1, 1, 0, '2024-10-10 09:14:37');
+(2, 1, 3, 'Junjun', 'Santos', 'P.', 'junjun12', '0947272761', 'junjun12@gmail.com', 1, 1, 0, '2024-10-10 09:14:37'),
+(3, 1, 4, 'Alexia', 'R', 'Midgar', 'alexia12', '092785858071', 'alexia16@gmail.com', 1, 1, 0, '2024-10-14 13:54:37');
 
 -- --------------------------------------------------------
 
@@ -196,7 +201,8 @@ CREATE TABLE `customer_security` (
 
 INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
 (1, 1, '$2b$12$5fs5dLhzVeEwONABi2kBlum6fOdNsvm85MH5HxeIE9Uk7QKLTgWdi', '$2b$12$B0osXUsq9CIlU5DEoYWwa.', 0, '', 0, 0, NULL, NULL, NULL, NULL),
-(2, 2, '$2b$12$Y5KsZjgtW9rBbtI66ojMn.62rm86cz3QCkNAQhrmoYgsvycWFtO0q', '$2b$12$5ARniHHdbvV4k3kIrCMA7.', 0, '', 0, 0, NULL, NULL, NULL, NULL);
+(2, 2, '$2b$12$Y5KsZjgtW9rBbtI66ojMn.62rm86cz3QCkNAQhrmoYgsvycWFtO0q', '$2b$12$5ARniHHdbvV4k3kIrCMA7.', 0, '', 0, 0, NULL, NULL, NULL, NULL),
+(3, 3, '$2b$12$20RCQTh5puW8ogLcCXaOneL7JhPFImubXDAgU6U3nBs1dRjSBgrrO', '$2b$12$ICl1xHJVzMtQjoIgppeVse', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -321,11 +327,11 @@ CREATE TABLE `messages` (
   `id` bigint(20) NOT NULL,
   `conversation_id` bigint(20) NOT NULL,
   `sender_id` bigint(20) NOT NULL,
-  `is_sender_user` tinyint(1) NOT NULL,
-  `content` text NOT NULL,
-  `message_type` varchar(100) NOT NULL,
-  `sent_at` datetime NOT NULL,
-  `is_read` tinyint(1) NOT NULL
+  `receiver_id` bigint(20) NOT NULL,
+  `sender_type` enum('User','Customer') NOT NULL,
+  `receiver_type` enum('User','Customer') NOT NULL,
+  `message` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -377,26 +383,36 @@ CREATE TABLE `service_progress` (
 --
 
 INSERT INTO `service_progress` (`id`, `service_request_id`, `stage`, `description`, `status_date`, `completed`, `false_description`) VALUES
-(41, 51, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-13 22:35:29', 1, 'Pickup request received; waiting for staff assignment.'),
-(42, 51, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
-(43, 51, 'Complete Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
-(44, 51, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
-(45, 51, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
-(46, 51, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
-(47, 51, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
-(48, 51, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
-(49, 51, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
-(50, 51, 'Complete Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
-(51, 53, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-13 22:48:56', 1, 'Pickup request received; waiting for staff assignment.'),
-(52, 53, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
-(53, 53, 'Complete Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
-(54, 53, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
-(55, 53, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
-(56, 53, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
-(57, 53, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
-(58, 53, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
-(59, 53, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
-(60, 53, 'Complete Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
+(111, 59, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-14 16:35:28', 1, 'Pickup request received; waiting for staff assignment.'),
+(112, 59, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-14 16:48:12', 1, 'Pickup has not yet started.'),
+(113, 59, 'Completed Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
+(114, 59, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(115, 59, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(116, 59, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(117, 59, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(118, 59, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(119, 59, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(120, 59, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(121, 60, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-14 18:17:50', 1, 'Pickup request received; waiting for staff assignment.'),
+(122, 60, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-14 18:18:21', 1, 'Pickup has not yet started.'),
+(123, 60, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-14 18:18:21', 1, 'Pickup has not been completed.'),
+(124, 60, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(125, 60, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(126, 60, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(127, 60, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(128, 60, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(129, 60, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(130, 60, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(131, 61, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-14 20:46:55', 1, 'Pickup request received; waiting for staff assignment.'),
+(132, 61, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-14 20:48:01', 1, 'Pickup has not yet started.'),
+(133, 61, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-14 20:48:01', 1, 'Pickup has not been completed.'),
+(134, 61, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(135, 61, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(136, 61, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(137, 61, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(138, 61, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(139, 61, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(140, 61, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
 
 -- --------------------------------------------------------
 
@@ -448,8 +464,9 @@ CREATE TABLE `service_request` (
 --
 
 INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `tracking_code`, `customer_fullname`, `customer_type`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`, `isPickup`, `isDelivery`) VALUES
-(51, 1, NULL, 1, 1, '#7530A07D003E405386C9', 'Rose Oriana', 'Online', '', '2024-10-13 14:35:29', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAPHSURBVO3BMY7sVgADQfbD3P/K7Q0cMBIsSLP2N1iFPzLzt5OZcjJTTmbKyUw5mSknM+VkppzMlJOZcjJTTmbKyUw5mSknM+VkpnzyEJDfpOYOIE3NE0CuqGlAfpOaJ05myslMOZkpn7xMzZuAXAFyRU0D0tQ0IFfUPKHmT', 1, 0, 0),
-(53, 1, NULL, 1, 2, '#79067530FEF24667971B', 'Rose Oriana', 'Online', '', '2024-10-13 14:48:56', NULL, NULL, 'Pending Pickup', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAYAAABRRIOnAAAAAklEQVR4AewaftIAAAOFSURBVO3BQY4jSQIDQfeA/v9lbh/mwFMAQko1XbM0M38w84/DTDnMlMNMOcyUw0w5zJTDTDnMlMNMOcyUw0w5zJTDTDnMlMNMefGQyk9KQlNpSWgqTyShqbQk3Kj8pCQ8cZgph5lymCkvPiwJn6TyRBLeodJUblRaEm6S8', 1, 0, 0);
+(59, 1, 6, 1, 1, '#55E049EF8E5D4C2894DE', 'Rose Oriana', 'Online', '', '2024-10-14 08:35:28', NULL, NULL, 'Ongoing Pickup', 'SR-59-#55E049EF8E5D4C2894DE', 1, 0, 0),
+(60, 1, 6, 3, 1, '#5E1BAECF823449AB8F4E', 'Alexia Midgar', 'Online', '', '2024-10-14 10:17:50', '2024-10-14 10:18:21', NULL, 'Completed Pickup', 'SR-60-#5E1BAECF823449AB8F4E', 1, 1, 0),
+(61, 1, 6, 3, 6, '#CA58F49433D747498BC8', 'Alexia Midgar', 'Online', '', '2024-10-14 12:46:55', '2024-10-14 12:48:01', NULL, 'Completed Pickup', 'SR-61-#CA58F49433D747498BC8', 1, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -591,7 +608,11 @@ ALTER TABLE `addresses`
 -- Indexes for table `conversations`
 --
 ALTER TABLE `conversations`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Conversations_Sender_User_Account` (`user_sender_id`),
+  ADD KEY `Conversations_Receiver_User_Account` (`user_receiver_id`),
+  ADD KEY `Conversations_Sender_Customer` (`customer_sender_id`),
+  ADD KEY `Conversations_Receiver_Customer` (`customer_receiver_id`);
 
 --
 -- Indexes for table `customer`
@@ -650,7 +671,7 @@ ALTER TABLE `laundry_unit`
 --
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `Messages_Conversation` (`conversation_id`);
+  ADD KEY `Messages_Conversations` (`conversation_id`);
 
 --
 -- Indexes for table `roles_permissions`
@@ -719,31 +740,31 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `conversations`
 --
 ALTER TABLE `conversations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `customer_security`
 --
 ALTER TABLE `customer_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `inventory`
@@ -779,7 +800,7 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `roles_permissions`
@@ -791,7 +812,7 @@ ALTER TABLE `roles_permissions`
 -- AUTO_INCREMENT for table `service_progress`
 --
 ALTER TABLE `service_progress`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=141;
 
 --
 -- AUTO_INCREMENT for table `service_promotions`
@@ -803,7 +824,7 @@ ALTER TABLE `service_promotions`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `service_type`
@@ -838,6 +859,15 @@ ALTER TABLE `user_security`
 --
 ALTER TABLE `activity_log`
   ADD CONSTRAINT `Activity_Log_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
+
+--
+-- Constraints for table `conversations`
+--
+ALTER TABLE `conversations`
+  ADD CONSTRAINT `Conversations_Receiver_Customer` FOREIGN KEY (`customer_receiver_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `Conversations_Receiver_User_Account` FOREIGN KEY (`user_receiver_id`) REFERENCES `user_account` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `Conversations_Sender_Customer` FOREIGN KEY (`customer_sender_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `Conversations_Sender_User_Account` FOREIGN KEY (`user_sender_id`) REFERENCES `user_account` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `customer`
@@ -883,7 +913,7 @@ ALTER TABLE `laundry_unit`
 -- Constraints for table `messages`
 --
 ALTER TABLE `messages`
-  ADD CONSTRAINT `Messages_Conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`);
+  ADD CONSTRAINT `Messages_Conversations` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `service_progress`

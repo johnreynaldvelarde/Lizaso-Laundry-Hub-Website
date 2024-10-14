@@ -75,4 +75,19 @@ export const getCustomerTrackOrderAndProgress = {
   },
 };
 
+//  <----- Get Customer Message ----->
+export const getCustomerMessageConvo = {
+  getCustomerConvo: async (customerId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/customers/${customerId}/get-customer-convo`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 // #PUT
