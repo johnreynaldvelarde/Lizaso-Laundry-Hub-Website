@@ -191,16 +191,17 @@ export const handleUpdateServiceRequestCancel = async (
   connection
 ) => {
   const { id } = req.params;
+  const { user_id } = req.body;
 
   try {
     await connection.beginTransaction();
 
     const updateQuery = `
         UPDATE Service_Request
-        SET request_status = 'Canceled'
+        SET request_status = 'Canceled',  user_id = ?
         WHERE id = ?`;
 
-    const [result] = await connection.execute(updateQuery, [id]);
+    const [result] = await connection.execute(updateQuery, [user_id, id]);
 
     if (result.affectedRows === 0) {
       return res
@@ -232,16 +233,17 @@ export const handleUpdateServiceRequestOngoing = async (
   connection
 ) => {
   const { id } = req.params;
+  const { user_id } = req.body;
 
   try {
     await connection.beginTransaction();
 
     const updateQuery = `
-        UPDATE Service_Request
-        SET request_status = 'Ongoing Pickup'
-        WHERE id = ?`;
+      UPDATE Service_Request
+      SET request_status = 'Ongoing Pickup', user_id = ?
+      WHERE id = ?`;
 
-    await connection.execute(updateQuery, [id]);
+    await connection.execute(updateQuery, [user_id, id]);
 
     const updateProgressQuery = `
       UPDATE Service_Progress
@@ -275,13 +277,14 @@ export const handleUpdateServiceRequestBackToPending = async (
   connection
 ) => {
   const { id } = req.params;
+  const { user_id } = req.body;
 
   try {
     await connection.beginTransaction();
 
     const updateQuery = `
           UPDATE Service_Request
-          SET request_status = 'Pending Pickup'
+          SET request_status = 'Pending Pickup', user_id = NULL
           WHERE id = ?`;
 
     await connection.execute(updateQuery, [id]);
@@ -326,6 +329,7 @@ export const handleUpdateServiceRequestFinishPickup = async (
     const updateQuery = `
           UPDATE Service_Request
           SET request_status = 'Completed Pickup',
+            pickup_date = NOW(),
             isPickup = TRUE
           WHERE id = ?`;
 
@@ -364,7 +368,9 @@ export const handleUpdateServiceRequestUsingQrCode = async (
   connection
 ) => {
   const { id } = req.params;
-  const { code } = req.body;
+  const { code, user_id } = req.body;
+
+  console.log(user_id);
 
   try {
     await connection.beginTransaction();
@@ -401,8 +407,8 @@ export const handleUpdateServiceRequestUsingQrCode = async (
         request_status === "Ongoing Pickup")
     ) {
       await connection.execute(
-        `UPDATE Service_Request SET request_status = ?,  pickup_date = NOW(), isPickup = ? WHERE id = ?`,
-        ["Completed Pickup", true, id]
+        `UPDATE Service_Request SET user_id = ?, request_status = ?,  pickup_date = NOW(), isPickup = ? WHERE id = ?`,
+        [user_id, "Completed Pickup", true, id]
       );
 
       await connection.execute(

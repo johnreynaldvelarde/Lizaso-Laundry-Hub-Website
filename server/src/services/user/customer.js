@@ -271,10 +271,10 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         sr.customer_fullname,
         sr.customer_type,
         sr.notes,
-        COALESCE(ua.username, 'Waiting') AS username,
+        COALESCE(ua.username, 'Waiting...') AS username,
         sr.request_date,
-        COALESCE(sr.pickup_date, 'Waiting') AS pickup_date,
-        COALESCE(sr.delivery_date, 'Waiting') AS delivery_date,
+        COALESCE(sr.pickup_date, 'Waiting...') AS pickup_date,
+        COALESCE(sr.delivery_date, 'Waiting...') AS delivery_date,
         sr.request_status,
         sr.qr_code,
         sr.qr_code_generated,
@@ -287,7 +287,8 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         sp.false_description,
         sp.status_date,
         st.service_name,
-        st.default_price
+        st.default_price,
+        COALESCE(lu.unit_name, 'Waiting...') AS unit_name
       FROM 
         Service_Request sr
       LEFT JOIN 
@@ -296,6 +297,10 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         User_Account ua ON sr.user_id = ua.id
       LEFT JOIN 
         Service_Type st ON sr.service_type_id = st.id
+      LEFT JOIN 
+        Laundry_Assignment la ON sr.id = la.service_request_id
+      LEFT JOIN 
+        Laundry_Unit lu ON la.unit_id = lu.id
       WHERE 
         sr.customer_id = ? 
         AND sr.request_status != 'Canceled'
@@ -336,6 +341,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
             qr_code_generated: row.qr_code_generated,
             isPickup: row.isPickup,
             isDelivery: row.isDelivery,
+            unit_name: row.unit_name,
           },
           progress: [], // Initialize the progress array
         };

@@ -201,3 +201,131 @@ export const handleAdminBasedSetNewUser = async (req, res, connection) => {
 //     connection.release();
 //   }
 // };
+
+// TRACK ORDER
+export const handleGetCustomerTrackOrderAndProgress = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params; // customer id
+
+  try {
+    await connection.beginTransaction();
+
+    // SQL query to get service requests along with progress
+    const query = `
+      SELECT 
+        sr.id AS service_request_id,
+        sr.store_id,
+        IF(sr.user_id IS NULL, false, sr.user_id) AS user_id,
+        sr.customer_id,
+        sr.tracking_code,
+        sr.customer_fullname,
+        sr.customer_type,
+        sr.notes,
+        COALESCE(ua.username, 'Waiting') AS username,
+        sr.request_date,
+        COALESCE(sr.pickup_date, 'Waiting') AS pickup_date,
+        COALESCE(sr.delivery_date, 'Waiting') AS delivery_date,
+        sr.request_status,
+        sr.qr_code,
+        sr.qr_code_generated,
+        sr.isPickup,
+        sr.isDelivery,
+        sp.id AS progress_id,
+        sp.stage,
+        sp.description,
+        sp.completed,
+        sp.false_description,
+        sp.status_date,
+        st.service_name,
+        st.default_price
+      FROM 
+        Service_Request sr
+      LEFT JOIN 
+        Service_Progress sp ON sr.id = sp.service_request_id
+      LEFT JOIN 
+        User_Account ua ON sr.user_id = ua.id
+      LEFT JOIN 
+        Service_Type st ON sr.service_type_id = st.id
+      WHERE 
+        sr.customer_id = ? 
+        AND sr.request_status != 'Canceled'
+      ORDER BY 
+        sr.request_date DESC;
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    // Structure the response data
+    const result = rows.reduce((acc, row) => {
+      // Check if the service request already exists in the accumulator
+      let serviceRequest = acc.find(
+        (req) => req.service_request.id === row.service_request_id
+      );
+
+      // If it doesn't exist, create a new entry
+      if (!serviceRequest) {
+        serviceRequest = {
+          service_request: {
+            id: row.service_request_id,
+            store_id: row.store_id,
+            user_id: row.user_id,
+            user_name: row.username,
+            customer_id: row.customer_id,
+            service_type_id: row.service_type_id,
+            service_name: row.service_name,
+            service_default_price: row.default_price,
+            tracking_code: row.tracking_code,
+            customer_fullname: row.customer_fullname,
+            customer_type: row.customer_type,
+            notes: row.notes,
+            request_date: row.request_date,
+            pickup_date: row.pickup_date,
+            delivery_date: row.delivery_date,
+            request_status: row.request_status,
+            qr_code: row.qr_code,
+            qr_code_generated: row.qr_code_generated,
+            isPickup: row.isPickup,
+            isDelivery: row.isDelivery,
+          },
+          progress: [], // Initialize the progress array
+        };
+        acc.push(serviceRequest);
+      }
+
+      // Add the progress information for this service request
+      serviceRequest.progress.push({
+        id: row.progress_id,
+        stage: row.stage,
+        description: row.description,
+        completed: row.completed,
+        status_date: row.status_date,
+        false_description: row.false_description,
+      });
+
+      return acc;
+    }, []);
+
+    result.forEach((serviceRequest) => {
+      serviceRequest.progress.sort((a, b) => a.id - b.id);
+    });
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error customer track order and progress:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};

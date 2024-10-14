@@ -129,7 +129,7 @@ const TrackOrders = () => {
 
                 <div className="flex flex-col md:flex-row justify-between mb-4">
                   <div className="mb-4 md:mb-0">
-                    <p className="mb-2" style={{ color: styles.text3 }}>
+                    <p className="mb-2" style={{ color: styles.primary }}>
                       <span className="font-bold">Status:</span>
                       <span
                         className={`ml-2 inline-block px-3 py-1 rounded-full text-sm font-semibold ${
@@ -148,13 +148,16 @@ const TrackOrders = () => {
                         {orders[currentIndex].service_request.request_status}
                       </span>
                     </p>
-                    <p className="mb-2 flex" style={{ color: styles.text3 }}>
+                    <p className="mb-2 flex" style={{ color: styles.primary }}>
                       <span className="font-bold">Pickup Time:</span>
-                      <span className="ml-2">
+                      <span
+                        className="ml-2"
+                        style={{ color: styles.secondary }}
+                      >
                         {orders[currentIndex].service_request.pickup_date}
                       </span>
                     </p>
-                    <p className="mb-2 flex" style={{ color: styles.text3 }}>
+                    <p className="mb-2 flex" style={{ color: styles.primary }}>
                       <span className="font-bold">Delivery Time:</span>
                       <span
                         className="ml-2"
@@ -163,7 +166,7 @@ const TrackOrders = () => {
                         {orders[currentIndex].service_request.delivery_date}
                       </span>
                     </p>
-                    <p className="mb-2 flex" style={{ color: styles.text3 }}>
+                    <p className="mb-2 flex" style={{ color: styles.primary }}>
                       <span className="font-bold">
                         Pickup or Delivery Staff:
                       </span>
@@ -189,24 +192,42 @@ const TrackOrders = () => {
                   <div>
                     <p className="mb-2 flex" style={{ color: styles.primary }}>
                       <span className="font-bold">Selected Service:</span>
-                      <span className="ml-2">
+                      <span
+                        className="ml-2"
+                        style={{ color: styles.secondary }}
+                      >
                         {orders[currentIndex].service_request.service_name}
                       </span>
                     </p>
                     <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Base Price:</strong>{" "}
-                      {
-                        orders[currentIndex].service_request
-                          .service_default_price
-                      }
+                      <span className="font-bold">Base Price:</span>
+                      <span
+                        className="ml-2"
+                        style={{ color: styles.secondary }}
+                      >
+                        {
+                          orders[currentIndex].service_request
+                            .service_default_price
+                        }
+                      </span>
                     </p>
                     <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Assessment:</strong>{" "}
-                      {orders[currentIndex].assessmentStatus}
+                      <span className="font-bold">Assigned Unit:</span>
+                      <span
+                        className="ml-2"
+                        style={{ color: styles.secondary }}
+                      >
+                        {orders[currentIndex].service_request.unit_name}
+                      </span>
                     </p>
                     <p className="mb-2" style={{ color: styles.primary }}>
-                      <strong>Assigned Unit:</strong>{" "}
-                      {orders[currentIndex].assignedUnit}
+                      <span className="font-bold">Assessment:</span>
+                      <span
+                        className="ml-2"
+                        style={{ color: styles.secondary }}
+                      >
+                        {orders[currentIndex].assessmentStatus}
+                      </span>
                     </p>
                   </div>
                 </div>
