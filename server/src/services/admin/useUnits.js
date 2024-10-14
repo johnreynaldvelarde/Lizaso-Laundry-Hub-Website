@@ -267,7 +267,7 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
         JOIN 
           Service_Type st ON sr.service_type_id = st.id
         WHERE 
-          sr.store_id = ? AND sr.request_status = 'Complete Pickup'
+          sr.store_id = ? AND sr.request_status = 'Completed Pickup'
       `;
 
     const [results] = await connection.execute(query, [id]);

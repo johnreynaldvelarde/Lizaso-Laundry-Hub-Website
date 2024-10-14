@@ -52,7 +52,7 @@ const styles = {
 
   // Primary and Secondary colors
   primary: "#595959",
-  secondary: "#5787C8",
+  secondary: "#5787C8#5787C8",
   third: "#447F8C",
   secondaryHover1: "#3D6F9B",
   secondaryHover: "#3E5B8C",

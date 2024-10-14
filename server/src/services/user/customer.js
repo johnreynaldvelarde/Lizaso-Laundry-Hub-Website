@@ -105,6 +105,30 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   }
 };
 
+//#CUSTOMER MESSAGE THE DELIVERY STAFF
+// export const handlePostNewMessages = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const { recieverId, text, senderType, receiverType } = req.body;
+
+//   console.log(recieverId);
+//   console.log(text);
+//   console.log(senderType);
+//   console.log(receiverType);
+
+//   try {
+//     await connection.beginTransaction();
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error updating service request status:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while updating the request.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
 // GET
 export const handleGetServiceTypeAndPromotions = async (
   req,
@@ -271,13 +295,13 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         sr.customer_fullname,
         sr.customer_type,
         sr.notes,
-        COALESCE(ua.username, 'Waiting...') AS username,
+        COALESCE(CONCAT(ua.first_name, ' ', ua.middle_name, ' ', ua.last_name), 'Waiting...') AS username,
         sr.request_date,
         COALESCE(sr.pickup_date, 'Waiting...') AS pickup_date,
         COALESCE(sr.delivery_date, 'Waiting...') AS delivery_date,
         sr.request_status,
         sr.qr_code,
-        sr.qr_code_generated,
+        sr.qr_code_generated, 
         sr.isPickup,
         sr.isDelivery,
         sp.id AS progress_id,

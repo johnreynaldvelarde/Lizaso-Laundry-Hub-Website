@@ -31,9 +31,9 @@ const TrackOrders = () => {
   const fetchCustomerTrackOrderData = useCallback(() => {
     fetchCustomerTrackOrder(
       getCustomerTrackOrderAndProgress.getCustomerTrackOrder,
-      userDetails.storeId
+      userDetails.userId
     );
-  }, [fetchCustomerTrackOrder, userDetails?.storeId]);
+  }, [fetchCustomerTrackOrder, userDetails?.userId]);
 
   useEffect(() => {
     fetchCustomerTrackOrderData();
