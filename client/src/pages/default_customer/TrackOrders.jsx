@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { format } from "date-fns";
 import useAuth from "../../contexts/AuthContext";
 import { motion } from "framer-motion";
 import norequest from "../../assets/images/nodata.jpg";
@@ -300,7 +301,20 @@ const TrackOrders = () => {
                             {step.stage}
                           </p>
                           <p
-                            className="text-gray-500"
+                            className="font-normal"
+                            style={{ color: styles.text3 }}
+                          >
+                            {step.status_date && (
+                              <span className="text-[#5787C8] text-xs">
+                                {format(
+                                  new Date(step.status_date),
+                                  "MMMM d, yyyy, h:mm a"
+                                )}
+                              </span>
+                            )}
+                          </p>
+                          <p
+                            className="text-[#595959] text-sm font-normal"
                             style={{ color: styles.primary }}
                           >
                             {step.completed

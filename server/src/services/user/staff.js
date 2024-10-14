@@ -225,7 +225,7 @@ export const handleUpdateServiceRequestCancel = async (
   }
 };
 
-//#PENDING ONGOING
+//#PENDING TO ONGOING
 export const handleUpdateServiceRequestOngoing = async (
   req,
   res,
@@ -241,13 +241,16 @@ export const handleUpdateServiceRequestOngoing = async (
         SET request_status = 'Ongoing Pickup'
         WHERE id = ?`;
 
-    const [result] = await connection.execute(updateQuery, [id]);
+    await connection.execute(updateQuery, [id]);
 
-    if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Request not found." });
-    }
+    const updateProgressQuery = `
+      UPDATE Service_Progress
+      SET completed = true,
+          status_date = NOW()
+      WHERE service_request_id = ? AND stage = 'Ongoing Pickup'`;
+
+    await connection.execute(updateProgressQuery, [id]);
+
     await connection.commit();
 
     res.status(200).json({
@@ -256,7 +259,6 @@ export const handleUpdateServiceRequestOngoing = async (
     });
   } catch (error) {
     await connection.rollback();
-    console.error("Error updating service request status:", error);
     res.status(500).json({
       success: false,
       message: "An error occurred while updating the request.",
@@ -266,7 +268,7 @@ export const handleUpdateServiceRequestOngoing = async (
   }
 };
 
-//#BACK TO PENDING
+//#ONGOING TO PENDING
 export const handleUpdateServiceRequestBackToPending = async (
   req,
   res,
@@ -282,13 +284,16 @@ export const handleUpdateServiceRequestBackToPending = async (
           SET request_status = 'Pending Pickup'
           WHERE id = ?`;
 
-    const [result] = await connection.execute(updateQuery, [id]);
+    await connection.execute(updateQuery, [id]);
 
-    if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Request not found." });
-    }
+    const updateProgressQuery = `
+      UPDATE Service_Progress
+      SET completed = false,
+          status_date = NULL
+      WHERE service_request_id = ? AND stage = 'Ongoing Pickup'`;
+
+    await connection.execute(updateProgressQuery, [id]);
+
     await connection.commit();
 
     res.status(200).json({
@@ -307,6 +312,52 @@ export const handleUpdateServiceRequestBackToPending = async (
   }
 };
 
+//#ONGOING TO COMPLETED
+export const handleUpdateServiceRequestFinishPickup = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+          UPDATE Service_Request
+          SET request_status = 'Completed Pickup',
+            isPickup = TRUE
+          WHERE id = ?`;
+
+    await connection.execute(updateQuery, [id]);
+
+    const updateProgressQuery = `
+      UPDATE Service_Progress
+      SET completed = true,
+          status_date = NOW()
+      WHERE service_request_id = ? AND stage = 'Completed Pickup'`;
+
+    await connection.execute(updateProgressQuery, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Request status updated to Completed Pickup.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating service request status:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the request.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+//#SCAN QRCODE
 export const handleUpdateServiceRequestUsingQrCode = async (
   req,
   res,
@@ -335,7 +386,7 @@ export const handleUpdateServiceRequestUsingQrCode = async (
     // Step 2: Check the request_status to determine availability
     if (
       request_status === "Canceled" ||
-      request_status === "Complete Delivery"
+      request_status === "Completed Delivery"
     ) {
       return res.status(200).json({
         success: false,
@@ -343,7 +394,7 @@ export const handleUpdateServiceRequestUsingQrCode = async (
       });
     }
 
-    // Step 3: Check if isPickup is false and update the status to "Complete Pickup"
+    // Step 3: Check if isPickup is false and update the status to "Completed Pickup"
     if (
       !isPickup &&
       (request_status === "Pending Pickup" ||
@@ -353,8 +404,16 @@ export const handleUpdateServiceRequestUsingQrCode = async (
         `UPDATE Service_Request SET request_status = ?,  pickup_date = NOW(), isPickup = ? WHERE id = ?`,
         ["Completed Pickup", true, id]
       );
+
+      await connection.execute(
+        `UPDATE Service_Progress 
+         SET completed = true,
+             status_date = NOW()
+         WHERE service_request_id = ? AND (stage = 'Ongoing Pickup' OR stage = 'Completed Pickup')`,
+        [id]
+      );
     }
-    // New Step: If isPickup is true and request_status is "Complete Pickup"
+    // New Step: If isPickup is true and request_status is "Completed Pickup"
     else if (
       isPickup && // Only check if pickup is completed
       (request_status === "Ready for Delivery" ||
@@ -363,6 +422,14 @@ export const handleUpdateServiceRequestUsingQrCode = async (
       await connection.execute(
         `UPDATE Service_Request SET request_status = ?,  delivery_date = NOW(), isDelivery = ? WHERE id = ?`,
         ["Completed Delivery", true, id]
+      );
+
+      await connection.execute(
+        `UPDATE Service_Progress 
+         SET completed = true,
+             status_date = NOW()
+         WHERE service_request_id = ? AND (stage = 'Out for Delivery' OR stage = 'Completed Delivery')`,
+        [id]
       );
     } else {
       return res.status(200).json({
@@ -385,74 +452,6 @@ export const handleUpdateServiceRequestUsingQrCode = async (
     if (connection) connection.release();
   }
 };
-
-// export const handleUpdateServiceRequestUsingQrCode = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params;
-//   const { code } = req.body;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     // Step 1: Check if the tracking code exists in the Service_Request table
-//     const [existingRequest] = await connection.execute(
-//       `SELECT request_status, isPickup FROM Service_Request WHERE id = ? AND tracking_code = ?`,
-//       [id, code]
-//     );
-
-//     if (existingRequest.length === 0) {
-//       return res
-//         .status(200)
-//         .json({ success: false, message: "Service request not found." });
-//     }
-
-//     const { request_status, isPickup } = existingRequest[0];
-
-//     // Step 2: Check the request_status to determine availability
-//     if (
-//       request_status === "Canceled" ||
-//       request_status === "Complete Delivery"
-//     ) {
-//       return res.status(200).json({
-//         success: false,
-//         message: "This service request is not available anymore.",
-//       });
-//     }
-
-//     // Step 3: Check if isPickup is false and update the status
-//     if (
-//       !isPickup &&
-//       (request_status === "Pending Pickup" ||
-//         request_status === "Ongoing Pickup")
-//     ) {
-//       await connection.execute(
-//         `UPDATE Service_Request SET request_status = ?, isPickup = ? WHERE id = ?`,
-//         ["Complete Pickup", true, id]
-//       );
-//     } else {
-//       return res.status(200).json({
-//         success: false,
-//         message: "Invalid request status or pickup already completed.",
-//       });
-//     }
-
-//     // Step 4: Commit the transaction if everything is fine
-//     await connection.commit();
-//     res.status(200).json({
-//       success: true,
-//       message: "Service request updated successfully.",
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Database operation error:", error);
-//     res.status(500).json({ message: "Error updating service request." });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// };
 
 export const handleGetStaffMessages = async (req, res, connection) => {
   const { id } = req.params; // This is the staff ID
@@ -534,139 +533,3 @@ export const handleGetStaffMessages = async (req, res, connection) => {
     connection.release();
   }
 };
-
-// export const handleGetStaffsMessages = async (req, res, connection) => {
-//   const { id } = req.params; // This is the staff ID
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const [rows] = await connection.query(
-//       `
-//       SELECT
-//         m.id,
-//         m.message,
-//         m.isRead,
-//         m.date_sent,
-//         ua_sender.username AS sender_username,
-//         ua_recipient.username AS recipient_username,
-//         c_sender.c_username AS sender_customer_username,
-//         c_recipient.c_username AS recipient_customer_username
-//       FROM
-//         Message m
-//       LEFT JOIN
-//         User_Account ua_sender ON m.sender_user_account_id = ua_sender.id
-//       LEFT JOIN
-//         User_Account ua_recipient ON m.recipient_user_account_id = ua_recipient.id
-//       LEFT JOIN
-//         Customer c_sender ON m.sender_customer_id = c_sender.id
-//       LEFT JOIN
-//         Customer c_recipient ON m.recipient_customer_id = c_recipient.id
-//       WHERE
-//         m.sender_user_account_id = ? OR m.recipient_user_account_id = ?
-//       ORDER BY
-//         m.date_sent DESC
-//     `,
-//       [id, id]
-//     );
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       success: true,
-//       data: rows,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching staff messages:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching the staff messages.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
-
-// PUT
-
-// export const handleGetStaffsMessages = async (req, res, connection) => {
-//   const { id } = req.params; // this is id of staff
-
-//   try {
-//     await connection.beginTransaction();
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       success: true,
-//       data: rows,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching staff messages:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching the staff messages.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
-
-// export const handleGetStaffMessages = async (req, res, connection) => {
-//   const { id } = req.params; // This is the staff ID
-// };
-
-// try {
-//   await connection.beginTransaction();
-
-//   const [rows] = await connection.query(
-//     `
-//     SELECT
-//       m.id,
-//       m.message,
-//       m.isRead,
-//       m.date_sent,
-//       CONCAT(ua_sender.first_name, ' ', ua_sender.middle_name, ' ', ua_sender.last_name) AS sender_fullname,
-//       ua_sender.id AS sender_id,
-//       CONCAT(ua_recipient.first_name, ' ', ua_recipient.middle_name, ' ', ua_recipient.last_name) AS recipient_fullname,
-//       ua_recipient.id AS recipient_id,
-//       CONCAT(c_sender.c_firstname, ' ', c_sender.c_middlename, ' ', c_sender.c_lastname) AS sender_customer_fullname,
-//       c_sender.id AS sender_customer_id,
-//       CONCAT(c_recipient.c_firstname, ' ', c_recipient.c_middlename, ' ', c_recipient.c_lastname) AS recipient_customer_fullname,
-//       c_recipient.id AS recipient_customer_id
-//     FROM
-//       Message m
-//     LEFT JOIN
-//       User_Account ua_sender ON m.sender_user_account_id = ua_sender.id
-//     LEFT JOIN
-//       User_Account ua_recipient ON m.recipient_user_account_id = ua_recipient.id
-//     LEFT JOIN
-//       Customer c_sender ON m.sender_customer_id = c_sender.id
-//     LEFT JOIN
-//       Customer c_recipient ON m.recipient_customer_id = c_recipient.id
-//     WHERE
-//       m.sender_user_account_id = ? OR m.recipient_user_account_id = ?
-//     ORDER BY
-//       m.date_sent DESC
-//   `,
-//     [id, id]
-//   );
-
-//   await connection.commit();
-
-//   res.status(200).json({
-//     success: true,
-//     data: rows,
-//   });
-// } catch (error) {
-//   await connection.rollback();
-//   console.error("Error fetching staff messages:", error);
-//   res.status(500).json({
-//     success: false,
-//     message: "An error occurred while fetching the staff messages.",
-//   });
-// } finally {
-//   connection.release();
-// }

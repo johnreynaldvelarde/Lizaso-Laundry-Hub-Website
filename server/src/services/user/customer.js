@@ -256,7 +256,6 @@ export const handleGetCustomerTrackOrderAndProgress = async (
   connection
 ) => {
   const { id } = req.params; // customer id
-  console.log(id);
 
   try {
     await connection.beginTransaction();

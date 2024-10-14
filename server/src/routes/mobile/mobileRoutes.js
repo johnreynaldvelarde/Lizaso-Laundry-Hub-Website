@@ -4,6 +4,7 @@ import {
   handleGetStaffMessages,
   handlePostNewMessages,
   handleUpdateServiceRequestBackToPending,
+  handleUpdateServiceRequestFinishPickup,
   handleUpdateServiceRequestUsingQrCode,
 } from "../../services/user/staff.js";
 import { getPool } from "../../db/dbConfig.js";
@@ -83,6 +84,8 @@ router.get(
 );
 
 // #PUT
+
+//#PENDING TO CANCEL
 router.put(
   "/staff/:id/update-request-cancel",
   withDatabaseConnection(async (req, res, connection) => {
@@ -95,6 +98,7 @@ router.put(
   })
 );
 
+//# PENDING TO ONGOING
 router.put(
   "/staff/:id/update-request-ongoing",
   withDatabaseConnection(async (req, res, connection) => {
@@ -107,6 +111,7 @@ router.put(
   })
 );
 
+//# ONGOING TO PENDING
 router.put(
   "/staff/:id/update-request-back-pending",
   withDatabaseConnection(async (req, res, connection) => {
@@ -119,6 +124,20 @@ router.put(
   })
 );
 
+//# ONGOING TO COMPLETED
+router.put(
+  "/staff/:id/update-request-finish-pickup",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestFinishPickup(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//# SCAN QR CODE FOR PICKUP
 router.put(
   "/staff/:id/update-request-qr-code",
   withDatabaseConnection(async (req, res, connection) => {

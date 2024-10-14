@@ -14,7 +14,7 @@ export const progress = [
     falseDescription: "Pickup has not yet started.",
   },
   {
-    stage: "Complete Pickup",
+    stage: "Completed Pickup",
     description: "Pickup completed successfully.",
     status_date: null,
     completed: false,
@@ -63,7 +63,7 @@ export const progress = [
     falseDescription: "Laundry has not been dispatched yet.",
   },
   {
-    stage: "Complete Delivery",
+    stage: "Completed Delivery",
     description: "Delivered and payment confirmed.",
     status_date: null,
     completed: false,
