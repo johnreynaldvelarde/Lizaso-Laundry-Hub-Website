@@ -23,7 +23,7 @@ import { QRCodeCanvas } from "qrcode.react";
 const TrackOrders = () => {
   const navigate = useNavigate();
   const { userDetails } = useAuth();
-  const { isOpen, popupType, openPopup, closePopup } = usePopup();
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const { data: orders, fetchData: fetchCustomerTrackOrder } = useFetchData();
@@ -183,7 +183,12 @@ const TrackOrders = () => {
                           ? "hover:bg-[#3E5B8C]"
                           : "opacity-50 cursor-not-allowed"
                       }`}
-                      onClick={() => openPopup("messageStaff")}
+                      onClick={() => {
+                        openPopup(
+                          "messageStaff",
+                          orders[currentIndex].service_request.user_id
+                        );
+                      }}
                       disabled={!orders[currentIndex].service_request.user_id} // Disable if user_id is false
                     >
                       Message the Delivery Staff
@@ -362,7 +367,12 @@ const TrackOrders = () => {
       </div>
       {/* Popup */}
       {isOpen && popupType === "messageStaff" && (
-        <PopMessageStaff open={isOpen} onClose={closePopup} />
+        <PopMessageStaff
+          open={isOpen}
+          onClose={closePopup}
+          senderId={userDetails.userId}
+          receiverId={popupData}
+        />
       )}
       {isOpen && popupType === "showBreakDown" && (
         <PopAmountBreakDown open={isOpen} onClose={closePopup} />

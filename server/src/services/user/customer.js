@@ -105,29 +105,94 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   }
 };
 
-//#CUSTOMER MESSAGE THE DELIVERY STAFF
-// export const handlePostNewMessages = async (req, res, connection) => {
-//   const { id } = req.params;
-//   const { recieverId, text, senderType, receiverType } = req.body;
+// #CUSTOMER MESSAGE THE DELIVERY STAFF
+export const handleSetMessagesSenderIsCustomer = async (
+  req,
+  res,
+  connection
+) => {
+  const { sender_id, receiver_id, message } = req.body; // Extract necessary data from the request body
 
-//   console.log(recieverId);
-//   console.log(text);
-//   console.log(senderType);
-//   console.log(receiverType);
+  try {
+    // Begin transaction
+    await connection.beginTransaction();
 
-//   try {
-//     await connection.beginTransaction();
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error updating service request status:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while updating the request.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
+    // Check if a conversation already exists
+    const findConversationQuery = `
+      SELECT id FROM Conversations 
+      WHERE (user_sender_id = ? AND customer_receiver_id = ?) OR 
+            (customer_sender_id = ? AND user_receiver_id = ?)
+      LIMIT 1
+    `;
+
+    const [conversationRows] = await connection.query(findConversationQuery, [
+      sender_id,
+      receiver_id,
+      sender_id,
+      receiver_id,
+    ]);
+
+    let conversation_id;
+
+    // If no conversation exists, create a new one
+    if (conversationRows.length === 0) {
+      const insertConversationQuery = `
+        INSERT INTO Conversations (user_sender_id, customer_sender_id, user_receiver_id, customer_receiver_id, last_message, last_message_date, created_at, updated_at)
+        VALUES (NULL, ?, ?, NULL, ?, NOW(), NOW(), NOW())
+      `;
+
+      const [newConversationResult] = await connection.query(
+        insertConversationQuery,
+        [sender_id, receiver_id, message]
+      );
+      conversation_id = newConversationResult.insertId; // Get the new conversation ID
+    } else {
+      conversation_id = conversationRows[0].id; // Use the existing conversation ID
+    }
+
+    // Insert the new message into the Messages table
+    const insertMessageQuery = `
+      INSERT INTO Messages (conversation_id, sender_id, receiver_id, sender_type, receiver_type, message, created_at) 
+      VALUES (?, ?, ?, 'Customer', 'User', ?, NOW())
+    `;
+
+    // Execute the insert query
+    await connection.query(insertMessageQuery, [
+      conversation_id,
+      sender_id,
+      receiver_id,
+      message,
+    ]);
+
+    // Update the last message and last message date in the Conversations table
+    const updateConversationQuery = `
+      UPDATE Conversations 
+      SET last_message = ?, last_message_date = NOW() 
+      WHERE id = ?
+    `;
+    await connection.query(updateConversationQuery, [message, conversation_id]);
+
+    // Commit the transaction
+    await connection.commit();
+
+    // Send a successful response
+    res.status(201).json({
+      success: true,
+      message: "Message sent successfully.",
+    });
+  } catch (error) {
+    // Rollback the transaction in case of an error
+    await connection.rollback();
+    console.error("Error while sending message:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while sending the message.",
+    });
+  } finally {
+    // Release the database connection
+    connection.release();
+  }
+};
 
 // GET
 export const handleGetServiceTypeAndPromotions = async (
@@ -692,5 +757,23 @@ export const handleUpdateCustomerBasicInformation = async (
 //     });
 //   } finally {
 //     if (connection) connection.release();
+//   }
+// };
+
+// export const handlePostNewMessages = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const {} = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error upda", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while updating the request.",
+//     });
+//   } finally {
+//     connection.release();
 //   }
 // };

@@ -348,9 +348,66 @@ isStatus
 isArhive
 
 
+--> Messages <--
+id (Primary Key)
+user_sender_id (Foregin Key)
+customer_sender_id (Foregin Key)
+user_receiver_id (Foregin Key)
+customer_receiver_id (Foregin Key)
+last_message
+last_message_date
+created_at
+updated_at
+
+--> Conversations <--
+id (Primary Key)
+sender_id 
+receiver_id
+sender_type
+receiver_type
+message
+created_at
 
 
 
+
+
+
+
+
+// QUERY
+CREATE TABLE Messages (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id BIGINT NOT NULL,                     -- Reference to the Conversations table
+    user_sender_id BIGINT,                               -- ID of the User sender (if applicable)
+    customer_sender_id BIGINT,                           -- ID of the Customer sender (if applicable)
+    message TEXT NOT NULL,                               -- The content of the message
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Timestamp of when the message was sent
+
+    -- Foreign key references
+    FOREIGN KEY (conversation_id) REFERENCES Conversations(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_sender_id) REFERENCES User_Account(id) ON DELETE CASCADE, 
+    FOREIGN KEY (customer_sender_id) REFERENCES Customer(id) ON DELETE CASCADE 
+);
+
+
+CREATE TABLE Conversations (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_sender_id BIGINT,                   -- ID of the User sender (if applicable)
+    customer_sender_id BIGINT,               -- ID of the Customer sender (if applicable)
+    user_receiver_id BIGINT,                 -- ID of the User receiver (if applicable)
+    customer_receiver_id BIGINT,             -- ID of the Customer receiver (if applicable)
+    last_message TEXT,                       -- The content of the last message
+    last_message_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp of the last message
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the conversation was created
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Timestamp of the last update
+
+    -- Foreign key references
+    FOREIGN KEY (user_sender_id) REFERENCES User_Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_sender_id) REFERENCES Customer(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_receiver_id) REFERENCES User_Account(id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_receiver_id) REFERENCES Customer(id) ON DELETE CASCADE
+);
 
 
 

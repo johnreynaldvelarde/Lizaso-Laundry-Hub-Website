@@ -1,23 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, TextField, Button } from "@mui/material";
 import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitle";
 import { COLORS } from "../../../constants/color";
+import { createMessageSenderCustomer } from "../../../services/api/customerApi";
 
-const PopMessageStaff = ({ open, onClose }) => {
+const PopMessageStaff = ({ open, onClose, senderId, receiverId }) => {
   // Sample conversation data
-  const [messages, setMessages] = useState([
-    { sender: "customer", text: "Hi, when will my laundry be delivered?" },
-    { sender: "staff", text: "Your laundry will be delivered by 2 PM." },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: "customer", text: newMessage },
-      ]);
-      setNewMessage(""); // Clear the input field
+      const messageData = {
+        sender_id: senderId,
+        receiver_id: receiverId,
+        message: newMessage,
+      };
+
+      try {
+        const response = await createMessageSenderCustomer.setCustomerMessage(
+          messageData
+        );
+        if (response && response.success) {
+          setNewMessage("");
+        } else {
+          console.error("Message failed to send", response);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+    } else {
+      console.log("Cannot send an empty message.");
     }
   };
 

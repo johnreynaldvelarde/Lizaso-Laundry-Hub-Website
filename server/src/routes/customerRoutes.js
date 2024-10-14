@@ -4,6 +4,7 @@ import {
   handleGetCustomerTrackOrderAndProgress,
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
+  handleSetMessagesSenderIsCustomer,
   handleUpdateCustomerBasicInformation,
 } from "../services/user/customer.js";
 
@@ -28,6 +29,18 @@ router.post(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleSetCustomerServiceRequest(req, res, connection);
+    } catch (error) {
+      console.error("Error creating service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.post(
+  "/customers/set-messages-sender-customer",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetMessagesSenderIsCustomer(req, res, connection);
     } catch (error) {
       console.error("Error creating service request:", error);
       res.status(500).json({ error: "Internal Server Error" });

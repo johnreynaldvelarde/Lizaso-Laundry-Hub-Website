@@ -30,20 +30,20 @@ export const createCustomerServiceRequest = {
   },
 };
 
-// export const createCustomerServiceRequest = {
-//   setCustomerServiceRequest: async (customerId, data) => {
-//     try {
-//       const response = await axiosPrivate.post(
-//         `/customers/${customerId}/set-service-request`,
-//         data
-//       );
-//       // return response.data;
-//     } catch (error) {
-//       console.error("Error customer service request:", error);
-//       throw error;
-//     }
-//   },
-// };
+export const createMessageSenderCustomer = {
+  setCustomerMessage: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/customers/set-messages-sender-customer`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error customer service request:", error);
+      throw error;
+    }
+  },
+};
 
 // #GET
 export const getCustomerServiceAndPromotions = {
