@@ -368,6 +368,7 @@ sender_type
 receiver_type
 message
 created_at
+isRead
 
 
 

@@ -1,7 +1,7 @@
 import express from "express";
 import {
   handleGetLaundryPickup,
-  handleGetStaffMessages,
+  handleGetStaffConvo,
   handlePostNewMessages,
   handleUpdateServiceRequestBackToPending,
   handleUpdateServiceRequestFinishPickup,
@@ -12,7 +12,6 @@ import {
   handleUpdateServiceRequestCancel,
   handleUpdateServiceRequestOngoing,
 } from "../../services/user/staff.js";
-import { handleGetCustomerConvo } from "../../services/user/customer.js";
 
 const router = express.Router();
 
@@ -28,9 +27,20 @@ const withDatabaseConnection = (handler) => async (req, res) => {
     connection.release();
   }
 };
-// CUSTOMER SECTIOn
+// CUSTOMER SECTION
 // #POST
 // #GET
+router.get(
+  "/customer/:id/get-customer-list-convo",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetCustomerConvo(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving customer request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 // #PUT
 
 // STAFF SECTION
@@ -59,31 +69,18 @@ router.get(
   })
 );
 
+// #GET STAFF MESSAGE
 router.get(
-  "/staff/:id/get-staff-list-convo",
+  "/staff/:id/get-staff-convo",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleGetStaffMessages(req, res, connection);
+      await handleGetStaffConvo(req, res, connection);
     } catch (error) {
       console.error("Error retrieving staff message request:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   })
 );
-
-router.get(
-  "/customer/:id/get-customer-list-convo",
-  withDatabaseConnection(async (req, res, connection) => {
-    try {
-      await handleGetCustomerConvo(req, res, connection);
-    } catch (error) {
-      console.error("Error retrieving customer request:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  })
-);
-
-// #PUT
 
 //#PENDING TO CANCEL
 router.put(

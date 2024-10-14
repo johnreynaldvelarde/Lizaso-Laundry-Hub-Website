@@ -57,7 +57,8 @@ export const handlePostNewMessages = async (req, res, connection) => {
 // GET
 export const handleGetLaundryPickup = async (req, res, connection) => {
   const { id } = req.params;
-
+  const { user_id } = req.query;
+  console.log(user_id);
   try {
     await connection.beginTransaction();
 
@@ -76,7 +77,16 @@ export const handleGetLaundryPickup = async (req, res, connection) => {
           a.latitude AS customer_latitude,
           a.longitude AS customer_longitude,
           store_address.latitude AS store_latitude,
-          store_address.longitude AS store_longitude
+          store_address.longitude AS store_longitude,
+          (
+            SELECT COUNT(*) 
+            FROM Messages m 
+            INNER JOIN Conversations conv ON conv.id = m.conversation_id
+            WHERE 
+              (conv.user_sender_id = ? AND conv.customer_receiver_id = c.id) OR 
+              (conv.customer_sender_id = c.id AND conv.user_receiver_id = ?)
+              AND m.isRead = 0
+          ) AS unread_messages
         FROM 
           Service_Request sr
         INNER JOIN 
@@ -96,7 +106,7 @@ export const handleGetLaundryPickup = async (req, res, connection) => {
           AND c.isArchive = 0
       `;
 
-    const [rows] = await connection.execute(query, [id]);
+    const [rows] = await connection.execute(query, [user_id, user_id, id]);
 
     // Compute distances for each row
     const resultsWithDistance = rows.map((row) => {
@@ -130,58 +140,6 @@ export const handleGetLaundryPickup = async (req, res, connection) => {
     if (connection) connection.release();
   }
 };
-
-// export const handleGetStaffMessages = async (req, res, connection) => {
-//   const { id } = req.params; // 'id' is the User_Account ID (e.g., staff ID)
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-//       SELECT
-//         m.id,
-//         m.message,
-//         m.sender_type,
-//         m.receiver_type,
-//         m.isRead,
-//         m.date_sent,
-//         CASE
-//           WHEN m.sender_customer_id IS NOT NULL THEN CONCAT(c.c_firstname, ' ', c.c_middlename, ' ', c.c_lastname)
-//           WHEN m.sender_user_account_id IS NOT NULL THEN CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)
-//         END AS sender_full_name,
-//         CASE
-//           WHEN m.recipient_customer_id IS NOT NULL THEN CONCAT(c.c_firstname, ' ', c.c_middlename, ' ', c.c_lastname)
-//           WHEN m.recipient_user_account_id IS NOT NULL THEN CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)
-//         END AS recipient_full_name
-//       FROM Message m
-//       LEFT JOIN Customer c ON m.sender_customer_id = c.id OR m.recipient_customer_id = c.id
-//       LEFT JOIN User_Account u ON m.sender_user_account_id = u.id OR m.recipient_user_account_id = u.id
-//       WHERE (
-//         m.sender_user_account_id = ? OR
-//         m.recipient_user_account_id = ?
-//       )
-//       ORDER BY m.date_sent DESC
-//     `;
-
-//     const [rows] = await connection.execute(query, [id, id]);
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       success: true,
-//       data: rows,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching staff messages:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching the staff messages.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
 
 // PUT
 //#PENDING CANCEL
@@ -459,83 +417,277 @@ export const handleUpdateServiceRequestUsingQrCode = async (
   }
 };
 
-export const handleGetStaffMessages = async (req, res, connection) => {
-  const { id } = req.params; // This is the staff ID
+export const handleGetStaffConvo = async (req, res, connection) => {
+  const { id } = req.params;
 
   try {
     await connection.beginTransaction();
 
-    const [rows] = await connection.query(
-      `
-          SELECT 
-              m.id,
-              m.message,
-              m.isRead,
-              m.date_sent,
-              COALESCE(CONCAT(ua_sender.first_name, ' ', ua_sender.middle_name, ' ', ua_sender.last_name), 
-                       CONCAT(c_sender.c_firstname, ' ', c_sender.c_middlename, ' ', c_sender.c_lastname)) AS sender_fullname,
-              COALESCE(CONCAT(ua_recipient.first_name, ' ', ua_recipient.middle_name, ' ', ua_recipient.last_name), 
-                       CONCAT(c_recipient.c_firstname, ' ', c_recipient.c_middlename, ' ', c_recipient.c_lastname)) AS recipient_fullname
-          FROM 
-              Message m
-          LEFT JOIN 
-              User_Account ua_sender ON m.sender_user_account_id = ua_sender.id
-          LEFT JOIN 
-              User_Account ua_recipient ON m.recipient_user_account_id = ua_recipient.id
-          LEFT JOIN 
-              Customer c_sender ON m.sender_customer_id = c_sender.id
-          LEFT JOIN 
-              Customer c_recipient ON m.recipient_customer_id = c_recipient.id
-          WHERE 
-              m.sender_user_account_id = ? OR m.recipient_user_account_id = ?
-          ORDER BY 
-              m.date_sent DESC
-          `,
-      [id, id]
-    );
+    const updateQuery = `
+      UPDATE Messages
+      SET isRead = 1
+      WHERE conversation_id IN (
+        SELECT id FROM Conversations 
+        WHERE customer_sender_id = ? OR customer_receiver_id = ?
+      )
+      AND (receiver_id = ? OR sender_id = ?)
+    `;
+
+    await connection.execute(updateQuery, [id, id, id, id]);
+
+    const query = `
+      SELECT
+        m.id AS message_id,
+        m.conversation_id,
+        m.sender_id,
+        m.receiver_id,
+        m.sender_type,
+        m.receiver_type,
+        m.message,
+        m.created_at,
+        c.last_message,
+        c.last_message_date
+      FROM
+        Messages m
+      JOIN
+        Conversations c ON m.conversation_id = c.id
+      WHERE
+        c.customer_sender_id = ? OR c.customer_receiver_id = ?
+      ORDER BY
+        m.created_at ASC
+    `;
+
+    const [rows] = await connection.execute(query, [id, id]);
 
     await connection.commit();
 
-    // Transform rows into inbox-like structure
-    const inbox = {};
-
-    rows.forEach((message) => {
-      const recipientId =
-        message.recipient_user_account_id || message.recipient_customer_id;
-      const recipientName = message.recipient_fullname;
-
-      if (!inbox[recipientId]) {
-        inbox[recipientId] = {
-          recipient_id: recipientId,
-          recipient_fullname: recipientName,
-          messages: [],
-        };
-      }
-
-      inbox[recipientId].messages.push({
-        id: message.id,
-        sender_fullname: message.sender_fullname,
-        message: message.message,
-        isRead: message.isRead,
-        date_sent: message.date_sent,
-      });
-    });
-
-    // Convert the inbox object to an array
-    const inboxArray = Object.values(inbox);
-
     res.status(200).json({
       success: true,
-      data: inboxArray,
+      data: rows,
     });
   } catch (error) {
     await connection.rollback();
-    console.error("Error fetching staff messages:", error);
+    console.error("Error fetching messages:", error);
     res.status(500).json({
       success: false,
-      message: "An error occurred while fetching the staff messages.",
+      message: "An error occurred while fetching messages.",
     });
   } finally {
     connection.release();
   }
 };
+
+// export const handleGetStaffMessages = async (req, res, connection) => {
+//   const { id } = req.params; // 'id' is the User_Account ID (e.g., staff ID)
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+//       SELECT
+//         m.id,
+//         m.message,
+//         m.sender_type,
+//         m.receiver_type,
+//         m.isRead,
+//         m.date_sent,
+//         CASE
+//           WHEN m.sender_customer_id IS NOT NULL THEN CONCAT(c.c_firstname, ' ', c.c_middlename, ' ', c.c_lastname)
+//           WHEN m.sender_user_account_id IS NOT NULL THEN CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)
+//         END AS sender_full_name,
+//         CASE
+//           WHEN m.recipient_customer_id IS NOT NULL THEN CONCAT(c.c_firstname, ' ', c.c_middlename, ' ', c.c_lastname)
+//           WHEN m.recipient_user_account_id IS NOT NULL THEN CONCAT(u.first_name, ' ', u.middle_name, ' ', u.last_name)
+//         END AS recipient_full_name
+//       FROM Message m
+//       LEFT JOIN Customer c ON m.sender_customer_id = c.id OR m.recipient_customer_id = c.id
+//       LEFT JOIN User_Account u ON m.sender_user_account_id = u.id OR m.recipient_user_account_id = u.id
+//       WHERE (
+//         m.sender_user_account_id = ? OR
+//         m.recipient_user_account_id = ?
+//       )
+//       ORDER BY m.date_sent DESC
+//     `;
+
+//     const [rows] = await connection.execute(query, [id, id]);
+
+//     await connection.commit();
+
+//     res.status(200).json({
+//       success: true,
+//       data: rows,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching staff messages:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching the staff messages.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+// export const handleGetStaffConvo = async (req, res, connection) => {
+//   const { id } = req.params; // This is the staff ID
+//   const { id } = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const [rows] = await connection.query(
+//       `
+//           SELECT
+//               m.id,
+//               m.message,
+//               m.isRead,
+//               m.date_sent,
+//               COALESCE(CONCAT(ua_sender.first_name, ' ', ua_sender.middle_name, ' ', ua_sender.last_name),
+//                        CONCAT(c_sender.c_firstname, ' ', c_sender.c_middlename, ' ', c_sender.c_lastname)) AS sender_fullname,
+//               COALESCE(CONCAT(ua_recipient.first_name, ' ', ua_recipient.middle_name, ' ', ua_recipient.last_name),
+//                        CONCAT(c_recipient.c_firstname, ' ', c_recipient.c_middlename, ' ', c_recipient.c_lastname)) AS recipient_fullname
+//           FROM
+//               Message m
+//           LEFT JOIN
+//               User_Account ua_sender ON m.sender_user_account_id = ua_sender.id
+//           LEFT JOIN
+//               User_Account ua_recipient ON m.recipient_user_account_id = ua_recipient.id
+//           LEFT JOIN
+//               Customer c_sender ON m.sender_customer_id = c_sender.id
+//           LEFT JOIN
+//               Customer c_recipient ON m.recipient_customer_id = c_recipient.id
+//           WHERE
+//               m.sender_user_account_id = ? OR m.recipient_user_account_id = ?
+//           ORDER BY
+//               m.date_sent DESC
+//           `,
+//       [id, id]
+//     );
+
+//     await connection.commit();
+
+//     // Transform rows into inbox-like structure
+//     const inbox = {};
+
+//     rows.forEach((message) => {
+//       const recipientId =
+//         message.recipient_user_account_id || message.recipient_customer_id;
+//       const recipientName = message.recipient_fullname;
+
+//       if (!inbox[recipientId]) {
+//         inbox[recipientId] = {
+//           recipient_id: recipientId,
+//           recipient_fullname: recipientName,
+//           messages: [],
+//         };
+//       }
+
+//       inbox[recipientId].messages.push({
+//         id: message.id,
+//         sender_fullname: message.sender_fullname,
+//         message: message.message,
+//         isRead: message.isRead,
+//         date_sent: message.date_sent,
+//       });
+//     });
+
+//     // Convert the inbox object to an array
+//     const inboxArray = Object.values(inbox);
+
+//     res.status(200).json({
+//       success: true,
+//       data: inboxArray,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching staff messages:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching the staff messages.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+// export const handleGetStaffMessages = async (req, res, connection) => {
+//   const { id } = req.params; // This is the staff ID
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const [rows] = await connection.query(
+//       `
+//           SELECT
+//               m.id,
+//               m.message,
+//               m.isRead,
+//               m.date_sent,
+//               COALESCE(CONCAT(ua_sender.first_name, ' ', ua_sender.middle_name, ' ', ua_sender.last_name),
+//                        CONCAT(c_sender.c_firstname, ' ', c_sender.c_middlename, ' ', c_sender.c_lastname)) AS sender_fullname,
+//               COALESCE(CONCAT(ua_recipient.first_name, ' ', ua_recipient.middle_name, ' ', ua_recipient.last_name),
+//                        CONCAT(c_recipient.c_firstname, ' ', c_recipient.c_middlename, ' ', c_recipient.c_lastname)) AS recipient_fullname
+//           FROM
+//               Message m
+//           LEFT JOIN
+//               User_Account ua_sender ON m.sender_user_account_id = ua_sender.id
+//           LEFT JOIN
+//               User_Account ua_recipient ON m.recipient_user_account_id = ua_recipient.id
+//           LEFT JOIN
+//               Customer c_sender ON m.sender_customer_id = c_sender.id
+//           LEFT JOIN
+//               Customer c_recipient ON m.recipient_customer_id = c_recipient.id
+//           WHERE
+//               m.sender_user_account_id = ? OR m.recipient_user_account_id = ?
+//           ORDER BY
+//               m.date_sent DESC
+//           `,
+//       [id, id]
+//     );
+
+//     await connection.commit();
+
+//     // Transform rows into inbox-like structure
+//     const inbox = {};
+
+//     rows.forEach((message) => {
+//       const recipientId =
+//         message.recipient_user_account_id || message.recipient_customer_id;
+//       const recipientName = message.recipient_fullname;
+
+//       if (!inbox[recipientId]) {
+//         inbox[recipientId] = {
+//           recipient_id: recipientId,
+//           recipient_fullname: recipientName,
+//           messages: [],
+//         };
+//       }
+
+//       inbox[recipientId].messages.push({
+//         id: message.id,
+//         sender_fullname: message.sender_fullname,
+//         message: message.message,
+//         isRead: message.isRead,
+//         date_sent: message.date_sent,
+//       });
+//     });
+
+//     // Convert the inbox object to an array
+//     const inboxArray = Object.values(inbox);
+
+//     res.status(200).json({
+//       success: true,
+//       data: inboxArray,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching staff messages:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching the staff messages.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };

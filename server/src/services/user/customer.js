@@ -152,8 +152,8 @@ export const handleSetMessagesSenderIsCustomer = async (
 
     // Insert the new message into the Messages table
     const insertMessageQuery = `
-      INSERT INTO Messages (conversation_id, sender_id, receiver_id, sender_type, receiver_type, message, created_at) 
-      VALUES (?, ?, ?, 'Customer', 'User', ?, NOW())
+      INSERT INTO Messages (conversation_id, sender_id, receiver_id, sender_type, receiver_type, message, created_at, isRead) 
+      VALUES (?, ?, ?, 'Customer', 'User', ?, NOW(), 0)
     `;
 
     // Execute the insert query
