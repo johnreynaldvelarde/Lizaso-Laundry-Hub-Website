@@ -1,50 +1,75 @@
 import { haversineDistance } from "../../helpers/distanceComputing.js";
 // POST
-export const handlePostNewMessages = async (req, res, connection) => {
-  const { id } = req.params; // assuming this is either sender's user/customer id
-  const { receiverId, text, senderType, receiverType } = req.body;
 
+export const handleSetMessagesSenderIsStaff = async (req, res, connection) => {
+  const { sender_id, receiver_id, message } = req.body; // sender_id = staff ID, receiver_id = customer ID
   try {
+    // Begin transaction
     await connection.beginTransaction();
-    // Determine sender and receiver based on type
-    let senderCustomerId = null;
-    let senderUserAccountId = null;
-    let recipientCustomerId = null;
-    let recipientUserAccountId = null;
-    if (senderType === "Customer") {
-      senderCustomerId = id; // If the sender is a customer
-    } else if (senderType === "Staff") {
-      senderUserAccountId = id; // If the sender is a staff member
-    }
-    if (receiverType === "Customer") {
-      recipientCustomerId = receiverId; // If the receiver is a customer
-    } else if (receiverType === "Staff") {
-      recipientUserAccountId = receiverId; // If the receiver is a staff member
-    }
-    // Insert new message into the Message table using execute
-    const query = `
-      INSERT INTO Message
-      (sender_customer_id, sender_user_account_id, recipient_customer_id, recipient_user_account_id, message, sender_type, receiver_type, isRead, date_sent)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+
+    const findConversationQuery = `
+      SELECT id FROM Conversations 
+      WHERE (user_sender_id IS NULL AND customer_sender_id = ? AND user_receiver_id = ?) OR 
+            (customer_sender_id IS NULL AND user_sender_id = ? AND customer_receiver_id = ?)
+      LIMIT 1
     `;
-    await connection.execute(query, [
-      senderCustomerId,
-      senderUserAccountId,
-      recipientCustomerId,
-      recipientUserAccountId,
-      text,
-      senderType,
-      receiverType,
-      false, // isRead is false by default
+
+    const [conversationRows] = await connection.query(findConversationQuery, [
+      receiver_id, // Customer ID who started the conversation
+      sender_id, // User (staff) ID who is replying
+      sender_id, // User (staff) ID who is replying
+      receiver_id, // Customer ID who is receiving the reply
     ]);
+
+    let conversation_id;
+
+    // If no conversation exists, create a new one
+    if (conversationRows.length === 0) {
+      const insertConversationQuery = `
+        INSERT INTO Conversations (user_sender_id, customer_sender_id, user_receiver_id, customer_receiver_id, last_message, last_message_date, created_at, updated_at)
+        VALUES (?, NULL, NULL, ?, ?, NOW(), NOW(), NOW())
+      `;
+
+      const [newConversationResult] = await connection.query(
+        insertConversationQuery,
+        [sender_id, receiver_id, message]
+      );
+      conversation_id = newConversationResult.insertId; // Get the new conversation ID
+      console.log("Created new conversation with ID:", conversation_id); // Debugging: Log new conversation ID
+    } else {
+      conversation_id = conversationRows[0].id; // Use the existing conversation ID
+      console.log("Using existing conversation with ID:", conversation_id); // Debugging: Log existing conversation ID
+    }
+
+    // Insert the new message into the Messages table
+    const insertMessageQuery = `
+      INSERT INTO Messages (conversation_id, sender_id, receiver_id, sender_type, receiver_type, message, created_at, isRead) 
+      VALUES (?, ?, ?, 'User', 'Customer', ?, NOW(), 0)
+    `;
+
+    await connection.query(insertMessageQuery, [
+      conversation_id,
+      sender_id,
+      receiver_id,
+      message,
+    ]);
+
+    const updateConversationQuery = `
+      UPDATE Conversations 
+      SET last_message = ?, last_message_date = NOW() 
+      WHERE id = ?
+    `;
+    await connection.query(updateConversationQuery, [message, conversation_id]);
+
     await connection.commit();
-    res.status(200).json({
+
+    res.status(201).json({
       success: true,
-      message: "Message sent successfully!",
+      message: "Message sent successfully.",
     });
   } catch (error) {
     await connection.rollback();
-    console.error("Error sending message:", error);
+    console.error("Error while sending message:", error);
     res.status(500).json({
       success: false,
       message: "An error occurred while sending the message.",
@@ -54,11 +79,179 @@ export const handlePostNewMessages = async (req, res, connection) => {
   }
 };
 
+// export const handleSetMessagesSenderIsStaff = async (req, res, connection) => {
+//   const { sender_id, receiver_id, message } = req.body; // sender_id = staff ID, receiver_id = customer ID
+//   try {
+//     // Begin transaction
+//     await connection.beginTransaction();
+
+//     console.log("Incoming message details:", {
+//       sender_id,
+//       receiver_id,
+//       message,
+//     });
+
+//     // Check if a conversation already exists
+//     const findConversationQuery = `
+//       SELECT id FROM Conversations
+//       WHERE (user_sender_id IS NULL AND customer_sender_id = ? AND user_receiver_id = ?) OR
+//             (customer_sender_id IS NULL AND user_sender_id = ? AND customer_receiver_id = ?)
+//       LIMIT 1
+//     `;
+
+//     const [conversationRows] = await connection.query(findConversationQuery, [
+//       receiver_id, // Customer ID who started the conversation
+//       sender_id, // User (staff) ID who is replying
+//       sender_id, // User (staff) ID who is replying
+//       receiver_id, // Customer ID who is receiving the reply
+//     ]);
+
+//     console.log("Conversation Rows:", conversationRows); // Debugging: Log conversation rows
+
+//     let conversation_id;
+
+//     // If no conversation exists, create a new one
+//     if (conversationRows.length === 0) {
+//       const insertConversationQuery = `
+//         INSERT INTO Conversations (user_sender_id, customer_sender_id, user_receiver_id, customer_receiver_id, last_message, last_message_date, created_at, updated_at)
+//         VALUES (?, NULL, NULL, ?, ?, NOW(), NOW(), NOW())
+//       `;
+
+//       const [newConversationResult] = await connection.query(
+//         insertConversationQuery,
+//         [sender_id, receiver_id, message]
+//       );
+//       conversation_id = newConversationResult.insertId; // Get the new conversation ID
+//       console.log("Created new conversation with ID:", conversation_id); // Debugging: Log new conversation ID
+//     } else {
+//       conversation_id = conversationRows[0].id; // Use the existing conversation ID
+//       console.log("Using existing conversation with ID:", conversation_id); // Debugging: Log existing conversation ID
+//     }
+
+//     // Insert the new message into the Messages table
+//     const insertMessageQuery = `
+//       INSERT INTO Messages (conversation_id, sender_id, receiver_id, sender_type, receiver_type, message, created_at, isRead)
+//       VALUES (?, ?, ?, 'User', 'Customer', ?, NOW(), 0)
+//     `;
+
+//     await connection.query(insertMessageQuery, [
+//       conversation_id,
+//       sender_id,
+//       receiver_id,
+//       message,
+//     ]);
+
+//     const updateConversationQuery = `
+//       UPDATE Conversations
+//       SET last_message = ?, last_message_date = NOW()
+//       WHERE id = ?
+//     `;
+//     await connection.query(updateConversationQuery, [message, conversation_id]);
+
+//     await connection.commit();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Message sent successfully.",
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error while sending message:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while sending the message.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+// export const handleSetMessagesSenderIsStaff = async (req, res, connection) => {
+//   const { sender_id, receiver_id, message } = req.body;
+//   console.log(req.body);
+//   try {
+//     // Begin transaction
+//     await connection.beginTransaction();
+
+//     const findConversationQuery = `
+//       SELECT id FROM Conversations
+//       WHERE (user_sender_id IS NULL AND customer_sender_id = ? AND user_receiver_id = ?) OR
+//             (customer_sender_id IS NULL AND user_sender_id = ? AND customer_receiver_id = ?)
+//       LIMIT 1
+//     `;
+
+//     const [conversationRows] = await connection.query(findConversationQuery, [
+//       sender_id, // User (staff) ID who is replying
+//       receiver_id, // Customer ID who is receiving the reply
+//       receiver_id, // Customer ID who started the conversation
+//       sender_id, // User (staff) ID who is replying
+//     ]);
+
+//     console.log("Conversation Rows:", conversationRows);
+
+//     let conversation_id;
+
+//     console.log(conversationRows);
+
+//     // If no conversation exists, create a new one
+//     if (conversationRows.length === 0) {
+//       const insertConversationQuery = `
+//         INSERT INTO Conversations (user_sender_id, customer_sender_id, user_receiver_id, customer_receiver_id, last_message, last_message_date, created_at, updated_at)
+//         VALUES (?, NULL, NULL, ?, ?, NOW(), NOW(), NOW())
+//       `;
+
+//       const [newConversationResult] = await connection.query(
+//         insertConversationQuery,
+//         [sender_id, receiver_id, message]
+//       );
+//       conversation_id = newConversationResult.insertId; // Get the new conversation ID
+//     } else {
+//       conversation_id = conversationRows[0].id;
+//     }
+
+//     // Insert the new message into the Messages table
+//     const insertMessageQuery = `
+//       INSERT INTO Messages (conversation_id, sender_id, receiver_id, sender_type, receiver_type, message, created_at, isRead)
+//       VALUES (?, ?, ?, 'User', 'Customer', ?, NOW(), 0)
+//     `;
+
+//     await connection.query(insertMessageQuery, [
+//       conversation_id,
+//       sender_id,
+//       receiver_id,
+//       message,
+//     ]);
+
+//     const updateConversationQuery = `
+//       UPDATE Conversations
+//       SET last_message = ?, last_message_date = NOW()
+//       WHERE id = ?
+//     `;
+//     await connection.query(updateConversationQuery, [message, conversation_id]);
+
+//     await connection.commit();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Message sent successfully.",
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error while sending message:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while sending the message.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
 // GET
+
 export const handleGetLaundryPickup = async (req, res, connection) => {
   const { id } = req.params;
   const { user_id } = req.query;
-  console.log(user_id);
   try {
     await connection.beginTransaction();
 
@@ -476,6 +669,60 @@ export const handleGetStaffConvo = async (req, res, connection) => {
     connection.release();
   }
 };
+
+// export const handlePostNewMessages = async (req, res, connection) => {
+//   const { id } = req.params; // assuming this is either sender's user/customer id
+//   const { receiverId, text, senderType, receiverType } = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+//     // Determine sender and receiver based on type
+//     let senderCustomerId = null;
+//     let senderUserAccountId = null;
+//     let recipientCustomerId = null;
+//     let recipientUserAccountId = null;
+//     if (senderType === "Customer") {
+//       senderCustomerId = id; // If the sender is a customer
+//     } else if (senderType === "Staff") {
+//       senderUserAccountId = id; // If the sender is a staff member
+//     }
+//     if (receiverType === "Customer") {
+//       recipientCustomerId = receiverId; // If the receiver is a customer
+//     } else if (receiverType === "Staff") {
+//       recipientUserAccountId = receiverId; // If the receiver is a staff member
+//     }
+//     // Insert new message into the Message table using execute
+//     const query = `
+//       INSERT INTO Message
+//       (sender_customer_id, sender_user_account_id, recipient_customer_id, recipient_user_account_id, message, sender_type, receiver_type, isRead, date_sent)
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+//     `;
+//     await connection.execute(query, [
+//       senderCustomerId,
+//       senderUserAccountId,
+//       recipientCustomerId,
+//       recipientUserAccountId,
+//       text,
+//       senderType,
+//       receiverType,
+//       false, // isRead is false by default
+//     ]);
+//     await connection.commit();
+//     res.status(200).json({
+//       success: true,
+//       message: "Message sent successfully!",
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error sending message:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while sending the message.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
 
 // export const handleGetStaffMessages = async (req, res, connection) => {
 //   const { id } = req.params; // 'id' is the User_Account ID (e.g., staff ID)

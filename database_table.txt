@@ -370,7 +370,14 @@ message
 created_at
 isRead
 
+#here the customer who start convo to user
+id | user_sender_id | customer_sender_id | user_receiver_id | customer_receiver_id
+41        NULL                  1                  6                    NULL
 
+BUT WHEN THE STAFF REPLAYING BACK ITS CREATE NEW CONVE WHY
+id | user_sender_id | customer_sender_id | user_receiver_id | customer_receiver_id
+41        NULL                  1                  6                    NULL
+42          6                 NULL                 NULL                  1       <--- here the 
 
 
 

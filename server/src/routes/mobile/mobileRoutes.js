@@ -2,7 +2,7 @@ import express from "express";
 import {
   handleGetLaundryPickup,
   handleGetStaffConvo,
-  handlePostNewMessages,
+  handleSetMessagesSenderIsStaff,
   handleUpdateServiceRequestBackToPending,
   handleUpdateServiceRequestFinishPickup,
   handleUpdateServiceRequestUsingQrCode,
@@ -43,13 +43,13 @@ router.get(
 );
 // #PUT
 
-// STAFF SECTION
+// ---STAFF SECTION---
 // #POST
 router.post(
-  "/message/:id/set-new-messages",
+  "/staff/set-messages-sender-staff",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handlePostNewMessages(req, res, connection);
+      await handleSetMessagesSenderIsStaff(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

@@ -120,17 +120,31 @@ export const handleSetMessagesSenderIsCustomer = async (
     // Check if a conversation already exists
     const findConversationQuery = `
       SELECT id FROM Conversations 
-      WHERE (user_sender_id = ? AND customer_receiver_id = ?) OR 
-            (customer_sender_id = ? AND user_receiver_id = ?)
+      WHERE (customer_sender_id = ? AND user_receiver_id = ?) OR 
+            (user_sender_id = ? AND customer_receiver_id = ?)
       LIMIT 1
     `;
 
     const [conversationRows] = await connection.query(findConversationQuery, [
-      sender_id,
-      receiver_id,
-      sender_id,
-      receiver_id,
+      sender_id, // Customer ID who is sending the message
+      receiver_id, // User (staff) ID who is receiving the message
+      receiver_id, // User (staff) ID who is receiving the message
+      sender_id, // Customer ID who is sending the message
     ]);
+
+    // const findConversationQuery = `
+    //   SELECT id FROM Conversations
+    //   WHERE (user_sender_id = ? AND customer_receiver_id = ?) OR
+    //         (customer_sender_id = ? AND user_receiver_id = ?)
+    //   LIMIT 1
+    // `;
+
+    // const [conversationRows] = await connection.query(findConversationQuery, [
+    //   sender_id,
+    //   receiver_id,
+    //   sender_id,
+    //   receiver_id,
+    // ]);
 
     let conversation_id;
 
@@ -298,69 +312,6 @@ export const handleGetCustomerConvo = async (req, res, connection) => {
     connection.release();
   }
 };
-
-// export const handleGetCustomerTrackOrderAndProgress = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params; // customer id
-//   console.log(id);
-
-//   try {
-//     await connection.beginTransaction();
-
-//     // const query = `
-
-//     // `;
-
-//     // const [rows] = await connection.execute(query, [id]);
-
-//     // await connection.commit();
-
-//     // res.status(200).json({
-//     //   success: true,
-//     //   data: rows,
-//     // });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error customer track order and progress:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching data.",
-//     });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// };
-
-// export const handleGetMessagesForCustomers = async (req, res, connection) => {
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-
-//     `;
-
-//     const [rows] = await connection.execute(query);
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       success: true,
-//       messages: rows,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fees.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
 
 //# TRACKING ORDER
 export const handleGetCustomerTrackOrderAndProgress = async (
@@ -564,6 +515,69 @@ export const handleUpdateCustomerBasicInformation = async (
     connection.release();
   }
 };
+
+// export const handleGetCustomerTrackOrderAndProgress = async (
+//   req,
+//   res,
+//   connection
+// ) => {
+//   const { id } = req.params; // customer id
+//   console.log(id);
+
+//   try {
+//     await connection.beginTransaction();
+
+//     // const query = `
+
+//     // `;
+
+//     // const [rows] = await connection.execute(query, [id]);
+
+//     // await connection.commit();
+
+//     // res.status(200).json({
+//     //   success: true,
+//     //   data: rows,
+//     // });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error customer track order and progress:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching data.",
+//     });
+//   } finally {
+//     if (connection) connection.release();
+//   }
+// };
+
+// export const handleGetMessagesForCustomers = async (req, res, connection) => {
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+
+//     `;
+
+//     const [rows] = await connection.execute(query);
+
+//     await connection.commit();
+
+//     res.status(200).json({
+//       success: true,
+//       messages: rows,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fees.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
 
 // export const handleUpdateServiceRequestUsingQrCode = async (
 //   req,
