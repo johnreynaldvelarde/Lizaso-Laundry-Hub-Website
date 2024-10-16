@@ -400,8 +400,6 @@ const useUnitMonitor = () => {
 
     // <----- PopupAssignUnit ----->
     avaiableUnitData,
-    selectedAssignUnit,
-    setSelectedAssignUnit,
     handleAssignUnitSelect,
     handleAssignUnitConfirm,
     fetchAvailableUnit,

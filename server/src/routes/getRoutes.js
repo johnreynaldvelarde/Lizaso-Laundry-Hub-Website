@@ -3,6 +3,7 @@ import { handleViewStore } from "../services/admin/useStore.js";
 import {
   handleGetCountLaundryAssignment,
   handleGetCountRequestInQueue,
+  handleGetInventoryLaundryItem,
   handleGetLaundryAssignments,
   handleGetSelectedCustomer,
   handleGetServiceInQueue,
@@ -48,6 +49,17 @@ router.get(
 );
 
 // Laundry Unit Section
+router.get(
+  "/monitored-unit/:id/get-laundry-item",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetInventoryLaundryItem(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.get(
   "/user/:id/count-inqueue",
   withDatabaseConnection(async (req, res, connection) => {

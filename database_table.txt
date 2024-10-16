@@ -118,8 +118,8 @@ date_created
 
 --> Inventory <--
 id (Primary Key)
-item_id (Foregin Key)
 store_id (Foregin Key)
+item_id (Foregin Key)
 price
 quantity
 isStatus
@@ -204,7 +204,7 @@ updated_at
 --> Related_Item <--
 id (Primary Key)
 assigment_id (Foregin Key)
-item_id (Foregin Key)
+inventory_id (Foregin Key)
 quantity,
 amount,
 

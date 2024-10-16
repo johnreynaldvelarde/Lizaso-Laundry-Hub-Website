@@ -1,6 +1,6 @@
 import { generateTrackingCode } from "../../helpers/generateCode.js";
 
-// SET SECTION
+//#POST
 export const handleCreateUnits = async (req, res, db) => {
   try {
     const { store_id, unit_name, isUnitStatus } = req.body;
@@ -154,10 +154,10 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
 
 // Set Laundry Assignment
 export const handleSetLaundryAssignment = async (req, res, connection) => {
-  const { id } = req.params;
-  const { requestId, unitId, weight } = req.body;
-  const assignedAt = new Date();
+  const { service_request_id, unit_id, assign_by_id, weight, supplies } =
+    req.body;
 
+  console.log(req.body);
   try {
     await connection.beginTransaction();
 
@@ -171,16 +171,17 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
         isAssignmentStatus,
         isCompleted
       )
-      VALUES (?, ?, ?, ?, ?, 0, 0)
+      VALUES (?, ?, ?, ?, NOW(), 0, 0)
     `;
 
     const [insertResults] = await connection.execute(insertQuery, [
-      requestId,
-      unitId,
-      id,
+      service_request_id,
+      unit_id,
+      assign_by_id,
       weight,
-      assignedAt,
     ]);
+
+    const assignmentId = insertResults.insertId;
 
     // Update Laundry Unit
     const updateQuery = `
@@ -188,7 +189,7 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
       SET isUnitStatus = 1
       WHERE id = ?
     `;
-    await connection.execute(updateQuery, [unitId]);
+    await connection.execute(updateQuery, [unit_id]);
 
     // Update the Service_Request
     const updateRequestQuery = `
@@ -196,13 +197,46 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
       SET request_status = 'In Laundry'
       WHERE id = ?
     `;
-    await connection.execute(updateRequestQuery, [requestId]);
+    await connection.execute(updateRequestQuery, [service_request_id]);
+
+    // Check if supplies have data
+    if (supplies && supplies.length > 0) {
+      for (const supply of supplies) {
+        const { item_id, quantity, amount } = supply;
+
+        const relatedItemQuery = `
+          INSERT INTO Related_Item (
+            assignment_id,
+            item_id,
+            quantity,
+            amount
+          )
+          VALUES (?, ?, ?, ?)
+        `;
+        await connection.execute(relatedItemQuery, [
+          assignmentId,
+          item_id,
+          quantity,
+          amount,
+        ]);
+
+        // Update the quantity in the Inventory table
+        const updateInventoryQuery = `
+          UPDATE Inventory
+          SET quantity = quantity - ?
+          WHERE id = ?
+        `;
+        await connection.execute(updateInventoryQuery, [quantity, item_id]);
+      }
+    }
 
     await connection.commit();
 
-    res
-      .status(200)
-      .json({ message: "Laundry assignment successful", data: insertResults });
+    res.status(200).json({
+      success: true,
+      message: "Laundry assignment successful",
+      data: insertResults,
+    });
   } catch (error) {
     await connection.rollback();
     console.error("Error setting laundry assignment:", error);
@@ -212,7 +246,7 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
   }
 };
 
-// GET SECTION
+//#GET
 export const handleGetServiceType = async (req, res, connection) => {
   const { id } = req.params;
   try {
@@ -406,7 +440,98 @@ export const handleViewUnits = async (req, res, db) => {
   }
 };
 
-// PUT SECTION
+export const handleGetCountRequestInQueue = async (req, res, connection) => {
+  const { id } = req.params; // Store ID to filter requests
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM Service_Request
+      WHERE store_id = ? AND request_status = 'In Queue'
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      count: results[0].count,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error getting count of requests in queue:", error);
+    res.status(500).json({ error: "Failed to get request count" });
+  }
+};
+
+export const handleGetCountLaundryAssignment = async (req, res, connection) => {
+  const { id } = req.params;
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        SUM(CASE WHEN la.isAssignmentStatus = '0' THEN 1 ELSE 0 END) AS count_in_progress,
+        SUM(CASE WHEN la.isAssignmentStatus = '1' THEN 1 ELSE 0 END) AS count_completed,
+        SUM(CASE WHEN la.isAssignmentStatus = '2' THEN 1 ELSE 0 END) AS count_canceled
+      FROM Laundry_Assignment AS la
+      INNER JOIN Service_Request AS sr ON la.service_request_id = sr.id
+      WHERE sr.store_id = ?
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      count_in_progress: results[0].count_in_progress,
+      count_completed: results[0].count_completed,
+      count_canceled: results[0].count_canceled,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error getting count of assignments:", error);
+    res.status(500).json({ error: "Failed to get assignment count" });
+  }
+};
+
+export const handleGetInventoryLaundryItem = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        i.id AS inventory_id,
+        it.item_name,
+        i.quantity,
+        i.price,
+        i.isStatus
+      FROM Inventory i
+      INNER JOIN Item it ON i.item_id = it.id
+      WHERE i.store_id = ?
+        AND i.quantity > 0
+        AND i.isStatus = 0
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      data: results,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error getting inventory items:", error);
+    res.status(500).json({ error: "Failed to get inventory items" });
+  }
+};
+
+//#PUT
 export const handlePutAssignment = async (req, res, connection) => {
   const { id } = req.params; // The id refers to Laundry_Assignment.id
 
@@ -485,62 +610,6 @@ export const handlePutRemoveInQueue = async (req, res, connection) => {
 };
 
 // Counting Section
-export const handleGetCountRequestInQueue = async (req, res, connection) => {
-  const { id } = req.params; // Store ID to filter requests
-
-  try {
-    await connection.beginTransaction();
-
-    const query = `
-      SELECT COUNT(*) AS count
-      FROM Service_Request
-      WHERE store_id = ? AND request_status = 'In Queue'
-    `;
-
-    const [results] = await connection.execute(query, [id]);
-
-    await connection.commit();
-
-    res.status(200).json({
-      count: results[0].count,
-    });
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error getting count of requests in queue:", error);
-    res.status(500).json({ error: "Failed to get request count" });
-  }
-};
-
-export const handleGetCountLaundryAssignment = async (req, res, connection) => {
-  const { id } = req.params;
-  try {
-    await connection.beginTransaction();
-
-    const query = `
-      SELECT 
-        SUM(CASE WHEN la.isAssignmentStatus = '0' THEN 1 ELSE 0 END) AS count_in_progress,
-        SUM(CASE WHEN la.isAssignmentStatus = '1' THEN 1 ELSE 0 END) AS count_completed,
-        SUM(CASE WHEN la.isAssignmentStatus = '2' THEN 1 ELSE 0 END) AS count_canceled
-      FROM Laundry_Assignment AS la
-      INNER JOIN Service_Request AS sr ON la.service_request_id = sr.id
-      WHERE sr.store_id = ?
-    `;
-
-    const [results] = await connection.execute(query, [id]);
-
-    await connection.commit();
-
-    res.status(200).json({
-      count_in_progress: results[0].count_in_progress,
-      count_completed: results[0].count_completed,
-      count_canceled: results[0].count_canceled,
-    });
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error getting count of assignments:", error);
-    res.status(500).json({ error: "Failed to get assignment count" });
-  }
-};
 
 // export const handleSetWalkInRequest = async (req, res, connection) => {
 //   const { id } = req.params;

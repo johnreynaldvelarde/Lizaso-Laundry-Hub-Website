@@ -24,10 +24,10 @@ export const createUnit = {
 };
 
 export const createLaundryAssignment = {
-  setLaundryAssignment: async (userId, data) => {
+  setLaundryAssignment: async (data) => {
     try {
       const response = await axiosPrivate.post(
-        `/unit-monitor/${userId}/set-assignment`,
+        `/monitored-unit/set-new-assignment`,
         data
       );
       return response.data;

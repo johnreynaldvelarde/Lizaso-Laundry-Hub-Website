@@ -32,7 +32,14 @@ const withDatabaseConnection = (handler) => async (req, res) => {
   }
 };
 
-// Unit Monitored Section
+//#UNIT MONITORED SECTION
+// router.post(
+//   "/monitored-unit/set-",
+//   withDatabaseConnection(async (req, res, connection) => {
+//     await handleCreateUnits(req, res, connection);
+//   })
+// );
+
 router.post(
   "/create-unit",
   withDatabaseConnection(async (req, res, connection) => {
@@ -41,9 +48,13 @@ router.post(
 );
 
 router.post(
-  "/unit-monitor/:id/set-assignment",
+  "/monitored-unit/set-new-assignment",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleSetLaundryAssignment(req, res, connection);
+    try {
+      await handleSetLaundryAssignment(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

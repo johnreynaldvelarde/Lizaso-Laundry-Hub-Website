@@ -7,6 +7,20 @@ const handleError = (error) => {
 };
 
 // UNIT MONITORED SECTION
+export const getInventoryLaundryItem = {
+  getInventoryItem: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/monitored-unit/${storeId}/get-laundry-item`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
 export const getCountRequestInQueue = {
   getCountInQueue: async (storeId) => {
     try {
