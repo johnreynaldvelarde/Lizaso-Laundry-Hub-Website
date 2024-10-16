@@ -12,9 +12,15 @@ import {
   FormControlLabel,
   Paper,
   TextField,
+  Typography,
 } from "@mui/material";
+import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitle";
+import CustomPopFooterButton from "../../../components/common/CustomPopFooterButton";
+import { COLORS } from "../../../constants/color";
 
 function PopupAssignUnit({ open, onClose, inqueueID }) {
+  const [loading, setLoading] = useState(false);
+  const [weight, setWeight] = useState("");
   const {
     avaiableUnitData,
     selectedAssignUnit,
@@ -39,16 +45,184 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
     <Dialog
       open={open}
       onClose={onClose}
+      maxWidth="xs"
+      fullWidth
       PaperProps={{
-        component: motion.div,
-        variants: dialogVariants,
-        initial: "hidden",
-        animate: "visible",
-        transition: { duration: 0.3, ease: "easeOut" },
-        className: "bg-white rounded-3xl max-w-md mx-4 p-1",
+        style: {
+          borderRadius: 16,
+        },
       }}
     >
-      <div className="relative">
+      <CustomPopHeaderTitle
+        title={"Choose an Available Unit"}
+        subtitle={"Fill in the necessary details"}
+        onClose={onClose}
+      />
+      <DialogContent>
+        <div className="mt-4 mb-5 flex overflow-x-auto space-x-3 hori-scrollable">
+          {avaiableUnitData.length > 0 ? (
+            avaiableUnitData.map((unit) => (
+              <Paper
+                key={unit.id}
+                elevation={0}
+                sx={{
+                  padding: "15px",
+                  border: "1px solid",
+                  borderColor:
+                    selectedAssignUnit === unit.id
+                      ? COLORS.secondary
+                      : COLORS.border,
+                  marginBottom: "10px",
+                  borderRadius: "8px",
+                  color:
+                    selectedAssignUnit === unit.id
+                      ? COLORS.white
+                      : COLORS.primary,
+                  backgroundColor:
+                    selectedAssignUnit === unit.id ? COLORS.secondary : "white",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s ease",
+                }}
+                onClick={() => setSelectedAssignUnit(unit.id)}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: 600, textAlign: "center" }}
+                >
+                  {unit.unit_name}
+                </Typography>
+              </Paper>
+            ))
+          ) : (
+            <Typography variant="body1" color="text.secondary" align="center">
+              No available units at the moment.
+            </Typography>
+          )}
+        </div>
+        <TextField
+          label="Weight (kg)"
+          variant="outlined"
+          fullWidth
+          type="number"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          placeholder="Enter weight in kilograms"
+          // error={!!errors.weight}
+        />
+      </DialogContent>
+      {/* Footer */}
+      <CustomPopFooterButton
+        label={"Proceed"}
+        onClose={onClose}
+        loading={loading}
+      />
+    </Dialog>
+  );
+}
+
+export default PopupAssignUnit;
+
+{
+  /* <TextField
+          margin="dense"
+          label="Item Code"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={itemCode}
+          onChange={handleInputChange("rolename")}
+          error={Boolean(errors.itemCode)}
+          helperText={errors.itemCode}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        />
+        <TextField
+          margin="dense"
+          label="Item Name"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={itemName}
+          onChange={handleInputChange("rolename")}
+          error={Boolean(errors.itemName)}
+          helperText={errors.itemName}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        />
+        <TextField
+          margin="dense"
+          label="Price"
+          type="text"
+          fullWidth
+          variant="outlined"
+          value={itemPrice}
+          onChange={handleInputChange("rolename")}
+          error={Boolean(errors.itemPrice)}
+          helperText={errors.itemPrice}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        />
+        <TextField
+          select
+          margin="dense"
+          label="Category"
+          fullWidth
+          variant="outlined"
+          value={selectedCategory}
+          onChange={handleInputChange("selectedStore")}
+          error={Boolean(errors.selectedCategory)}
+          helperText={errors.selectedCategory}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        >
+          <MenuItem value="" disabled>
+            Select a category
+          </MenuItem>
+          {data.map((category) => (
+            <MenuItem key={category.category_id} value={category.category_id}>
+              {category.category_name}
+            </MenuItem>
+          ))}
+        </TextField> */
+}
+
+{
+  /* <div className="relative">
         <DialogTitle className="text-lg font-semibold mb-4">
           Select an Available Unit
         </DialogTitle>
@@ -151,9 +325,5 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
             Proceed
           </Button>
         </DialogActions>
-      </div>
-    </Dialog>
-  );
+      </div> */
 }
-
-export default PopupAssignUnit;
