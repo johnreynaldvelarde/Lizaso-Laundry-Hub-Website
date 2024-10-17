@@ -3,6 +3,7 @@ import { handleCreateStore } from "../services/admin/useStore.js";
 import {
   handlePutAssignment,
   handlePutRemoveInQueue,
+  handleUpdateProgressInqueueAndAtStore,
 } from "../services/admin/useUnits.js";
 import { getPool } from "../db/dbConfig.js";
 import {
@@ -50,6 +51,17 @@ router.put(
   "/user/:id/remove-request",
   withDatabaseConnection(async (req, res, connection) => {
     await handlePutRemoveInQueue(req, res, connection);
+  })
+);
+
+router.put(
+  "/monitored-unit/:id/update-progress-inqueue-store",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateProgressInqueueAndAtStore(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

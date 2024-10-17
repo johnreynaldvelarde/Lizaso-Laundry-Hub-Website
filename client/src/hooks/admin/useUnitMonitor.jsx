@@ -11,6 +11,7 @@ import {
 } from "../../services/api/getApi";
 import { createLaundryAssignment } from "../../services/api/postApi";
 import {
+  updateProgressInQueueAtStore,
   updateRemoveAssignment,
   updateRemoveInQueue,
 } from "../../services/api/putApi";
@@ -166,9 +167,24 @@ const useUnitMonitor = () => {
     setDialogQueueOpen(true);
   };
 
-  const handleDialogAssignUnit = (id) => {
+  const handleDialogAssignUnit = async (id) => {
     setSelectedQueueId(id);
-    setDialogAssignUnitOpen(true);
+
+    if (id) {
+      try {
+        await updateProgressInQueueAtStore.putProgressInQueueAtStore(id);
+      } catch (error) {
+        const errorMessage =
+          error?.response?.data?.message ||
+          error.message ||
+          "Something went wrong";
+        throw new Error(errorMessage);
+      } finally {
+        setDialogAssignUnitOpen(true);
+      }
+    } else {
+      setDialogAssignUnitOpen(true);
+    }
   };
 
   const handleConfrimRemoveQueue = async (id) => {

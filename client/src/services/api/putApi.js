@@ -21,6 +21,21 @@ export const updateCustomerBasicInformation = {
   },
 };
 
+//#UNIT MONITORED SECTION
+export const updateProgressInQueueAtStore = {
+  putProgressInQueueAtStore: async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/monitored-unit/${id}/update-progress-inqueue-store`
+      );
+      return response;
+    } catch (error) {
+      console.error("Error updating assignment:", error);
+      throw error;
+    }
+  },
+};
+
 export const updateRemoveInQueue = {
   putRemoveInQueue: async (inqueueID) => {
     try {

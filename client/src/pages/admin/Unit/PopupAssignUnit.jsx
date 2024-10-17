@@ -111,27 +111,16 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
       Object.values(quantityErrors).every((err) => err === "")
     ) {
       // setLoading(true);
-      // const data = {
-      //   service_request_id: inqueueID,
-      //   unit_id: selectedAssignUnit,
-      //   assign_by_id: userDetails.userId,
-      //   weight: weight,
-      //   supplies: selectedSupplies.map((supplyId) => ({
-      //     supplyId,
-      //     quantity: quantities[supplyId] || 1,
-      //   })),
-      // };
-
       // Prepare supplies data with total amount per item
       const suppliesData = selectedSupplies.map((supplyId) => {
         const supply = itemData.find((s) => s.inventory_id === supplyId);
-        const quantity = quantities[supplyId] || 1; // Default to 1 if not set
-        const totalAmount = (supply.price * quantity).toFixed(2); // Calculate total amount
+        const quantity = quantities[supplyId] || 1;
+        const totalAmount = (supply.price * quantity).toFixed(2);
 
         return {
           supplyId,
           quantity,
-          amount: totalAmount, // Add amount per item
+          amount: totalAmount,
         };
       });
 
@@ -140,30 +129,28 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
         unit_id: selectedAssignUnit,
         assign_by_id: userDetails.userId,
         weight: weight,
-        supplies: suppliesData, // Include supplies data
+        supplies: suppliesData,
       };
 
-      // console.log("Selected Supplies:", selectedSupplies);
-      // console.log("Quantities:", quantities);
       console.log("Data to be submitted:", data);
 
-      // try {
-      //   const response = await createLaundryAssignment.setLaundryAssignment(
-      //     data
-      //   );
+      try {
+        const response = await createLaundryAssignment.setLaundryAssignment(
+          data
+        );
 
-      //   if (response.success) {
-      //     toast.success(response.message);
-      //   } else {
-      //     toast.error(response.message);
-      //   }
-      // } catch (error) {
-      //   toast.error(
-      //     `Error with laundry assignment  request: ${error.message || error}`
-      //   );
-      // } finally {
-      //   setLoading(false);
-      // }
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(
+          `Error with laundry assignment  request: ${error.message || error}`
+        );
+      } finally {
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }

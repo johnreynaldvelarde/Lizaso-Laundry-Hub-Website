@@ -202,12 +202,12 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
     // Check if supplies have data
     if (supplies && supplies.length > 0) {
       for (const supply of supplies) {
-        const { item_id, quantity, amount } = supply;
+        const { supplyId, quantity, amount } = supply;
 
         const relatedItemQuery = `
           INSERT INTO Related_Item (
             assignment_id,
-            item_id,
+            inventory_id,
             quantity,
             amount
           )
@@ -215,7 +215,7 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
         `;
         await connection.execute(relatedItemQuery, [
           assignmentId,
-          item_id,
+          supplyId,
           quantity,
           amount,
         ]);
@@ -226,9 +226,17 @@ export const handleSetLaundryAssignment = async (req, res, connection) => {
           SET quantity = quantity - ?
           WHERE id = ?
         `;
-        await connection.execute(updateInventoryQuery, [quantity, item_id]);
+        await connection.execute(updateInventoryQuery, [quantity, supplyId]);
       }
     }
+
+    await connection.execute(
+      `UPDATE Service_Progress 
+       SET completed = true,
+           status_date = NOW()
+       WHERE service_request_id = ? AND (stage = 'In Laundry')`,
+      [service_request_id]
+    );
 
     await connection.commit();
 
@@ -532,6 +540,48 @@ export const handleGetInventoryLaundryItem = async (req, res, connection) => {
 };
 
 //#PUT
+export const handleUpdateProgressInqueueAndAtStore = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+  try {
+    await connection.beginTransaction();
+
+    const [rows] = await connection.execute(
+      `SELECT completed FROM Service_Progress 
+       WHERE service_request_id = ? AND (stage = 'At Store' OR stage = 'In Queue')`,
+      [id]
+    );
+
+    if (rows.length > 0 && rows.every((row) => row.completed === true)) {
+      await connection.rollback();
+      return;
+    }
+    await connection.execute(
+      `UPDATE Service_Progress 
+       SET completed = true,
+           status_date = NOW()
+       WHERE service_request_id = ? AND completed = false AND (stage = 'At Store' OR stage = 'In Queue')`,
+      [id]
+    );
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "Error updating service progress.",
+      error,
+    });
+  }
+};
+
 export const handlePutAssignment = async (req, res, connection) => {
   const { id } = req.params; // The id refers to Laundry_Assignment.id
 
@@ -608,211 +658,3 @@ export const handlePutRemoveInQueue = async (req, res, connection) => {
       .json({ success: false, message: "Error canceling the request", error });
   }
 };
-
-// Counting Section
-
-// export const handleSetWalkInRequest = async (req, res, connection) => {
-//   const { id } = req.params;
-//   const { customerId, userId, unitId, fullname, weight, serviceType, customerNotes } = req.body;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     await connection.execute(, []);
-
-//     await connection.commit();
-
-//   } catch (error) {
-//     await connection.rollback();
-//     res.status(500).json({ error: "An error occurred while setting the laundry assignment." });
-//   }
-// };
-
-// export const handleGetCountAssignmentInProgress = async (req, res, connection) => {
-//   const { id } = req.params;
-
-//   try {
-//     // Begin the transaction
-//     await connection.beginTransaction();
-
-//     const query = `
-//       SELECT COUNT(*) AS count
-//       FROM Laundry_Assignment AS la
-//       INNER JOIN Service_Request AS sr ON la.service_request_id = sr.id
-//       WHERE sr.store_id = ? AND la.isAssignmentStatus = '0'
-//     `;
-
-//     const [results] = await connection.execute(query, [id]);
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       count: results[0].count,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error('Error getting count of assignments in progress:', error);
-//     res.status(500).json({ error: 'Failed to get assignment count' });
-//   }
-// };
-
-// export const handlePutRemoveInQueue = async (req, res, connection) => {
-//   const { id } = req.params;
-//   try {
-
-//     await connection.beginTransaction();
-//     const query = `
-//       UPDATE Service_Request
-//       SET request_status = 'Canceled'
-//       WHERE id = ?;
-//     `;
-
-//     const [results] = await connection.execute(query, [id]);
-
-//     await connection.commit();
-
-//     res.status(200).json({ success: true, message: 'Request canceled successfully', results });
-//   } catch (error) {
-//     await connection.rollback();
-//     res.status(500).json({ success: false, message: 'Error canceling the request', error });
-//   }
-// };
-
-// export const handlePutAsssignment = async (req, res, connection) => {
-//   const { id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-
-//   `;
-
-//     await connection.commit();
-
-//     res.status(200).json(results);
-//   } catch (error) {
-//   }
-// };
-
-// export const handleGetLaundryAssignment = async (req, res, connection) => {
-//   const { id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-
-//   `;
-
-//     const [results] = await connection.execute(query, [id]);
-
-//     await connection.commit();
-
-//     res.status(200).json(results);
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching ", error);
-//     res.status(500).json({ error: "An error occurred while fetching." });
-//   }
-// };
-
-// export const handleGetCountRequestInQueue = async (req, res, connection) => {
-//   const { id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-//     SELECT
-
-//   `;
-
-//     res.status(200).json(results);
-//   } catch (error) {
-
-//   }
-// };
-
-// export const handleSetLaundryAssignment = async (req, res, connection) => {
-//   const { id } = req.params;
-//   const { requestId, unitId, weight } = req.body;
-//   const assignedAt = new Date();
-
-//   try {
-//     await connection.beginTransaction();
-
-//     // Define the SQL INSERT query
-//     const query = `
-//       INSERT INTO Laundry_Assignment (
-//         service_request_id,
-//         unit_id,
-//         assigned_by,
-//         weight,
-//         assigned_at,
-//         isAssignmentStatus,
-//         isCompleted
-//       )
-//       VALUES (?, ?, ?, ?, ?, 0, 0)
-//     `;
-
-//     const [results] = await connection.execute(query, [
-//       requestId,
-//       unitId,
-//       id,
-//       weight,
-//       assignedAt
-//     ]);
-
-//     await connection.commit();
-
-//     res.status(200).json({ message: "Laundry assignment successful", data: results });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error setting laundry assignment:", error);
-//     res.status(500).json({ error: "An error occurred while setting the laundry assignment." });
-//   }
-// };
-
-// export const handleSetLaundryAssignment = async (req, res, connection) => {
-//   const { id } = req.params;
-//   const { requestId, unitId, weight } = req.body;
-//   const assignedAt = new Date();
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-
-//   `;
-
-//     const [results] = await connection.execute(query, [id]);
-
-//     await connection.commit();
-
-//     res.status(200).json(results);
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching laundry Unit:", error);
-//     res.status(500).json({ error: "An error occurred while fetching." });
-//   }
-// };
-
-// export const handleViewUnits = async (req, res, db) => {
-//   try {
-
-//     const { store_id} = req.body;
-
-//     res.status(200).json({
-//       success: true,
-//       data: rows,
-//     });
-//   } catch (error) {
-
-//     console.error("Error retrieving unit list:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while retrieving the unit list.",
-//     });
-//   }
-// };
