@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 16, 2024 at 05:21 PM
+-- Generation Time: Oct 17, 2024 at 03:01 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -236,8 +236,8 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `store_id`, `item_id`, `price`, `quantity`, `isStatus`) VALUES
-(1, 1, 1, 1.00, 0, 0),
-(2, 1, 2, 2.00, 0, 0);
+(1, 1, 1, 1.00, 20, 0),
+(2, 1, 2, 2.00, 10, 0);
 
 -- --------------------------------------------------------
 
@@ -309,7 +309,9 @@ CREATE TABLE `laundry_assignment` (
 --
 
 INSERT INTO `laundry_assignment` (`id`, `service_request_id`, `unit_id`, `assigned_by`, `weight`, `assigned_at`, `completed_at`, `isAssignmentStatus`, `isCompleted`) VALUES
-(4, 67, 1, 1, '1', '2024-10-16 22:23:47', NULL, 0, 0);
+(4, 67, 1, 1, '1', '2024-10-16 22:23:47', NULL, 2, 0),
+(5, 68, 2, 1, '1', '2024-10-17 07:13:04', NULL, 2, 0),
+(8, 65, 1, 1, '5', '2024-10-17 07:37:39', NULL, 2, 0);
 
 -- --------------------------------------------------------
 
@@ -331,7 +333,7 @@ CREATE TABLE `laundry_unit` (
 --
 
 INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(1, 1, 'Unit 1', '2024-10-07 16:40:14', 1, 0),
+(1, 1, 'Unit 1', '2024-10-07 16:40:14', 0, 0),
 (2, 1, 'Unit 2', '2024-10-07 16:40:19', 0, 0),
 (3, 1, 'Unit 3', '2024-10-07 16:40:23', 0, 0),
 (4, 1, 'Unit 4', '2024-10-07 16:40:26', 0, 0),
@@ -400,7 +402,7 @@ INSERT INTO `messages` (`id`, `conversation_id`, `sender_id`, `receiver_id`, `se
 CREATE TABLE `related_item` (
   `id` bigint(20) NOT NULL,
   `assignment_id` bigint(20) NOT NULL,
-  `item_id` bigint(20) NOT NULL,
+  `inventory_id` bigint(20) NOT NULL,
   `quantity` int(11) NOT NULL,
   `amount` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -516,7 +518,8 @@ CREATE TABLE `service_request` (
 
 INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `tracking_code`, `customer_fullname`, `customer_type`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`, `isPickup`, `isDelivery`) VALUES
 (65, 1, 6, 1, 1, '#AFF9D58E4B5745618864', 'Rose Oriana', 'Online', '', '2024-10-16 08:57:16', '2024-10-16 13:55:45', NULL, 'Completed Pickup', 'SR-65-#AFF9D58E4B5745618864', 1, 1, 0),
-(67, 1, 1, 2, 1, '#47346C3F010841D9B143', 'P., Junjun Santos', 'Walk-In', '', '2024-10-16 14:23:47', NULL, NULL, 'In Laundry', '', 0, 1, 0);
+(67, 1, 1, 2, 1, '#47346C3F010841D9B143', 'P., Junjun Santos', 'Walk-In', '', '2024-10-16 14:23:47', NULL, NULL, 'Canceled', '', 0, 1, 0),
+(68, 1, 1, 3, 1, '#96E81470AC75441B9E2F', 'Midgar, Alexia R', 'Walk-In', '', '2024-10-16 23:13:04', NULL, NULL, 'Canceled', '', 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -744,7 +747,8 @@ ALTER TABLE `messages`
 --
 ALTER TABLE `related_item`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `Related_Item_Laundry_Assignment` (`assignment_id`);
+  ADD KEY `Related_Item_Laundry_Assignment` (`assignment_id`),
+  ADD KEY `Related_Item_Inventory` (`inventory_id`);
 
 --
 -- Indexes for table `roles_permissions`
@@ -867,7 +871,7 @@ ALTER TABLE `item_category`
 -- AUTO_INCREMENT for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
@@ -909,7 +913,7 @@ ALTER TABLE `service_promotions`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `service_type`
@@ -1010,7 +1014,7 @@ ALTER TABLE `messages`
 -- Constraints for table `related_item`
 --
 ALTER TABLE `related_item`
-  ADD CONSTRAINT `Related_Item_Item` FOREIGN KEY (`id`) REFERENCES `item` (`id`),
+  ADD CONSTRAINT `Related_Item_Inventory` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`id`),
   ADD CONSTRAINT `Related_Item_Laundry_Assignment` FOREIGN KEY (`assignment_id`) REFERENCES `laundry_assignment` (`id`);
 
 --
