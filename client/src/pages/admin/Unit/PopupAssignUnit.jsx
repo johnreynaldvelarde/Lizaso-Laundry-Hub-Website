@@ -30,7 +30,6 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
   const [quantityErrors, setQuantityErrors] = useState({}); // To store quantity validation errors
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
   const { data: itemData, fetchData: fetchItem } = useFetchData();
   const { avaiableUnitData, fetchAvailableUnit } = useUnitMonitor();
 
@@ -111,39 +110,60 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
       Object.keys(newErrors).length === 0 &&
       Object.values(quantityErrors).every((err) => err === "")
     ) {
-      setLoading(true);
+      // setLoading(true);
+      // const data = {
+      //   service_request_id: inqueueID,
+      //   unit_id: selectedAssignUnit,
+      //   assign_by_id: userDetails.userId,
+      //   weight: weight,
+      //   supplies: selectedSupplies.map((supplyId) => ({
+      //     supplyId,
+      //     quantity: quantities[supplyId] || 1,
+      //   })),
+      // };
+
+      // Prepare supplies data with total amount per item
+      const suppliesData = selectedSupplies.map((supplyId) => {
+        const supply = itemData.find((s) => s.inventory_id === supplyId);
+        const quantity = quantities[supplyId] || 1; // Default to 1 if not set
+        const totalAmount = (supply.price * quantity).toFixed(2); // Calculate total amount
+
+        return {
+          supplyId,
+          quantity,
+          amount: totalAmount, // Add amount per item
+        };
+      });
+
       const data = {
         service_request_id: inqueueID,
         unit_id: selectedAssignUnit,
         assign_by_id: userDetails.userId,
         weight: weight,
-        supplies: selectedSupplies.map((supplyId) => ({
-          supplyId,
-          quantity: quantities[supplyId] || 1, // Default quantity to 1 if not specified
-        })),
+        supplies: suppliesData, // Include supplies data
       };
 
-      console.log("Selected Supplies:", selectedSupplies);
-      console.log("Quantities:", quantities);
+      // console.log("Selected Supplies:", selectedSupplies);
+      // console.log("Quantities:", quantities);
       console.log("Data to be submitted:", data);
 
-      try {
-        const response = await createLaundryAssignment.setLaundryAssignment(
-          data
-        );
+      // try {
+      //   const response = await createLaundryAssignment.setLaundryAssignment(
+      //     data
+      //   );
 
-        if (response.success) {
-          toast.success(response.message);
-        } else {
-          toast.error(response.message);
-        }
-      } catch (error) {
-        toast.error(
-          `Error with laundry assignment  request: ${error.message || error}`
-        );
-      } finally {
-        setLoading(false);
-      }
+      //   if (response.success) {
+      //     toast.success(response.message);
+      //   } else {
+      //     toast.error(response.message);
+      //   }
+      // } catch (error) {
+      //   toast.error(
+      //     `Error with laundry assignment  request: ${error.message || error}`
+      //   );
+      // } finally {
+      //   setLoading(false);
+      // }
     } else {
       setLoading(false);
     }
@@ -255,6 +275,68 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
           <div style={{ marginTop: "20px" }}>
             {selectedSupplies.map((supplyId) => {
               const supply = itemData.find((s) => s.inventory_id === supplyId);
+              const quantity = quantities[supplyId] || 1; // Default quantity is 1
+              const totalPrice = (supply.price * quantity).toFixed(2); // Calculate total price
+
+              return (
+                <div key={supplyId} style={{ marginBottom: "10px" }}>
+                  <Typography variant="body2">
+                    {supply.item_name} Quantity:
+                  </Typography>
+                  <TextField
+                    type="number"
+                    fullWidth
+                    value={quantity}
+                    onChange={(e) =>
+                      handleQuantityChange(supplyId, parseInt(e.target.value))
+                    }
+                    inputProps={{ min: 1, max: supply.quantity }} // Set max to available quantity
+                    error={Boolean(quantityErrors[supplyId])}
+                    helperText={quantityErrors[supplyId]}
+                  />
+                  <Typography variant="body2" sx={{ marginTop: "5px" }}>
+                    Total Price: ${totalPrice} {/* Display total price */}
+                  </Typography>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* <FormControl fullWidth variant="outlined" sx={{ marginTop: "20px" }}>
+          <InputLabel>Select Laundry Supplies</InputLabel>
+          <Select
+            label="Select Laundry Supplies"
+            multiple
+            value={selectedSupplies}
+            onChange={handleSupplySelect}
+            renderValue={(selected) =>
+              selected.map((supplyId) => {
+                const supply = itemData.find(
+                  (s) => s.inventory_id === supplyId
+                );
+                return (
+                  <Chip
+                    key={supplyId}
+                    label={supply ? supply.item_name : ""}
+                    sx={{ margin: "5px" }}
+                  />
+                );
+              })
+            }
+          >
+            {itemData.map((supply) => (
+              <MenuItem key={supply.inventory_id} value={supply.inventory_id}>
+                {`${supply.item_name} (Available: ${supply.quantity})`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {selectedSupplies.length > 0 && (
+          <div style={{ marginTop: "20px" }}>
+            {selectedSupplies.map((supplyId) => {
+              const supply = itemData.find((s) => s.inventory_id === supplyId);
               return (
                 <div key={supplyId} style={{ marginBottom: "10px" }}>
                   <Typography variant="body2">
@@ -275,7 +357,7 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
               );
             })}
           </div>
-        )}
+        )} */}
       </DialogContent>
 
       {/* Footer */}
