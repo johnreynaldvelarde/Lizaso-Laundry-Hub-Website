@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
   Dialog,
@@ -9,7 +9,7 @@ import {
   Button,
   Tooltip,
 } from "@mui/material";
-import styles from "../../../styles/style";
+import styles from "../../../../styles/style";
 import { Link } from "react-router-dom";
 import {
   CalendarDots,
@@ -17,12 +17,16 @@ import {
   MinusSquare,
 } from "@phosphor-icons/react";
 import CloseIcon from "@mui/icons-material/Close";
-import nodata from "../../../assets/images/no_data.png";
-import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+import nodata from "../../../../assets/images/no_data.png";
+import useUnitMonitor from "../../../../hooks/admin/useUnitMonitor";
 import PopupAssignUnit from "./PopupAssignUnit";
-import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
+import useFetchData from "../../../../hooks/common/useFetchData";
+import { viewRequestInQueue, viewUnits } from "../../../../services/api/getApi";
+import useAuth from "../../../../contexts/AuthContext";
 
 const PopupInQueue = ({ open, onClose }) => {
+  const { userDetails } = useAuth();
   const {
     dialogQueueOpen,
     dialogAssignUnitOpen,
@@ -32,19 +36,34 @@ const PopupInQueue = ({ open, onClose }) => {
     handleDialogAssignUnit,
     handleDialogRemoveInQueue,
     handleConfrimRemoveQueue,
-    fetchUnitsData,
-    fetchInQueueLaundry,
-    unitsData,
-    inQueueData,
   } = useUnitMonitor();
 
-  useEffect(() => {
-    fetchUnitsData();
-  }, []);
+  const { data: unitsData, fetchData: fetchUnits } = useFetchData();
+  const { data: inQueueData, fetchData: fetchInQueue } = useFetchData();
+
+  const fetchUnitsData = useCallback(() => {
+    fetchUnits(viewUnits.getUnitsList, userDetails.storeId);
+  }, [fetchUnits, userDetails?.storeId]);
+
+  const fetchInQueueData = useCallback(() => {
+    fetchInQueue(viewRequestInQueue.getRequestInQueue, userDetails.storeId);
+  }, [fetchInQueue, userDetails?.storeId]);
 
   useEffect(() => {
-    fetchInQueueLaundry();
-  }, []);
+    if (open) {
+      fetchUnitsData();
+      fetchInQueueData();
+
+      const intervalId = setInterval(() => {
+        fetchUnitsData();
+        fetchInQueueData();
+      }, 2000);
+
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [fetchUnitsData, fetchInQueueData, open]);
 
   return (
     <Dialog

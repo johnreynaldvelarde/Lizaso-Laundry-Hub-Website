@@ -142,6 +142,9 @@ const TrackOrders = () => {
                             : orders[currentIndex].service_request
                                 .request_status === "Completed Pickup"
                             ? "bg-[#5787C8] text-white"
+                            : orders[currentIndex].service_request
+                                .request_status === "In Laundry"
+                            ? "bg-[#17a2b8] text-white"
                             : "bg-gray-200 text-gray-800"
                         }`}
                       >
@@ -226,7 +229,7 @@ const TrackOrders = () => {
                       </span>
                     </p>
                     <p className="mb-2" style={{ color: styles.primary }}>
-                      <span className="font-bold">Assessment:</span>
+                      <span className="font-bold">Transaction:</span>
                       <span
                         className="ml-2"
                         style={{ color: styles.secondary }}

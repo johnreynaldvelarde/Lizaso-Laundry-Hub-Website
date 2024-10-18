@@ -312,11 +312,11 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
           sr.store_id = ? AND sr.request_status = 'Completed Pickup'
       `;
 
-    const [results] = await connection.execute(query, [id]);
+    const [rows] = await connection.execute(query, [id]);
 
     await connection.commit();
 
-    res.status(200).json(results);
+    res.status(200).json({ success: true, data: rows });
   } catch (error) {
     await connection.rollback();
     console.error("Error fetching customer requests:", error);
@@ -349,7 +349,7 @@ export const handleGetUnitListAvaiable = async (req, res, connection) => {
 
     await connection.commit();
 
-    res.status(200).json(results);
+    res.status(200).json({ data: results });
   } catch (error) {
     await connection.rollback();
     console.error("Error fetching laundry Unit:", error);
@@ -377,11 +377,11 @@ export const handleGetLaundryAssignments = async (req, res, connection) => {
         AND la.isCompleted = 0
     `;
 
-    const [results] = await connection.execute(query, [id]);
+    const [rows] = await connection.execute(query, [id]);
 
     await connection.commit();
 
-    res.status(200).json(results);
+    res.status(200).json({ success: true, data: rows });
   } catch (error) {
     await connection.rollback();
     console.error("Error fetching assignments:", error);
@@ -457,7 +457,7 @@ export const handleGetCountRequestInQueue = async (req, res, connection) => {
     const query = `
       SELECT COUNT(*) AS count
       FROM Service_Request
-      WHERE store_id = ? AND request_status = 'In Queue'
+      WHERE store_id = ? AND request_status = 'Completed Pickup'
     `;
 
     const [results] = await connection.execute(query, [id]);
@@ -465,7 +465,7 @@ export const handleGetCountRequestInQueue = async (req, res, connection) => {
     await connection.commit();
 
     res.status(200).json({
-      count: results[0].count,
+      data: results[0].count,
     });
   } catch (error) {
     await connection.rollback();
@@ -494,9 +494,11 @@ export const handleGetCountLaundryAssignment = async (req, res, connection) => {
     await connection.commit();
 
     res.status(200).json({
-      count_in_progress: results[0].count_in_progress,
-      count_completed: results[0].count_completed,
-      count_canceled: results[0].count_canceled,
+      data: {
+        count_in_progress: results[0].count_in_progress,
+        count_completed: results[0].count_completed,
+        count_canceled: results[0].count_canceled,
+      },
     });
   } catch (error) {
     await connection.rollback();

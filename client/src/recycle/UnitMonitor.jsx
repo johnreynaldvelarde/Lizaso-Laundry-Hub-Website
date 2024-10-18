@@ -1,23 +1,37 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { formatDistanceToNow } from "date-fns";
 import {
   Box,
   Button,
   Badge,
+  Drawer,
+  Divider,
+  IconButton,
   Menu,
   MenuItem,
+  Avatar,
+  ListItemIcon,
   Paper,
   Typography,
   TextField,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import styles from "../../../styles/style";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
-import { HourglassLow, CaretDown, CaretUp } from "@phosphor-icons/react";
+import {
+  SlidersHorizontal,
+  HourglassLow,
+  MinusSquare,
+  CaretDown,
+  CaretUp,
+} from "@phosphor-icons/react";
 
 // popup page
-import PopupSelectUnit from "./components/PopupSelectUnit";
-import PopupInQueue from "./components/PopupInQueue";
+import PopupSelectUnit from "./PopupSelectUnit";
+import PopupInQueue from "./PopupInQueue";
 
 // image
 import nodata from "../../../assets/images/no_data.png";
@@ -25,34 +39,50 @@ import Available from "../../../assets/images/Available.png";
 import Occupied from "../../../assets/images/Occupied.png";
 import Reserved from "../../../assets/images/Reserved.png";
 import In_Maintaince from "../../../assets/images/Not_Available.png";
+import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
-import PopCompleteInLaundry from "./components/PopCompleteInLaundry";
+import PopCompleteInLaundry from "./PopCompleteInLaundry";
 import DrawerInLaundry from "./components/DrawerInLaundry";
-import useFetchData from "../../../hooks/common/useFetchData";
-import useAuth from "../../../contexts/AuthContext";
-import {
-  getCountLaundryAssignment,
-  getCountRequestInQueue,
-  viewUnits,
-} from "../../../services/api/getApi";
 
 const UnitMonitor = () => {
-  const { userDetails } = useAuth();
   const {
     openDialog,
     selectedUnit,
+    openCustomerRequest,
     openInQueue,
+    openInProgress,
     searchTerm,
+    filteredUnits,
+    loading,
+    error,
     handleOpenDialog,
     handleCloseDialog,
+    handleCloseCustomerRequest,
+    handleCloseInProgress,
     handleSearchChange,
     handleOpenInQueue,
     handleCloseInQueue,
+    fetchUnitsData,
+    userDetails,
+    // <----- Counting Section ----->
+    countInQueueData,
+    countAssignmentData,
+    fetchCountInQueue,
+    fetchCountLaundryAssignment,
+    // <------------------------->
+    // <----- Drawer InProgress Section ----->
+    inQueueData,
+    inProgressData,
+    dialogProgressOpen,
+    selectedProgressID,
+    setDialogProgressOpen,
+    fetchInProgress,
+    handleDialogRemoveInProgress,
+    handleConfirmRemoveInProgress,
+    handleConfirmInProgress,
     // <------------------------->
   } = useUnitMonitor();
-  const [filteredUnits, setFilteredUnits] = useState([]);
-  const [filterStatus, setFilterStatus] = useState("");
 
   const { isOpen, popupType, openPopup, closePopup } = usePopup();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -83,6 +113,37 @@ const UnitMonitor = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchUnitsData();
+        await fetchCountInQueue();
+        await fetchCountLaundryAssignment();
+        await fetchInProgress();
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError(error.message);
+      }
+    };
+
+    fetchData();
+  }, [
+    fetchUnitsData,
+    fetchCountInQueue,
+    fetchCountLaundryAssignment,
+    fetchInProgress,
+  ]);
+
+  const refreshData = async () => {
+    try {
+      await fetchUnitsData();
+      await fetchInProgress();
+      // await fetchCountLaundryAssignment();
+    } catch (error) {
+      console.error("Error during refresh:", error);
+    }
+  };
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -90,61 +151,11 @@ const UnitMonitor = () => {
     setDrawerOpen(open);
   };
 
-  const { data: unitsData, fetchData: fetchUnits } = useFetchData();
-  const { data: countInQueueData, fetchData: fetchCountInQueue } =
-    useFetchData();
-  const { data: countAssignmentData, fetchData: fetchCountAssignment } =
-    useFetchData();
-
-  const fetchUnitsData = useCallback(() => {
-    fetchUnits(viewUnits.getUnitsList, userDetails.storeId);
-  }, [fetchUnits, userDetails?.storeId]);
-
-  const fetchCountInQueueData = useCallback(() => {
-    fetchCountInQueue(
-      getCountRequestInQueue.getCountInQueue,
-      userDetails.storeId
-    );
-  }, [fetchCountInQueue, userDetails?.storeId]);
-
-  const fetchCountAssignmentData = useCallback(() => {
-    fetchCountAssignment(
-      getCountLaundryAssignment.getCountAssignment,
-      userDetails.storeId
-    );
-  }, [fetchCountAssignment, userDetails?.storeId]);
-
-  useEffect(() => {
-    fetchUnitsData();
-    fetchCountInQueueData();
-    fetchCountAssignmentData();
-
-    const intervalId = setInterval(() => {
-      fetchUnitsData();
-      fetchCountInQueueData();
-      fetchCountAssignmentData();
-    }, 2000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [fetchUnitsData, fetchCountInQueueData, fetchCountAssignmentData]);
-
-  useEffect(() => {
-    setFilteredUnits(
-      unitsData
-        .filter((unit) =>
-          unit.unit_name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .filter(
-          (unit) => filterStatus === "" || unit.isUnitStatus === filterStatus
-        )
-    );
-  }, [searchTerm, unitsData, filterStatus]);
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <Box sx={{ pt: "90px", pb: "20px", px: { xs: 1, md: 2 } }}>
-      {/* Header */}
       <Box
         sx={{
           mb: 3,
@@ -158,10 +169,10 @@ const UnitMonitor = () => {
           sx={{
             mt: { xs: 2, sm: 2, md: 0 },
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "space-between", // Ensure search is on the left, buttons on the right
             alignItems: "center",
-            flexDirection: { xs: "column", sm: "column", md: "row" },
-            gap: 2,
+            flexDirection: { xs: "column", sm: "column", md: "row" }, // Stack vertically on small screens
+            gap: 2, // Add spacing between elements
             width: "100%",
           }}
         >
@@ -171,11 +182,11 @@ const UnitMonitor = () => {
             value={searchTerm}
             onChange={handleSearchChange}
             sx={{
-              width: "100%",
-              maxWidth: { xs: "100%", sm: "100%", md: "300px", lg: "400px" },
-              mb: { xs: 2, sm: 2, md: 0 },
+              width: "100%", // Full width of the container
+              maxWidth: { xs: "100%", sm: "100%", md: "300px", lg: "400px" }, // Adjust maximum width for different screen sizes
+              mb: { xs: 2, sm: 2, md: 0 }, // Margin bottom for spacing on small screens
               "& .MuiInputBase-root": {
-                fontSize: { xs: "0.875rem", sm: "1rem", md: "1.125rem" },
+                fontSize: { xs: "0.875rem", sm: "1rem", md: "1.125rem" }, // Responsive font size
               },
             }}
           />
@@ -234,7 +245,7 @@ const UnitMonitor = () => {
             </Menu>
 
             <Badge
-              badgeContent={countInQueueData > 0 ? countInQueueData : null}
+              badgeContent={countInQueueData}
               color="error"
               anchorOrigin={{
                 vertical: "top",
@@ -265,7 +276,7 @@ const UnitMonitor = () => {
             </Badge>
 
             <Badge
-              badgeContent={Number(countAssignmentData?.count_in_progress) || 0}
+              badgeContent={countAssignmentData.count_in_progress}
               color="error"
               anchorOrigin={{
                 vertical: "top",
@@ -295,7 +306,163 @@ const UnitMonitor = () => {
         </Box>
       </Box>
 
+      {/* Drawer */}
+      {/* <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => toggleDrawer(false)}
+      >
+        <Box
+          sx={{
+            width: 450,
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              padding: 2,
+              alignItems: "center",
+              justifyContent: "space-between",
+              backgroundColor: "#fff",
+            }}
+          >
+            <span className="text-xl font-semibold">In Progress Laundry</span>
+            <IconButton
+              onClick={() => toggleDrawer(false)}
+              sx={{ color: "#5787C8", "&:hover": { color: "#5787C8" } }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Divider />
+
+          <Box
+            sx={{
+              height: "150px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f5f5f5",
+            }}
+          >
+            {" "}
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              In Progress Laundry
+            </Typography>
+          </Box>
+          <Divider />
+
+          <Box
+            sx={{
+              flex: 1,
+              overflowY: "auto",
+              padding: 2,
+              height: "100%",
+            }}
+          >
+            {inProgressData.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full border border-gray-300 rounded-lg shadow-sm">
+                <img src={nodata} alt="No Data" className="w-32 h-32 mb-4" />
+                <p
+                  className="text-base font-semibold"
+                  style={{ color: styles.textColor2 }}
+                >
+                  No data available at the moment
+                </p>
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {inProgressData.map((customer) => (
+                  <Paper
+                    key={customer.id}
+                    sx={{
+                      padding: 2,
+                      boxShadow: "none !important",
+                      borderRadius: "10px",
+                      borderStyle: "solid",
+                      borderWidth: "1px",
+                      borderColor: "divider",
+                    }}
+                    className="flex justify-between items-center"
+                  >
+                    <div className="flex-1 mr-4 truncate">
+                      <div className="font-bold truncate">
+                        {customer.customer_fullname}
+                      </div>
+                      <div className="text-sm text-gray-600 truncate">
+                        {customer.unit_name}
+                      </div>
+                      <div className="text-sm text-gray-600 truncate">
+                        {formatDistanceToNow(new Date(customer.assigned_at), {
+                          addSuffix: true,
+                        })}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="contained"
+                        disableElevation
+                        color="primary"
+                        size="small"
+                        onClick={() => openPopup("completeInLaundry")}
+                        // onClick={() => handleConfirmInProgress(customer.id)}
+                        disabled={loading}
+                        sx={{
+                          backgroundColor: "#5787C8",
+                          borderRadius: "5px",
+                          fontWeight: 600,
+                          fontSize: 15,
+                          textTransform: "none",
+                          "&:hover": {
+                            backgroundColor: "#3A5A85",
+                          },
+                        }}
+                      >
+                        {loading ? (
+                          <CircularProgress
+                            size={20}
+                            sx={{ color: COLORS.white }}
+                          />
+                        ) : (
+                          "Complete"
+                        )}
+                      </Button>
+                      <IconButton
+                        onClick={() =>
+                          handleDialogRemoveInProgress(customer.id, refreshData)
+                        }
+                      >
+                        <MinusSquare
+                          size={20}
+                          color="#DB524B"
+                          weight="duotone"
+                        />
+                      </IconButton>
+                    </div>
+                  </Paper>
+                ))}
+              </ul>
+            )}
+          </Box>
+          <Box
+            sx={{
+              padding: 2,
+              backgroundColor: "#f5f5f5",
+            }}
+          >
+            <Paper sx={{ padding: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                Additional Information or Footer Content
+              </Typography>
+            </Paper>
+          </Box>
+        </Box>
+      </Drawer> */}
       {/* List of Units*/}
+
       <Box
         sx={{
           display: "grid",
@@ -425,6 +592,8 @@ const UnitMonitor = () => {
                     handleOpenDialog(unit);
                   } else if (unit.isUnitStatus === 1) {
                     toast.error("This laundry unit is occupied");
+                    // alert("This is occupied");
+                    // handleShowOccupiedMenu(unit); // Function to handle occupied state
                   }
                 }}
               >
@@ -449,6 +618,7 @@ const UnitMonitor = () => {
           onClose={handleCloseDialog}
           unitName={selectedUnit.unit_name}
           unitId={selectedUnit.id}
+          onSuccess={refreshData}
         />
       )}
 
@@ -456,11 +626,26 @@ const UnitMonitor = () => {
         <PopupInQueue open={openInQueue} onClose={handleCloseInQueue} />
       )}
 
+      {/* {openInProgress && (
+        <PopupInLaundry open={openInProgress} onClose={handleCloseInProgress} />
+      )} */}
+
       {/* Popup */}
       {isOpen && popupType === "completeInLaundry" && (
         <PopCompleteInLaundry open={isOpen} onClose={closePopup} />
       )}
-      <DrawerInLaundry open={drawerOpen} onClose={() => toggleDrawer(false)} />
+      <DrawerInLaundry
+        open={drawerOpen}
+        onClose={() => toggleDrawer(false)}
+        inProgressData={inProgressData}
+      />
+
+      {/* <ConfirmationDialog
+        open={dialogProgressOpen}
+        onClose={() => setDialogProgressOpen(false)}
+        onConfirm={handleConfirmRemoveInProgress}
+        itemId={selectedProgressID}
+      /> */}
     </Box>
   );
 };

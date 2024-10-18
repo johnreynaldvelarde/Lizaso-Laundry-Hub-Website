@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
+import useUnitMonitor from "../../../../hooks/admin/useUnitMonitor";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import {
@@ -13,13 +13,16 @@ import {
   Chip,
 } from "@mui/material";
 import toast from "react-hot-toast";
-import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitle";
-import CustomPopFooterButton from "../../../components/common/CustomPopFooterButton";
-import { COLORS } from "../../../constants/color";
-import useAuth from "../../../contexts/AuthContext";
-import { getInventoryLaundryItem } from "../../../services/api/getApi";
-import useFetchData from "../../../hooks/common/useFetchData";
-import { createLaundryAssignment } from "../../../services/api/postApi";
+import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
+import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
+import { COLORS } from "../../../../constants/color";
+import useAuth from "../../../../contexts/AuthContext";
+import {
+  getInventoryLaundryItem,
+  viewUnitAvailable,
+} from "../../../../services/api/getApi";
+import useFetchData from "../../../../hooks/common/useFetchData";
+import { createLaundryAssignment } from "../../../../services/api/postApi";
 
 function PopupAssignUnit({ open, onClose, inqueueID }) {
   const { userDetails } = useAuth();
@@ -30,8 +33,14 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
   const [quantityErrors, setQuantityErrors] = useState({}); // To store quantity validation errors
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const { data: avaiableUnitData, fetchData: fetchAvailableUnit } =
+    useFetchData();
   const { data: itemData, fetchData: fetchItem } = useFetchData();
-  const { avaiableUnitData, fetchAvailableUnit } = useUnitMonitor();
+
+  const fetchAvailableUnitData = useCallback(() => {
+    fetchAvailableUnit(viewUnitAvailable.getUnitAvailable, userDetails.storeId);
+  }, [fetchAvailableUnit, userDetails?.storeId]);
 
   const fetchItemData = useCallback(() => {
     fetchItem(getInventoryLaundryItem.getInventoryItem, userDetails.storeId);
@@ -39,11 +48,20 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
 
   useEffect(() => {
     fetchItemData();
-  }, [fetchItemData]);
+    fetchAvailableUnitData();
+
+    const intervalId = setInterval(() => {
+      fetchAvailableUnitData();
+    }, 2000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [fetchItemData, fetchAvailableUnit]);
 
   useEffect(() => {
     if (open) {
-      fetchAvailableUnit();
+      fetchAvailableUnitData();
     }
   }, [open]);
 
@@ -110,8 +128,8 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
       Object.keys(newErrors).length === 0 &&
       Object.values(quantityErrors).every((err) => err === "")
     ) {
-      // setLoading(true);
-      // Prepare supplies data with total amount per item
+      setLoading(true);
+
       const suppliesData = selectedSupplies.map((supplyId) => {
         const supply = itemData.find((s) => s.inventory_id === supplyId);
         const quantity = quantities[supplyId] || 1;
@@ -132,8 +150,6 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
         supplies: suppliesData,
       };
 
-      console.log("Data to be submitted:", data);
-
       try {
         const response = await createLaundryAssignment.setLaundryAssignment(
           data
@@ -141,6 +157,7 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
 
         if (response.success) {
           toast.success(response.message);
+          onClose();
         } else {
           toast.error(response.message);
         }
@@ -289,8 +306,23 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
             })}
           </div>
         )}
+      </DialogContent>
 
-        {/* <FormControl fullWidth variant="outlined" sx={{ marginTop: "20px" }}>
+      {/* Footer */}
+      <CustomPopFooterButton
+        label={"Proceed"}
+        onClose={onClose}
+        onSubmit={handleProceed}
+        loading={loading}
+      />
+    </Dialog>
+  );
+}
+
+export default PopupAssignUnit;
+
+{
+  /* <FormControl fullWidth variant="outlined" sx={{ marginTop: "20px" }}>
           <InputLabel>Select Laundry Supplies</InputLabel>
           <Select
             label="Select Laundry Supplies"
@@ -344,18 +376,5 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
               );
             })}
           </div>
-        )} */}
-      </DialogContent>
-
-      {/* Footer */}
-      <CustomPopFooterButton
-        label={"Proceed"}
-        onClose={onClose}
-        onSubmit={handleProceed}
-        loading={loading}
-      />
-    </Dialog>
-  );
+        )} */
 }
-
-export default PopupAssignUnit;

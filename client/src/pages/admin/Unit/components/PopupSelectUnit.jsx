@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import useAuth from "../../../contexts/AuthContext";
+import useAuth from "../../../../contexts/AuthContext";
 import toast from "react-hot-toast";
 import {
   Dialog,
@@ -22,8 +22,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import {
   getSelectedCustomer,
   getServiceType,
-} from "../../../services/api/getApi";
-import { createWalkInServiceRequest } from "../../../services/api/postApi";
+} from "../../../../services/api/getApi";
+import { createWalkInServiceRequest } from "../../../../services/api/postApi";
 
 const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
   const { userDetails } = useAuth();
