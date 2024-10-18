@@ -30,7 +30,7 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
   const [weight, setWeight] = useState("");
   const [selectedSupplies, setSelectedSupplies] = useState([]);
   const [quantities, setQuantities] = useState({});
-  const [quantityErrors, setQuantityErrors] = useState({}); // To store quantity validation errors
+  const [quantityErrors, setQuantityErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -158,6 +158,13 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
         if (response.success) {
           toast.success(response.message);
           onClose();
+
+          setSelectedAssignUnit(null);
+          setWeight("");
+          setSelectedSupplies([]);
+          setQuantities({});
+          setQuantityErrors({});
+          setErrors({});
         } else {
           toast.error(response.message);
         }
@@ -298,8 +305,15 @@ function PopupAssignUnit({ open, onClose, inqueueID }) {
                     error={Boolean(quantityErrors[supplyId])}
                     helperText={quantityErrors[supplyId]}
                   />
-                  <Typography variant="body2" sx={{ marginTop: "5px" }}>
-                    Total Price: ${totalPrice} {/* Display total price */}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      marginTop: "5px",
+                      color: COLORS.primary,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Total Price: ₱{totalPrice}
                   </Typography>
                 </div>
               );

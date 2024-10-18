@@ -423,25 +423,6 @@ CREATE TABLE Conversations (
     FOREIGN KEY (customer_receiver_id) REFERENCES Customer(id) ON DELETE CASCADE
 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 CREATE TABLE Messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sender_customer_id INT NULL,  -- NULL if sender is from User_Account

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import useAuth from "../../../../contexts/AuthContext";
 import toast from "react-hot-toast";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
+  InputLabel,
   Button,
   Typography,
   Autocomplete,
@@ -15,20 +15,25 @@ import {
   IconButton,
   FormControl,
   Chip,
-  CircularProgress,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { createFilterOptions } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import {
+  getInventoryLaundryItem,
   getSelectedCustomer,
   getServiceType,
 } from "../../../../services/api/getApi";
 import { createWalkInServiceRequest } from "../../../../services/api/postApi";
+import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
+import useFetchData from "../../../../hooks/common/useFetchData";
+import { COLORS } from "../../../../constants/color";
 
 const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
   const { userDetails } = useAuth();
-  const [customerData, setCustomerData] = useState([]);
-  const [serviceData, setServiceData] = useState([]);
+  // const [customerData, setCustomerData] = useState([]);
+  // const [serviceData, setServiceData] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [weight, setWeight] = useState("");
   const [notes, setNotes] = useState("");
@@ -36,6 +41,93 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
   const [selectedTabId, setSelectedTabId] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const [selectedSupplies, setSelectedSupplies] = useState([]);
+  const [quantities, setQuantities] = useState({});
+  const [quantityErrors, setQuantityErrors] = useState({});
+
+  const { data: itemData, fetchData: fetchItem } = useFetchData();
+  const { data: customerData, fetchData: fetchSelectedCustomer } =
+    useFetchData();
+  const { data: serviceData, fetchData: fetchServiceType } = useFetchData();
+
+  const fetchItemData = useCallback(() => {
+    fetchItem(getInventoryLaundryItem.getInventoryItem, userDetails.storeId);
+  }, [fetchItem, userDetails?.storeId]);
+
+  const fetchSelectedCustomerData = useCallback(() => {
+    fetchSelectedCustomer(
+      getSelectedCustomer.getSelectCustomer,
+      userDetails.storeId
+    );
+  }, [fetchSelectedCustomer, userDetails?.storeId]);
+
+  const fetchServiceTypeData = useCallback(() => {
+    fetchServiceType(getServiceType.getService, userDetails.storeId);
+  }, [fetchServiceType, userDetails?.storeId]);
+
+  // Fetch selected customer details by store ID
+  // const fetchSelectedCustomer = async () => {
+  //   if (!userDetails?.storeId) return;
+
+  //   try {
+  //     const response = await getSelectedCustomer.getSelectCustomer(
+  //       userDetails.storeId
+  //     );
+  //     if (response) {
+  //       setCustomerData(response);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching customer:", error);
+  //   }
+  // };
+
+  // // Get the Service Type Data
+  // const fetchServiceType = async () => {
+  //   if (!userDetails?.storeId) return;
+
+  //   try {
+  //     const response = await getServiceType.getService(userDetails.storeId);
+  //     if (response) {
+  //       setServiceData(response);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching customer:", error);
+  //   }
+  // };
+
+  useEffect(() => {
+    if (open) {
+      fetchItemData();
+      fetchSelectedCustomerData();
+      fetchServiceTypeData();
+    }
+  }, [open, fetchItemData, fetchSelectedCustomerData, fetchServiceTypeData]);
+
+  const handleSupplySelect = (event) => {
+    setSelectedSupplies(event.target.value);
+  };
+
+  const handleQuantityChange = (supplyId, quantity) => {
+    const supply = itemData.find((s) => s.inventory_id === supplyId);
+
+    if (quantity > supply.quantity) {
+      setQuantityErrors((prev) => ({
+        ...prev,
+        [supplyId]: `Quantity cannot exceed available amount (${supply.quantity})`,
+      }));
+    } else {
+      setQuantityErrors((prev) => ({
+        ...prev,
+        [supplyId]: "",
+      }));
+    }
+
+    setQuantities((prev) => ({
+      ...prev,
+      [supplyId]: quantity,
+    }));
+  };
 
   const handleAdditionalInfoToggle = () => {
     setShowAdditionalInfo((prev) => !prev);
@@ -91,6 +183,19 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
 
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
+
+      const suppliesData = selectedSupplies.map((supplyId) => {
+        const supply = itemData.find((s) => s.inventory_id === supplyId);
+        const quantity = quantities[supplyId] || 1;
+        const totalAmount = (supply.price * quantity).toFixed(2);
+
+        return {
+          supplyId,
+          quantity,
+          amount: totalAmount,
+        };
+      });
+
       const data = {
         customerId: selectedCustomer.id,
         userId: userDetails.userId,
@@ -99,6 +204,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
         fullname: selectedCustomer.fullname,
         weight: weight,
         customerNotes: notes,
+        supplies: suppliesData,
       };
 
       setTimeout(async () => {
@@ -110,7 +216,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
 
           if (!response.success) {
             toast.success(response.message);
-            if (onSuccess) onSuccess();
+            onClose;
           } else {
             toast.error(response.message);
           }
@@ -123,43 +229,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
       }, 1500);
     }
   };
-
-  // Fetch selected customer details by store ID
-  const fetchSelectedCustomer = async () => {
-    if (!userDetails?.storeId) return;
-
-    try {
-      const response = await getSelectedCustomer.getSelectCustomer(
-        userDetails.storeId
-      );
-      if (response) {
-        setCustomerData(response);
-      }
-    } catch (error) {
-      console.error("Error fetching customer:", error);
-    }
-  };
-
-  // Get the Service Type Data
-  const fetchServiceType = async () => {
-    if (!userDetails?.storeId) return;
-
-    try {
-      const response = await getServiceType.getService(userDetails.storeId);
-      if (response) {
-        setServiceData(response);
-      }
-    } catch (error) {
-      console.error("Error fetching customer:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (open) {
-      fetchSelectedCustomer();
-      fetchServiceType();
-    }
-  }, [open]);
 
   return (
     <Dialog
@@ -211,7 +280,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
               <button
                 key={service.id}
                 onClick={() => handleTabChange(service.id)}
-                className={`whitespace-nowrap px-4 py-2 mx-1.5 font-bold text-sm rounded-sm transition-colors duration-200 ${
+                className={`whitespace-nowrap px-4 py-2 mx-1.5 font-bold text-sm rounded-full transition-colors duration-200 ${
                   selectedTabId === service.id
                     ? "bg-white text-[#5787C8]"
                     : "bg-transparent text-white hover:bg-[#4a6b9c]"
@@ -222,7 +291,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
             ))}
           </div>
         </div>
-
         {/* Customer Selection Autocomplete */}
         <FormControl
           fullWidth
@@ -340,17 +408,97 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
             </Typography>
           )}
         </FormControl>
+
+        {/* Select Item for this Transaction */}
+        <FormControl fullWidth variant="outlined" sx={{ marginTop: "20px" }}>
+          <InputLabel>Select Laundry Items</InputLabel>
+          <Select
+            label="Select Laundry Items"
+            multiple
+            value={selectedSupplies}
+            onChange={handleSupplySelect}
+            renderValue={(selected) =>
+              selected.map((supplyId) => {
+                const supply = itemData.find(
+                  (s) => s.inventory_id === supplyId
+                );
+                return (
+                  <Chip
+                    key={supplyId}
+                    label={supply ? supply.item_name : ""}
+                    sx={{ margin: "5px" }}
+                  />
+                );
+              })
+            }
+          >
+            {itemData.map((supply) => (
+              <MenuItem key={supply.inventory_id} value={supply.inventory_id}>
+                {`${supply.item_name} (Available: ${supply.quantity})`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {selectedSupplies.length > 0 && (
+          <div style={{ marginTop: "20px" }}>
+            {selectedSupplies.map((supplyId) => {
+              const supply = itemData.find((s) => s.inventory_id === supplyId);
+              const quantity = quantities[supplyId] || 1; // Default quantity is 1
+              const totalPrice = (supply.price * quantity).toFixed(2); // Calculate total price
+
+              return (
+                <div key={supplyId} style={{ marginBottom: "10px" }}>
+                  <Typography variant="body2">
+                    {supply.item_name} Quantity:
+                  </Typography>
+                  <TextField
+                    type="number"
+                    fullWidth
+                    value={quantity}
+                    onChange={(e) =>
+                      handleQuantityChange(supplyId, parseInt(e.target.value))
+                    }
+                    inputProps={{ min: 1, max: supply.quantity }} // Set max to available quantity
+                    error={Boolean(quantityErrors[supplyId])}
+                    helperText={quantityErrors[supplyId]}
+                  />
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      marginTop: "5px",
+                      color: COLORS.primary,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Total Price: ₱{totalPrice}
+                  </Typography>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* Additional Info Toggle */}
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          marginTop={2}
+          marginTop={3}
         >
-          <Typography variant="body1">Additional Info</Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: COLORS.primary, fontWeight: 700 }}
+          >
+            Additional Info
+          </Typography>
           <Button
             onClick={handleAdditionalInfoToggle}
-            sx={{ textTransform: "none" }}
+            sx={{
+              textTransform: "none",
+              border: 1,
+              borderColor: COLORS.secondary,
+            }}
           >
             {showAdditionalInfo ? "Hide" : "Show"}
           </Button>
@@ -370,65 +518,15 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
           </FormControl>
         </Collapse>
       </DialogContent>
-
-      <DialogActions className="flex justify-end space-x-1 mb-1 mr-2">
-        <Button
-          variant="outlined"
-          onClick={onClose}
-          sx={{
-            marginRight: 1,
-            borderColor: "#595959",
-            borderRadius: "5px",
-            fontWeight: 500,
-            textTransform: "none",
-            color: "#595959",
-            "&:hover": {
-              borderColor: "#595959",
-              backgroundColor: "rgba(144, 144, 144, 0.1)",
-            },
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          disableElevation
-          onClick={handleProceedSelectedUnit}
-          disabled={loading}
-          sx={{
-            backgroundColor: "#5787C8",
-            borderRadius: "5px",
-            fontWeight: 500,
-            minWidth: "90px",
-            textTransform: "none",
-            "&:hover": {
-              backgroundColor: "#3A5A85",
-            },
-          }}
-        >
-          {loading ? <CircularProgress size={24} /> : "Proceed"}
-        </Button>
-      </DialogActions>
+      {/* Footer */}
+      <CustomPopFooterButton
+        label={"Proceed"}
+        onClose={onClose}
+        onSubmit={handleProceedSelectedUnit}
+        loading={loading}
+      />
     </Dialog>
   );
 };
 
 export default PopupSelectUnit;
-
-{
-  /* <div className="mt-2 mb-2 flex justify-center bg-[#5787C8] rounded-md">
-          {["Wash", "Wash/Dry", "Wash/Dry/Fold"].map((label, index) => (
-            <button
-              key={index}
-              onClick={() => handleTabChange(index)}
-              className={`w-full p-2 m-1.5 font-bold text-sm rounded-sm transition-colors duration-200 ${
-                selectedTab === index
-                  ? "bg-white text-[#5787C8]"
-                  : "bg-transparent text-white hover:bg-[#4a6b9c]"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div> */
-}

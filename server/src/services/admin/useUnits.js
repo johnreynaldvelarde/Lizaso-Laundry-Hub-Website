@@ -1,4 +1,6 @@
 import { generateTrackingCode } from "../../helpers/generateCode.js";
+import { progress } from "../../helpers/_progress.js";
+const newPickupDate = new Date();
 
 //#POST
 export const handleCreateUnits = async (req, res, db) => {
@@ -61,6 +63,29 @@ export const handleCreateUnits = async (req, res, db) => {
   }
 };
 
+//# CREATE NEW TRANSACTION
+export const handleTransaction = async (req, res, connection) => {
+  const { assignment_id, total_amount, payment_method } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    await connection.commit();
+
+    res.status(201).json({
+      success: true,
+    });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while sending the message.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
 export const handleSetWalkInRequest = async (req, res, connection) => {
   const { id } = req.params;
   const {
@@ -71,6 +96,7 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
     fullname,
     weight,
     customerNotes,
+    supplies,
   } = req.body;
 
   try {
@@ -111,7 +137,55 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
 
     const serviceRequestId = serviceRequestResult.insertId;
 
-    // Step 2: Insert into Laundry_Assignment
+    await connection.execute(
+      `UPDATE Service_Request
+        SET pickup_date = ?
+        WHERE id = ?`,
+      [newPickupDate, serviceRequestId]
+    );
+
+    const qrCodeData = `SR-${serviceRequestId}-${trackingCode}`;
+
+    await connection.execute(
+      `UPDATE Service_Request 
+       SET qr_code = ?, qr_code_generated = 1
+       WHERE id = ?`,
+      [qrCodeData, serviceRequestId]
+    );
+
+    // Step 2: Insert the progress of new service
+    const progressQuery = `
+    INSERT INTO Service_Progress (
+        service_request_id,
+        stage,
+        description,
+        status_date,
+        completed,
+        false_description
+      ) 
+    VALUES (?, ?, ?, ?, ?, ?)`;
+
+    for (const item of progress) {
+      await connection.execute(progressQuery, [
+        serviceRequestId,
+        item.stage,
+        item.description,
+        item.completed ? new Date() : null,
+        item.completed,
+        item.falseDescription,
+      ]);
+    }
+
+    // Step 3: After step 2 update the existing progress
+    await connection.execute(
+      `UPDATE Service_Progress 
+       SET completed = true,
+           status_date = NOW()
+       WHERE service_request_id = ? AND (stage = 'Ongoing Pickup' OR stage = 'Completed Pickup')`,
+      [serviceRequestId]
+    );
+
+    // Step 4: Insert into Laundry_Assignment
     const assignmentQuery = `
       INSERT INTO Laundry_Assignment (
         service_request_id,
@@ -123,14 +197,16 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
       ) VALUES (?, ?, ?, ?, NOW(), 0)
     `;
 
-    await connection.execute(assignmentQuery, [
-      serviceRequestId, // service_request_id (from Step 1)
-      unitId, // unit_id
-      userId, // assigned_by
-      weight, // weight
+    const [result] = await connection.execute(assignmentQuery, [
+      serviceRequestId,
+      unitId,
+      userId,
+      weight,
     ]);
 
-    // Step 3: Update Laundry_Unit's isUnitStatus to 1 (Occupied)
+    const assignmentId = result.insertId;
+
+    // Step 5: Update Laundry_Unit's isUnitStatus to 1 (Occupied)
     const updateUnitQuery = `
       UPDATE Laundry_Unit 
       SET isUnitStatus = 1 
@@ -138,6 +214,46 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
     `;
 
     await connection.execute(updateUnitQuery, [unitId]);
+
+    // Step 6: check the supplies if have item
+    if (supplies && supplies.length > 0) {
+      for (const supply of supplies) {
+        const { supplyId, quantity, amount } = supply;
+
+        const relatedItemQuery = `
+          INSERT INTO Related_Item (
+            assignment_id,
+            inventory_id,
+            quantity,
+            amount
+          )
+          VALUES (?, ?, ?, ?)
+        `;
+        await connection.execute(relatedItemQuery, [
+          assignmentId,
+          supplyId,
+          quantity,
+          amount,
+        ]);
+
+        // Update the quantity in the Inventory table
+        const updateInventoryQuery = `
+          UPDATE Inventory
+          SET quantity = quantity - ?
+          WHERE id = ?
+        `;
+        await connection.execute(updateInventoryQuery, [quantity, supplyId]);
+      }
+    }
+
+    // Step 7: After step 6  update the existing progress
+    await connection.execute(
+      `UPDATE Service_Progress 
+         SET completed = true,
+             status_date = NOW()
+         WHERE service_request_id = ? AND (stage = 'At Store' OR stage = 'In Queue' OR stage = 'In Laundry')`,
+      [serviceRequestId]
+    );
 
     // Commit the transaction
     await connection.commit();
@@ -273,7 +389,7 @@ export const handleGetServiceType = async (req, res, connection) => {
 
     const [results] = await connection.execute(query, [id]);
     await connection.commit();
-    res.status(200).json(results);
+    res.status(200).json({ data: results });
   } catch (error) {
     await connection.rollback();
     console.error("Error fetching service type:", error);
@@ -367,10 +483,13 @@ export const handleGetLaundryAssignments = async (req, res, connection) => {
       SELECT
         la.id,
         sr.customer_fullname,
+        sr.customer_type,
+        st.service_name,
         lu.unit_name,
         la.assigned_at
       FROM Laundry_Assignment la
       JOIN Service_Request sr ON la.service_request_id = sr.id
+      JOIN Service_Type st ON sr.service_type_id = st.id
       JOIN Laundry_Unit lu ON la.unit_id = lu.id
       WHERE sr.store_id = ? 
         AND la.isAssignmentStatus = 0 
@@ -411,7 +530,7 @@ export const handleGetSelectedCustomer = async (req, res, connection) => {
 
     await connection.commit();
 
-    res.status(200).json(results);
+    res.status(200).json({ data: results });
   } catch (error) {
     await connection.rollback();
     res

@@ -1,6 +1,6 @@
 import QRCode from "qrcode";
 import { generateTrackingCode } from "../../helpers/generateCode.js";
-import { progress } from "./_progress.js";
+import { progress } from "../../helpers/_progress.js";
 // POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
@@ -235,7 +235,7 @@ export const handleGetServiceTypeAndPromotions = async (
       FROM 
         Service_Type st
       LEFT JOIN 
-        Service_Promotions sp ON st.id = sp.service_id 
+        Service_Promo sp ON st.id = sp.service_id 
           AND sp.isActive = 1 
           AND sp.isArchive = 0 
           AND (sp.start_date IS NULL OR sp.start_date <= CURDATE())

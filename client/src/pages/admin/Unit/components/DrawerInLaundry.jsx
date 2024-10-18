@@ -20,11 +20,12 @@ import useUnitMonitor from "../../../../hooks/admin/useUnitMonitor";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { getAssignmentInProgress } from "../../../../services/api/getApi";
 import useAuth from "../../../../contexts/AuthContext";
+import { COLORS } from "../../../../constants/color";
 
 const DrawerInLaundry = ({ open, onClose }) => {
   const { userDetails } = useAuth();
   const [loading, setLoading] = useState(false);
-  const { isOpen, popupType, openPopup, closePopup } = usePopup();
+  const { isOpen, popupType, popupData, openPopup, closePopup } = usePopup();
   const {
     selectedProgressID,
     dialogProgressOpen,
@@ -74,7 +75,12 @@ const DrawerInLaundry = ({ open, onClose }) => {
               backgroundColor: "#fff",
             }}
           >
-            <span className="text-xl font-semibold">In Progress Laundry</span>
+            <span
+              className="text-xl font-bold"
+              style={{ color: COLORS.secondary }}
+            >
+              In Progress Laundry
+            </span>
             <IconButton
               onClick={() => onClose()}
               sx={{ color: "#5787C8", "&:hover": { color: "#5787C8" } }}
@@ -121,41 +127,160 @@ const DrawerInLaundry = ({ open, onClose }) => {
                 </p>
               </div>
             ) : (
-              <ul className="space-y-2">
+              <ul className="space-y-4">
                 {inProgressData.map((customer) => (
                   <Paper
                     key={customer.id}
                     sx={{
-                      padding: 2,
                       boxShadow: "none !important",
                       borderRadius: "10px",
                       borderStyle: "solid",
                       borderWidth: "1px",
-                      borderColor: "divider",
+                      borderColor: COLORS.border,
                     }}
-                    className="flex justify-between items-center"
+                    className="flex flex-col justify-between"
                   >
-                    <div className="flex-1 mr-4 truncate">
-                      <div className="font-bold truncate">
-                        {customer.customer_fullname}
+                    {/* First Row: Customer Details */}
+                    <div className="flex-1 mr-4 truncate p-5 flex justify-between items-center">
+                      <div className="flex-1">
+                        <div
+                          className="font-normal"
+                          style={{ color: COLORS.text3, fontSize: 13 }}
+                        >
+                          Customer Name:
+                        </div>
+                        <div
+                          className="font-bold truncate mb-2"
+                          style={{ color: COLORS.text3, fontSize: 18 }}
+                        >
+                          {customer.customer_fullname}
+                        </div>
+                        <div
+                          className="font-normal"
+                          style={{ color: COLORS.text3, fontSize: 13 }}
+                        >
+                          Service Name:
+                        </div>
+                        <div
+                          className="font-bold truncate mb-2"
+                          style={{ color: COLORS.secondary, fontSize: 18 }}
+                        >
+                          {customer.service_name}
+                        </div>
+                        <div
+                          className="font-normal"
+                          style={{ color: COLORS.text3, fontSize: 13 }}
+                        >
+                          Assign Unit:
+                        </div>
+                        <div
+                          className="font-bold truncate mb-2"
+                          style={{ color: COLORS.primary, fontSize: 18 }}
+                        >
+                          {customer.unit_name}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 truncate">
-                        {customer.unit_name}
-                      </div>
-                      <div className="text-sm text-gray-600 truncate">
-                        {formatDistanceToNow(new Date(customer.assigned_at), {
-                          addSuffix: true,
-                        })}
+
+                      {/* Circle on the right edge with date */}
+                      <div
+                        className="flex flex-col items-center justify-center "
+                        style={{
+                          width: "155px",
+                          height: "155px",
+                          borderRadius: "50%",
+                          borderWidth: 10,
+                          borderColor: COLORS.secondary,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginLeft: "10px",
+                          color: COLORS.primary,
+                        }}
+                      >
+                        <span
+                          className="text-[13px] font-bold text-center flex items-center justify-center"
+                          style={{ color: COLORS.text3 }}
+                        >
+                          {formatDistanceToNow(new Date(customer.assigned_at))}
+                        </span>
+                        <span
+                          className="text-[12px] font-semibold mt-1"
+                          style={{ color: COLORS.secondary }}
+                        >
+                          In Progress
+                        </span>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+
+                    {/* Divider with full width */}
+                    <Divider sx={{ margin: 0, width: "100%" }} />
+
+                    {/* Second Row: Buttons */}
+                    <div className="flex justify-between items-center mt-2 p-2">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: COLORS.primary,
+                          fontWeight: 400,
+                        }}
+                      >
+                        Customer Type:
+                        <span
+                          className="ml-2"
+                          style={{ color: COLORS.success, fontWeight: 600 }}
+                        >
+                          {customer.customer_type}
+                        </span>
+                      </Typography>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="contained"
+                          disableElevation
+                          color="primary"
+                          size="small"
+                          onClick={() =>
+                            openPopup("completeInLaundry", customer)
+                          }
+                          disabled={loading}
+                          sx={{
+                            backgroundColor: "#5787C8",
+                            borderRadius: "5px",
+                            fontWeight: 600,
+                            textTransform: "none",
+                            "&:hover": {
+                              backgroundColor: "#3A5A85",
+                            },
+                          }}
+                        >
+                          {loading ? (
+                            <CircularProgress
+                              size={20}
+                              sx={{ color: COLORS.white }}
+                            />
+                          ) : (
+                            "Create Billing"
+                          )}
+                        </Button>
+                        <IconButton
+                          onClick={() =>
+                            handleDialogRemoveInProgress(customer.id)
+                          }
+                        >
+                          <MinusSquare
+                            size={20}
+                            color="#DB524B"
+                            weight="duotone"
+                          />
+                        </IconButton>
+                      </div>
+                    </div>
+                    {/* <div className="flex justify-end gap-2 mt-2 p-2">
                       <Button
                         variant="contained"
                         disableElevation
                         color="primary"
                         size="small"
                         onClick={() => openPopup("completeInLaundry")}
-                        // onClick={() => handleConfirmInProgress(customer.id)}
                         disabled={loading}
                         sx={{
                           backgroundColor: "#5787C8",
@@ -173,7 +298,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
                             sx={{ color: COLORS.white }}
                           />
                         ) : (
-                          "Complete"
+                          "Create Billing"
                         )}
                       </Button>
                       <IconButton
@@ -187,7 +312,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
                           weight="duotone"
                         />
                       </IconButton>
-                    </div>
+                    </div> */}
                   </Paper>
                 ))}
               </ul>
@@ -212,7 +337,11 @@ const DrawerInLaundry = ({ open, onClose }) => {
 
       {/* Popup */}
       {isOpen && popupType === "completeInLaundry" && (
-        <PopCompleteInLaundry open={isOpen} onClose={closePopup} />
+        <PopCompleteInLaundry
+          open={isOpen}
+          onClose={closePopup}
+          data={popupData}
+        />
       )}
 
       <ConfirmationDialog

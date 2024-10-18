@@ -1,0 +1,83 @@
+Customer
+id (Primary Key)
+store_id (Foregin Key)
+address_id (Foregin Key)  
+c_firstname
+c_middlename
+c_lastname
+c_username
+c_number
+c_email
+isAgreement
+isOnline
+isArchive
+date_created
+
+
+--> Service_Promo <--
+id (Primary Key)
+service_id (Foregin Key)
+discount_percentage
+discount_price
+valid_days (IF valid on Monday, Tuesday, Wednesday, Thursday, Friday , Saturday, Sunday)
+start_date
+end_date
+isActive 
+date_created
+isArchive
+
+
+--> Service_Type <--
+id (Primary Key)
+store_id (Foregin Key)
+service_name
+default_price
+date_created
+isArchive
+
+--> Service_Request <--
+id (Primary Key)
+store_id (Foregin Key)
+user_id (Foregin Key)
+customer_id (Foregin Key)
+service_type_id (Foregin Key)
+tracking_code
+customer_fullname
+customer_type
+notes
+request_date
+pickup_date
+delivery_date
+request_status
+qr_code
+qr_code_generated (BOOLEAN)
+isPickup (BOOLEAN)
+isDelivery  (BOOLEAN)
+
+--> Laundry_Assignment <--
+id (Primary Key)
+service_request_id (Foregin Key)
+unit_id (Foregin Key)
+assigned_by (Foregin Key)
+weight
+assigned_at 
+completed_at
+isAssignmentStatus 0 = In Progress, 1 = Completed, 2 = Canceled
+isCompleted
+
+--> Transaction <--
+id (Primary Key)
+assigment_id (Foregin Key)
+total_amount,
+payment_method,
+status
+created_at
+updated_at
+
+
+--> Related_Item <--
+id (Primary Key)
+assigment_id (Foregin Key)
+inventory_id (Foregin Key)
+quantity,
+amount,
