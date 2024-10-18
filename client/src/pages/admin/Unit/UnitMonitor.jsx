@@ -123,7 +123,7 @@ const UnitMonitor = () => {
       fetchUnitsData();
       fetchCountInQueueData();
       fetchCountAssignmentData();
-    }, 2000);
+    }, 10000);
 
     return () => {
       clearInterval(intervalId);

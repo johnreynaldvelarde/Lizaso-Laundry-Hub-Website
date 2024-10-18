@@ -13,7 +13,6 @@ isOnline
 isArchive
 date_created
 
-
 --> Service_Promo <--
 id (Primary Key)
 service_id (Foregin Key)
@@ -25,7 +24,6 @@ end_date
 isActive 
 date_created
 isArchive
-
 
 --> Service_Type <--
 id (Primary Key)
@@ -74,10 +72,18 @@ status
 created_at
 updated_at
 
-
 --> Related_Item <--
 id (Primary Key)
 assigment_id (Foregin Key)
 inventory_id (Foregin Key)
 quantity,
 amount,
+
+
+--> Inventory <--
+id (Primary Key)
+store_id (Foregin Key)
+item_id (Foregin Key)
+price
+quantity
+isStatus

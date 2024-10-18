@@ -1,6 +1,7 @@
 import express from "express";
 import { handleViewStore } from "../services/admin/useStore.js";
 import {
+  handleGetCalculatedTransaction,
   handleGetCountLaundryAssignment,
   handleGetCountRequestInQueue,
   handleGetInventoryLaundryItem,
@@ -49,6 +50,17 @@ router.get(
 );
 
 // Laundry Unit Section
+router.get(
+  "/monitored-unit/:id/get-calculated-transaction",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetCalculatedTransaction(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.get(
   "/monitored-unit/:id/get-laundry-item",
   withDatabaseConnection(async (req, res, connection) => {
