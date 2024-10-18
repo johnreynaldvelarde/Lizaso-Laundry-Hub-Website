@@ -172,6 +172,7 @@ const PopCompleteInLaundry = ({ open, onClose, data }) => {
 
       <CustomPopFooterButton
         label={"Proceed"}
+        onClose={onClose}
         onClick={handleSubmit}
         loading={loading}
       />

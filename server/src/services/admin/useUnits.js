@@ -258,7 +258,9 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
     // Commit the transaction
     await connection.commit();
 
-    res.status(200).json({ message: "Assignment created successfully." });
+    res
+      .status(200)
+      .json({ success: true, message: "Assignment created successfully." });
   } catch (error) {
     await connection.rollback();
     console.error(error);

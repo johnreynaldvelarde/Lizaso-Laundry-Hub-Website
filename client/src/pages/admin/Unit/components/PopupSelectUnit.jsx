@@ -30,10 +30,8 @@ import CustomPopFooterButton from "../../../../components/common/CustomPopFooter
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { COLORS } from "../../../../constants/color";
 
-const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
+const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
   const { userDetails } = useAuth();
-  // const [customerData, setCustomerData] = useState([]);
-  // const [serviceData, setServiceData] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [weight, setWeight] = useState("");
   const [notes, setNotes] = useState("");
@@ -65,36 +63,6 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
   const fetchServiceTypeData = useCallback(() => {
     fetchServiceType(getServiceType.getService, userDetails.storeId);
   }, [fetchServiceType, userDetails?.storeId]);
-
-  // Fetch selected customer details by store ID
-  // const fetchSelectedCustomer = async () => {
-  //   if (!userDetails?.storeId) return;
-
-  //   try {
-  //     const response = await getSelectedCustomer.getSelectCustomer(
-  //       userDetails.storeId
-  //     );
-  //     if (response) {
-  //       setCustomerData(response);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching customer:", error);
-  //   }
-  // };
-
-  // // Get the Service Type Data
-  // const fetchServiceType = async () => {
-  //   if (!userDetails?.storeId) return;
-
-  //   try {
-  //     const response = await getServiceType.getService(userDetails.storeId);
-  //     if (response) {
-  //       setServiceData(response);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching customer:", error);
-  //   }
-  // };
 
   useEffect(() => {
     if (open) {
@@ -207,26 +175,33 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, onSuccess }) => {
         supplies: suppliesData,
       };
 
-      setTimeout(async () => {
-        try {
-          const response = await createWalkInServiceRequest.setWalkInRequest(
-            userDetails.storeId,
-            data
-          );
+      try {
+        const response = await createWalkInServiceRequest.setWalkInRequest(
+          userDetails.storeId,
+          data
+        );
 
-          if (!response.success) {
-            toast.success(response.message);
-            onClose;
-          } else {
-            toast.error(response.message);
-          }
-        } catch (error) {
-          toast.error("Error:", error);
-        } finally {
-          setLoading(false);
+        if (response.success) {
+          toast.success(response.message);
           onClose();
+
+          setSelectedCustomer(null);
+          setSelectedTabId(null);
+          setWeight("");
+          setSelectedSupplies([]);
+          setQuantities({});
+          setQuantityErrors({});
+          setErrors({});
+        } else {
+          toast.error(response.message);
         }
-      }, 1500);
+      } catch (error) {
+        toast.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
     }
   };
 

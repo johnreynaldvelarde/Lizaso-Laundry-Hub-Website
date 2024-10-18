@@ -4,7 +4,8 @@ import { progress } from "../../helpers/_progress.js";
 // POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
-  const { store_id, service_type_id, customer_name, notes } = req.body;
+  const { store_id, service_type_id, customer_name, notes, payment_method } =
+    req.body;
 
   const missingFields = [];
   if (!store_id) missingFields.push("store_id");
@@ -34,9 +35,10 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
           request_date,
           request_status,
           tracking_code,  
-          qr_code_generated
+          qr_code_generated,
+          payment_method
         ) 
-      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?)`;
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)`;
 
     const [result] = await connection.execute(query, [
       store_id,
@@ -48,6 +50,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       "Pending Pickup",
       trackingCode,
       0,
+      payment_method,
     ]);
 
     // Get the ID of the newly created service request

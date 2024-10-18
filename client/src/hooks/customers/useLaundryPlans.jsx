@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import useAuth from "../../contexts/AuthContext";
 import { createCustomerServiceRequest } from "../../services/api/customerApi";
 import { useNavigate } from "react-router-dom";
+import { AccountBalance, AccountBalanceWallet } from "@mui/icons-material"; // Icons for payment
 
 const useLaundryPlans = (onClose) => {
   const { userDetails } = useAuth();
@@ -11,8 +12,18 @@ const useLaundryPlans = (onClose) => {
   const [note, setNote] = useState("");
   const [serviceType, setServiceType] = useState("");
   const [selectedService, setSelectedService] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState("Cash on Delivery");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const paymentMethods = [
+    {
+      label: "Cash on Delivery",
+      icon: <AccountBalanceWallet />,
+      id: "Cash on Delivery",
+    },
+    { label: "GCash", icon: <AccountBalance />, id: "GCash" },
+  ];
 
   const validateFields = () => {
     const newErrors = {};
@@ -40,6 +51,11 @@ const useLaundryPlans = (onClose) => {
     const newErrors = validateFields();
     setErrors(newErrors);
 
+    if (!selectedPayment) {
+      toast.error("Please select a payment method.");
+      return;
+    }
+
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
       setTimeout(async () => {
@@ -49,6 +65,7 @@ const useLaundryPlans = (onClose) => {
           service_type_id: serviceId,
           customer_name: name,
           notes: note,
+          payment_method: selectedPayment,
         };
 
         try {
@@ -91,6 +108,9 @@ const useLaundryPlans = (onClose) => {
     setServiceType,
     selectedService,
     setSelectedService,
+    selectedPayment,
+    setSelectedPayment,
+    paymentMethods,
     handleInputChange,
     handleSubmit,
     loading,
