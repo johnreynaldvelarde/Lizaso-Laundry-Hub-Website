@@ -68,21 +68,68 @@ export const handleCreateUnits = async (req, res, db) => {
 
 //# CREATE NEW TRANSACTION
 export const handleTypeOnlineTransaction = async (req, res, connection) => {
-  const { assignment_id, total_amount, payment_method } = req.body;
+  const { assignment_id, transaction_code, total_amount, payment_method } =
+    req.body;
 
   try {
     await connection.beginTransaction();
+
+    console.log(req.body);
+
+    const insertQuery = `
+      INSERT INTO Transactions (assignment_id, transaction_code, total_amount, payment_method, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+    `;
+
+    await connection.execute(insertQuery, [
+      assignment_id,
+      transaction_code,
+      total_amount,
+      payment_method,
+      "Pending",
+    ]);
+
+    await connection.execute(
+      `UPDATE Laundry_Assignment
+      SET isAssignmentStatus = 1
+      WHERE id = ?`,
+      [assignment_id]
+    );
+
+    const [assignment] = await connection.execute(
+      `SELECT unit_id, service_request_id FROM Laundry_Assignment WHERE id = ?`,
+      [assignment_id]
+    );
+
+    const unitId = assignment[0].unit_id;
+    const serviceRequestId = assignment[0].service_request_id;
+
+    await connection.execute(
+      `UPDATE Laundry_Unit
+      SET isUnitStatus = 0
+      WHERE id = ?`,
+      [unitId]
+    );
+
+    await connection.execute(
+      `UPDATE Service_Progress
+       SET completed = true,
+           status_date = NOW()
+       WHERE service_request_id = ? AND (stage = 'Laundry Completed' OR stage = 'Ready for Delivery')`,
+      [serviceRequestId]
+    );
 
     await connection.commit();
 
     res.status(201).json({
       success: true,
+      message: "Transaction created with pending status.",
     });
   } catch (error) {
     await connection.rollback();
     res.status(500).json({
       success: false,
-      message: "An error occurred while sending the message.",
+      message: "An error occurred while creating the transaction.",
     });
   } finally {
     connection.release();

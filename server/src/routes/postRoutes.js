@@ -4,6 +4,8 @@ import {
   handleCreateUnits,
   handleSetLaundryAssignment,
   handleSetWalkInRequest,
+  handleTypeOnlineTransaction,
+  handleTypeWalkInTransaction,
 } from "../services/admin/useUnits.js";
 import {
   handleCreateItem,
@@ -33,12 +35,27 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 };
 
 //#UNIT MONITORED SECTION
-// router.post(
-//   "/monitored-unit/set-",
-//   withDatabaseConnection(async (req, res, connection) => {
-//     await handleCreateUnits(req, res, connection);
-//   })
-// );
+router.post(
+  "/monitored-unit/set-new-transaction-online",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleTypeOnlineTransaction(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.post(
+  "/monitored-unit/set-new-transaction-walkin",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleTypeWalkInTransaction(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 router.post(
   "/create-unit",

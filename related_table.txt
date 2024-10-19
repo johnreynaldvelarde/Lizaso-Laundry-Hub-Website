@@ -63,9 +63,10 @@ completed_at
 isAssignmentStatus 0 = In Progress, 1 = Completed, 2 = Canceled
 isCompleted
 
---> Transaction <--
+--> Transactions <--
 id (Primary Key)
 assigment_id (Foregin Key)
+transaction_code,
 total_amount,
 payment_method,
 status
@@ -87,3 +88,30 @@ item_id (Foregin Key)
 price
 quantity
 isStatus
+
+    await connection.execute(
+      ``,
+      [assignment_id]
+    );
+
+// export const handleTypeOnlineTransaction = async (req, res, connection) => {
+//   const { assignment_id, total_amount, payment_method } = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     await connection.commit();
+
+//     res.status(201).json({
+//       success: true,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     res.status(500).json({
+//       success: false,
+//       message: "",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };

@@ -53,6 +53,36 @@ export const createWalkInServiceRequest = {
   },
 };
 
+export const createNewTransactionOnline = {
+  setTransactionOnline: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/monitored-unit/set-new-transaction-online`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  },
+};
+
+export const createNewTransactionWalkIn = {
+  setTransactionWalkIn: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/monitored-unit/set-new-transaction-walkin`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  },
+};
+
 // STORE SECTION
 export const createStore = {
   setStore: async (data) => {

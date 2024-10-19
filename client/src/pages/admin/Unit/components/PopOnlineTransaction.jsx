@@ -23,8 +23,11 @@ import useFetchData from "../../../../hooks/common/useFetchData";
 import { getCalculatedTransaction } from "../../../../services/api/getApi";
 import logo from "../../../../assets/images/logo.png";
 import { transactionDate, transactionTime } from "./unit_helpers";
+import { createNewTransactionOnline } from "../../../../services/api/postApi";
+import toast from "react-hot-toast";
 
 const PopOnlineTransaction = ({ open, onClose, data }) => {
+  const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [serviceType, setServiceType] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -44,43 +47,42 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
   useEffect(() => {
     if (open) {
       fetchCalculatedTransactionData();
+      setSelectedId(data.id);
       setCustomerName(data.customer_fullname);
       setServiceType(data.service_name);
       setPaymentMethod(data.payment_method);
     }
   }, [open, fetchCalculatedTransactionData]);
 
-  const handleSubmit = () => {
+  const handleSubmitTransactionOnline = async () => {
     setLoading(true);
-    setLoading(false);
-  };
+    const data = {
+      transaction_code: transactionData.transaction_id,
+      assignment_id: selectedId,
+      total_amount: transactionData.final_total,
+      payment_method: paymentMethod,
+    };
 
-  const renderReceiptItems = () => {
-    const { related_items } = transactionData?.data || {};
-    const itemIds = related_items?.item_ids || [];
-    const itemPrices = related_items?.item_prices || [];
-    const quantities = related_items?.quantities || [];
+    try {
+      const response = await createNewTransactionOnline.setTransactionOnline(
+        data
+      );
 
-    return itemIds.map((itemId, index) => (
-      <ListItem key={itemId}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <ListItemText primary={`Item ${itemId}`} />
-          </Grid>
-          <Grid item xs={3}>
-            <ListItemText primary={`Qty: ${quantities[index]}`} />
-          </Grid>
-          <Grid item xs={2}>
-            <ListItemText primary={`$${itemPrices[index]}`} />
-          </Grid>
-          <Grid item xs={3}>
-            <ListItemText
-              primary={`$${related_items.related_item_totals[index]}`}
-            />
-          </Grid>
-        </Grid>
-      </ListItem>
-    ));
+      if (response.success) {
+        toast.success(response.message);
+        onClose();
+      } else {
+        toast.error("Transaction failed");
+      }
+    } catch (error) {
+      toast.error(
+        `Error posting new transaction: ${
+          error.message || "Something went wrong"
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -211,7 +213,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                       fontWeight: 600,
                     }}
                   >
-                    Transaction ID:
+                    Transaction Code:
                     <span
                       style={{
                         color: COLORS.primary,
@@ -380,6 +382,26 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                           fontWeight: 500,
                         }}
                       >{`₱${transactionData.base_total_amount}`}</Typography>
+
+                      {transactionData.discount_applied && (
+                        <Box
+                          sx={{
+                            borderRadius: "8px",
+                            textAlign: "center",
+                          }}
+                        >
+                          <Typography
+                            align="center"
+                            sx={{
+                              color: COLORS.secondary,
+                              fontWeight: 600,
+                              fontSize: 10,
+                            }}
+                          >
+                            {transactionData.discount_applied}
+                          </Typography>
+                        </Box>
+                      )}
                     </Grid>
                   </Grid>
                 </List>
@@ -541,7 +563,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
       <CustomPopFooterButton
         label={"Complete Transaction"}
         onClose={onClose}
-        onClick={handleSubmit}
+        onSubmit={handleSubmitTransactionOnline}
         loading={loading}
       />
     </Dialog>
