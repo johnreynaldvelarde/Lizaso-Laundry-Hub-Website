@@ -21,6 +21,8 @@ import useFetchData from "../../../../hooks/common/useFetchData";
 import { getAssignmentInProgress } from "../../../../services/api/getApi";
 import useAuth from "../../../../contexts/AuthContext";
 import { COLORS } from "../../../../constants/color";
+import PopOnlineTransaction from "./PopOnlineTransaction";
+import PopWalkInTransaction from "./PopWalkInTransaction";
 
 const DrawerInLaundry = ({ open, onClose }) => {
   const { userDetails } = useAuth();
@@ -46,7 +48,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
 
       const intervalId = setInterval(() => {
         fetchInprogressData();
-      }, 2000);
+      }, 20000);
 
       return () => {
         clearInterval(intervalId);
@@ -238,9 +240,13 @@ const DrawerInLaundry = ({ open, onClose }) => {
                           disableElevation
                           color="primary"
                           size="small"
-                          onClick={() =>
-                            openPopup("completeInLaundry", customer)
-                          }
+                          onClick={() => {
+                            if (customer.customer_type === "Online") {
+                              openPopup("Online", customer);
+                            } else if (customer.customer_type === "Walk-In") {
+                              openPopup("Walk-In", customer);
+                            }
+                          }}
                           disabled={loading}
                           sx={{
                             backgroundColor: "#5787C8",
@@ -274,45 +280,6 @@ const DrawerInLaundry = ({ open, onClose }) => {
                         </IconButton>
                       </div>
                     </div>
-                    {/* <div className="flex justify-end gap-2 mt-2 p-2">
-                      <Button
-                        variant="contained"
-                        disableElevation
-                        color="primary"
-                        size="small"
-                        onClick={() => openPopup("completeInLaundry")}
-                        disabled={loading}
-                        sx={{
-                          backgroundColor: "#5787C8",
-                          borderRadius: "5px",
-                          fontWeight: 600,
-                          textTransform: "none",
-                          "&:hover": {
-                            backgroundColor: "#3A5A85",
-                          },
-                        }}
-                      >
-                        {loading ? (
-                          <CircularProgress
-                            size={20}
-                            sx={{ color: COLORS.white }}
-                          />
-                        ) : (
-                          "Create Billing"
-                        )}
-                      </Button>
-                      <IconButton
-                        onClick={() =>
-                          handleDialogRemoveInProgress(customer.id)
-                        }
-                      >
-                        <MinusSquare
-                          size={20}
-                          color="#DB524B"
-                          weight="duotone"
-                        />
-                      </IconButton>
-                    </div> */}
                   </Paper>
                 ))}
               </ul>
@@ -338,6 +305,21 @@ const DrawerInLaundry = ({ open, onClose }) => {
       {/* Popup */}
       {isOpen && popupType === "completeInLaundry" && (
         <PopCompleteInLaundry
+          open={isOpen}
+          onClose={closePopup}
+          data={popupData}
+        />
+      )}
+
+      {isOpen && popupType === "Online" && (
+        <PopOnlineTransaction
+          open={isOpen}
+          onClose={closePopup}
+          data={popupData}
+        />
+      )}
+      {isOpen && popupType === "Walk-In" && (
+        <PopWalkInTransaction
           open={isOpen}
           onClose={closePopup}
           data={popupData}

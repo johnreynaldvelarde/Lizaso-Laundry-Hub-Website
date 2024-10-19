@@ -488,7 +488,6 @@ export const handleGetLaundryAssignments = async (req, res, connection) => {
         sr.customer_type,
         sr.payment_method,
         st.service_name,
-        st.default_price,
         lu.unit_name,
         la.assigned_at
       FROM Laundry_Assignment la
@@ -665,6 +664,7 @@ export const handleGetInventoryLaundryItem = async (req, res, connection) => {
 };
 
 //# ITS ABOUT GETTING THE CALCULATED TRANSACTION
+
 export const handleGetCalculatedTransaction = async (req, res, connection) => {
   const { id } = req.params; // Laundry_Assignment ID
 
@@ -714,7 +714,6 @@ export const handleGetCalculatedTransaction = async (req, res, connection) => {
 
     if (rows.length > 0) {
       const {
-        weight,
         base_total_amount,
         discount_percentage,
         discount_price,
@@ -776,28 +775,26 @@ export const handleGetCalculatedTransaction = async (req, res, connection) => {
       // Log related item details
       console.log("Related Items Breakdown:");
       const itemIdsArray = item_ids ? item_ids.split(", ") : [];
-      const itemNameArray = item_ids ? item_ids.split(", ") : [];
       const itemPricesArray = item_prices ? item_prices.split(", ") : [];
       const quantitiesArray = quantities ? quantities.split(", ") : [];
       const relatedItemTotalsArray = related_item_totals
         ? related_item_totals.split(", ")
         : [];
 
-      // itemIdsArray.forEach((itemId, index) => {
-      //   console.log(`- Item ID: ${itemId}`);
-      //   console.log(`  Price: ${itemPricesArray[index]}`);
-      //   console.log(`  Quantity: ${quantitiesArray[index]}`);
-      //   console.log(
-      //     `  Total Amount for this item: ${relatedItemTotalsArray[index]}`
-      //   );
-      // });
+      itemIdsArray.forEach((itemId, index) => {
+        console.log(`- Item ID: ${itemId}`);
+        console.log(`  Price: ${itemPricesArray[index]}`);
+        console.log(`  Quantity: ${quantitiesArray[index]}`);
+        console.log(
+          `  Total Amount for this item: ${relatedItemTotalsArray[index]}`
+        );
+      });
 
       // Send the response to the client
       res.status(200).json({
         success: true,
         data: {
           base_total_amount,
-          weight: weight,
           discount_applied,
           related_items: {
             item_ids: itemIdsArray,
@@ -873,7 +870,7 @@ export const handleUpdateProgressInqueueAndAtStore = async (
 };
 
 export const handlePutAssignment = async (req, res, connection) => {
-  const { id } = req.params;
+  const { id } = req.params; // The id refers to Laundry_Assignment.id
 
   try {
     // Start the transaction
@@ -948,3 +945,554 @@ export const handlePutRemoveInQueue = async (req, res, connection) => {
       .json({ success: false, message: "Error canceling the request", error });
   }
 };
+
+// export const handleGetCalculatedTransaction = async (req, res, connection) => {
+//   const { id } = req.params; // Laundry_Assignment ID
+
+//   try {
+//     console.log("Starting transaction for Laundry_Assignment ID:", id);
+//     await connection.beginTransaction();
+
+//     // Query to calculate total and check for a promo
+//     const query = `
+//       SELECT
+//         la.id AS laundry_assignment_id,
+//         sr.id AS service_request_id,
+//         st.default_price,
+//         la.weight,
+//         (st.default_price * la.weight) AS base_total_amount,
+//         sp.discount_percentage,
+//         sp.discount_price,
+//         sp.valid_days,
+//         sp.start_date,
+//         sp.end_date,
+//         sp.isActive
+//       FROM
+//         Laundry_Assignment la
+//       INNER JOIN
+//         Service_Request sr ON la.service_request_id = sr.id
+//       INNER JOIN
+//         Service_Type st ON sr.service_type_id = st.id
+//       LEFT JOIN
+//         Service_Promo sp ON st.id = sp.service_id
+//       WHERE
+//         la.id = ?
+//         AND (sp.isActive = 1 OR sp.id IS NULL)
+//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date);
+//     `;
+
+//     const [rows] = await connection.execute(query, [id]);
+
+//     if (rows.length > 0) {
+//       const {
+//         base_total_amount,
+//         discount_percentage,
+//         discount_price,
+//         valid_days,
+//         isActive,
+//       } = rows[0];
+
+//       let final_total = parseFloat(base_total_amount);
+
+//       console.log(
+//         `Base Total Amount (Service Price * Weight): ${base_total_amount}`
+//       );
+
+//       // Get current day of the week
+//       const currentDay = new Date().toLocaleString("en-US", {
+//         weekday: "long",
+//       });
+
+//       // Apply promo if active and valid for the current day
+//       if (isActive && valid_days && valid_days.includes(currentDay)) {
+//         if (discount_percentage > 0) {
+//           console.log(`Promo Active: ${discount_percentage}% Discount Applied`);
+//           const discount_amount = final_total * (discount_percentage / 100);
+//           final_total = final_total * (1 - discount_percentage / 100);
+//           console.log(`Discount Amount: -${discount_amount}`);
+//         } else if (discount_price > 0) {
+//           console.log(`Promo Active: ${discount_price} Price Discount Applied`);
+//           final_total -= parseFloat(discount_price);
+//           console.log(`Discount Amount: -${discount_price}`);
+//         }
+//       } else {
+//         console.log("No valid promo applied.");
+//       }
+
+//       // Fetch related items with item name, price, and total amount
+//       const relatedItemsQuery = `
+//         SELECT
+//           ri.id AS related_item_id,
+//           inv.item_id,
+//           inv.price AS item_price,
+//           ri.quantity,
+//           ri.amount AS related_item_total
+//         FROM
+//           Related_Item ri
+//         INNER JOIN
+//           Inventory inv ON ri.inventory_id = inv.id
+//         WHERE
+//           ri.assignment_id = ?;
+//       `;
+
+//       const [relatedItems] = await connection.execute(relatedItemsQuery, [id]);
+
+//       if (relatedItems.length > 0) {
+//         let related_items_total = 0;
+//         console.log("Related Items Breakdown:");
+
+//         relatedItems.forEach((item) => {
+//           console.log(`- Item ID: ${item.item_id}`);
+//           console.log(`  Price: ${item.item_price}`);
+//           console.log(`  Quantity: ${item.quantity}`);
+//           console.log(
+//             `  Total Amount for this item: ${item.related_item_total}`
+//           );
+//           related_items_total += parseFloat(item.related_item_total);
+//         });
+
+//         console.log(`Total Related Items Amount: +${related_items_total}`);
+
+//         // Add related items total to the final total
+//         final_total += related_items_total;
+//       } else {
+//         console.log("No related items found.");
+//       }
+
+//       // Log final total
+//       console.log(
+//         `Final Total Amount including Related Items: ${final_total.toFixed(2)}`
+//       );
+//     } else {
+//       console.log("No valid data found or no active promo.");
+//     }
+
+//     await connection.commit();
+//     console.log("Transaction committed.");
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching assignment:", error);
+//   }
+// };
+
+// export const handleGetCalculatedTransaction = async (req, res, connection) => {
+//   const { id } = req.params; // Laundry_Assignment ID
+
+//   try {
+//     console.log("Starting transaction for Laundry_Assignment ID:", id);
+//     await connection.beginTransaction();
+
+//     // Query to calculate total based on Laundry_Assignment ID
+//     const query = `
+//       SELECT
+//         la.id AS laundry_assignment_id,
+//         sr.id AS service_request_id,
+//         st.default_price,
+//         la.weight,
+//         (st.default_price * la.weight) AS total_amount
+//       FROM
+//         Laundry_Assignment la
+//       INNER JOIN
+//         Service_Request sr ON la.service_request_id = sr.id
+//       INNER JOIN
+//         Service_Type st ON sr.service_type_id = st.id
+//       WHERE
+//         la.id = ?;
+//     `;
+
+//     const [rows] = await connection.execute(query, [id]);
+
+//     console.log("Query executed. Rows fetched:", rows);
+
+//     await connection.commit();
+//     console.log("Transaction committed.");
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching assignment:", error);
+//   }
+// };
+// export const handleGetCalculatedTransaction = async (req, res, connection) => {
+//   const { id } = req.params; // Laundry_Assignment ID
+
+//   try {
+//     console.log("Starting transaction for Laundry_Assignment ID:", id);
+//     await connection.beginTransaction();
+
+//     // Query to calculate total and check for a promo
+//     const query = `
+//       SELECT
+//         la.id AS laundry_assignment_id,
+//         sr.id AS service_request_id,
+//         st.default_price,
+//         la.weight,
+//         (st.default_price * la.weight) AS base_total_amount,
+//         sp.discount_percentage,
+//         sp.discount_price,
+//         sp.start_date,
+//         sp.end_date,
+//         sp.isActive,
+//         sp.valid_days
+//       FROM
+//         Laundry_Assignment la
+//       INNER JOIN
+//         Service_Request sr ON la.service_request_id = sr.id
+//       INNER JOIN
+//         Service_Type st ON sr.service_type_id = st.id
+//       LEFT JOIN
+//         Service_Promo sp ON st.id = sp.service_id
+//       WHERE
+//         la.id = ?
+//         AND (sp.isActive = 1 OR sp.id IS NULL) -- Check if promo is active or no promo
+//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date);
+//     `;
+
+//     const [rows] = await connection.execute(query, [id]);
+
+//     if (rows.length > 0) {
+//       const {
+//         base_total_amount,
+//         discount_percentage,
+//         discount_price,
+//         valid_days,
+//         isActive,
+//       } = rows[0];
+
+//       let final_total = base_total_amount;
+//       const currentDay = new Date().toLocaleString("en-US", {
+//         weekday: "long",
+//       });
+
+//       // Check if a promo exists and is active
+//       if (isActive && valid_days && valid_days.includes(currentDay)) {
+//         if (discount_percentage > 0) {
+//           console.log("Percentage is Active");
+//           final_total = base_total_amount * (1 - discount_percentage / 100);
+//         } else if (discount_price > 0) {
+//           console.log("Discount is Active");
+//           final_total = base_total_amount - discount_price;
+//         }
+//       } else {
+//         console.log("No valid promo for today or no active promo.");
+//       }
+//       console.log("Calculated Total Amount:", final_total);
+//       // console.log(final_total);
+//     } else {
+//       console.log("No valid data found or no active promo.");
+//     }
+
+//     await connection.commit();
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching assignment:", error);
+//   }
+// };
+
+// export const handleGetCalculatedTransaction = async (req, res, connection) => {
+//   const { id } = req.params; // Laundry_Assignment ID
+
+//   try {
+//     console.log("Starting transaction for Laundry_Assignment ID:", id);
+//     await connection.beginTransaction();
+
+//     // Query to calculate total and check for a promo
+//     const query = `
+//       SELECT
+//         la.id AS laundry_assignment_id,
+//         sr.id AS service_request_id,
+//         st.default_price,
+//         la.weight,
+//         (st.default_price * la.weight) AS base_total_amount,
+//         sp.discount_percentage,
+//         sp.discount_price,
+//         sp.valid_days,
+//         sp.start_date,
+//         sp.end_date,
+//         sp.isActive
+//       FROM
+//         Laundry_Assignment la
+//       INNER JOIN
+//         Service_Request sr ON la.service_request_id = sr.id
+//       INNER JOIN
+//         Service_Type st ON sr.service_type_id = st.id
+//       LEFT JOIN
+//         Service_Promo sp ON st.id = sp.service_id
+//       WHERE
+//         la.id = ?
+//         AND (sp.isActive = 1 OR sp.id IS NULL)
+//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date);
+//     `;
+
+//     const [rows] = await connection.execute(query, [id]);
+
+//     if (rows.length > 0) {
+//       const {
+//         base_total_amount,
+//         discount_percentage,
+//         discount_price,
+//         valid_days,
+//         isActive,
+//       } = rows[0];
+
+//       let final_total = base_total_amount;
+
+//       // Get current day of the week
+//       const currentDay = new Date().toLocaleString("en-US", {
+//         weekday: "long",
+//       });
+
+//       // Check if the current day is in the valid_days string
+//       if (isActive && valid_days && valid_days.includes(currentDay)) {
+//         if (discount_percentage > 0) {
+//           console.log("Percentage is Active");
+//           final_total = base_total_amount * (1 - discount_percentage / 100);
+//         } else if (discount_price > 0) {
+//           console.log("Discount Price is Active");
+//           final_total = base_total_amount - discount_price;
+//         }
+//       }
+
+//       console.log(final_total);
+
+//       const relatedItemsQuery = `
+//         SELECT
+//           SUM(amount) AS related_items_total
+//         FROM
+//           Related_Item
+//         WHERE
+//           assignment_id = ?;
+//       `;
+
+//       const [relatedItems] = await connection.execute(relatedItemsQuery, [id]);
+
+//       if (relatedItems.length > 0 && relatedItems[0].related_items_total) {
+//         const related_items_total = relatedItems[0].related_items_total;
+//         console.log("Total Related Items Amount:", related_items_total);
+
+//         final_total += related_items_total;
+//       }
+
+//       console.log("Final Total Amount including Related Items:", final_total);
+//     } else {
+//       console.log("No valid data found or no active promo.");
+//     }
+
+//     await connection.commit();
+//     console.log("Transaction committed.");
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching assignment:", error);
+//   }
+// };
+
+// export const handleGetCalculatedTransaction = async (req, res, connection) => {
+//   const { id } = req.params; // Laundry_Assignment ID
+
+//   try {
+//     console.log("Starting transaction for Laundry_Assignment ID:", id);
+//     await connection.beginTransaction();
+
+//     // Query to calculate total and check for a promo
+//     const query = `
+//       SELECT
+//         la.id AS laundry_assignment_id,
+//         sr.id AS service_request_id,
+//         st.default_price,
+//         la.weight,
+//         (st.default_price * la.weight) AS base_total_amount,
+//         sp.discount_percentage,
+//         sp.discount_price,
+//         sp.valid_days,
+//         sp.start_date,
+//         sp.end_date,
+//         sp.isActive
+//       FROM
+//         Laundry_Assignment la
+//       INNER JOIN
+//         Service_Request sr ON la.service_request_id = sr.id
+//       INNER JOIN
+//         Service_Type st ON sr.service_type_id = st.id
+//       LEFT JOIN
+//         Service_Promo sp ON st.id = sp.service_id
+//       WHERE
+//         la.id = ?
+//         AND (sp.isActive = 1 OR sp.id IS NULL)
+//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date);
+//     `;
+
+//     const [rows] = await connection.execute(query, [id]);
+
+//     if (rows.length > 0) {
+//       const {
+//         base_total_amount,
+//         discount_percentage,
+//         discount_price,
+//         valid_days,
+//         isActive,
+//       } = rows[0];
+
+//       // Ensure base total is treated as a number
+//       let final_total = parseFloat(base_total_amount);
+
+//       // Get current day of the week
+//       const currentDay = new Date().toLocaleString("en-US", {
+//         weekday: "long",
+//       });
+
+//       // Check if the current day is in the valid_days string
+//       if (isActive && valid_days && valid_days.includes(currentDay)) {
+//         if (discount_percentage > 0) {
+//           console.log("Percentage is Active");
+//           final_total = final_total * (1 - discount_percentage / 100);
+//         } else if (discount_price > 0) {
+//           console.log("Discount Price is Active");
+//           final_total -= parseFloat(discount_price);
+//         }
+//       }
+
+//       // Fetch the related items total and add to final total
+//       const relatedItemsQuery = `
+//         SELECT
+//           SUM(amount) AS related_items_total
+//         FROM
+//           Related_Item
+//         WHERE
+//           assignment_id = ?;
+//       `;
+
+//       const [relatedItems] = await connection.execute(relatedItemsQuery, [id]);
+
+//       if (relatedItems.length > 0 && relatedItems[0].related_items_total) {
+//         const related_items_total = parseFloat(
+//           relatedItems[0].related_items_total
+//         );
+//         console.log("Total Related Items Amount:", related_items_total);
+
+//         // Add related items total to the final total
+//         final_total += related_items_total;
+//       }
+//       // Log final total as a number
+//       console.log(
+//         "Final Total Amount including Related Items:",
+//         final_total.toFixed(2)
+//       );
+//     } else {
+//       console.log("No valid data found or no active promo.");
+//     }
+
+//     await connection.commit();
+//     console.log("Transaction committed.");
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching assignment:", error);
+//   }
+// };
+
+// export const handleGetCalculatedTransaction = async (req, res, connection) => {
+//   const { id } = req.params; // Laundry_Assignment ID
+
+//   try {
+//     console.log("Starting transaction for Laundry_Assignment ID:", id);
+//     await connection.beginTransaction();
+
+//     // Query to calculate total and check for a promo
+//     const query = `
+//       SELECT
+//         la.id AS laundry_assignment_id,
+//         sr.id AS service_request_id,
+//         st.default_price,
+//         la.weight,
+//         (st.default_price * la.weight) AS base_total_amount,
+//         sp.discount_percentage,
+//         sp.discount_price,
+//         sp.valid_days,
+//         sp.start_date,
+//         sp.end_date,
+//         sp.isActive
+//       FROM
+//         Laundry_Assignment la
+//       INNER JOIN
+//         Service_Request sr ON la.service_request_id = sr.id
+//       INNER JOIN
+//         Service_Type st ON sr.service_type_id = st.id
+//       LEFT JOIN
+//         Service_Promo sp ON st.id = sp.service_id
+//       WHERE
+//         la.id = ?
+//         AND (sp.isActive = 1 OR sp.id IS NULL)
+//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date);
+//     `;
+
+//     const [rows] = await connection.execute(query, [id]);
+
+//     if (rows.length > 0) {
+//       const {
+//         base_total_amount,
+//         discount_percentage,
+//         discount_price,
+//         valid_days,
+//         isActive,
+//       } = rows[0];
+
+//       // Ensure base total is treated as a number
+//       let final_total = parseFloat(base_total_amount);
+
+//       console.log(
+//         `Base Total Amount (Service Price * Weight): ${base_total_amount}`
+//       );
+
+//       // Get current day of the week
+//       const currentDay = new Date().toLocaleString("en-US", {
+//         weekday: "long",
+//       });
+
+//       // Check if the current day is in the valid_days string
+//       if (isActive && valid_days && valid_days.includes(currentDay)) {
+//         if (discount_percentage > 0) {
+//           console.log(`Promo Active: ${discount_percentage}% Discount Applied`);
+//           const discount_amount = final_total * (discount_percentage / 100);
+//           final_total = final_total * (1 - discount_percentage / 100);
+//           console.log(`Discount Amount: -${discount_amount}`);
+//         } else if (discount_price > 0) {
+//           console.log(`Promo Active: ${discount_price} Price Discount Applied`);
+//           final_total -= parseFloat(discount_price);
+//           console.log(`Discount Amount: -${discount_price}`);
+//         }
+//       } else {
+//         console.log("No valid promo applied.");
+//       }
+
+//       // Fetch the related items total and add to final total
+//       const relatedItemsQuery = `
+//         SELECT
+//           SUM(amount) AS related_items_total
+//         FROM
+//           Related_Item
+//         WHERE
+//           assignment_id = ?;
+//       `;
+
+//       const [relatedItems] = await connection.execute(relatedItemsQuery, [id]);
+
+//       if (relatedItems.length > 0 && relatedItems[0].related_items_total) {
+//         const related_items_total = parseFloat(
+//           relatedItems[0].related_items_total
+//         );
+//         console.log(`Total Related Items Amount: ${related_items_total}`);
+
+//         final_total += related_items_total;
+//       }
+
+//       console.log(
+//         `Final Total Amount including Related Items: ${final_total.toFixed(2)}`
+//       );
+//     } else {
+//       console.log("No valid data found or no active promo.");
+//     }
+
+//     await connection.commit();
+//     console.log("Transaction committed.");
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching assignment:", error);
+//   }
+// };

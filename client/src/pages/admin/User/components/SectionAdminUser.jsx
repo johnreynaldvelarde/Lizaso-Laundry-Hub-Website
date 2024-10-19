@@ -943,7 +943,7 @@ const SectionAdminUser = () => {
                         <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                           <Typography
                             variant="body2"
-                            sx={{ fontWeight: "600", color: COLORS.text5 }}
+                            sx={{ fontWeight: "600", color: COLORS.text }}
                           >
                             {user.first_name}{" "}
                             {user.middle_name && `${user.middle_name} `}

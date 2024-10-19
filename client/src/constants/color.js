@@ -44,7 +44,8 @@ export const COLORS = {
   text3: "#393939",
   text4: "#666666",
 
-  text: "#111111",
+  // text: "#111111",
+  text: "#393939",
   subtitle: "#666666",
 
   // Primary and Secondary colors

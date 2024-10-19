@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import useAuth from "../../../contexts/AuthContext";
 import toast from "react-hot-toast";
 import {
   Box,
@@ -14,28 +15,21 @@ import {
 } from "@mui/material";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
 import { HourglassLow, CaretDown, CaretUp } from "@phosphor-icons/react";
-
-// popup page
 import PopupSelectUnit from "./components/PopupSelectUnit";
 import PopupInQueue from "./components/PopupInQueue";
-
-// image
 import nodata from "../../../assets/images/no_data.png";
-import Available from "../../../assets/images/Available.png";
-import Occupied from "../../../assets/images/Occupied.png";
-import Reserved from "../../../assets/images/Reserved.png";
-import In_Maintaince from "../../../assets/images/Not_Available.png";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopCompleteInLaundry from "./components/PopCompleteInLaundry";
 import DrawerInLaundry from "./components/DrawerInLaundry";
 import useFetchData from "../../../hooks/common/useFetchData";
-import useAuth from "../../../contexts/AuthContext";
+
 import {
   getCountLaundryAssignment,
   getCountRequestInQueue,
   viewUnits,
 } from "../../../services/api/getApi";
+import { getUnitImage } from "./components/unit_helpers";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -66,21 +60,6 @@ const UnitMonitor = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const getImage = (status) => {
-    switch (status) {
-      case 0:
-        return Available;
-      case 1:
-        return Occupied;
-      case 2:
-        return Reserved;
-      case 3:
-        return In_Maintaince;
-      default:
-        return Available;
-    }
   };
 
   const theme = useTheme();
@@ -119,15 +98,15 @@ const UnitMonitor = () => {
     fetchCountInQueueData();
     fetchCountAssignmentData();
 
-    const intervalId = setInterval(() => {
-      fetchUnitsData();
-      fetchCountInQueueData();
-      fetchCountAssignmentData();
-    }, 10000);
+    // const intervalId = setInterval(() => {
+    //   fetchUnitsData();
+    //   fetchCountInQueueData();
+    //   fetchCountAssignmentData();
+    // }, 10000);
 
-    return () => {
-      clearInterval(intervalId);
-    };
+    // return () => {
+    //   clearInterval(intervalId);
+    // };
   }, [fetchUnitsData, fetchCountInQueueData, fetchCountAssignmentData]);
 
   useEffect(() => {
@@ -375,7 +354,7 @@ const UnitMonitor = () => {
                 {unit.unit_name}
               </Typography>
               <img
-                src={getImage(unit.isUnitStatus)}
+                src={getUnitImage(unit.isUnitStatus)}
                 alt={unit.unit_name}
                 style={{
                   width: "100%",
