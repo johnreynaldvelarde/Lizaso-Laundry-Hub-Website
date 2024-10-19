@@ -67,29 +67,7 @@ export const handleCreateUnits = async (req, res, db) => {
 };
 
 //# CREATE NEW TRANSACTION
-export const handleTypeOnlineTransaction = async (req, res, connection) => {
-  const { assignment_id, total_amount, payment_method } = req.body;
-
-  try {
-    await connection.beginTransaction();
-
-    await connection.commit();
-
-    res.status(201).json({
-      success: true,
-    });
-  } catch (error) {
-    await connection.rollback();
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while sending the message.",
-    });
-  } finally {
-    connection.release();
-  }
-};
-
-export const handleTypeWalkInTransaction = async (req, res, connection) => {
+export const handleTransaction = async (req, res, connection) => {
   const { assignment_id, total_amount, payment_method } = req.body;
 
   try {
@@ -806,6 +784,16 @@ export const handleGetCalculatedTransaction = async (req, res, connection) => {
         ? related_item_totals.split(", ")
         : [];
 
+      // itemIdsArray.forEach((itemId, index) => {
+      //   console.log(`- Item ID: ${itemId}`);
+      //   console.log(`  Price: ${itemPricesArray[index]}`);
+      //   console.log(`  Quantity: ${quantitiesArray[index]}`);
+      //   console.log(
+      //     `  Total Amount for this item: ${relatedItemTotalsArray[index]}`
+      //   );
+      // });
+
+      // Send the response to the client
       res.status(200).json({
         success: true,
         data: {
@@ -833,6 +821,7 @@ export const handleGetCalculatedTransaction = async (req, res, connection) => {
     }
 
     await connection.commit();
+    console.log("Transaction committed.");
   } catch (error) {
     await connection.rollback();
     console.error("Error fetching assignment:", error);
@@ -840,8 +829,6 @@ export const handleGetCalculatedTransaction = async (req, res, connection) => {
       success: false,
       error: "An error occurred while fetching the assignment.",
     });
-  } finally {
-    connection.release();
   }
 };
 

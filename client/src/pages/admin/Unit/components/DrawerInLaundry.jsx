@@ -147,19 +147,19 @@ const DrawerInLaundry = ({ open, onClose }) => {
                       <div className="flex-1">
                         <div
                           className="font-normal"
-                          style={{ color: COLORS.text3, fontSize: 13 }}
+                          style={{ color: COLORS.primary, fontSize: 13 }}
                         >
                           Customer Name:
                         </div>
                         <div
                           className="font-bold truncate mb-2"
-                          style={{ color: COLORS.text3, fontSize: 18 }}
+                          style={{ color: COLORS.text, fontSize: 18 }}
                         >
                           {customer.customer_fullname}
                         </div>
                         <div
                           className="font-normal"
-                          style={{ color: COLORS.text3, fontSize: 13 }}
+                          style={{ color: COLORS.primary, fontSize: 13 }}
                         >
                           Service Name:
                         </div>
@@ -171,7 +171,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
                         </div>
                         <div
                           className="font-normal"
-                          style={{ color: COLORS.text3, fontSize: 13 }}
+                          style={{ color: COLORS.primary, fontSize: 13 }}
                         >
                           Assign Unit:
                         </div>
@@ -201,7 +201,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
                       >
                         <span
                           className="text-[13px] font-bold text-center flex items-center justify-center"
-                          style={{ color: COLORS.text3 }}
+                          style={{ color: COLORS.text }}
                         >
                           {formatDistanceToNow(new Date(customer.assigned_at))}
                         </span>
@@ -214,7 +214,6 @@ const DrawerInLaundry = ({ open, onClose }) => {
                       </div>
                     </div>
 
-                    {/* Divider with full width */}
                     <Divider sx={{ margin: 0, width: "100%" }} />
 
                     {/* Second Row: Buttons */}
@@ -229,7 +228,13 @@ const DrawerInLaundry = ({ open, onClose }) => {
                         Customer Type:
                         <span
                           className="ml-2"
-                          style={{ color: COLORS.success, fontWeight: 600 }}
+                          style={{
+                            color:
+                              customer.customer_type === "Online"
+                                ? COLORS.success
+                                : COLORS.error,
+                            fontWeight: 600,
+                          }}
                         >
                           {customer.customer_type}
                         </span>

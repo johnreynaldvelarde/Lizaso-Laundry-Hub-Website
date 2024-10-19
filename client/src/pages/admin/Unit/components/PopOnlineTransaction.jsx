@@ -22,10 +22,10 @@ import { COLORS } from "../../../../constants/color";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { getCalculatedTransaction } from "../../../../services/api/getApi";
 import logo from "../../../../assets/images/logo.png";
+import { transactionDate, transactionTime } from "./unit_helpers";
 
 const PopOnlineTransaction = ({ open, onClose, data }) => {
   const [customerName, setCustomerName] = useState("");
-  const [customerNumber, setCustomerNumber] = useState("");
   const [serviceType, setServiceType] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [loading, setLoading] = useState(false);
@@ -168,7 +168,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
-                mb={2}
+                mb={1}
               >
                 <Box>
                   <img
@@ -195,23 +195,107 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                 </Typography>
               </Box>
 
-              <Divider sx={{ mb: 2 }} />
+              <Box
+                sx={{
+                  padding: "16px",
+                  borderRadius: "8px",
+                  border: 1,
+                  borderColor: COLORS.border,
+                }}
+              >
+                <Box sx={{ mb: 1 }}>
+                  <Typography
+                    sx={{
+                      fontSize: 12,
+                      color: COLORS.text,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Transaction ID:
+                    <span
+                      style={{
+                        color: COLORS.primary,
+                        fontWeight: 500,
+                        marginLeft: "8px",
+                      }}
+                    >
+                      #{transactionData.transaction_id}
+                    </span>
+                  </Typography>
+                </Box>
 
-              <Typography variant="subtitle2">
-                Customer: {"John Doe"}
-              </Typography>
-              <Typography variant="subtitle2">
-                Phone: {"(123) 456-7890"}
-              </Typography>
+                <Box sx={{ mb: 1 }}>
+                  <Typography
+                    sx={{
+                      fontSize: 12,
+                      color: COLORS.text,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Customer Name:
+                    <span
+                      style={{
+                        color: COLORS.primary,
+                        fontWeight: 500,
+                        marginLeft: "8px",
+                      }}
+                    >
+                      {customerName}
+                    </span>
+                  </Typography>
+                </Box>
 
-              <Box sx={{ mt: 2 }}>
+                <Box sx={{ mb: 1 }}>
+                  <Typography
+                    sx={{
+                      fontSize: 12,
+                      color: COLORS.text,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Payment Method:
+                    <span
+                      style={{
+                        color: COLORS.primary,
+                        fontWeight: 500,
+                        marginLeft: "8px",
+                      }}
+                    >
+                      {paymentMethod}
+                    </span>
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography
+                    sx={{
+                      fontSize: 12,
+                      color: COLORS.text,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Date:
+                    <span
+                      style={{
+                        color: COLORS.primary,
+                        fontWeight: 500,
+                        marginLeft: "8px",
+                      }}
+                    >
+                      {`${transactionDate}, ${transactionTime}`}
+                    </span>
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ mt: 1 }}>
                 <List>
                   <Grid container spacing={2}>
                     <Grid item xs={4}>
                       <Typography
-                        variant="subtitle1"
                         align="center"
                         sx={{
+                          fontSize: 15,
                           color: COLORS.text,
                           fontWeight: 700,
                         }}
@@ -221,9 +305,9 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     </Grid>
                     <Grid item xs={4}>
                       <Typography
-                        variant="subtitle1"
                         align="center"
                         sx={{
+                          fontSize: 15,
                           color: COLORS.text,
                           fontWeight: 700,
                         }}
@@ -233,9 +317,9 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     </Grid>
                     <Grid item xs={4}>
                       <Typography
-                        variant="subtitle1"
                         align="center"
                         sx={{
+                          fontSize: 15,
                           color: COLORS.text,
                           fontWeight: 700,
                         }}
@@ -249,11 +333,14 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     <Grid item xs={4}>
                       <Typography
                         align="center"
-                        sx={{ color: COLORS.primary, fontWeight: 500 }}
+                        sx={{
+                          fontSize: 13,
+                          color: COLORS.primary,
+                          fontWeight: 500,
+                        }}
                       >
                         {serviceType}
                       </Typography>
-                      {/* New Box for Base Price */}
                       <Box
                         sx={{
                           borderRadius: "8px",
@@ -264,7 +351,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                           align="center"
                           sx={{
                             color: COLORS.secondary,
-                            fontWeight: 500,
+                            fontWeight: 600,
                             fontSize: 10,
                           }}
                         >
@@ -275,7 +362,11 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     <Grid item xs={4}>
                       <Typography
                         align="center"
-                        sx={{ color: COLORS.primary, fontWeight: 500 }}
+                        sx={{
+                          fontSize: 13,
+                          color: COLORS.primary,
+                          fontWeight: 500,
+                        }}
                       >
                         {transactionData.weight}
                       </Typography>
@@ -283,7 +374,11 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     <Grid item xs={4}>
                       <Typography
                         align="center"
-                        sx={{ color: COLORS.primary, fontWeight: 500 }}
+                        sx={{
+                          fontSize: 13,
+                          color: COLORS.primary,
+                          fontWeight: 500,
+                        }}
                       >{`₱${transactionData.base_total_amount}`}</Typography>
                     </Grid>
                   </Grid>
@@ -295,7 +390,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
               <Box sx={{ mt: 2 }}>
                 <Typography
                   align="center"
-                  sx={{ fontSize: 18, fontWeight: 600, color: COLORS.primary }}
+                  sx={{ fontSize: 15, fontWeight: 600, color: COLORS.primary }}
                 >
                   Related Items
                 </Typography>
@@ -304,6 +399,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     <Typography
                       align="center"
                       sx={{
+                        fontSize: 15,
                         color: COLORS.text,
                         fontWeight: 700,
                       }}
@@ -315,6 +411,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     <Typography
                       align="center"
                       sx={{
+                        fontSize: 15,
                         color: COLORS.text,
                         fontWeight: 700,
                       }}
@@ -326,6 +423,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                     <Typography
                       align="center"
                       sx={{
+                        fontSize: 15,
                         color: COLORS.text,
                         fontWeight: 700,
                       }}
@@ -344,9 +442,13 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                           <Grid item xs={4}>
                             <Typography
                               align="center"
-                              sx={{ color: COLORS.primary, fontWeight: 500 }}
+                              sx={{
+                                fontSize: 13,
+                                color: COLORS.primary,
+                                fontWeight: 500,
+                              }}
                             >
-                              Item {itemId}
+                              {transactionData.related_items.item_names[index]}
                             </Typography>
                             <Box
                               sx={{
@@ -358,28 +460,40 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                                 align="center"
                                 sx={{
                                   color: COLORS.secondary,
-                                  fontWeight: 500,
+                                  fontWeight: 600,
                                   fontSize: 10,
                                 }}
                               >
-                                Price: {data.default_price}
+                                Price:
+                                {
+                                  transactionData.related_items.item_prices[
+                                    index
+                                  ]
+                                }
                               </Typography>
                             </Box>
                           </Grid>
                           <Grid item xs={4}>
                             <Typography
                               align="center"
-                              sx={{ color: COLORS.primary, fontWeight: 500 }}
+                              sx={{
+                                fontSize: 13,
+                                color: COLORS.primary,
+                                fontWeight: 500,
+                              }}
                             >
                               {transactionData.related_items.quantities[index]}
                             </Typography>
                           </Grid>
-                          <Grid
-                            item
-                            xs={4}
-                            sx={{ color: COLORS.primary, fontWeight: 500 }}
-                          >
-                            <Typography align="center">{`₱${transactionData.related_items.related_item_totals[index]}`}</Typography>
+                          <Grid item xs={4}>
+                            <Typography
+                              align="center"
+                              sx={{
+                                fontSize: 13,
+                                color: COLORS.primary,
+                                fontWeight: 500,
+                              }}
+                            >{`₱${transactionData.related_items.related_item_totals[index]}`}</Typography>
                           </Grid>
                         </React.Fragment>
                       )
@@ -396,7 +510,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
 
               <Divider />
               <Box sx={{ mt: 2 }}>
-                <Typography variant="h6" align="center">
+                <Typography align="center" sx={{ fontSize: 18 }}>
                   <span style={{ color: COLORS.secondary, fontWeight: 700 }}>
                     Total Amount:{" "}
                   </span>
@@ -412,9 +526,9 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                   padding: 1,
                   fontSize: 12,
                   borderRadius: 20,
-                  mt: 3,
-                  color: COLORS.white,
-                  backgroundColor: COLORS.secondary,
+                  mt: 2,
+                  color: COLORS.primary,
+                  backgroundColor: COLORS.background,
                 }}
               >
                 Thank you for your business!
@@ -435,24 +549,3 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
 };
 
 export default PopOnlineTransaction;
-
-{
-  /* <List>
-                <ListItem>
-                  <ListItemText
-                    primary={"Service Type"}
-                    secondary={`$${"0.00"}`}
-                  />
-                </ListItem>
-
-                <ListItem>
-                  <ListItemText
-                    primary="Weight"
-                    secondary={transactionData.weight}
-                  />
-                </ListItem>
-
-                <Divider sx={{ my: 1 }} />
-               
-              </List> */
-}

@@ -6,6 +6,7 @@ import {
 } from "../helpers/auth.js";
 import { ActionDescriptions, ActionTypes } from "../helpers/activityLog.js";
 import { logActivity } from "./useExtraSystem.js";
+import { generateBigIntCustomerId } from "../helpers/generateCode.js";
 
 const createToken = (payload, secret, expiresIn) => {
   return jwt.sign(payload, secret, { expiresIn });
@@ -85,6 +86,7 @@ export const handleLogin = async (req, res, db) => {
       }
 
       user = customerAccountResults[0];
+
       const [secCustomerResults] = await db.query(
         "SELECT * FROM Customer_Security WHERE customer_id = ?",
         [user.id]
@@ -165,21 +167,20 @@ export const handleRegister = async (req, res, db) => {
     c_number,
   } = req.body;
 
-  try {
-    // Hash the customer's password
-    const hashedPassword = await hashPassword(c_password);
+  const newCustomerId = generateBigIntCustomerId();
 
-    // Generate password salt (if needed)
+  try {
+    const hashedPassword = await hashPassword(c_password);
     const passwordSalt = await generatePasswordSalt();
 
-    // Begin transaction
     await db.beginTransaction();
 
     // Insert customer into Customers table
     const [customerResult] = await db.query(
-      `INSERT INTO Customer (c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
-       VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+      `INSERT INTO Customer (id, c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
+        newCustomerId,
         c_firstname,
         c_middlename,
         c_lastname,
@@ -190,14 +191,11 @@ export const handleRegister = async (req, res, db) => {
       ]
     );
 
-    const customerId = customerResult.insertId;
-
-    // Insert customer security data into Customer_Security table
-    await db.query(
+    const [securityResult] = await db.query(
       `INSERT INTO Customer_Security (customer_id, c_password, c_password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        customerId,
+        newCustomerId,
         hashedPassword,
         passwordSalt,
         false,
@@ -209,21 +207,115 @@ export const handleRegister = async (req, res, db) => {
       ]
     );
 
-    // Commit transaction
-    await db.commit();
+    if (securityResult.affectedRows === 0) {
+      throw new Error("Failed to insert customer security data");
+    }
 
-    // Respond with success
+    await db.commit();
     res
       .status(201)
       .json({ success: true, message: "Customer registered successfully" });
   } catch (error) {
-    // Rollback transaction in case of error
     await db.rollback();
 
-    console.error("Error registering customer:", error);
+    console.error("Error registering customer:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+// export const handleRegister = async (req, res, db) => {
+//   const {
+//     c_firstname,
+//     c_middlename,
+//     c_lastname,
+//     c_username,
+//     c_password,
+//     isAgreement,
+//     c_email,
+//     c_number,
+//   } = req.body;
+
+//   const newCustomerId = generateBigIntCustomerId();
+
+//   try {
+//     // Hash the customer's password
+//     const hashedPassword = await hashPassword(c_password);
+
+//     // Generate password salt (if needed)
+//     const passwordSalt = await generatePasswordSalt();
+
+//     // Begin transaction
+//     await db.beginTransaction();
+
+//     // Insert customer into Customers table
+//     // const [customerResult] = await db.query(
+//     //   `INSERT INTO Customer (id, c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
+//     //    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+//     //   [
+//     //     newCustomerId,
+//     //     c_firstname,
+//     //     c_middlename,
+//     //     c_lastname,
+//     //     c_username,
+//     //     c_number,
+//     //     c_email,
+//     //     isAgreement,
+//     //   ]
+//     // );
+
+//     const [customerResult] = await db.query(
+//       `INSERT INTO Customer (id, c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
+//        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+//       [
+//         newCustomerId,
+//         c_firstname,
+//         c_middlename,
+//         c_lastname,
+//         c_username,
+//         c_number,
+//         c_email,
+//         isAgreement,
+//       ]
+//     );
+
+//     // Check if the insertion was successful
+//     if (customerResult.affectedRows === 0) {
+//       throw new Error("Failed to insert customer");
+//     }
+
+//     // const customerId = customerResult.insertId;
+
+//     // Insert customer security data into Customer_Security table
+//     await db.query(
+//       `INSERT INTO Customer_Security (customer_id, c_password, c_password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
+//        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//       [
+//         newCustomerId,
+//         hashedPassword,
+//         passwordSalt,
+//         false,
+//         0,
+//         false,
+//         null,
+//         null,
+//         null,
+//       ]
+//     );
+
+//     // Commit transaction
+//     await db.commit();
+
+//     // Respond with success
+//     res
+//       .status(201)
+//       .json({ success: true, message: "Customer registered successfully" });
+//   } catch (error) {
+//     // Rollback transaction in case of error
+//     await db.rollback();
+
+//     console.error("Error registering customer:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
 
 export const handleRefreshToken = async (req, res) => {
   const { refreshToken } = req.cookies;
