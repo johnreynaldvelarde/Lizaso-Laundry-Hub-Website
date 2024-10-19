@@ -92,6 +92,7 @@ npx shadcn@latest init
 npm install --save nprogress
 npm install qrcode
 npm install qrcode.react
+npm install jspdf
 
 
 
