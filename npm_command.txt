@@ -101,11 +101,6 @@ npm install jspdf
 
 
 
-
-
-
-
-
 store_id: userDetails.storeId,
 
 
