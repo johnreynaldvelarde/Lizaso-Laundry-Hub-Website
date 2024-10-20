@@ -90,28 +90,39 @@ export const handleCreateItemCategory = async (req, res, db) => {
   const { category_name } = req.body;
 
   try {
-    const [existingCategoryName] = await db.query(
+    // Start transaction
+    await db.beginTransaction();
+
+    // Check if category name already exists
+    const [existingCategoryName] = await db.execute(
       "SELECT * FROM Item_Category WHERE category_name = ?",
       [category_name]
     );
     if (existingCategoryName.length > 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Category name is already exists" });
+      return res.status(200).json({
+        success: false,
+        message: "Category name already exists",
+      });
     }
 
-    const result = await db.query(
+    // Insert new category
+    await db.execute(
       "INSERT INTO Item_Category (category_name, isArchive, updated_at, date_created) VALUES (?, ?, NOW(), NOW())",
       [category_name, false]
     );
 
-    res.status(201).json({
+    await db.commit();
+
+    res.status(200).json({
       success: true,
       message: "Category created successfully",
     });
   } catch (error) {
+    await db.rollback();
     console.error("Error creating new category:", error);
     res.status(500).json({ success: false, message: "Server error" });
+  } finally {
+    if (db) db.release();
   }
 };
 

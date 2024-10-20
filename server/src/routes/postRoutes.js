@@ -104,9 +104,13 @@ router.post(
 );
 
 router.post(
-  "/create-category-item",
+  "/inventory/create-category-item",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleCreateItemCategory(req, res, connection);
+    try {
+      await handleCreateItemCategory(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

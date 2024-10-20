@@ -130,20 +130,13 @@ export const createItem = {
 export const createItemCategory = {
   setCategoryItem: async (data) => {
     try {
-      const response = await axiosPrivate.post("/create-category-item", data);
-      const { success, message } = response.data;
-
-      if (success) {
-        return { success, message };
-      } else {
-        throw new Error(message || "Failed");
-      }
+      const response = await axiosPrivate.post(
+        "/inventory/create-category-item",
+        data
+      );
+      return response.data;
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "Cannot Get the message for the server";
-      console.log(errorMessage);
-      throw new Error(errorMessage);
+      throw error;
     }
   },
 };

@@ -3,7 +3,10 @@ import useAuth from "../../../../contexts/AuthContext";
 import { Dialog, DialogContent, TextField } from "@mui/material";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
-import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
+import {
+  createItemCategory,
+  createNewRoleAndPermissions,
+} from "../../../../services/api/postApi";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
@@ -15,8 +18,8 @@ const PopAddCategory = ({ open, onClose }) => {
 
   const validateFields = () => {
     const newErrors = {};
-    if (!rolename) {
-      newErrors.rolename = "Role name is required";
+    if (!categoryName) {
+      newErrors.categoryName = "Category name is required";
     }
 
     return newErrors;
@@ -25,8 +28,8 @@ const PopAddCategory = ({ open, onClose }) => {
   const handleInputChange = (field) => (e) => {
     const value = e.target.value;
 
-    if (field === "rolename") {
-      setRolename(value);
+    if (field === "categoryName") {
+      setCategoryName(value);
     }
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -40,16 +43,18 @@ const PopAddCategory = ({ open, onClose }) => {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
       try {
-        // const response = await createNewRoleAndPermissions.setRoleAndPermissons(
-        //   userDetails.userId,
-        //   roleData
-        // );
-        // if (response.success) {
-        //   toast.success(response.message);
-        //   onClose();
-        // } else {
-        //   toast.error(response.message);
-        // }
+        const response = await createItemCategory.setCategoryItem({
+          category_name: categoryName,
+        });
+        if (response.success) {
+          toast.success(response.message);
+          onClose();
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            categoryName: response.message,
+          }));
+        }
       } catch (error) {
         toast.error(`Error with service request: ${error.message || error}`);
       } finally {
@@ -95,8 +100,8 @@ const PopAddCategory = ({ open, onClose }) => {
           variant="outlined"
           value={categoryName}
           onChange={handleInputChange("categoryName")}
-          error={Boolean(errors.rolename)}
-          helperText={errors.rolename}
+          error={Boolean(errors.categoryName)}
+          helperText={errors.categoryName}
           sx={{
             "& .MuiOutlinedInput-root": {
               "&.Mui-focused fieldset": {

@@ -34,6 +34,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const contentRef = useRef(null);
 
   const { data: transactionData, fetchData: fetchCalculatedTransaction } =
     useFetchData();
@@ -55,10 +56,15 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
     }
   }, [open, fetchCalculatedTransactionData]);
 
-  const contentRef = useRef(null);
-
   const handlePrint = useReactToPrint({
-    content: () => contentRef.current,
+    contentRef,
+    onAfterPrint: () => {
+      setLoading(false);
+      toast.success("Print completed!");
+    },
+    onBeforeGetContent: () => {
+      setLoading(true);
+    },
   });
 
   const handleSubmitTransactionOnline = async () => {
@@ -69,28 +75,28 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
       total_amount: transactionData.final_total,
       payment_method: paymentMethod,
     };
-    handlePrint();
-    // try {
-    //   const response = await createNewTransactionOnline.setTransactionOnline(
-    //     data
-    //   );
 
-    //   if (response.success) {
-    //     toast.success(response.message);
+    try {
+      const response = await createNewTransactionOnline.setTransactionOnline(
+        data
+      );
 
-    //     onClose();
-    //   } else {
-    //     toast.error("Transaction failed");
-    //   }
-    // } catch (error) {
-    //   toast.error(
-    //     `Error posting new transaction: ${
-    //       error.message || "Something went wrong"
-    //     }`
-    //   );
-    // } finally {
-    //   setLoading(false);
-    // }
+      if (response.success) {
+        toast.success(response.message);
+        handlePrint();
+        onClose();
+      } else {
+        toast.error("Transaction failed");
+      }
+    } catch (error) {
+      toast.error(
+        `Error posting new transaction: ${
+          error.message || "Something went wrong"
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -164,7 +170,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
 
           {/* Right Column */}
           <Grid item xs={12} md={6}>
-            <Box
+            <Paper
               ref={contentRef}
               sx={{
                 padding: 2,
@@ -564,7 +570,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
               >
                 Thank you for your business!
               </Typography>
-            </Box>
+            </Paper>
           </Grid>
         </Grid>
       </DialogContent>
@@ -572,7 +578,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
       <CustomPopFooterButton
         label={"Complete Transaction"}
         onClose={onClose}
-        onSubmit={handlePrint}
+        onSubmit={handleSubmitTransactionOnline}
         loading={loading}
       />
     </Dialog>

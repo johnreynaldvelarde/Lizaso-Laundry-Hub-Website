@@ -157,6 +157,9 @@ const TrackOrders = () => {
                             : orders[currentIndex].service_request
                                 .request_status === "In Laundry"
                             ? "bg-[#17a2b8] text-white"
+                            : orders[currentIndex].service_request
+                                .request_status === "Ready for Delivery"
+                            ? "bg-[#800080] text-white"
                             : "bg-gray-200 text-gray-800"
                         }`}
                       >

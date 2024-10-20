@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import useAuth from "../../contexts/AuthContext";
 import { createCustomerServiceRequest } from "../../services/api/customerApi";
 import { useNavigate } from "react-router-dom";
-import { AccountBalance, AccountBalanceWallet } from "@mui/icons-material"; // Icons for payment
+import { AccountBalance, AccountBalanceWallet } from "@mui/icons-material";
 
 const useLaundryPlans = (onClose) => {
   const { userDetails } = useAuth();
@@ -74,7 +74,7 @@ const useLaundryPlans = (onClose) => {
               userDetails.userId,
               customerData
             );
-          if (!response.success) {
+          if (response.success) {
             toast.success(response.message);
             setQrCode(response.qr_code);
           } else {
@@ -91,12 +91,6 @@ const useLaundryPlans = (onClose) => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (qrCode) {
-      console.log("QR Code updated:", qrCode);
-    }
-  }, [qrCode]);
 
   return {
     qrCode,

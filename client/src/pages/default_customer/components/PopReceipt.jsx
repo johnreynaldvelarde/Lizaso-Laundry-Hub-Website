@@ -11,6 +11,7 @@ import {
   Grid,
   Divider,
 } from "@mui/material";
+import { useReactToPrint } from "react-to-print";
 import { transactionDate, transactionTime } from "../../../utils/method";
 import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitle";
 import { COLORS } from "../../../constants/color";
@@ -19,9 +20,11 @@ import useFetchData from "../../../hooks/common/useFetchData";
 import { getCalculatedTransactionForCustomer } from "../../../services/api/customerApi";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import toast from "react-hot-toast";
 
 const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
-  const receiptRef = useRef(null);
+  const contentRef = useRef(null);
+  const [loading, setLoading] = useState(false);
   const { data: transactionData, fetchData: fetchCalculatedTransaction } =
     useFetchData();
 
@@ -39,28 +42,28 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
   }, [open, fetchCalculatedTransactionData]);
 
   const handleSaveAsImage = () => {
-    if (receiptRef.current) {
-      html2canvas(receiptRef.current).then((canvas) => {
+    if (contentRef.current) {
+      html2canvas(contentRef.current).then((canvas) => {
         const link = document.createElement("a");
         link.href = canvas.toDataURL("image/png");
         link.download = "receipt.png";
         link.click();
+
+        toast.success("Image saved successfully");
       });
     }
   };
 
-  const handleDownloadAsPdf = () => {
-    const pdf = new jsPDF("p", "pt", "a4");
-
-    // Convert HTML to PDF
-    pdf.html(receiptRef.current, {
-      callback: (doc) => {
-        doc.save("receipt.pdf");
-      },
-      x: 10,
-      y: 10,
-    });
-  };
+  const handleDownloadAsPdf = useReactToPrint({
+    contentRef,
+    onAfterPrint: () => {
+      setLoading(false);
+      toast.success("Download completed");
+    },
+    onBeforeGetContent: () => {
+      setLoading(true);
+    },
+  });
 
   return (
     <Dialog
@@ -82,7 +85,7 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
       />
 
       {/* This is the reciept */}
-      <DialogContent ref={receiptRef}>
+      <DialogContent ref={contentRef}>
         <Paper
           sx={{
             marginTop: 1,

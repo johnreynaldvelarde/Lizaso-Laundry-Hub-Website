@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import { useReactToPrint } from "react-to-print";
 import {
   Grid,
   TextField,
@@ -15,7 +16,10 @@ import {
   List,
   ListItem,
   ListItemText,
+  Card,
+  CardActionArea,
 } from "@mui/material";
+import { AccountBalance, AccountBalanceWallet } from "@mui/icons-material";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 import { COLORS } from "../../../../constants/color";
@@ -23,14 +27,21 @@ import useFetchData from "../../../../hooks/common/useFetchData";
 import { getCalculatedTransaction } from "../../../../services/api/getApi";
 import logo from "../../../../assets/images/logo.png";
 import { transactionDate, transactionTime } from "./unit_helpers";
+import {
+  createNewTransactionOnline,
+  createNewTransactionWalkIn,
+} from "../../../../services/api/postApi";
+import toast from "react-hot-toast";
 
 const PopWalkInTransaction = ({ open, onClose, data }) => {
+  const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
-  const [customerNumber, setCustomerNumber] = useState("");
   const [serviceType, setServiceType] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState("Cash");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const contentRef = useRef(null);
 
   const { data: transactionData, fetchData: fetchCalculatedTransaction } =
     useFetchData();
@@ -45,43 +56,67 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
   useEffect(() => {
     if (open) {
       fetchCalculatedTransactionData();
+      setSelectedId(data.id);
       setCustomerName(data.customer_fullname);
       setServiceType(data.service_name);
       setPaymentMethod(data.payment_method);
     }
   }, [open, fetchCalculatedTransactionData]);
 
-  const handleSubmit = () => {
+  const handlePrint = useReactToPrint({
+    contentRef,
+    onAfterPrint: () => {
+      setLoading(false);
+      toast.success("Print completed!");
+    },
+    onBeforeGetContent: () => {
+      setLoading(true);
+    },
+  });
+
+  const handleSubmitTransactionWalkIn = async () => {
     setLoading(true);
-    setLoading(false);
+    const data = {
+      transaction_code: transactionData.transaction_id,
+      assignment_id: selectedId,
+      total_amount: transactionData.final_total,
+      payment_method: selectedPayment,
+    };
+
+    try {
+      const response = await createNewTransactionWalkIn.setTransactionWalkIn(
+        data
+      );
+
+      if (response.success) {
+        toast.success(response.message);
+        handlePrint();
+        onClose();
+      } else {
+        toast.error("Transaction failed");
+      }
+    } catch (error) {
+      toast.error(
+        `Error posting new transaction: ${
+          error.message || "Something went wrong"
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderReceiptItems = () => {
-    const { related_items } = transactionData?.data || {};
-    const itemIds = related_items?.item_ids || [];
-    const itemPrices = related_items?.item_prices || [];
-    const quantities = related_items?.quantities || [];
+  const paymentMethods = [
+    {
+      label: "Cash",
+      icon: <AccountBalanceWallet />,
+      id: "Cash",
+    },
+    { label: "GCash", icon: <AccountBalance />, id: "GCash" },
+  ];
 
-    return itemIds.map((itemId, index) => (
-      <ListItem key={itemId}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <ListItemText primary={`Item ${itemId}`} />
-          </Grid>
-          <Grid item xs={3}>
-            <ListItemText primary={`Qty: ${quantities[index]}`} />
-          </Grid>
-          <Grid item xs={2}>
-            <ListItemText primary={`$${itemPrices[index]}`} />
-          </Grid>
-          <Grid item xs={3}>
-            <ListItemText
-              primary={`$${related_items.related_item_totals[index]}`}
-            />
-          </Grid>
-        </Grid>
-      </ListItem>
-    ));
+  const handlePaymentSelect = (method) => {
+    setSelectedPayment(method);
   };
 
   return (
@@ -150,18 +185,73 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                   },
                 }}
               />
+
+              {/* Payment Method */}
+              <Box sx={{ mt: 4 }}>
+                <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                  Payment Method
+                </Typography>
+
+                <Grid container spacing={2} direction="column">
+                  {paymentMethods.map((method) => (
+                    <Grid item xs={12} key={method.id}>
+                      <Card
+                        sx={{
+                          border:
+                            selectedPayment === method.id
+                              ? "1px solid #5787C8"
+                              : "1px solid #ccc",
+                          borderRadius: "8px",
+                          backgroundColor:
+                            selectedPayment === method.id
+                              ? COLORS.secondary
+                              : COLORS.white,
+                          boxShadow: "none",
+                        }}
+                      >
+                        <CardActionArea
+                          onClick={() => handlePaymentSelect(method.id)}
+                          sx={{ textAlign: "center", padding: 2 }}
+                        >
+                          {React.cloneElement(method.icon, {
+                            style: {
+                              color:
+                                selectedPayment === method.id
+                                  ? COLORS.white
+                                  : COLORS.primary,
+                            },
+                          })}
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              mt: 1,
+                              color:
+                                selectedPayment === method.id
+                                  ? COLORS.white
+                                  : COLORS.primary,
+                            }}
+                          >
+                            {method.label}
+                          </Typography>
+                        </CardActionArea>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
             </Box>
           </Grid>
 
           {/* Right Column */}
           <Grid item xs={12} md={6}>
             <Paper
+              ref={contentRef}
               sx={{
                 padding: 2,
                 boxShadow: "none !important",
                 borderRadius: "10px",
                 borderStyle: "solid",
-                borderWidth: "2px",
+                borderWidth: "1px",
                 borderColor: COLORS.border,
               }}
             >
@@ -208,11 +298,11 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                   <Typography
                     sx={{
                       fontSize: 12,
-                      color: COLORS.textSecondary,
+                      color: COLORS.text,
                       fontWeight: 600,
                     }}
                   >
-                    Transaction ID:
+                    Transaction Code:
                     <span
                       style={{
                         color: COLORS.primary,
@@ -229,7 +319,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                   <Typography
                     sx={{
                       fontSize: 12,
-                      color: COLORS.textSecondary,
+                      color: COLORS.text,
                       fontWeight: 600,
                     }}
                   >
@@ -250,7 +340,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                   <Typography
                     sx={{
                       fontSize: 12,
-                      color: COLORS.textSecondary,
+                      color: COLORS.text,
                       fontWeight: 600,
                     }}
                   >
@@ -271,7 +361,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                   <Typography
                     sx={{
                       fontSize: 12,
-                      color: COLORS.textSecondary,
+                      color: COLORS.text,
                       fontWeight: 600,
                     }}
                   >
@@ -369,7 +459,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                           fontWeight: 500,
                         }}
                       >
-                        {transactionData.weight}
+                        {transactionData.weight}kg
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -381,6 +471,26 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                           fontWeight: 500,
                         }}
                       >{`₱${transactionData.base_total_amount}`}</Typography>
+
+                      {transactionData.discount_applied && (
+                        <Box
+                          sx={{
+                            borderRadius: "8px",
+                            textAlign: "center",
+                          }}
+                        >
+                          <Typography
+                            align="center"
+                            sx={{
+                              color: COLORS.secondary,
+                              fontWeight: 600,
+                              fontSize: 10,
+                            }}
+                          >
+                            {transactionData.discount_applied}
+                          </Typography>
+                        </Box>
+                      )}
                     </Grid>
                   </Grid>
                 </List>
@@ -449,7 +559,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
                                 fontWeight: 500,
                               }}
                             >
-                              Item {itemId}
+                              {transactionData.related_items.item_names[index]}
                             </Typography>
                             <Box
                               sx={{
@@ -542,7 +652,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
       <CustomPopFooterButton
         label={"Complete Transaction"}
         onClose={onClose}
-        onClick={handleSubmit}
+        onSubmit={handleSubmitTransactionWalkIn}
         loading={loading}
       />
     </Dialog>
@@ -550,223 +660,3 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
 };
 
 export default PopWalkInTransaction;
-
-// import React, { useCallback, useEffect, useState } from "react";
-// import Dialog from "@mui/material/Dialog";
-// import DialogContent from "@mui/material/DialogContent";
-// import {
-//   Grid,
-//   TextField,
-//   Typography,
-//   MenuItem,
-//   Select,
-//   FormControl,
-//   InputLabel,
-//   Divider,
-//   Box,
-//   Paper,
-//   List,
-//   ListItem,
-//   ListItemText,
-// } from "@mui/material";
-// import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
-// import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
-// import { COLORS } from "../../../../constants/color";
-// import useFetchData from "../../../../hooks/common/useFetchData";
-// import { getCalculatedTransaction } from "../../../../services/api/getApi";
-
-// const PopWalkInTransaction = ({ open, onClose, data }) => {
-//   const [customerName, setCustomerName] = useState("");
-//   const [customerNumber, setCustomerNumber] = useState("");
-//   const [serviceType, setServiceType] = useState("");
-//   const [paymentMethod, setPaymentMethod] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [errors, setErrors] = useState({});
-
-//   const { data: transactionData, fetchData: fetchCalculatedTransaction } =
-//     useFetchData();
-
-//   const fetchCalculatedTransactionData = useCallback(() => {
-//     fetchCalculatedTransaction(
-//       getCalculatedTransaction.getTransaction,
-//       data.id
-//     );
-//   }, [fetchCalculatedTransaction, data.id]);
-
-//   useEffect(() => {
-//     if (open && data.id) {
-//       fetchCalculatedTransactionData();
-//       setCustomerName(data.customer_fullname);
-//       setServiceType(data.service_name);
-//       setPaymentMethod(data.payment_method);
-//     }
-//   }, [open, data.id, fetchCalculatedTransactionData]);
-
-//   const handleSubmit = () => {
-//     setLoading(true);
-//     setLoading(false);
-//   };
-
-//   return (
-//     <Dialog
-//       open={open}
-//       onClose={onClose}
-//       maxWidth="md"
-//       fullWidth
-//       PaperProps={{
-//         style: {
-//           borderRadius: 16,
-//         },
-//       }}
-//     >
-//       <CustomPopHeaderTitle
-//         title={"Billing Information"}
-//         subtitle={"Provide the required information"}
-//         onClose={onClose}
-//       />
-
-//       <DialogContent>
-//         <Grid container spacing={2}>
-//           {/* Left Side: Input Information */}
-//           <Grid item xs={12} md={6}>
-//             <Box sx={{ mt: 5 }}>
-//               <TextField
-//                 fullWidth
-//                 margin="dense"
-//                 label="Customer Name"
-//                 type="text"
-//                 variant="outlined"
-//                 value={customerName}
-//                 InputProps={{
-//                   readOnly: true,
-//                 }}
-//                 sx={{
-//                   "& .MuiOutlinedInput-root": {
-//                     "&.Mui-focused fieldset": {
-//                       borderColor: COLORS.secondary,
-//                     },
-//                   },
-//                   "& .MuiInputLabel-root.Mui-focused": {
-//                     color: COLORS.secondary,
-//                   },
-//                 }}
-//               />
-//               <TextField
-//                 fullWidth
-//                 margin="dense"
-//                 label="Service Type"
-//                 type="text"
-//                 variant="outlined"
-//                 value={serviceType}
-//                 InputProps={{
-//                   readOnly: true,
-//                 }}
-//                 sx={{
-//                   mt: 3,
-//                   "& .MuiOutlinedInput-root": {
-//                     "&.Mui-focused fieldset": {
-//                       borderColor: COLORS.secondary,
-//                     },
-//                   },
-//                   "& .MuiInputLabel-root.Mui-focused": {
-//                     color: COLORS.secondary,
-//                   },
-//                 }}
-//               />
-//               {/* <TextField
-//                 fullWidth
-//                 margin="dense"
-//                 label="Payment Method"
-//                 type="text"
-//                 variant="outlined"
-//                 value={paymentMethod}
-//                 InputProps={{
-//                   readOnly: true,
-//                 }}
-//                 sx={{
-//                   mt: 3,
-//                   "& .MuiOutlinedInput-root": {
-//                     "&.Mui-focused fieldset": {
-//                       borderColor: COLORS.secondary,
-//                     },
-//                   },
-//                   "& .MuiInputLabel-root.Mui-focused": {
-//                     color: COLORS.secondary,
-//                   },
-//                 }}
-//               /> */}
-//             </Box>
-//           </Grid>
-
-//           {/* Right Side: Sample Receipt */}
-//           <Grid item xs={12} md={6}>
-//             <Paper
-//               sx={{
-//                 padding: 3,
-//                 boxShadow: "none !important",
-//                 borderRadius: "10px",
-//                 borderStyle: "solid",
-//                 borderWidth: "2px",
-//                 borderColor: COLORS.border,
-//               }}
-//             >
-//               <Typography variant="h6" gutterBottom>
-//                 Receipt
-//               </Typography>
-//               <Divider sx={{ mb: 2 }} />
-
-//               <Typography variant="subtitle2">
-//                 Customer: {"John Doe"}
-//               </Typography>
-//               <Typography variant="subtitle2">
-//                 Phone: {"(123) 456-7890"}
-//               </Typography>
-
-//               <List>
-//                 <ListItem>
-//                   <ListItemText
-//                     primary={"Service Type"}
-//                     secondary={`$${"0.00"}`}
-//                   />
-//                 </ListItem>
-
-//                 <ListItem>
-//                   <ListItemText primary="Subtotal" secondary={1} />
-//                 </ListItem>
-
-//                 <ListItem>
-//                   <ListItemText primary="Tax (12%)" secondary={`$${1}`} />
-//                 </ListItem>
-
-//                 <Divider sx={{ my: 1 }} />
-
-//                 <ListItem>
-//                   <ListItemText primary="Total" secondary={`$${1}`} />
-//                 </ListItem>
-//               </List>
-
-//               <Divider sx={{ my: 2 }} />
-
-//               <Typography variant="subtitle2">
-//                 Payment Method: {"Cash"}
-//               </Typography>
-
-//               <Typography variant="h6" align="center" sx={{ mt: 2 }}>
-//                 Thank you for your business!
-//               </Typography>
-//             </Paper>
-//           </Grid>
-//         </Grid>
-//       </DialogContent>
-
-//       <CustomPopFooterButton
-//         label={"Proceed"}
-//         onClose={onClose}
-//         onClick={handleSubmit}
-//         loading={loading}
-//       />
-//     </Dialog>
-//   );
-// };
-
-// export default PopWalkInTransaction;

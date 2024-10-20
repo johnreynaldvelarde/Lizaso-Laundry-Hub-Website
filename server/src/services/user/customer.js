@@ -22,6 +22,23 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   try {
     await connection.beginTransaction();
 
+    const countQuery = `
+      SELECT COUNT(*) AS request_count 
+      FROM Service_Request 
+      WHERE customer_id = ? 
+        AND customer_type = 'Online'
+        AND request_status != 'Canceled'`;
+
+    const [countResult] = await connection.execute(countQuery, [id]);
+    const requestCount = countResult[0].request_count;
+
+    if (requestCount >= 2) {
+      return res.status(200).json({
+        success: false,
+        message: "Max of 2 active requests allowed",
+      });
+    }
+
     const trackingCode = generateTrackingCode();
 
     const query = `
@@ -375,6 +392,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
       WHERE 
         sr.customer_id = ? 
         AND sr.request_status != 'Canceled'
+        AND sr.customer_type = 'Online'
       ORDER BY 
         sr.request_date DESC;
     `;

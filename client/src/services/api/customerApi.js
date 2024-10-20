@@ -1,11 +1,5 @@
 import { axiosPrivate } from "../../api/axios";
 
-// const handleError = (error) => {
-//   const message =
-//     error.response?.data?.message || "An unexpected error occurred.";
-//   return new Error(message);
-// };
-
 // #POST
 export const createCustomerServiceRequest = {
   setCustomerServiceRequest: async (customerId, data) => {
@@ -14,17 +8,8 @@ export const createCustomerServiceRequest = {
         `/customers/${customerId}/set-service-request`,
         data
       );
-      if (response.status === 201) {
-        return response.data;
-      } else {
-        throw new Error("Failed to create service request");
-      }
+      return response.data;
     } catch (error) {
-      console.error("Error creating customer service request:", error);
-
-      if (error.response) {
-        console.error("Server responded with:", error.response.data);
-      }
       throw error;
     }
   },
@@ -39,7 +24,6 @@ export const createMessageSenderCustomer = {
       );
       return response.data;
     } catch (error) {
-      console.error("Error customer service request:", error);
       throw error;
     }
   },
@@ -105,3 +89,26 @@ export const getCustomerMessageConvo = {
 };
 
 // #PUT
+
+// export const createCustomerServiceRequest = {
+//   setCustomerServiceRequest: async (customerId, data) => {
+//     try {
+//       const response = await axiosPrivate.post(
+//         `/customers/${customerId}/set-service-request`,
+//         data
+//       );
+//       if (response.status === 201) {
+//         return response.data;
+//       } else {
+//         throw new Error("Failed to create service request");
+//       }
+//     } catch (error) {
+//       console.error("Error creating customer service request:", error);
+
+//       if (error.response) {
+//         console.error("Server responded with:", error.response.data);
+//       }
+//       throw error;
+//     }
+//   },
+// };
