@@ -17,6 +17,8 @@ import { COLORS } from "../../../constants/color";
 import logo from "../../../assets/images/logo.png";
 import useFetchData from "../../../hooks/common/useFetchData";
 import { getCalculatedTransactionForCustomer } from "../../../services/api/customerApi";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
   const receiptRef = useRef(null);
@@ -36,9 +38,29 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
     }
   }, [open, fetchCalculatedTransactionData]);
 
-  const handleSaveAsImage = () => {};
+  const handleSaveAsImage = () => {
+    if (receiptRef.current) {
+      html2canvas(receiptRef.current).then((canvas) => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "receipt.png";
+        link.click();
+      });
+    }
+  };
 
-  const handleDownloadAsPdf = () => {};
+  const handleDownloadAsPdf = () => {
+    const pdf = new jsPDF("p", "pt", "a4");
+
+    // Convert HTML to PDF
+    pdf.html(receiptRef.current, {
+      callback: (doc) => {
+        doc.save("receipt.pdf");
+      },
+      x: 10,
+      y: 10,
+    });
+  };
 
   return (
     <Dialog
@@ -442,6 +464,7 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
           disableElevation
           variant="outlined"
           color="primary"
+          onClick={handleSaveAsImage}
           sx={{
             marginTop: 3,
             marginRight: 1,
@@ -462,6 +485,7 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
           disableElevation
           variant="contained"
           color="primary"
+          onClick={handleDownloadAsPdf}
           sx={{
             marginTop: 3,
             textTransform: "none",

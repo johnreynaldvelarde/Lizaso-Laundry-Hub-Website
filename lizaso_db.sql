@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 19, 2024 at 04:34 PM
+-- Generation Time: Oct 20, 2024 at 07:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,10 @@ CREATE TABLE `activity_log` (
 --
 
 INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action_description`, `timestamp`) VALUES
-(1, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-19 21:15:34');
+(1, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-19 21:15:34'),
+(2, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-19 22:35:13'),
+(3, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 05:34:25'),
+(4, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 07:31:47');
 
 -- --------------------------------------------------------
 
@@ -68,7 +71,8 @@ CREATE TABLE `addresses` (
 
 INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
 (1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-19 13:15:27'),
-(2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-19 14:32:04');
+(2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-19 14:32:04'),
+(3, 'Taliptip Bulakan, Bulacan', 'Taliptip Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.759256, 120.904878, '2024-10-19 23:30:32');
 
 -- --------------------------------------------------------
 
@@ -87,6 +91,14 @@ CREATE TABLE `conversations` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `conversations`
+--
+
+INSERT INTO `conversations` (`id`, `user_sender_id`, `customer_sender_id`, `user_receiver_id`, `customer_receiver_id`, `last_message`, `last_message_date`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, NULL, 2410192231000000, '1', '2024-10-20 01:51:23', '2024-10-19 21:44:51', '2024-10-20 01:51:23'),
+(2, 1, NULL, NULL, 2410200729000000, '2', '2024-10-19 23:31:11', '2024-10-19 23:31:06', '2024-10-19 23:31:11');
 
 -- --------------------------------------------------------
 
@@ -115,7 +127,8 @@ CREATE TABLE `customer` (
 --
 
 INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
-(2410192231000000, 1, 2, 'Rose', '', 'Oriana', 'rose16', '09264545098', 'roseoriana16@gmail.com', 1, 1, 0, '2024-10-19 22:31:21');
+(2410192231000000, 1, 2, 'Rose', '', 'Oriana', 'rose16', '09264545098', 'roseoriana16@gmail.com', 1, 1, 0, '2024-10-19 22:31:21'),
+(2410200729000000, 1, 3, 'Alexia', '', 'Midgar', 'alexia16', '09785656051', 'alexia16@gmail.com', 1, 1, 0, '2024-10-20 07:29:52');
 
 -- --------------------------------------------------------
 
@@ -143,7 +156,8 @@ CREATE TABLE `customer_security` (
 --
 
 INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(12, 2410192231000000, '$2b$12$BdwzDItUXwZUl5NFOMQDNesFJtPAD3bUmBdjhH/peiBWwByIguGlW', '$2b$12$06v.JgBdbJ.ddslg7CIxEu', 0, '', 0, 0, NULL, NULL, NULL, NULL);
+(12, 2410192231000000, '$2b$12$BdwzDItUXwZUl5NFOMQDNesFJtPAD3bUmBdjhH/peiBWwByIguGlW', '$2b$12$06v.JgBdbJ.ddslg7CIxEu', 0, '', 0, 0, NULL, NULL, NULL, NULL),
+(13, 2410200729000000, '$2b$12$ZHeV6VILia3/hFpJlpNVV.1DuX6nD./WWabrPc5EIBkZgPoEmiUHC', '$2b$12$DEkEDZHAyfvWEFJBsdEwN.', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -228,6 +242,20 @@ CREATE TABLE `laundry_assignment` (
   `isCompleted` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `laundry_assignment`
+--
+
+INSERT INTO `laundry_assignment` (`id`, `service_request_id`, `unit_id`, `assigned_by`, `weight`, `assigned_at`, `completed_at`, `isAssignmentStatus`, `isCompleted`) VALUES
+(1, 1, 1, 1, '2', '2024-10-20 05:49:13', NULL, 1, 0),
+(2, 2, 1, 1, '10', '2024-10-20 07:54:23', NULL, 1, 0),
+(3, 3, 1, 1, '5', '2024-10-20 07:57:56', NULL, 1, 0),
+(4, 4, 1, 1, '1', '2024-10-20 08:03:07', NULL, 1, 0),
+(5, 7, 1, 1, '5', '2024-10-20 09:51:50', NULL, 1, 0),
+(6, 8, 2, 1, '20', '2024-10-20 10:25:38', NULL, 1, 0),
+(7, 10, 1, 1, '5', '2024-10-20 12:10:51', NULL, 0, 0),
+(8, 12, 2, 1, '1', '2024-10-20 12:31:58', NULL, 0, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -248,8 +276,8 @@ CREATE TABLE `laundry_unit` (
 --
 
 INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(1, 1, 'Unit 1', '2024-10-19 21:17:58', 0, 0),
-(2, 1, 'Unit 2', '2024-10-19 21:18:01', 0, 0);
+(1, 1, 'Unit 1', '2024-10-19 21:17:58', 1, 0),
+(2, 1, 'Unit 2', '2024-10-19 21:18:01', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -268,6 +296,17 @@ CREATE TABLE `messages` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `isRead` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`id`, `conversation_id`, `sender_id`, `receiver_id`, `sender_type`, `receiver_type`, `message`, `created_at`, `isRead`) VALUES
+(1, 1, 1, 2410192231000000, 'User', 'Customer', 'Hi po saan po bahay nila', '2024-10-19 21:44:51', 1),
+(2, 1, 2410192231000000, 1, 'Customer', 'User', 'Dito sa my bandang kaitaasan', '2024-10-19 21:46:29', 1),
+(3, 2, 1, 2410200729000000, 'User', 'Customer', '1', '2024-10-19 23:31:06', 1),
+(4, 2, 2410200729000000, 1, 'Customer', 'User', '2', '2024-10-19 23:31:11', 1),
+(5, 1, 1, 2410192231000000, 'User', 'Customer', '1', '2024-10-20 01:51:23', 1);
 
 -- --------------------------------------------------------
 
@@ -342,6 +381,132 @@ CREATE TABLE `service_progress` (
   `false_description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `service_progress`
+--
+
+INSERT INTO `service_progress` (`id`, `service_request_id`, `stage`, `description`, `status_date`, `completed`, `false_description`) VALUES
+(1, 1, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 05:39:46', 1, 'Pickup request received; waiting for staff assignment.'),
+(2, 1, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 05:44:31', 1, 'Pickup has not yet started.'),
+(3, 1, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 05:46:41', 1, 'Pickup has not been completed.'),
+(4, 1, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 05:47:37', 1, 'The clothes have not yet arrived at the store.'),
+(5, 1, 'In Queue', 'Waiting for processing.', '2024-10-20 05:47:37', 1, 'Not yet in queue for processing.'),
+(6, 1, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 05:49:13', 1, 'Laundry has not started processing yet.'),
+(7, 1, 'Laundry Completed', 'Washing/drying finished.', '2024-10-20 07:50:18', 1, 'Laundry processing has not been completed.'),
+(8, 1, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-20 07:50:18', 1, 'Laundry is not yet ready for delivery.'),
+(9, 1, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(10, 1, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(11, 2, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 07:30:46', 1, 'Pickup request received; waiting for staff assignment.'),
+(12, 2, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 07:30:52', 1, 'Pickup has not yet started.'),
+(13, 2, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 07:31:19', 1, 'Pickup has not been completed.'),
+(14, 2, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 07:54:17', 1, 'The clothes have not yet arrived at the store.'),
+(15, 2, 'In Queue', 'Waiting for processing.', '2024-10-20 07:54:17', 1, 'Not yet in queue for processing.'),
+(16, 2, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 07:54:23', 1, 'Laundry has not started processing yet.'),
+(17, 2, 'Laundry Completed', 'Washing/drying finished.', '2024-10-20 07:54:32', 1, 'Laundry processing has not been completed.'),
+(18, 2, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-20 07:54:32', 1, 'Laundry is not yet ready for delivery.'),
+(19, 2, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(20, 2, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(21, 3, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 07:57:26', 1, 'Pickup request received; waiting for staff assignment.'),
+(22, 3, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 07:57:30', 1, 'Pickup has not yet started.'),
+(23, 3, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 07:57:34', 1, 'Pickup has not been completed.'),
+(24, 3, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 07:57:43', 1, 'The clothes have not yet arrived at the store.'),
+(25, 3, 'In Queue', 'Waiting for processing.', '2024-10-20 07:57:43', 1, 'Not yet in queue for processing.'),
+(26, 3, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 07:57:56', 1, 'Laundry has not started processing yet.'),
+(27, 3, 'Laundry Completed', 'Washing/drying finished.', '2024-10-20 07:58:05', 1, 'Laundry processing has not been completed.'),
+(28, 3, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-20 07:58:05', 1, 'Laundry is not yet ready for delivery.'),
+(29, 3, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(30, 3, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(31, 4, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 08:02:47', 1, 'Pickup request received; waiting for staff assignment.'),
+(32, 4, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 08:02:52', 1, 'Pickup has not yet started.'),
+(33, 4, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 08:02:55', 1, 'Pickup has not been completed.'),
+(34, 4, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 08:03:01', 1, 'The clothes have not yet arrived at the store.'),
+(35, 4, 'In Queue', 'Waiting for processing.', '2024-10-20 08:03:01', 1, 'Not yet in queue for processing.'),
+(36, 4, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 08:03:07', 1, 'Laundry has not started processing yet.'),
+(37, 4, 'Laundry Completed', 'Washing/drying finished.', '2024-10-20 08:03:17', 1, 'Laundry processing has not been completed.'),
+(38, 4, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-20 08:03:17', 1, 'Laundry is not yet ready for delivery.'),
+(39, 4, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(40, 4, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(41, 5, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 09:20:19', 1, 'Pickup request received; waiting for staff assignment.'),
+(42, 5, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
+(43, 5, 'Completed Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
+(44, 5, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(45, 5, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(46, 5, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(47, 5, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(48, 5, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(49, 5, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(50, 5, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(51, 6, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 09:50:33', 1, 'Pickup request received; waiting for staff assignment.'),
+(52, 6, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
+(53, 6, 'Completed Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
+(54, 6, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(55, 6, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(56, 6, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(57, 6, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(58, 6, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(59, 6, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(60, 6, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(61, 7, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 09:51:03', 1, 'Pickup request received; waiting for staff assignment.'),
+(62, 7, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 09:51:11', 1, 'Pickup has not yet started.'),
+(63, 7, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 09:51:32', 1, 'Pickup has not been completed.'),
+(64, 7, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 09:51:43', 1, 'The clothes have not yet arrived at the store.'),
+(65, 7, 'In Queue', 'Waiting for processing.', '2024-10-20 09:51:43', 1, 'Not yet in queue for processing.'),
+(66, 7, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 09:51:50', 1, 'Laundry has not started processing yet.'),
+(67, 7, 'Laundry Completed', 'Washing/drying finished.', '2024-10-20 10:58:45', 1, 'Laundry processing has not been completed.'),
+(68, 7, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-20 10:58:45', 1, 'Laundry is not yet ready for delivery.'),
+(69, 7, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(70, 7, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(71, 8, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 10:24:41', 1, 'Pickup request received; waiting for staff assignment.'),
+(72, 8, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 10:24:46', 1, 'Pickup has not yet started.'),
+(73, 8, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 10:25:21', 1, 'Pickup has not been completed.'),
+(74, 8, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 10:25:26', 1, 'The clothes have not yet arrived at the store.'),
+(75, 8, 'In Queue', 'Waiting for processing.', '2024-10-20 10:25:26', 1, 'Not yet in queue for processing.'),
+(76, 8, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 10:25:38', 1, 'Laundry has not started processing yet.'),
+(77, 8, 'Laundry Completed', 'Washing/drying finished.', '2024-10-20 10:59:22', 1, 'Laundry processing has not been completed.'),
+(78, 8, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-20 10:59:22', 1, 'Laundry is not yet ready for delivery.'),
+(79, 8, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(80, 8, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(81, 9, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 11:10:03', 1, 'Pickup request received; waiting for staff assignment.'),
+(82, 9, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 11:27:18', 1, 'Pickup has not yet started.'),
+(83, 9, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 11:27:26', 1, 'Pickup has not been completed.'),
+(84, 9, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 11:27:30', 1, 'The clothes have not yet arrived at the store.'),
+(85, 9, 'In Queue', 'Waiting for processing.', '2024-10-20 11:27:30', 1, 'Not yet in queue for processing.'),
+(86, 9, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(87, 9, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(88, 9, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(89, 9, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(90, 9, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(91, 10, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 12:08:49', 1, 'Pickup request received; waiting for staff assignment.'),
+(92, 10, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 12:08:55', 1, 'Pickup has not yet started.'),
+(93, 10, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 12:08:58', 1, 'Pickup has not been completed.'),
+(94, 10, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 12:10:43', 1, 'The clothes have not yet arrived at the store.'),
+(95, 10, 'In Queue', 'Waiting for processing.', '2024-10-20 12:10:43', 1, 'Not yet in queue for processing.'),
+(96, 10, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 12:10:51', 1, 'Laundry has not started processing yet.'),
+(97, 10, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(98, 10, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(99, 10, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(100, 10, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(101, 11, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 12:09:38', 1, 'Pickup request received; waiting for staff assignment.'),
+(102, 11, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 12:09:47', 1, 'Pickup has not yet started.'),
+(103, 11, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 12:10:06', 1, 'Pickup has not been completed.'),
+(104, 11, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(105, 11, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(106, 11, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(107, 11, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(108, 11, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(109, 11, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(110, 11, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(111, 12, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 12:31:22', 1, 'Pickup request received; waiting for staff assignment.'),
+(112, 12, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 12:31:37', 1, 'Pickup has not yet started.'),
+(113, 12, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 12:31:41', 1, 'Pickup has not been completed.'),
+(114, 12, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 12:31:55', 1, 'The clothes have not yet arrived at the store.'),
+(115, 12, 'In Queue', 'Waiting for processing.', '2024-10-20 12:31:55', 1, 'Not yet in queue for processing.'),
+(116, 12, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 12:31:58', 1, 'Laundry has not started processing yet.'),
+(117, 12, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(118, 12, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(119, 12, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(120, 12, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
+
 -- --------------------------------------------------------
 
 --
@@ -388,6 +553,24 @@ CREATE TABLE `service_request` (
   `payment_method` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `service_request`
+--
+
+INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `tracking_code`, `customer_fullname`, `customer_type`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`, `isPickup`, `isDelivery`, `payment_method`) VALUES
+(1, 1, 1, 2410192231000000, 1, '#EBC0A54984CE48D89B65', 'Rose Oriana', 'Online', '', '2024-10-19 21:39:46', '2024-10-19 21:46:41', NULL, 'Canceled', 'SR-1-#EBC0A54984CE48D89B65', 1, 1, 0, 'Cash on Delivery'),
+(2, 1, 1, 2410200729000000, 1, '#67C3C2CBB16F43A99E87', 'Alexia Midgar', 'Online', '', '2024-10-19 23:30:46', '2024-10-19 23:31:19', NULL, 'Canceled', 'SR-2-#67C3C2CBB16F43A99E87', 1, 1, 0, 'Cash on Delivery'),
+(3, 1, 1, 2410192231000000, 1, '#AF504EA954574231A90C', 'Rose Oriana', 'Online', '', '2024-10-19 23:57:26', '2024-10-19 23:57:34', NULL, 'Canceled', 'SR-3-#AF504EA954574231A90C', 1, 1, 0, 'Cash on Delivery'),
+(4, 1, 1, 2410192231000000, 1, '#71EB7D17AE794B66A5CE', 'Rose Oriana', 'Online', '', '2024-10-20 00:02:47', '2024-10-20 00:02:55', NULL, 'Canceled', 'SR-4-#71EB7D17AE794B66A5CE', 1, 1, 0, 'Cash on Delivery'),
+(5, 1, 1, 2410192231000000, 1, '#BBF02EA36F064A7E81F3', 'Rose Oriana', 'Online', '', '2024-10-20 01:20:19', NULL, NULL, 'Canceled', 'SR-5-#BBF02EA36F064A7E81F3', 1, 0, 0, 'Cash on Delivery'),
+(6, 1, 1, 2410192231000000, 1, '#9906B385C40B49FEBD97', 'Rose Oriana', 'Online', '', '2024-10-20 01:50:33', NULL, NULL, 'Canceled', 'SR-6-#9906B385C40B49FEBD97', 1, 0, 0, 'Cash on Delivery'),
+(7, 1, 1, 2410192231000000, 1, '#02D4212D16D2425CAEB2', 'Rose Oriana', 'Online', '', '2024-10-20 01:51:03', '2024-10-20 01:51:32', NULL, 'Canceled', 'SR-7-#02D4212D16D2425CAEB2', 1, 1, 0, 'Cash on Delivery'),
+(8, 1, 1, 2410192231000000, 1, '#4F3EACC43940413590CC', 'Rose Oriana', 'Online', '', '2024-10-20 02:24:41', '2024-10-20 02:25:21', NULL, 'Canceled', 'SR-8-#4F3EACC43940413590CC', 1, 1, 0, 'Cash on Delivery'),
+(9, 1, 1, 2410192231000000, 1, '#DA252EF372774D14AAF1', 'Rose Oriana', 'Online', '', '2024-10-20 03:10:03', '2024-10-20 03:27:26', NULL, 'Canceled', 'SR-9-#DA252EF372774D14AAF1', 1, 1, 0, 'Cash on Delivery'),
+(10, 1, 1, 2410192231000000, 4, '#37D69398F43F400683A5', 'Rose Oriana', 'Online', '', '2024-10-20 04:08:49', '2024-10-20 04:08:58', NULL, 'In Laundry', 'SR-10-#37D69398F43F400683A5', 1, 1, 0, 'Cash on Delivery'),
+(11, 1, 1, 2410200729000000, 1, '#7B0FBFC648EF4442A9EC', 'Alexia Midgar', 'Online', '', '2024-10-20 04:09:38', '2024-10-20 04:10:06', NULL, 'Completed Pickup', 'SR-11-#7B0FBFC648EF4442A9EC', 1, 1, 0, 'Cash on Delivery'),
+(12, 1, 1, 2410192231000000, 1, '#EA89DC35E7B9490EA133', 'Rose Oriana', 'Online', '', '2024-10-20 04:31:22', '2024-10-20 04:31:41', NULL, 'In Laundry', 'SR-12-#EA89DC35E7B9490EA133', 1, 1, 0, 'Cash on Delivery');
+
 -- --------------------------------------------------------
 
 --
@@ -411,7 +594,8 @@ CREATE TABLE `service_type` (
 INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `description`, `default_price`, `date_created`, `isArchive`) VALUES
 (1, 1, 'Wash', NULL, 65.00, '2024-10-19 21:15:27', 0),
 (2, 1, 'Dry', NULL, 55.00, '2024-10-19 21:15:27', 0),
-(3, 1, 'Fold', NULL, 30.00, '2024-10-19 21:15:27', 0);
+(3, 1, 'Fold', NULL, 30.00, '2024-10-19 21:15:27', 0),
+(4, 1, 'Wash/Dry', 'Basic wash and dry', 120.00, '2024-10-20 12:08:27', 0);
 
 -- --------------------------------------------------------
 
@@ -447,14 +631,27 @@ INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_conta
 --
 
 CREATE TABLE `transactions` (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(255) NOT NULL,
   `assignment_id` bigint(20) NOT NULL,
+  `transaction_code` varchar(255) NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
   `payment_method` varchar(100) NOT NULL,
   `status` varchar(100) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`id`, `assignment_id`, `transaction_code`, `total_amount`, `payment_method`, `status`, `created_at`, `updated_at`) VALUES
+(8, 1, 'LLH-20241019-0004', 130.00, 'Cash on Delivery', 'Pending', '2024-10-20 07:50:18', '2024-10-20 07:50:18'),
+(9, 2, 'LLH-20241019-0006', 650.00, 'Cash on Delivery', 'Pending', '2024-10-20 07:54:32', '2024-10-20 07:54:32'),
+(10, 3, 'LLH-20241019-0008', 325.00, 'Cash on Delivery', 'Pending', '2024-10-20 07:58:05', '2024-10-20 07:58:05'),
+(11, 4, 'LLH-20241020-0010', 65.00, 'Cash on Delivery', 'Pending', '2024-10-20 08:03:17', '2024-10-20 08:03:17'),
+(12, 5, 'LLH-20241020-0004', 325.00, 'Cash on Delivery', 'Pending', '2024-10-20 10:58:45', '2024-10-20 10:58:45'),
+(13, 6, 'LLH-20241020-0006', 1300.00, 'Cash on Delivery', 'Pending', '2024-10-20 10:59:22', '2024-10-20 10:59:22');
 
 -- --------------------------------------------------------
 
@@ -700,19 +897,19 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `conversations`
 --
 ALTER TABLE `conversations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customer`
@@ -724,7 +921,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT for table `customer_security`
 --
 ALTER TABLE `customer_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `feedback_review`
@@ -754,7 +951,7 @@ ALTER TABLE `item_category`
 -- AUTO_INCREMENT for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
@@ -766,7 +963,7 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -790,7 +987,7 @@ ALTER TABLE `roles_permissions`
 -- AUTO_INCREMENT for table `service_progress`
 --
 ALTER TABLE `service_progress`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
 
 --
 -- AUTO_INCREMENT for table `service_promo`
@@ -802,13 +999,13 @@ ALTER TABLE `service_promo`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `service_type`
 --
 ALTER TABLE `service_type`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `stores`
@@ -820,7 +1017,7 @@ ALTER TABLE `stores`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user_account`

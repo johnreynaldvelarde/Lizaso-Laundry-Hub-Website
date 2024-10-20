@@ -77,7 +77,7 @@ npm react-hot-toast
 npm install --save react-toastify
 npm install react-hot-toast
 npm install framer-motion
-
+npm install --save react-to-print
 
 
 
