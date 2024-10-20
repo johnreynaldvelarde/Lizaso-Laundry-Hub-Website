@@ -6,8 +6,6 @@ import norequest from "../../assets/images/nodata.jpg";
 import { useNavigate } from "react-router-dom";
 import styles from "../../styles/style";
 import {
-  ArrowFatLineLeft,
-  ArrowFatLineRight,
   ChartPie,
   CheckCircle,
   LinkBreak,
@@ -90,12 +88,12 @@ const TrackOrders = () => {
             </div>
             <p
               className="text-lg font-semibold mb-4 mt-5"
-              style={{ color: styles.white }}
+              style={{ color: styles.primary }}
             >
               You have not made any service requests yet
             </p>
             <button
-              className={`bg-[${COLORS.accent}] text-white px-4 py-2 rounded mt-2 hover:bg-[#e76a4b]`}
+              className="bg-[#5787C8] text-white px-4 py-2 rounded mt-2 hover:bg-[#3D6F9B]"
               onClick={() => navigate("/customer-page/laundry-services")}
             >
               Go to Laundry Services
@@ -106,13 +104,9 @@ const TrackOrders = () => {
             {orders.length > 1 && (
               <button
                 onClick={prevOrder}
-                className="absolute left-0 z-10 w-12 h-12 flex items-center justify-center bg-white rounded-full border border-gray-300 shadow-md focus:outline-none hover:bg-gray-300"
+                className="absolute left-0 z-10 p-2 bg-white rounded-full focus:outline-none hover:bg-gray-300"
               >
-                <ArrowFatLineLeft
-                  size={30}
-                  color={COLORS.secondary}
-                  weight="duotone"
-                />
+                &lt;
               </button>
             )}
             {/* Order Box */}
@@ -401,13 +395,9 @@ const TrackOrders = () => {
             {orders.length > 1 && (
               <button
                 onClick={nextOrder}
-                className="absolute right-0 z-10 w-12 h-12 flex items-center justify-center bg-white rounded-full border border-gray-300 shadow-md focus:outline-none hover:bg-gray-300"
+                className="absolute right-0 z-10 p-2 bg-gray-200 rounded-full focus:outline-none hover:bg-gray-300"
               >
-                <ArrowFatLineRight
-                  size={30}
-                  color={COLORS.secondary}
-                  weight="duotone"
-                />
+                &gt;
               </button>
             )}
           </div>

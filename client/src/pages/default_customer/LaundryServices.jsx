@@ -135,7 +135,7 @@ const LaundryServices = () => {
         className="py-20 min-h-[500px] flex flex-col items-center"
         id="features"
         style={{
-          background: `linear-gradient(to right, rgba(68, 127, 140, 0.8), rgba(87, 135, 200, 0.8)), url()`,
+          background: `linear-gradient(to right, rgba(68, 127, 140, 0.8), rgba(87, 135, 200, 0.8)), url(${background_1})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

@@ -355,7 +355,9 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         st.service_name,
         st.default_price,
         COALESCE(lu.unit_name, 'Waiting...') AS unit_name,
-        COALESCE(la.id, 'Waiting for total amount...') AS assignment_id 
+        COALESCE(la.id, 'Waiting for total amount...') AS assignment_id,
+        COALESCE(t.status, 'Waiting...') AS transaction_status,
+        COALESCE(sr.payment_method, 'Waiting...') AS payment_method
       FROM 
         Service_Request sr
       LEFT JOIN 
@@ -368,6 +370,8 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         Laundry_Assignment la ON sr.id = la.service_request_id
       LEFT JOIN 
         Laundry_Unit lu ON la.unit_id = lu.id
+      LEFT JOIN 
+        Transactions t ON la.id = t.assignment_id
       WHERE 
         sr.customer_id = ? 
         AND sr.request_status != 'Canceled'
@@ -408,9 +412,11 @@ export const handleGetCustomerTrackOrderAndProgress = async (
             isDelivery: row.isDelivery,
             unit_name: row.unit_name,
             assignment_id: row.assignment_id,
+            transaction_status: row.transaction_status,
+            payment_method: row.payment_method,
           },
           progress: [],
-          total_amount: null, // Initialize total_amount to null
+          total_amount: null,
         };
         acc.push(serviceRequest);
       }

@@ -69,7 +69,7 @@ export const COLORS = {
   grayDark: "#343a40",
 
   // Accent Colors
-  accent: "#ff7f50", // Optional accent color for special components
+  accent: "#ff7f50",
 
   // Background and Border Colors
   background: "#f4f4f4",
