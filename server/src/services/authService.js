@@ -367,7 +367,7 @@ export const getUserDetails = async (req, res, db) => {
     return res.status(401).json({ success: false, message: "Invalid token" });
   }
 
-  console.log("Decoded Token1:", decoded);
+  // console.log("Decoded Token1:", decoded);
 
   const { userId, username } = decoded;
 

@@ -15,7 +15,7 @@ import { COLORS } from "../../constants/color";
 import PopMessageStaff from "./components/PopMessageStaff";
 import usePopup from "../../hooks/common/usePopup";
 import PopAmountBreakDown from "./components/PopAmountBreakDown";
-import PopPay from "./components/PopPay";
+import PopPay from "./components/PopReceipt";
 import useFetchData from "../../hooks/common/useFetchData";
 import { getCustomerTrackOrderAndProgress } from "../../services/api/customerApi";
 import { QRCodeCanvas } from "qrcode.react";
@@ -104,13 +104,13 @@ const TrackOrders = () => {
             <motion.div
               key={currentIndex}
               className="bg-white p-6 sm:p-10 lg:p-10 rounded-lg shadow-md border border-gray-300 mb-6 flex flex-col md:flex-row"
-              initial={{ x: 100 }} // Initial position to the right
-              animate={{ x: 0 }} // Animate to the original position
-              exit={{ x: -100 }} // Exit to the left
-              transition={{ duration: 0.5 }} // Duration of animation
+              initial={{ x: 100 }}
+              animate={{ x: 0 }}
+              exit={{ x: -100 }}
+              transition={{ duration: 0.5 }}
             >
               {/* Order Info on the left */}
-              <div className="flex-grow mb-20 md:mb-0">
+              <div className="flex-grow mb-20 md:mb-0 flex flex-col justify-between">
                 <div className="mb-10">
                   <h2
                     className="text-base font-normal"
@@ -254,39 +254,39 @@ const TrackOrders = () => {
                     Wait for the staff to scan this QR code to update the
                     progress of your laundry order.
                   </p>
-
-                  <div className=" mt-12 w-full flex flex-col md:flex-row justify-between items-center">
-                    <p
-                      className="text-2xl font-bold text-center md:text-left"
-                      style={{ color: styles.text3 }}
-                    >
-                      Total Amount:
+                </div>
+                {/* Always positioned at the bottom */}
+                <div className="mt-12 w-full flex flex-col md:flex-row justify-between items-center">
+                  <p
+                    className="text-2xl font-bold text-center md:text-left"
+                    style={{ color: COLORS.text }}
+                  >
+                    Total Amount:
+                    {orders[currentIndex].service_request.assignment_id ===
+                    "Waiting for total amount..." ? (
                       <span
-                        className="ml-2"
-                        style={{ color: styles.secondary }}
+                        style={{
+                          color: COLORS.primary,
+                          fontWeight: 400,
+                          marginLeft: 10,
+                          fontSize: 20,
+                        }}
                       >
-                        ₱{1000}
+                        {orders[currentIndex].service_request.assignment_id}
                       </span>
-                    </p>
-                    <div className="flex flex-col md:flex-row items-center mt-4 md:mt-0">
-                      <button
-                        className="ml-4 bg-[#5787C8] text-white px-6 py-2 rounded hover:bg-[#3E5B8C] w-full md:w-auto mb-2 md:mb-0"
-                        onClick={() => openPopup("showPay")}
-                      >
-                        Pay Now
-                      </button>
-                      <button
-                        className="ml-4 bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 flex items-center w-full md:w-auto"
-                        onClick={() => openPopup("showBreakDown")}
-                      >
-                        <LinkBreak
-                          size={24}
-                          color={COLORS.primary}
-                          className="mr-2"
-                        />
-                        <span style={{ color: styles.primary }}>Breakdown</span>
-                      </button>
-                    </div>
+                    ) : (
+                      <span style={{ color: COLORS.secondary, marginLeft: 10 }}>
+                        ₱{orders[currentIndex].total_amount}
+                      </span>
+                    )}
+                  </p>
+                  <div className="flex flex-col md:flex-row items-center mt-4 md:mt-0">
+                    <button
+                      className="ml-4 bg-[#5787C8] text-white px-6 py-2 rounded hover:bg-[#3E5B8C] w-full md:w-auto mb-2 md:mb-0"
+                      onClick={() => openPopup("showReceipt")}
+                    >
+                      View Receipt
+                    </button>
                   </div>
                 </div>
               </div>
@@ -377,10 +377,7 @@ const TrackOrders = () => {
           receiverId={popupData}
         />
       )}
-      {isOpen && popupType === "showBreakDown" && (
-        <PopAmountBreakDown open={isOpen} onClose={closePopup} />
-      )}
-      {isOpen && popupType === "showPay" && (
+      {isOpen && popupType === "showReceipt" && (
         <PopPay open={isOpen} onClose={closePopup} />
       )}
     </div>

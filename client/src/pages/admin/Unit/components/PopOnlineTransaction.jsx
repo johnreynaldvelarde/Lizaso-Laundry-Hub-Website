@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import {
@@ -25,8 +25,10 @@ import logo from "../../../../assets/images/logo.png";
 import { transactionDate, transactionTime } from "./unit_helpers";
 import { createNewTransactionOnline } from "../../../../services/api/postApi";
 import toast from "react-hot-toast";
+import { generatePDF } from "../../../../utils/method";
 
 const PopOnlineTransaction = ({ open, onClose, data }) => {
+  const rightColumnRef = useRef();
   const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [serviceType, setServiceType] = useState("");
@@ -71,6 +73,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
       if (response.success) {
         toast.success(response.message);
         onClose();
+        // generatePDF(rightColumnRef);
       } else {
         toast.error("Transaction failed");
       }
@@ -165,6 +168,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
                 borderWidth: "2px",
                 borderColor: COLORS.border,
               }}
+              ref={rightColumnRef}
             >
               <Box
                 display="flex"

@@ -75,6 +75,20 @@ export const getCustomerTrackOrderAndProgress = {
   },
 };
 
+// export const getCustomerInitialAmount = {
+//   getIntinialAmount: async (id) => {
+//     try {
+//       const response = await axiosPrivate.get(
+//         `/customers/${id}/get-initial-total-amount`
+//       );
+//       return response.data;
+//     } catch (error) {
+//       console.error("Error fetching:", error);
+//       throw error;
+//     }
+//   },
+// };
+
 //  <----- Get Customer Message ----->
 export const getCustomerMessageConvo = {
   getCustomerConvo: async (customerId) => {

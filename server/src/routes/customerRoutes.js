@@ -80,11 +80,21 @@ router.get(
     try {
       await handleGetCustomerTrackOrderAndProgress(req, res, connection);
     } catch (error) {
-      console.error("Error retrieving service types:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   })
 );
+
+// router.get(
+//   "/customers/:id/get-initial-total-amount",
+//   withDatabaseConnection(async (req, res, connection) => {
+//     try {
+//       await handleGetCalculatedForCustomerClient(req, res, connection);
+//     } catch (error) {
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   })
+// );
 
 // PUT
 router.put(
@@ -93,7 +103,6 @@ router.put(
     try {
       await handleUpdateCustomerBasicInformation(req, res, connection);
     } catch (error) {
-      console.error("Error updating customer information:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   })
