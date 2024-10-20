@@ -13,6 +13,7 @@
     "@mui/icons-material": "^5.16.4",
     "@mui/material": "^5.16.6",
     "@phosphor-icons/react": "^2.1.7",
+    "@react-pdf/renderer": "^4.0.0",
     "apexcharts": "^3.52.0",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",

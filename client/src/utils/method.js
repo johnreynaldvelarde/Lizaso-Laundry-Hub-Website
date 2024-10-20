@@ -45,3 +45,15 @@ export const generatePDF = async (ref) => {
     pdf.save("transaction_receipt.pdf"); // Save the PDF
   }
 };
+
+export const transactionDate = new Date().toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long", // Full month name (e.g., January)
+  day: "numeric",
+});
+
+export const transactionTime = new Date().toLocaleTimeString("en-US", {
+  hour: "numeric",
+  minute: "numeric",
+  hour12: true, // 12-hour format with AM/PM
+});

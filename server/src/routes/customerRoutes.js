@@ -1,6 +1,7 @@
 import express from "express";
 import { getPool } from "../db/dbConfig.js";
 import {
+  handleGetCalculatedTransactionForCustomer,
   handleGetCustomerConvo,
   handleGetCustomerTrackOrderAndProgress,
   handleGetServiceTypeAndPromotions,
@@ -85,16 +86,16 @@ router.get(
   })
 );
 
-// router.get(
-//   "/customers/:id/get-initial-total-amount",
-//   withDatabaseConnection(async (req, res, connection) => {
-//     try {
-//       await handleGetCalculatedForCustomerClient(req, res, connection);
-//     } catch (error) {
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   })
-// );
+router.get(
+  "/customers/:id/get-calculated-transaction",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetCalculatedTransactionForCustomer(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 // PUT
 router.put(

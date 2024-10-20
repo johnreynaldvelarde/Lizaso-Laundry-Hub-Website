@@ -8,20 +8,17 @@ import styles from "../../styles/style";
 import {
   ArrowFatLineLeft,
   ArrowFatLineRight,
-  ChartPie,
   CheckCircle,
-  LinkBreak,
   XCircle,
 } from "@phosphor-icons/react";
 import { COLORS } from "../../constants/color";
 import PopMessageStaff from "./components/PopMessageStaff";
 import usePopup from "../../hooks/common/usePopup";
-import PopAmountBreakDown from "./components/PopAmountBreakDown";
-import PopPay from "./components/PopReceipt";
 import useFetchData from "../../hooks/common/useFetchData";
 import { getCustomerTrackOrderAndProgress } from "../../services/api/customerApi";
 import { QRCodeCanvas } from "qrcode.react";
 import background_1 from "../../assets/images/background_2.jpg";
+import PopReceipt from "./components/PopReceipt";
 
 const TrackOrders = () => {
   const navigate = useNavigate();
@@ -323,8 +320,27 @@ const TrackOrders = () => {
                   </p>
                   <div className="flex flex-col md:flex-row items-center mt-4 md:mt-0">
                     <button
-                      className="ml-4 bg-[#5787C8] text-white px-6 py-2 rounded hover:bg-[#3E5B8C] w-full md:w-auto mb-2 md:mb-0"
-                      onClick={() => openPopup("showReceipt")}
+                      className={`ml-4 bg-[#5787C8] text-white px-6 py-2 rounded hover:bg-[#3E5B8C] w-full md:w-auto mb-2 md:mb-0 ${
+                        orders[currentIndex].service_request.assignment_id ===
+                        "Waiting for total amount..."
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        if (
+                          orders[currentIndex].service_request.assignment_id !==
+                          "Waiting for total amount..."
+                        ) {
+                          openPopup(
+                            "showReceipt",
+                            orders[currentIndex].service_request.assignment_id
+                          );
+                        }
+                      }}
+                      disabled={
+                        orders[currentIndex].service_request.assignment_id ===
+                        "Waiting for total amount..."
+                      }
                     >
                       View Receipt
                     </button>
@@ -423,7 +439,12 @@ const TrackOrders = () => {
         />
       )}
       {isOpen && popupType === "showReceipt" && (
-        <PopPay open={isOpen} onClose={closePopup} />
+        <PopReceipt
+          open={isOpen}
+          onClose={closePopup}
+          assignmentId={orders[currentIndex].service_request.assignment_id}
+          customerData={orders[currentIndex]}
+        />
       )}
     </div>
   );
