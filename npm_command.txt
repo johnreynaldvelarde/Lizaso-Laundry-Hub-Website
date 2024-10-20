@@ -93,6 +93,7 @@ npm install --save nprogress
 npm install qrcode
 npm install qrcode.react
 npm install jspdf
+npm install --save react-to-print
 
 
 

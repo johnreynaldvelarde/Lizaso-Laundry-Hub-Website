@@ -77,10 +77,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
               backgroundColor: "#fff",
             }}
           >
-            <span
-              className="text-xl font-bold"
-              style={{ color: COLORS.secondary }}
-            >
+            <span className="text-xl font-bold" style={{ color: COLORS.text }}>
               In Progress Laundry
             </span>
             <IconButton
@@ -90,10 +87,10 @@ const DrawerInLaundry = ({ open, onClose }) => {
               <CloseIcon />
             </IconButton>
           </Box>
-          <Divider />
+          {/* <Divider /> */}
 
           {/* Second Row */}
-          <Box
+          {/* <Box
             sx={{
               height: "150px",
               display: "flex",
@@ -102,11 +99,10 @@ const DrawerInLaundry = ({ open, onClose }) => {
               backgroundColor: "#f5f5f5",
             }}
           >
-            {" "}
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               In Progress Laundry
             </Typography>
-          </Box>
+          </Box> */}
           <Divider />
 
           {/* Third Row - Customer List */}
@@ -292,7 +288,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
           </Box>
 
           {/* Bottom Row - Footer */}
-          <Box
+          {/* <Box
             sx={{
               padding: 2,
               backgroundColor: "#f5f5f5",
@@ -303,7 +299,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
                 Additional Information or Footer Content
               </Typography>
             </Paper>
-          </Box>
+          </Box> */}
         </Box>
       </Drawer>
 

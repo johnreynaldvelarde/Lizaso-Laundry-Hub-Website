@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import { useReactToPrint } from "react-to-print";
 import {
   Grid,
   TextField,
@@ -25,10 +26,8 @@ import logo from "../../../../assets/images/logo.png";
 import { transactionDate, transactionTime } from "./unit_helpers";
 import { createNewTransactionOnline } from "../../../../services/api/postApi";
 import toast from "react-hot-toast";
-import { generatePDF } from "../../../../utils/method";
 
 const PopOnlineTransaction = ({ open, onClose, data }) => {
-  const rightColumnRef = useRef();
   const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [serviceType, setServiceType] = useState("");
@@ -56,6 +55,12 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
     }
   }, [open, fetchCalculatedTransactionData]);
 
+  const contentRef = useRef(null);
+
+  const handlePrint = useReactToPrint({
+    content: () => contentRef.current,
+  });
+
   const handleSubmitTransactionOnline = async () => {
     setLoading(true);
     const data = {
@@ -64,28 +69,28 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
       total_amount: transactionData.final_total,
       payment_method: paymentMethod,
     };
+    handlePrint();
+    // try {
+    //   const response = await createNewTransactionOnline.setTransactionOnline(
+    //     data
+    //   );
 
-    try {
-      const response = await createNewTransactionOnline.setTransactionOnline(
-        data
-      );
+    //   if (response.success) {
+    //     toast.success(response.message);
 
-      if (response.success) {
-        toast.success(response.message);
-        onClose();
-        // generatePDF(rightColumnRef);
-      } else {
-        toast.error("Transaction failed");
-      }
-    } catch (error) {
-      toast.error(
-        `Error posting new transaction: ${
-          error.message || "Something went wrong"
-        }`
-      );
-    } finally {
-      setLoading(false);
-    }
+    //     onClose();
+    //   } else {
+    //     toast.error("Transaction failed");
+    //   }
+    // } catch (error) {
+    //   toast.error(
+    //     `Error posting new transaction: ${
+    //       error.message || "Something went wrong"
+    //     }`
+    //   );
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
@@ -159,16 +164,16 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
 
           {/* Right Column */}
           <Grid item xs={12} md={6}>
-            <Paper
+            <Box
+              ref={contentRef}
               sx={{
                 padding: 2,
                 boxShadow: "none !important",
                 borderRadius: "10px",
                 borderStyle: "solid",
-                borderWidth: "2px",
+                borderWidth: "1px",
                 borderColor: COLORS.border,
               }}
-              ref={rightColumnRef}
             >
               <Box
                 display="flex"
@@ -559,7 +564,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
               >
                 Thank you for your business!
               </Typography>
-            </Paper>
+            </Box>
           </Grid>
         </Grid>
       </DialogContent>
@@ -567,7 +572,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
       <CustomPopFooterButton
         label={"Complete Transaction"}
         onClose={onClose}
-        onSubmit={handleSubmitTransactionOnline}
+        onSubmit={handlePrint}
         loading={loading}
       />
     </Dialog>
