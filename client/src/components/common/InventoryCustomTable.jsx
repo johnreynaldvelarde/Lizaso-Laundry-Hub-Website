@@ -8,7 +8,7 @@ import { COLORS } from "../../constants/color";
 import OutlinedIconButton from "../table/OutlinedIconButton";
 import { PencilLine, StackPlus, Trash } from "@phosphor-icons/react";
 
-const CustomTable = ({
+const InventoryCustomTable = ({
   data,
   fields,
   numberOfRows,
@@ -103,12 +103,15 @@ const CustomTable = ({
         },
       }}
       muiTableContainerProps={{
-        sx: { borderRadius: "15px" },
+        sx: { borderRadius: "0px" },
       }}
       muiTableHeadCellProps={{
         sx: {
+          color: COLORS.primary,
           fontSize: "14px",
-          fontWeight: "bold",
+          fontWeight: "700",
+          textTransform: "uppercase",
+          backgroundColor: COLORS.background,
         },
       }}
       muiTableHeadProps={{
@@ -133,4 +136,4 @@ const CustomTable = ({
   );
 };
 
-export default CustomTable;
+export default InventoryCustomTable;

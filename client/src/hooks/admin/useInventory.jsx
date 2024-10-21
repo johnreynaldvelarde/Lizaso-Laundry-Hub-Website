@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useAuth from "../../contexts/AuthContext";
-import { createItem, createItemCategory } from "../../services/api/postApi";
+import { createNewItem, createItemCategory } from "../../services/api/postApi";
 import {
   getCategoryItem,
   viewInventory,

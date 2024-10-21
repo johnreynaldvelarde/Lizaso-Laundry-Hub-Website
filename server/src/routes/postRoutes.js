@@ -8,8 +8,8 @@ import {
   handleTypeWalkInTransaction,
 } from "../services/admin/useUnits.js";
 import {
-  handleCreateItem,
   handleCreateItemCategory,
+  handleCreateNewItem,
 } from "../services/admin/useInventory.js";
 import { handleCustomerServiceRequest } from "../services/admin/useCustomer.js";
 import { getPool } from "../db/dbConfig.js";
@@ -97,9 +97,13 @@ router.post(
 
 // For Inventory Section
 router.post(
-  "/create-item",
+  "/inventory/create-new-item",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleCreateItem(req, res, connection);
+    try {
+      await handleCreateNewItem(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

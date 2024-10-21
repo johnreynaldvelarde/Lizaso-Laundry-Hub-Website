@@ -196,19 +196,22 @@ export const getCategoryItem = {
 
 export const viewInventory = {
   getViewInventoryList: async (storeId) => {
+    // try {
+    //   const response = await axiosPrivate.get(
+    //     `/usermanage/${userId}/admin-get-store`
+    //   );
+    //   return response.data;
+    // } catch (error) {
+    //   console.error("Error fetching:", error);
+    //   throw error;
+    // }
     try {
-      const response = await axiosPrivate.get("/view-inventory", {
+      const response = await axiosPrivate.get("inventory/view-inventory", {
         params: { store_id: storeId },
       });
-      const { success, data } = response.data;
-
-      if (success) {
-        return { success, data };
-      } else {
-        throw new Error("Failed to fetch inventory list.");
-      }
+      return response.data;
     } catch (error) {
-      throw handleError(error);
+      throw error;
     }
   },
 };

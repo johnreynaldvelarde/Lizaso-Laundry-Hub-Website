@@ -39,10 +39,6 @@ export const inventoryColumns = [
     show: false,
   },
   {
-    accessorKey: "item_code",
-    header: "Item Code",
-  },
-  {
     accessorKey: "item_name",
     header: "Name",
   },

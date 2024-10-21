@@ -13,17 +13,18 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import CheckIcon from "@mui/icons-material/Check";
+
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
-import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
+import {
+  createNewItem,
+  createNewRoleAndPermissions,
+} from "../../../../services/api/postApi";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
 const PopAddNewItem = ({ open, onClose, data }) => {
   const { userDetails } = useAuth();
-  const [itemCode, setItemCode] = useState("");
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -32,8 +33,21 @@ const PopAddNewItem = ({ open, onClose, data }) => {
 
   const validateFields = () => {
     const newErrors = {};
-    if (!rolename) {
-      newErrors.rolename = "Role name is required";
+    if (!itemName) {
+      newErrors.itemName = "Item name is required";
+    } else if (itemName.length < 3) {
+      newErrors.itemName = "Item name must be at least 3 characters long";
+    }
+
+    if (!itemPrice) {
+      newErrors.itemPrice = "Price is required";
+    } else if (isNaN(itemPrice)) {
+      newErrors.itemPrice = "Price must be a number";
+    } else if (parseFloat(itemPrice) < 0) {
+      newErrors.itemPrice = "Price cannot be negative";
+    }
+    if (!selectedCategory) {
+      newErrors.selectedCategory = "Category is required";
     }
 
     return newErrors;
@@ -42,8 +56,12 @@ const PopAddNewItem = ({ open, onClose, data }) => {
   const handleInputChange = (field) => (e) => {
     const value = e.target.value;
 
-    if (field === "rolename") {
-      setRolename(value);
+    if (field === "itemName") {
+      setItemName(value);
+    } else if (field === "itemPrice") {
+      setItemPrice(value);
+    } else if (field === "selectedCategory") {
+      setSelectedCategory(value);
     }
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -51,58 +69,39 @@ const PopAddNewItem = ({ open, onClose, data }) => {
     }));
   };
 
-  const handlePermissionToggle = (permission) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permission)
-        ? prev.filter((p) => p !== permission)
-        : [...prev, permission]
-    );
-  };
-
-  const handleCreateUser = async () => {
+  const handleCreateNewItem = async () => {
     const newErrors = validateFields();
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
-      const roleData = {
-        role_name: rolename,
-        permissionsStatus: {
-          Read: selectedPermissions.includes("Read"),
-          Write: selectedPermissions.includes("Write"),
-          Edit: selectedPermissions.includes("Edit"),
-          Delete: selectedPermissions.includes("Delete"),
-        },
+      const data = {
+        store_id: userDetails.storeId,
+        category_id: selectedCategory,
+        item_name: itemName,
+        price: itemPrice,
       };
 
       try {
-        const response = await createNewRoleAndPermissions.setRoleAndPermissons(
-          userDetails.userId,
-          roleData
-        );
+        const response = await createNewItem.setNewItem(data);
 
         if (response.success) {
           toast.success(response.message);
           onClose();
         } else {
-          toast.error(response.message);
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            itemName: response.message,
+          }));
         }
       } catch (error) {
-        toast.error(`Error with service request: ${error.message || error}`);
       } finally {
         setLoading(false);
       }
     } else {
       setLoading(false);
     }
-  };
-
-  const handleDialogClose = () => {
-    setRolename("");
-    setSelectedPermissions([]);
-    setErrors({});
-    onClose();
   };
 
   return (
@@ -123,29 +122,6 @@ const PopAddNewItem = ({ open, onClose, data }) => {
         onClose={onClose}
       />
       <DialogContent>
-        {/* Item Generated Code */}
-        <TextField
-          margin="dense"
-          label="Item Code"
-          type="text"
-          fullWidth
-          variant="outlined"
-          value={itemCode}
-          onChange={handleInputChange("rolename")}
-          error={Boolean(errors.itemCode)}
-          helperText={errors.itemCode}
-          sx={{
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: COLORS.secondary,
-              },
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: COLORS.secondary,
-            },
-          }}
-        />
         {/* Item Name */}
         <TextField
           margin="dense"
@@ -154,7 +130,7 @@ const PopAddNewItem = ({ open, onClose, data }) => {
           fullWidth
           variant="outlined"
           value={itemName}
-          onChange={handleInputChange("rolename")}
+          onChange={handleInputChange("itemName")}
           error={Boolean(errors.itemName)}
           helperText={errors.itemName}
           sx={{
@@ -173,24 +149,13 @@ const PopAddNewItem = ({ open, onClose, data }) => {
         <TextField
           margin="dense"
           label="Price"
-          type="text"
+          type="number"
           fullWidth
           variant="outlined"
           value={itemPrice}
-          onChange={handleInputChange("rolename")}
+          onChange={handleInputChange("itemPrice")}
           error={Boolean(errors.itemPrice)}
           helperText={errors.itemPrice}
-          sx={{
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: COLORS.secondary,
-              },
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: COLORS.secondary,
-            },
-          }}
         />
         {/* Select Category */}
         <TextField
@@ -200,7 +165,7 @@ const PopAddNewItem = ({ open, onClose, data }) => {
           fullWidth
           variant="outlined"
           value={selectedCategory}
-          onChange={handleInputChange("selectedStore")}
+          onChange={handleInputChange("selectedCategory")}
           error={Boolean(errors.selectedCategory)}
           helperText={errors.selectedCategory}
           sx={{
@@ -229,6 +194,7 @@ const PopAddNewItem = ({ open, onClose, data }) => {
       <CustomPopFooterButton
         label={"Create Item"}
         onClose={onClose}
+        onSubmit={handleCreateNewItem}
         loading={loading}
       />
     </Dialog>

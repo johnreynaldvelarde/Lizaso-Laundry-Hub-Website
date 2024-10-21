@@ -144,7 +144,7 @@ router.get(
 );
 
 router.get(
-  "/view-inventory",
+  "/inventory/view-inventory/",
   withDatabaseConnection(async (req, res, connection) => {
     await handleViewInventory(req, res, connection);
   })
