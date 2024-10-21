@@ -28,12 +28,8 @@ import {
   Tooltip,
   useThemeProps,
 } from "@mui/material";
-import {
-  PlusCircle,
-  FolderUser,
-  PencilLine,
-  Basket,
-} from "@phosphor-icons/react";
+import nodata from "../../../../assets/images/nodata.jpg";
+import { PlusCircle, PencilLine, Basket } from "@phosphor-icons/react";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import useFetchData from "../../../../hooks/common/useFetchData";
@@ -42,44 +38,35 @@ import usePopup from "../../../../hooks/common/usePopup";
 import PopAddCategory from "./PopAddCategory";
 import PopAddNewItem from "./PopAddNewItem";
 import { inventoryColumns } from "../../../../data/columns/inventory";
-import CustomTable from "../../../../components/common/CustomTable";
 import InventoryCustomTable from "../../../../components/common/InventoryCustomTable";
+import CustomNoDataMessage from "../../../../components/common/CustomNoDataMessage";
 
 const SectionAdminInventory = () => {
   const { userDetails } = useAuth();
-  const [loading, setLoading] = useState(true);
   const { isOpen, popupType, openPopup, closePopup } = usePopup();
-
   const { data: categoryData, fetchData: fetchCategory } = useFetchData();
-  const { data: inventoryData = [], fetchData: fetchInventory } =
-    useFetchData();
+  const { data: inventoryData, fetchData: fetchInventory } = useFetchData();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchCategoryData = useCallback(() => {
     fetchCategory(viewCategory.getViewCategoryList, userDetails.storeId);
   }, [fetchCategory, userDetails?.storeId]);
 
   const fetchInventoryData = useCallback(() => {
-    setLoading(true);
-    fetchInventory(
-      viewInventory.getViewInventoryList,
-      userDetails.storeId
-    ).then(() => {
-      setLoading(false);
-    });
+    fetchInventory(viewInventory.getViewInventoryList, userDetails.storeId);
   }, [fetchInventory, userDetails?.storeId]);
 
   useEffect(() => {
     fetchCategoryData();
     fetchInventoryData();
+    const intervalId = setInterval(() => {
+      fetchCategoryData();
+      fetchInventoryData();
+    }, 1000);
 
-    // const intervalId = setInterval(() => {
-    //   fetchCategoryData();
-    //   fetchInventoryData();
-    // }, 10000);
-
-    // return () => {
-    //   clearInterval(intervalId);
-    // };
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [fetchCategoryData, fetchInventoryData]);
 
   return (
@@ -226,9 +213,8 @@ const SectionAdminInventory = () => {
         ))}
       </Box>
 
-      {/*Table List Items */}
+      {/*Table Section */}
       <Box mt={5}>
-        {/* Table Header */}
         <Box
           className="flex items-center justify-between mb-"
           sx={{
@@ -283,10 +269,9 @@ const SectionAdminInventory = () => {
 
         {/* Table */}
         <Box mt={2}>
-          {loading ? (
-            <CircularProgress />
-          ) : inventoryData.length > 0 ? (
+          {inventoryData && inventoryData.length > 0 ? (
             <InventoryCustomTable
+              isLoading={isLoading}
               data={inventoryData}
               fields={inventoryColumns}
               numberOfRows={inventoryData.length}
@@ -301,7 +286,10 @@ const SectionAdminInventory = () => {
               routeLink="products"
             />
           ) : (
-            <p>No data available.</p> // Message for no data
+            <CustomNoDataMessage
+              imageSrc={nodata}
+              message={"No inventory items available"}
+            />
           )}
         </Box>
       </Box>
@@ -318,107 +306,3 @@ const SectionAdminInventory = () => {
 };
 
 export default SectionAdminInventory;
-
-// const fetchInventoryData = useCallback(() => {
-//   fetchInventory(viewInventory.getViewInventoryList, userDetails.storeId);
-// }, [fetchInventory, userDetails?.storeId]);
-
-{
-  /* {loading ? ( // Conditional rendering for loading state
-            <CircularProgress />
-          ) : (
-            <CustomTable
-              data={inventoryData} // Pass the inventory data to the CustomTable
-              fields={inventoryColumns} // Ensure inventoryColumns is defined
-              numberOfRows={inventoryData.length} // Pass the number of rows
-              enableTopToolBar={true}
-              enableBottomToolBar={true}
-              enablePagination={true}
-              enableRowSelection={true}
-              enableColumnFilters={true}
-              enableEditing={true}
-              enableColumnDragging={true}
-              showPreview={true}
-              routeLink="products"
-            />
-          )} */
-}
-{
-  /* <CustomTable
-            data={inventoryData}
-            fields={inventoryColumns}
-            numberOfRows={inventoryData.length}
-            enableTopToolBar={true}
-            enableBottomToolBar={true}
-            enablePagination={true}
-            enableRowSelection={true}
-            enableColumnFilters={true}
-            enableEditing={true}
-            enableColumnDragging={true}
-            showPreview={true}
-            routeLink="products"
-          /> */
-}
-
-// const [inventory, setInventory] = useState([
-//   {
-//     inventory_id: 1,
-//     store_id: 101,
-//     item_id: 201,
-//     category_name: "Laundry Detergent",
-//     item_name: "Tide Pods",
-//     price: "15.00",
-//     quantity: 50,
-//     isStatus: 1,
-//   },
-//   {
-//     inventory_id: 2,
-//     store_id: 102,
-//     item_id: 202,
-//     category_name: "Fabric Softener",
-//     item_name: "Downy Liquid",
-//     price: "8.50",
-//     quantity: 30,
-//     isStatus: 1,
-//   },
-//   {
-//     inventory_id: 3,
-//     store_id: 103,
-//     item_id: 203,
-//     category_name: "Bleach",
-//     item_name: "Clorox",
-//     price: "12.00",
-//     quantity: 20,
-//     isStatus: 1,
-//   },
-//   {
-//     inventory_id: 4,
-//     store_id: 101,
-//     item_id: 204,
-//     category_name: "Stain Remover",
-//     item_name: "OxiClean",
-//     price: "10.00",
-//     quantity: 15,
-//     isStatus: 0,
-//   },
-//   {
-//     inventory_id: 5,
-//     store_id: 102,
-//     item_id: 205,
-//     category_name: "Laundry Detergent",
-//     item_name: "Ariel Powder",
-//     price: "9.50",
-//     quantity: 40,
-//     isStatus: 1,
-//   },
-//   {
-//     inventory_id: 6,
-//     store_id: 103,
-//     item_id: 206,
-//     category_name: "Dryer Sheets",
-//     item_name: "Bounce Dryer Sheets",
-//     price: "5.00",
-//     quantity: 100,
-//     isStatus: 1,
-//   },
-// ]);

@@ -31,6 +31,7 @@ export const colors = {
 };
 
 export const COLORS = {
+  skeleton: "#E3E3E3",
   // Basic colors
   white: "#FFFFFF",
   black: "#222222",

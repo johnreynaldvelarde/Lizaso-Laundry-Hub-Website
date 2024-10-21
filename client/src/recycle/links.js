@@ -68,7 +68,20 @@ export const links = [
   {
     name: "Inventory",
     icon: React.createElement(MdOutlineWarehouse),
-    url: "/main/inventory",
+    subLinks: [
+      {
+        name: "All Items",
+        url: "/main/inventory",
+      },
+      {
+        name: "Add Item",
+        url: "/main/add-item",
+      },
+      {
+        name: "Item Category",
+        url: "/main/item-category",
+      },
+    ],
   },
   {
     name: "User Management",

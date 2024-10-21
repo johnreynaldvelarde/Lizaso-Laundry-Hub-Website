@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { MaterialReactTable } from "material-react-table";
-import { Skeleton, Button, IconButton, Tooltip } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { Box } from "@mui/system";
 import { Link } from "react-router-dom";
@@ -8,7 +8,7 @@ import { COLORS } from "../../constants/color";
 import OutlinedIconButton from "../table/OutlinedIconButton";
 import { PencilLine, StackPlus, Trash } from "@phosphor-icons/react";
 
-const InventoryCustomTable = ({
+const CustomTable = ({
   data,
   fields,
   numberOfRows,
@@ -21,18 +21,14 @@ const InventoryCustomTable = ({
   enableColumnDragging,
   showPreview,
   routeLink,
-  isLoading,
 }) => {
+  // Filter out columns with show: false
   const columns = useMemo(
     () => fields.filter((column) => column.show !== false),
     [fields]
   );
 
-  const [tableData, setTableData] = useState(data);
-
-  useEffect(() => {
-    setTableData(data);
-  }, [data]);
+  const [tableData, setTableData] = useState(() => data);
 
   const handleDeleteRow = useCallback(
     (row) => {
@@ -48,7 +44,7 @@ const InventoryCustomTable = ({
   return (
     <MaterialReactTable
       columns={columns}
-      data={isLoading ? [] : tableData.slice(0, numberOfRows)}
+      data={tableData.slice(0, numberOfRows)}
       getRowId={(row) => row.id}
       enableEditing={enableEditing}
       enableColumnDragging={enableColumnDragging}
@@ -99,7 +95,7 @@ const InventoryCustomTable = ({
       muiTablePaperProps={{
         sx: {
           padding: "20px",
-          borderRadius: "8px",
+          borderRadius: "15px",
           borderStyle: "solid",
           borderWidth: "1px",
           borderColor: COLORS.border,
@@ -107,15 +103,12 @@ const InventoryCustomTable = ({
         },
       }}
       muiTableContainerProps={{
-        sx: { borderRadius: "0px" },
+        sx: { borderRadius: "15px" },
       }}
       muiTableHeadCellProps={{
         sx: {
-          color: COLORS.primary,
           fontSize: "14px",
-          fontWeight: "700",
-          textTransform: "uppercase",
-          backgroundColor: COLORS.background,
+          fontWeight: "bold",
         },
       }}
       muiTableHeadProps={{
@@ -136,19 +129,8 @@ const InventoryCustomTable = ({
           },
         },
       }}
-      muiSkeletonProps={{
-        sx: {
-          height: "30px",
-          borderRadius: "4px",
-          backgroundColor: COLORS.skeleton,
-        },
-        animation: "wave",
-      }}
-      state={{
-        isLoading: isLoading,
-      }}
     />
   );
 };
 
-export default InventoryCustomTable;
+export default CustomTable;
