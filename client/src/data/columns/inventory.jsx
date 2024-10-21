@@ -1,3 +1,5 @@
+import { COLORS } from "../../constants/color";
+
 export const categoriesItemColumns = [
   {
     accessorKey: "category_id",
@@ -41,6 +43,11 @@ export const inventoryColumns = [
   {
     accessorKey: "item_name",
     header: "Name",
+    Cell: ({ cell }) => (
+      <span style={{ fontWeight: "700", color: COLORS.secondary }}>
+        {cell.getValue()}
+      </span>
+    ),
   },
   {
     accessorKey: "category_name",
