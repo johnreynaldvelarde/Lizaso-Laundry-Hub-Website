@@ -382,7 +382,7 @@ export const handleLoginMobile = async (req, res, db) => {
       if (!passwordMatch) {
         return res
           .status(200)
-          .json({ success: false, message: "Invalid username or password." });
+          .json({ success: false, message: "Invalid username or password" });
       }
 
       // Get role name and permissions
@@ -412,8 +412,8 @@ export const handleLoginMobile = async (req, res, db) => {
 
       if (customerAccountResults.length === 0) {
         return res
-          .status(404)
-          .json({ success: false, message: "User not found." });
+          .status(200)
+          .json({ success: false, message: "User not found" });
       }
 
       user = customerAccountResults[0];

@@ -12,6 +12,7 @@ import {
   handleUpdateServiceRequestCancel,
   handleUpdateServiceRequestOngoing,
 } from "../../services/user/staff.js";
+import { handleRegisterCustomer } from "../../services/authentication.js";
 
 const router = express.Router();
 
@@ -29,6 +30,17 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 };
 // CUSTOMER SECTION
 // #POST
+router.post(
+  "/register-mobile",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleRegisterCustomer(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 // #GET
 router.get(
   "/customer/:id/get-customer-list-convo",
