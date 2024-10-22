@@ -64,6 +64,35 @@ export const updateRemoveAssignment = {
   },
 };
 
+//#INVENTORY SECTION
+export const updateCategoryName = {
+  putCategoryName: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/inventory/${id}/update-category-name`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateRemoveCategory = {
+  putRemoveCategory: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/inventory/${id}/update-remove-category`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // USER MANAGEMENT SECTION
 // #For role and permission
 export const updateRemoveRole = {

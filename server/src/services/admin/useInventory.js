@@ -175,3 +175,80 @@ export const handleViewListCategory = async (req, res, db) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+//#PUT
+export const handleUpdateCategoryName = async (req, res, connection) => {
+  const { id } = req.params;
+  const { category_name } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const checkQuery = `
+      SELECT id FROM Item_Category
+      WHERE category_name = ? AND id != ?
+    `;
+    const [existingCategory] = await connection.execute(checkQuery, [
+      category_name,
+      id,
+    ]);
+
+    if (existingCategory.length > 0) {
+      return res.status(200).json({
+        status: false,
+        message: "Category name already exists for another category.",
+      });
+    }
+
+    const updateQuery = `
+      UPDATE Item_Category
+      SET category_name = ?
+      WHERE id = ?
+    `;
+
+    await connection.execute(updateQuery, [category_name, id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Category name updated successfully.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating category:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the category." });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+export const handleUpdateRemoveCategory = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Item_Category
+      SET isArchive = 1
+      WHERE id = ?
+    `;
+    await connection.execute(updateQuery, id);
+
+    await connection.commit();
+    res
+      .status(200)
+      .json({ success: true, message: "Category archived successfully." });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating category:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the category." });
+  } finally {
+    if (connection) connection.release();
+  }
+};

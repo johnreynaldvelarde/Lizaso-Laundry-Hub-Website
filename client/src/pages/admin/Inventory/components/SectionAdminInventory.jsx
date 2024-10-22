@@ -29,7 +29,7 @@ import {
   useThemeProps,
 } from "@mui/material";
 import nodata from "../../../../assets/images/nodata.jpg";
-import { PlusCircle, PencilLine, Basket } from "@phosphor-icons/react";
+import { PlusCircle, PencilLine, Basket, Trash } from "@phosphor-icons/react";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import useFetchData from "../../../../hooks/common/useFetchData";
@@ -40,12 +40,18 @@ import PopAddNewItem from "./PopAddNewItem";
 import { inventoryColumns } from "../../../../data/columns/inventory";
 import InventoryCustomTable from "../../../../components/common/InventoryCustomTable";
 import CustomNoDataMessage from "../../../../components/common/CustomNoDataMessage";
+import PopEditCategory from "./PopEditCategory";
+import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
+import { updateRemoveCategory } from "../../../../services/api/putApi";
+import toast from "react-hot-toast";
 
 const SectionAdminInventory = () => {
   const { userDetails } = useAuth();
-  const { isOpen, popupType, openPopup, closePopup } = usePopup();
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const { data: categoryData, fetchData: fetchCategory } = useFetchData();
   const { data: inventoryData, fetchData: fetchInventory } = useFetchData();
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchCategoryData = useCallback(() => {
@@ -62,12 +68,40 @@ const SectionAdminInventory = () => {
     const intervalId = setInterval(() => {
       fetchCategoryData();
       fetchInventoryData();
-    }, 1000);
+    }, 10000);
 
     return () => {
       clearInterval(intervalId);
     };
   }, [fetchCategoryData, fetchInventoryData]);
+
+  const handleDialogDelete = (id, options) => {
+    if (options === "categoryRemove") {
+      console.log(id);
+      setSelectedCategoryId(id);
+    } else {
+      // setSelectedUser(id);
+    }
+    setDialogOpen(true);
+  };
+
+  const handleCategoryDelete = async (id) => {
+    console.log(id);
+    if (id) {
+      try {
+        const response = await updateRemoveCategory.putRemoveCategory(id);
+        if (response.success) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
+  };
 
   return (
     <>
@@ -189,26 +223,55 @@ const SectionAdminInventory = () => {
                 </Typography>
               </Box>
             </Box>
-
-            <Button
-              variant="outlined"
-              sx={{
-                marginTop: 3,
-                padding: 1,
-                textTransform: "none",
-                color: COLORS.primary,
-                fontWeight: 600,
-                borderColor: COLORS.border,
-                "&:hover": {
-                  borderColor: COLORS.secondary,
-                  color: COLORS.secondary,
-                  backgroundColor: COLORS.secondaryLight,
-                },
-              }}
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              marginTop={3}
             >
-              <PencilLine size={24} weight="duotone" className="mr-1" />
-              Edit Category
-            </Button>
+              <Button
+                disabled={!userDetails?.permissions?.canEdit}
+                onClick={() => openPopup("editCategory", category)}
+                variant="outlined"
+                sx={{
+                  width: "100%",
+                  padding: 1,
+                  textTransform: "none",
+                  color: COLORS.primary,
+                  fontWeight: 600,
+                  borderColor: COLORS.border,
+                  "&:hover": {
+                    borderColor: COLORS.secondary,
+                    color: COLORS.secondary,
+                    backgroundColor: COLORS.secondaryLight,
+                  },
+                }}
+              >
+                <PencilLine size={24} weight="duotone" className="mr-1" />
+                Edit Category
+              </Button>
+
+              <Button
+                disabled={!userDetails?.permissions?.canDelete}
+                variant="outlined"
+                sx={{
+                  marginLeft: 1,
+                  padding: 1,
+                  textTransform: "none",
+                  color: COLORS.primary,
+                  fontWeight: 600,
+                  borderColor: COLORS.border,
+                  "&:hover": {
+                    borderColor: COLORS.error,
+                  },
+                }}
+                onClick={() =>
+                  handleDialogDelete(category.category_id, "categoryDelete")
+                }
+              >
+                <Trash size={24} weight="duotone" color={COLORS.error} />
+              </Button>
+            </Box>
           </Box>
         ))}
       </Box>
@@ -254,11 +317,6 @@ const SectionAdminInventory = () => {
               },
             }}
           >
-            {/* <CustomAddButton
-              onClick={() => openPopup("addItem")}
-              label={"Add new item"}
-              icon={<PlusCircle size={24} color="#fcfcfc" weight="duotone" />}
-            /> */}
             <CustomAddButton
               onClick={() => openPopup("addItem")}
               label={"Add new item"}
@@ -294,9 +352,19 @@ const SectionAdminInventory = () => {
         </Box>
       </Box>
 
+      <ConfirmationDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleCategoryDelete}
+        itemId={selectedCategoryId}
+      />
+
       {/* Popup */}
       {isOpen && popupType === "addCategory" && (
         <PopAddCategory open={isOpen} onClose={closePopup} />
+      )}
+      {isOpen && popupType === "editCategory" && (
+        <PopEditCategory open={isOpen} onClose={closePopup} data={popupData} />
       )}
       {isOpen && popupType === "addItem" && (
         <PopAddNewItem open={isOpen} onClose={closePopup} data={categoryData} />

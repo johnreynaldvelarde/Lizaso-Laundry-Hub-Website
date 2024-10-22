@@ -17,6 +17,10 @@ import {
   handleUpdateRemoveUser,
   handleUpdateRenameRole,
 } from "../services/admin/useUser.js";
+import {
+  handleUpdateCategoryName,
+  handleUpdateRemoveCategory,
+} from "../services/admin/useInventory.js";
 
 const router = express.Router();
 
@@ -59,6 +63,29 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateProgressInqueueAndAtStore(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//#INVENTORY SECTION
+router.put(
+  "/inventory/:id/update-category-name",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateCategoryName(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/inventory/:id/update-remove-category",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateRemoveCategory(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
