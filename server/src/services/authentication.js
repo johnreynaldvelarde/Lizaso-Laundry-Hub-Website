@@ -25,7 +25,7 @@ export const handleLoginMobile = async (req, res, db) => {
     await db.beginTransaction();
 
     const [users] = await db.query(
-      "SELECT * FROM Users_Account WHERE username = ? AND user_type IN ('Customer', 'Delivery_Staff')",
+      "SELECT * FROM User_Account WHERE username = ? AND user_type IN ('Customer', 'Delivery_Staff')",
       [username]
     );
 
@@ -40,7 +40,7 @@ export const handleLoginMobile = async (req, res, db) => {
     const user = users[0];
 
     const [userSecurities] = await db.query(
-      "SELECT * FROM Users_Security WHERE user_id = ?",
+      "SELECT * FROM User_Security WHERE user_id = ?",
       [user.id]
     );
 
@@ -76,13 +76,13 @@ export const handleLoginMobile = async (req, res, db) => {
       });
     }
 
-    // Update last login time in Users_Security table
+    // Update last login time in User_Security table
     await db.query(
-      "UPDATE Users_Security SET last_login = NOW() WHERE user_id = ?",
+      "UPDATE User_Security SET last_login = NOW() WHERE user_id = ?",
       [user.id]
     );
 
-    await db.query("UPDATE Users_Account SET isOnline = TRUE WHERE id = ?", [
+    await db.query("UPDATE User_Account SET isOnline = TRUE WHERE id = ?", [
       user.id,
     ]);
 
@@ -96,7 +96,7 @@ export const handleLoginMobile = async (req, res, db) => {
         userType: user.user_type,
       },
       process.env.ACCESS_TOKEN_SECRET,
-      process.env.JWT_EXPIRES_IN
+      Number(process.env.JWT_EXPIRES_IN)
     );
 
     res.status(200).json({
@@ -131,7 +131,7 @@ export const handleRegisterCustomer = async (req, res, db) => {
   try {
     const [existingUser] = await db.execute(
       `
-        SELECT * FROM Users_Account 
+        SELECT * FROM User_Account 
         WHERE username = ? 
         LIMIT 1
         `,
@@ -151,7 +151,7 @@ export const handleRegisterCustomer = async (req, res, db) => {
 
     const [customerResult] = await db.execute(
       `
-        INSERT INTO Users_Account 
+        INSERT INTO User_Account 
         (store_id, address_id, username, email, mobile_number, first_name, middle_name, last_name, user_type, isAgreement, isOnline, isStatus, isArchive, date_created)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
         `,
@@ -178,7 +178,7 @@ export const handleRegisterCustomer = async (req, res, db) => {
 
     const [securityResult] = await db.execute(
       `
-        INSERT INTO Users_Security
+        INSERT INTO User_Security
         (user_id, password, password_salt, mfa_enabled, mfa_secret, failed_login_attempts, account_locked, lockout_time, last_login, last_logout, last_password_change)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
@@ -233,12 +233,7 @@ export const getUserMobileDetails = async (req, res, db) => {
   const { userId } = decoded;
 
   try {
-    // const [userAccountResults] = await db.query(
-    //   "SELECT id, store_id, address_id, username, mobile_number, first_name, middle_name, last_name, user_type FROM Users_Account WHERE id = ?",
-    //   [userId]
-    // );
-
-    const [userAccountResults] = await db.query(
+    const [userAccountResults] = await db.execute(
       `SELECT 
           ua.id, 
           ua.store_id,
@@ -249,12 +244,12 @@ export const getUserMobileDetails = async (req, res, db) => {
           ua.middle_name, 
           ua.last_name, 
           ua.user_type, 
-          a.address_line1, 
+          a.address_line, 
           a.province, 
           a.city 
        FROM 
-          Users_Account ua 
-       JOIN 
+          User_Account ua 
+       LEFT JOIN 
           Addresses a ON ua.address_id = a.id 
        WHERE 
           ua.id = ?`,
@@ -269,13 +264,11 @@ export const getUserMobileDetails = async (req, res, db) => {
 
     const user = userAccountResults[0];
 
-    console.log(user);
-
     const userDetails = {
       id: user.id,
       store_id: user.store_id,
       address_id: user.address_id,
-      header_address: user.address_line1,
+      header_address: user.address_line,
       sub_province: user.province,
       sub_city: user.city,
       username: user.username,
@@ -303,12 +296,13 @@ export const getUserMobileDetails = async (req, res, db) => {
 
 export const handleCheckCustomerDetailsMobile = async (req, res, db) => {
   const { id } = req.params;
+  console.log(id);
 
   try {
     await db.beginTransaction();
 
     const [user] = await db.query(
-      "SELECT store_id, address_id FROM Users_Account WHERE id = ?",
+      "SELECT store_id, address_id FROM User_Account WHERE id = ?",
       [id]
     );
 
@@ -340,3 +334,8 @@ export const handleCheckCustomerDetailsMobile = async (req, res, db) => {
     if (db) db.release();
   }
 };
+
+// const [userAccountResults] = await db.query(
+//   "SELECT id, store_id, address_id, username, mobile_number, first_name, middle_name, last_name, user_type FROM Users_Account WHERE id = ?",
+//   [userId]
+// );

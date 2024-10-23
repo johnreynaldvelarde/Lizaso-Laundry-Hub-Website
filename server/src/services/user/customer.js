@@ -236,7 +236,7 @@ export const handleGetStoreList = async (req, res, db) => {
               s.store_name,
               a.province,
               a.city, 
-              a.address_line1, 
+              a.address_line, 
               a.latitude, 
               a.longitude 
        FROM Stores s
@@ -761,8 +761,7 @@ export const handleUpdateCustomerBasicInformation = async (
     store_id,
     c_email,
     c_number,
-    a_address_line1,
-    a_address_line2,
+    a_address_line,
     a_country,
     a_province,
     a_city,
@@ -777,11 +776,10 @@ export const handleUpdateCustomerBasicInformation = async (
 
     // Insert the new address into the Addresses table
     const [addressResult] = await connection.execute(
-      `INSERT INTO Addresses (address_line1, address_line2, country, province, city, postal_code, latitude, longitude, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      `INSERT INTO Addresses (address_line, country, province, city, postal_code, latitude, longitude, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
-        a_address_line1,
-        a_address_line2,
+        a_address_line,
         a_country,
         a_province,
         a_city,
@@ -827,8 +825,7 @@ export const handleUpdateCustomerBasicInformationMobile = async (
   const { id } = req.params;
   const {
     store_id,
-    address_line1,
-    address_line2,
+    address_line,
     country,
     province,
     city,
@@ -841,15 +838,15 @@ export const handleUpdateCustomerBasicInformationMobile = async (
     await connection.beginTransaction();
 
     const [addressResult] = await connection.execute(
-      `INSERT INTO Addresses (address_line1, country, province, city, postal_code, latitude, longitude, updated_at)
+      `INSERT INTO Addresses (address_line, country, province, city, postal_code, latitude, longitude, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-      [address_line1, country, province, city, postal_code, latitude, longitude]
+      [address_line, country, province, city, postal_code, latitude, longitude]
     );
 
     const addressId = addressResult.insertId;
 
     await connection.execute(
-      `UPDATE Users_Account
+      `UPDATE User_Account
          SET store_id = ?, address_id = ?
          WHERE id = ?`,
       [store_id, addressId, id]

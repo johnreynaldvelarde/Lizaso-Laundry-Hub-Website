@@ -24,44 +24,44 @@ export const handleCheckUsername = async (req, res, db) => {
   }
 };
 
-
 export const handleCheckCustomerDetails = async (req, res, db) => {
-  const { c_username } = req.body;
+  const { id } = req.params;
 
-  console.log('Customer Username:', c_username);
+  console.log(id);
 
-  if (!c_username) {
-    return res.status(400).json({ success: false, message: 'Username is required' });
+  if (!id) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Username is required" });
   }
 
   try {
     // Fetch customer details by ID
     const [customerResults] = await db.query(
-      'SELECT store_id, c_number, c_email FROM Customer WHERE c_username = ?',
-      [c_username]
+      "SELECT store_id, address_id FROM User_Account WHERE id = ?",
+      [id]
     );
 
     if (customerResults.length > 0) {
       const customer = customerResults[0];
 
-      // Check if the fields are null
       const storeIdIsNull = customer.store_id === null;
-      const cNumberIsNull = customer.c_number === null;
-      const cEmailIsNull = customer.c_email === null;
+      const addressIsNull = customer.address_id === null;
 
       return res.status(200).json({
         success: true,
         data: {
           storeIdIsNull,
-          cNumberIsNull,
-          cEmailIsNull
-        }
+          addressIsNull,
+        },
       });
     } else {
-      return res.status(404).json({ success: false, message: 'Customer not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Customer not found" });
     }
   } catch (error) {
-    console.error('Error checking customer details:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Error checking customer details:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };

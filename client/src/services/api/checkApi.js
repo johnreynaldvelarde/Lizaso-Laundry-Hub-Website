@@ -7,26 +7,24 @@ const handleError = (error) => {
 };
 
 export const checkCustomerDetails = {
-  getCheckCustomerDetails: async (c_username) => {
-
+  getCheckCustomerDetails: async (id) => {
     try {
-      const response = await axiosPrivate.post("/check-customer-details", {
-        c_username
-      });
+      const response = await axiosPrivate.post(
+        `customers/${id}/check-customer-details`
+      );
 
       if (response.data.success) {
-        const { storeIdIsNull, cNumberIsNull, cEmailIsNull } = response.data.data;
-        return { storeIdIsNull, cNumberIsNull, cEmailIsNull };
+        const { storeIdIsNull, addressIsNull } = response.data.data;
+        return { storeIdIsNull, addressIsNull };
       } else {
         return { success: false, message: response.data.message };
       }
     } catch (error) {
-      console.error('Error checking customer details:', error);
-      return { success: false, message: 'Failed to check customer details' };
+      console.error("Error checking customer details:", error);
+      return { success: false, message: "Failed to check customer details" };
     }
   },
 };
-
 
 // export const checkCustomerDetails = {
 //   getCheckCustomerDetails: async (customerId) => {

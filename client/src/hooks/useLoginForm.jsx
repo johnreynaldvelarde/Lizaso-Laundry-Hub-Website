@@ -6,6 +6,7 @@ import useAuth from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
+  const { userDetails } = useAuth();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -48,15 +49,17 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
         setLoginPassword("");
 
         if (userType === "Customer") {
+          console.log(userDetails.userId);
           const customerDetails =
-            await checkCustomerDetails.getCheckCustomerDetails(loginUsername);
+            await checkCustomerDetails.getCheckCustomerDetails(
+              userDetails.userId
+            );
 
           if (customerDetails.success !== false) {
             // Navigate based on customer details
             if (
               customerDetails.storeIdIsNull ||
-              customerDetails.cNumberIsNull ||
-              customerDetails.cEmailIsNull
+              customerDetails.addressIsNull
             ) {
               navigate("/complete-details");
             } else {

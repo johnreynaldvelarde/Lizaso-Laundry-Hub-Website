@@ -27,12 +27,11 @@ export const ensureMainStoreExists = async (db) => {
 
       // Step 1: Insert the address into the Addresses table
       const insertAddressQuery = `
-        INSERT INTO Addresses (address_line1, address_line2, country, province, city, postal_code, latitude, longitude, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
+        INSERT INTO Addresses (address_line, country, province, city, postal_code, latitude, longitude, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`;
 
       const addressValues = [
-        "Balagtas", // address_line1
-        "Bulacan", // address_line2
+        "Balagtas, Bulacan", // address_line
         "Philippines", // country
         "Bulacan", // province
         "Balagtas", // city
@@ -50,12 +49,12 @@ export const ensureMainStoreExists = async (db) => {
       // Step 2: Insert the store into the Stores table using the address_id
       const insertStoreQuery = `
         INSERT INTO Stores 
-        (address_id, store_no, store_name, store_contact, store_email, is_main_store, date_created) 
-        VALUES (?, ?, 'Lizaso Laundry Hub', 'Main Contact', '', TRUE, NOW())`;
+        (address_id, store_no, store_name, store_contact, store_email, is_main_store, updated_at, date_created) 
+        VALUES (?, ?, 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', TRUE, NOW(), NOW())`;
 
       const storeValues = [addressId, storeNo];
       const [storeResult] = await db.execute(insertStoreQuery, storeValues);
-      const storeId = storeResult.insertId; // Capture the store's ID
+      const storeId = storeResult.insertId;
 
       console.log("Main store created.");
 
@@ -63,16 +62,14 @@ export const ensureMainStoreExists = async (db) => {
       const insertServiceQuery = `
         INSERT INTO Service_Type (store_id, service_name, default_price, date_created, isArchive)
         VALUES (?, 'Wash', 65, NOW(), FALSE),
-               (?, 'Dry', 55, NOW(), FALSE),
-               (?, 'Fold', 30, NOW(), FALSE)`;
+              (?, 'Dry', 60, NOW(), FALSE),
+              (?, 'Fold', 30, NOW(), FALSE),
+              (?, 'Wash/Dry', 125, NOW(), FALSE),
+              (?, 'Wash/Dry/Fold', 155, NOW(), FALSE)`;
 
-      const serviceValues = [storeId, storeId, storeId];
+      const serviceValues = [storeId, storeId, storeId, storeId, storeId];
 
       await db.execute(insertServiceQuery, serviceValues);
-
-      console.log(
-        "Default services (Wash, Dry, Fold) created for the main store."
-      );
 
       await db.commit();
     }
@@ -95,7 +92,9 @@ export const createDefaultAdmin = async (db) => {
       const firstName = "Admin";
       const lastName = "User";
       const email = "admin@example.com";
+      const mobile_number = "09310064466";
       const password = "admin123";
+      const user_type = "Administrator";
       const hashedPassword = await bcrypt.hash(password, 10);
       const passwordSalt = await bcrypt.genSalt(10);
 
@@ -111,11 +110,41 @@ export const createDefaultAdmin = async (db) => {
 
         const rolePermissionsId = roleResult.insertId;
 
+        const insertAddressQuery = `
+          INSERT INTO Addresses (address_line,  country, province, city, postal_code, latitude, longitude, updated_at) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`;
+
+        const addressValues = [
+          "Balagtas, Bulacan",
+          "Philippines", // country
+          "Bulacan", // province
+          "Balagtas", // city
+          "3016", // postal_code
+          "14.814820876765298", // latitude
+          "120.91126972957287", // longitude
+        ];
+
+        const [addressResult] = await db.execute(
+          insertAddressQuery,
+          addressValues
+        );
+        const addressId = addressResult.insertId;
+
         const [userResult] = await db.execute(
           `INSERT INTO User_Account 
-          (username, first_name, last_name, email, role_permissions_id, isOnline, isStatus, date_created, store_id) 
-          VALUES (?, ?, ?, ?, ?, FALSE, FALSE, NOW(), ?)`,
-          [username, firstName, lastName, email, rolePermissionsId, storeId]
+          (username, first_name, last_name, email, role_permissions_id, isOnline, isStatus, isArchive, date_created, store_id, user_type, mobile_number, isAgreement, address_id) 
+          VALUES (?, ?, ?, ?, ?, FALSE, TRUE, FALSE, NOW(), ?, ?, ?, TRUE, ?)`,
+          [
+            username,
+            firstName,
+            lastName,
+            email,
+            rolePermissionsId,
+            storeId,
+            user_type,
+            mobile_number,
+            addressId,
+          ]
         );
 
         const userId = userResult.insertId;

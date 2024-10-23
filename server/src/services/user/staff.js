@@ -97,7 +97,7 @@ export const handleGetLaundryPickup = async (req, res, connection) => {
           sr.request_status,
           st.service_name,
           st.default_price,
-          a.address_line1,
+          a.address_line,
           a.latitude AS customer_latitude,
           a.longitude AS customer_longitude,
           store_address.latitude AS store_latitude,

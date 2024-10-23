@@ -9,6 +9,7 @@ import {
   handleSetMessagesSenderIsCustomer,
   handleUpdateCustomerBasicInformation,
 } from "../services/user/customer.js";
+import { handleCheckCustomerDetails } from "../services/useCheck.js";
 
 const router = express.Router();
 
@@ -26,6 +27,13 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 };
 
 // POST
+router.post(
+  "/customers/:id/check-customer-details",
+  withDatabaseConnection(async (req, res, connection) => {
+    await handleCheckCustomerDetails(req, res, connection);
+  })
+);
+
 router.post(
   "/customers/:id/set-service-request",
   withDatabaseConnection(async (req, res, connection) => {
