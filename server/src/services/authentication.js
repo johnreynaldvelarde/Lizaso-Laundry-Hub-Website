@@ -116,21 +116,6 @@ export const handleLoginMobile = async (req, res, db) => {
   }
 };
 
-//   user: {
-//     id: user.id,
-//     store_id: user.store_id,
-//     address_id: user.address_id,
-//     username: user.username,
-//     mobile_number: user.mobile_number,
-//     first_name: user.first_name,
-//     middle_name: user.middle_name,
-//     last_name: user.last_name,
-//     full_name: `${user.first_name} ${
-//       user.middle_name ? user.middle_name + " " : ""
-//     }${user.last_name}`,
-//     user_type: user.user_type,
-//   },
-
 export const handleRegisterCustomer = async (req, res, db) => {
   const {
     firstname,
@@ -247,11 +232,32 @@ export const getUserMobileDetails = async (req, res, db) => {
 
   const { userId } = decoded;
 
-  console.log(userId);
-
   try {
+    // const [userAccountResults] = await db.query(
+    //   "SELECT id, store_id, address_id, username, mobile_number, first_name, middle_name, last_name, user_type FROM Users_Account WHERE id = ?",
+    //   [userId]
+    // );
+
     const [userAccountResults] = await db.query(
-      "SELECT id, store_id, address_id, username, mobile_number, first_name, middle_name, last_name, user_type FROM Users_Account WHERE id = ?",
+      `SELECT 
+          ua.id, 
+          ua.store_id,
+          ua.address_id,  
+          ua.username, 
+          ua.mobile_number, 
+          ua.first_name, 
+          ua.middle_name, 
+          ua.last_name, 
+          ua.user_type, 
+          a.address_line1, 
+          a.province, 
+          a.city 
+       FROM 
+          Users_Account ua 
+       JOIN 
+          Addresses a ON ua.address_id = a.id 
+       WHERE 
+          ua.id = ?`,
       [userId]
     );
 
@@ -263,10 +269,15 @@ export const getUserMobileDetails = async (req, res, db) => {
 
     const user = userAccountResults[0];
 
+    console.log(user);
+
     const userDetails = {
       id: user.id,
       store_id: user.store_id,
       address_id: user.address_id,
+      header_address: user.address_line1,
+      sub_province: user.province,
+      sub_city: user.city,
       username: user.username,
       mobile_number: user.mobile_number,
       first_name: user.first_name,

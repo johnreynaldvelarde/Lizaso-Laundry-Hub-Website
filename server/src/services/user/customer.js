@@ -229,6 +229,34 @@ export const handleSetMessagesSenderIsCustomer = async (
 };
 
 // GET
+export const handleGetStoreList = async (req, res, db) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT s.id, 
+              s.store_name,
+              a.province,
+              a.city, 
+              a.address_line1, 
+              a.latitude, 
+              a.longitude 
+       FROM Stores s
+       LEFT JOIN Addresses a ON s.address_id = a.id
+       WHERE s.isArchive = 0`
+    );
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    console.error("Error retrieving store list:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while retrieving the store list.",
+    });
+  }
+};
+
 export const handleGetServiceTypeAndPromotions = async (
   req,
   res,
@@ -787,6 +815,56 @@ export const handleUpdateCustomerBasicInformation = async (
     res.status(500).json({ message: "Error updating customer information" });
   } finally {
     // Release the database connection
+    connection.release();
+  }
+};
+
+export const handleUpdateCustomerBasicInformationMobile = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+  const {
+    store_id,
+    address_line1,
+    address_line2,
+    country,
+    province,
+    city,
+    postal_code,
+    latitude,
+    longitude,
+  } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const [addressResult] = await connection.execute(
+      `INSERT INTO Addresses (address_line1, country, province, city, postal_code, latitude, longitude, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [address_line1, country, province, city, postal_code, latitude, longitude]
+    );
+
+    const addressId = addressResult.insertId;
+
+    await connection.execute(
+      `UPDATE Users_Account
+         SET store_id = ?, address_id = ?
+         WHERE id = ?`,
+      [store_id, addressId, id]
+    );
+
+    await connection.commit();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Your info is now up-to-date!" });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ message: "Error updating customer information" });
+  } finally {
     connection.release();
   }
 };

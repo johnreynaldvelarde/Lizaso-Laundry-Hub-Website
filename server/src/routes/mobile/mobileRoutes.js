@@ -18,6 +18,11 @@ import {
   handleLoginMobile,
   handleRegisterCustomer,
 } from "../../services/authentication.js";
+import {
+  handleGetStoreList,
+  handleUpdateCustomerBasicInformation,
+  handleUpdateCustomerBasicInformationMobile,
+} from "../../services/user/customer.js";
 
 const router = express.Router();
 
@@ -57,6 +62,18 @@ router.post(
   })
 );
 
+//#GET
+router.get(
+  "/customers/get-store-list",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetStoreList(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.get(
   "/customers/:id/check-customer-details",
   withDatabaseConnection(async (req, res, connection) => {
@@ -87,7 +104,18 @@ router.get(
     }
   })
 );
+
 // #PUT
+router.put(
+  "/customers/:id/update-customer-details",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateCustomerBasicInformationMobile(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 // ---STAFF SECTION---
 // #POST
@@ -194,20 +222,3 @@ router.put(
 );
 
 export default router;
-
-// Update User Status to offline isStatus to 0
-// router.post('/update-status', withDatabaseConnection(async (req, res, connection) => {
-//     await handleUpdateUserStatus(req, res, connection);
-// }));
-
-// router.put('/customers/:id/start', withDatabaseConnection(async (req, res, connection) => {
-//   await handleUpdateCustomerBasicInformation(req, res, connection);
-// }));
-
-// router.put('/user/:id/update-assignment', withDatabaseConnection(async (req, res, connection) => {
-//   await handlePutAssignment(req, res, connection);
-// }));
-
-// router.put('/update-start-customer', withDatabaseConnection(async (req, res, connection) => {
-//   await handleUpdateCustomerBasicInformation(req, res, connection);
-// }));

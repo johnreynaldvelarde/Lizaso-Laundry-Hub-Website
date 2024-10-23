@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 21, 2024 at 02:54 PM
+-- Generation Time: Oct 23, 2024 at 01:51 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -45,7 +45,8 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 (2, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-19 22:35:13'),
 (3, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 05:34:25'),
 (4, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 07:31:47'),
-(6, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 22:12:27');
+(6, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 22:12:27'),
+(12, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-23 10:42:14');
 
 -- --------------------------------------------------------
 
@@ -56,7 +57,7 @@ INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action
 CREATE TABLE `addresses` (
   `id` bigint(20) NOT NULL,
   `address_line1` varchar(255) NOT NULL,
-  `address_line2` varchar(255) NOT NULL,
+  `address_line2` varchar(255) DEFAULT NULL,
   `country` varchar(100) NOT NULL,
   `province` varchar(100) NOT NULL,
   `city` varchar(100) NOT NULL,
@@ -73,7 +74,8 @@ CREATE TABLE `addresses` (
 INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
 (1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-19 13:15:27'),
 (2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-19 14:32:04'),
-(3, 'Taliptip Bulakan, Bulacan', 'Taliptip Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.759256, 120.904878, '2024-10-19 23:30:32');
+(3, 'Taliptip Bulakan, Bulacan', 'Taliptip Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.759256, 120.904878, '2024-10-19 23:30:32'),
+(15, 'Uaja', NULL, 'Philippines', 'Bulacan', 'Bulakan', '646464', 14.763455, 120.897670, '2024-10-23 09:42:48');
 
 -- --------------------------------------------------------
 
@@ -129,7 +131,8 @@ CREATE TABLE `customer` (
 
 INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
 (2410192231000000, 1, 2, 'Rose', '', 'Oriana', 'rose16', '09264545098', 'roseoriana16@gmail.com', 1, 1, 0, '2024-10-19 22:31:21'),
-(2410200729000000, 1, 3, 'Alexia', '', 'Midgar', 'alexia16', '09785656051', 'alexia16@gmail.com', 1, 1, 0, '2024-10-20 07:29:52');
+(2410200729000000, 1, 3, 'Alexia', '', 'Midgar', 'alexia16', '09785656051', 'alexia16@gmail.com', 1, 1, 0, '2024-10-20 07:29:52'),
+(2410231049000000, NULL, NULL, 'John Reynald', 'P', 'Velarde', 'velarde16', '', '', 1, 1, 0, '2024-10-23 10:49:07');
 
 -- --------------------------------------------------------
 
@@ -158,7 +161,8 @@ CREATE TABLE `customer_security` (
 
 INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
 (12, 2410192231000000, '$2b$12$BdwzDItUXwZUl5NFOMQDNesFJtPAD3bUmBdjhH/peiBWwByIguGlW', '$2b$12$06v.JgBdbJ.ddslg7CIxEu', 0, '', 0, 0, NULL, NULL, NULL, NULL),
-(13, 2410200729000000, '$2b$12$ZHeV6VILia3/hFpJlpNVV.1DuX6nD./WWabrPc5EIBkZgPoEmiUHC', '$2b$12$DEkEDZHAyfvWEFJBsdEwN.', 0, '', 0, 0, NULL, NULL, NULL, NULL);
+(13, 2410200729000000, '$2b$12$ZHeV6VILia3/hFpJlpNVV.1DuX6nD./WWabrPc5EIBkZgPoEmiUHC', '$2b$12$DEkEDZHAyfvWEFJBsdEwN.', 0, '', 0, 0, NULL, NULL, NULL, NULL),
+(14, 2410231049000000, '$2b$12$X.be9Adr3AnKonikgGxIp.qyXFCRgdGgrxzwaneumaxyKV0jicDKu', '$2b$12$sXN6NC8Bk3J8NZ7dA6W5Je', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -572,6 +576,65 @@ INSERT INTO `transactions` (`id`, `assignment_id`, `transaction_code`, `total_am
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `users_account`
+--
+
+CREATE TABLE `users_account` (
+  `id` bigint(20) NOT NULL,
+  `store_id` bigint(20) DEFAULT NULL,
+  `address_id` bigint(20) DEFAULT NULL,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `mobile_number` varchar(20) DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `middle_name` varchar(255) DEFAULT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `user_type` varchar(100) NOT NULL,
+  `isOnline` tinyint(1) NOT NULL,
+  `isAgreement` tinyint(1) NOT NULL,
+  `isStatus` tinyint(1) NOT NULL,
+  `isArchive` tinyint(1) NOT NULL,
+  `date_created` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users_account`
+--
+
+INSERT INTO `users_account` (`id`, `store_id`, `address_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `user_type`, `isOnline`, `isAgreement`, `isStatus`, `isArchive`, `date_created`) VALUES
+(9, 1, 15, 'Guzemo16', 'johnreynaldvelarde@gmail.com', '0947227061', 'Reynald ', 'P', 'Velarde ', 'Customer', 1, 1, 1, 0, '2024-10-23 17:41:09');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users_security`
+--
+
+CREATE TABLE `users_security` (
+  `id` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `password_salt` varchar(255) NOT NULL,
+  `mfa_enabled` tinyint(1) NOT NULL,
+  `mfa_secret` varchar(255) DEFAULT NULL,
+  `failed_login_attempts` int(11) NOT NULL DEFAULT 0,
+  `account_locked` tinyint(1) NOT NULL,
+  `lockout_time` datetime DEFAULT NULL,
+  `last_login` datetime DEFAULT NULL,
+  `last_logout` datetime DEFAULT NULL,
+  `last_password_change` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users_security`
+--
+
+INSERT INTO `users_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
+(6, 9, '$2b$12$iTmrjs5Khy42em/SdOi8YekhKEppbn9wgmd/69sZWJV1VV9eBNs5q', '$2b$12$9aGbHJuUyS6Il1jUQUVmXO', 0, NULL, 0, 0, NULL, '2024-10-23 19:46:27', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user_account`
 --
 
@@ -791,6 +854,21 @@ ALTER TABLE `transactions`
   ADD KEY `Transactions_Laundry_Assignment` (`assignment_id`);
 
 --
+-- Indexes for table `users_account`
+--
+ALTER TABLE `users_account`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Users_Account_Stores` (`store_id`),
+  ADD KEY `Users_Account_Address` (`address_id`);
+
+--
+-- Indexes for table `users_security`
+--
+ALTER TABLE `users_security`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Users_Security_Users_Account` (`user_id`);
+
+--
 -- Indexes for table `user_account`
 --
 ALTER TABLE `user_account`
@@ -813,13 +891,13 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `conversations`
@@ -837,7 +915,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT for table `customer_security`
 --
 ALTER TABLE `customer_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `feedback_review`
@@ -934,6 +1012,18 @@ ALTER TABLE `stores`
 --
 ALTER TABLE `transactions`
   MODIFY `id` bigint(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `users_account`
+--
+ALTER TABLE `users_account`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `users_security`
+--
+ALTER TABLE `users_security`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `user_account`
@@ -1066,6 +1156,19 @@ ALTER TABLE `stores`
 --
 ALTER TABLE `transactions`
   ADD CONSTRAINT `Transactions_Laundry_Assignment` FOREIGN KEY (`assignment_id`) REFERENCES `laundry_assignment` (`id`);
+
+--
+-- Constraints for table `users_account`
+--
+ALTER TABLE `users_account`
+  ADD CONSTRAINT `Users_Account_Address` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`),
+  ADD CONSTRAINT `Users_Account_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `users_security`
+--
+ALTER TABLE `users_security`
+  ADD CONSTRAINT `Users_Security_Users_Account` FOREIGN KEY (`user_id`) REFERENCES `users_account` (`id`);
 
 --
 -- Constraints for table `user_account`

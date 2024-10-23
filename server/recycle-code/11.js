@@ -1,6 +1,6 @@
 import express from "express";
-import { getPool } from "../../db/dbConfig.js";
-import { handleGetLaundryPickup } from "../../services/user/staff.js";
+import { getPool } from "../src/db/dbConfig.js";
+import { handleGetLaundryPickup } from "../src/services/user/staff.js";
 
 const router = express.Router();
 
