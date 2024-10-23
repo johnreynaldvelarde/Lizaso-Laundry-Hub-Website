@@ -69,6 +69,19 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
         return;
       }
 
+      // const data = {
+      //   firstname: firstName,
+      //   middlename: middleName,
+      //   lastname: lastName,
+      //   username: userName,
+      //   password: password,
+      //   email: "",
+      //   mobile_number: "",
+      //   isAgreement: isAgreement,
+      // };
+
+      // const response = await registerService.register(data);
+
       // Proceed with registration if the username is available
       const response = await registerService.register({
         c_firstname: firstName,
@@ -83,7 +96,6 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
 
       if (response.success) {
         toast.success("Registration successful!");
-        // setShowCreateAccountPopup(false);
 
         // Automatically login the user after successful registration
         const loginResponse = await loginService.login({
@@ -93,7 +105,6 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
 
         setAccessToken(loginResponse.accessToken);
 
-        // Check customer details and navigate accordingly
         const userType = loginResponse.userType;
 
         setTimeout(async () => {

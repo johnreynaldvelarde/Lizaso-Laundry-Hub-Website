@@ -125,6 +125,7 @@ export const handleLogin = async (req, res, db) => {
       process.env.ACCESS_TOKEN_SECRET,
       process.env.JWT_EXPIRES_IN
     );
+
     const refreshToken = createToken(
       { userId: user.id, username, userType, roleName, permissions },
       process.env.REFRESH_TOKEN_SECRET,
@@ -344,144 +345,144 @@ export const getUserDetails = async (req, res, db) => {
   }
 };
 
-export const handleLoginMobile = async (req, res, db) => {
-  const { username, password } = req.body;
-  try {
-    let user, userType, roleName, permissions;
+// export const handleLoginMobile = async (req, res, db) => {
+//   const { username, password } = req.body;
+//   try {
+//     let user, userType, roleName, permissions;
 
-    // Check User_Account table first
-    const [userAccountResults] = await db.query(
-      `SELECT ua.*, rp.role_name, 
-              rp.can_read, rp.can_write, rp.can_edit, rp.can_delete 
-       FROM User_Account ua
-       JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
-       WHERE ua.username = ?`,
-      [username]
-    );
+//     // Check User_Account table first
+//     const [userAccountResults] = await db.query(
+//       `SELECT ua.*, rp.role_name,
+//               rp.can_read, rp.can_write, rp.can_edit, rp.can_delete
+//        FROM User_Account ua
+//        JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
+//        WHERE ua.username = ?`,
+//       [username]
+//     );
 
-    if (userAccountResults.length > 0) {
-      user = userAccountResults[0];
-      const [secResults] = await db.query(
-        "SELECT * FROM User_Security WHERE user_id = ?",
-        [user.id]
-      );
+//     if (userAccountResults.length > 0) {
+//       user = userAccountResults[0];
+//       const [secResults] = await db.query(
+//         "SELECT * FROM User_Security WHERE user_id = ?",
+//         [user.id]
+//       );
 
-      if (secResults.length === 0) {
-        return res.status(200).json({
-          success: false,
-          message: "User security details not found.",
-        });
-      }
+//       if (secResults.length === 0) {
+//         return res.status(200).json({
+//           success: false,
+//           message: "User security details not found.",
+//         });
+//       }
 
-      const userSecurity = secResults[0];
-      const passwordMatch = await comparePassword(
-        password,
-        userSecurity.password
-      );
+//       const userSecurity = secResults[0];
+//       const passwordMatch = await comparePassword(
+//         password,
+//         userSecurity.password
+//       );
 
-      if (!passwordMatch) {
-        return res
-          .status(200)
-          .json({ success: false, message: "Invalid username or password" });
-      }
+//       if (!passwordMatch) {
+//         return res
+//           .status(200)
+//           .json({ success: false, message: "Invalid username or password" });
+//       }
 
-      // Get role name and permissions
-      roleName = user.role_name;
-      permissions = {
-        can_read: user.can_read,
-        can_write: user.can_write,
-        can_edit: user.can_edit,
-        can_delete: user.can_delete,
-      };
+//       // Get role name and permissions
+//       roleName = user.role_name;
+//       permissions = {
+//         can_read: user.can_read,
+//         can_write: user.can_write,
+//         can_edit: user.can_edit,
+//         can_delete: user.can_delete,
+//       };
 
-      // Update isOnline status to 1
-      await db.query("UPDATE User_Account SET isOnline = 1 WHERE id = ?", [
-        user.id,
-      ]);
+//       // Update isOnline status to 1
+//       await db.query("UPDATE User_Account SET isOnline = 1 WHERE id = ?", [
+//         user.id,
+//       ]);
 
-      const actionType = ActionTypes.AUTHENTICATION;
-      const actionDescription = ActionDescriptions[actionType].LOGIN(username);
+//       const actionType = ActionTypes.AUTHENTICATION;
+//       const actionDescription = ActionDescriptions[actionType].LOGIN(username);
 
-      await logActivity(db, user.id, roleName, actionType, actionDescription);
-    } else {
-      // If not in User_Account, check Customers table
-      const [customerAccountResults] = await db.query(
-        "SELECT * FROM Customer WHERE c_username = ?",
-        [username]
-      );
+//       await logActivity(db, user.id, roleName, actionType, actionDescription);
+//     } else {
+//       // If not in User_Account, check Customers table
+//       const [customerAccountResults] = await db.query(
+//         "SELECT * FROM Customer WHERE c_username = ?",
+//         [username]
+//       );
 
-      if (customerAccountResults.length === 0) {
-        return res
-          .status(200)
-          .json({ success: false, message: "User not found" });
-      }
+//       if (customerAccountResults.length === 0) {
+//         return res
+//           .status(200)
+//           .json({ success: false, message: "User not found" });
+//       }
 
-      user = customerAccountResults[0];
+//       user = customerAccountResults[0];
 
-      const [secCustomerResults] = await db.query(
-        "SELECT * FROM Customer_Security WHERE customer_id = ?",
-        [user.id]
-      );
+//       const [secCustomerResults] = await db.query(
+//         "SELECT * FROM Customer_Security WHERE customer_id = ?",
+//         [user.id]
+//       );
 
-      if (secCustomerResults.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Customer security details not found.",
-        });
-      }
+//       if (secCustomerResults.length === 0) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "Customer security details not found.",
+//         });
+//       }
 
-      const customerSecurity = secCustomerResults[0];
-      const passwordMatch = await comparePassword(
-        password,
-        customerSecurity.c_password
-      );
+//       const customerSecurity = secCustomerResults[0];
+//       const passwordMatch = await comparePassword(
+//         password,
+//         customerSecurity.c_password
+//       );
 
-      if (!passwordMatch) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Invalid username or password." });
-      }
+//       if (!passwordMatch) {
+//         return res
+//           .status(401)
+//           .json({ success: false, message: "Invalid username or password." });
+//       }
 
-      // Set user type for customers
-      userType = "Customer";
+//       // Set user type for customers
+//       userType = "Customer";
 
-      // Update isOnline status to 1
-      await db.query("UPDATE Customer SET isOnline = 1 WHERE id = ?", [
-        user.id,
-      ]);
-    }
+//       // Update isOnline status to 1
+//       await db.query("UPDATE Customer SET isOnline = 1 WHERE id = ?", [
+//         user.id,
+//       ]);
+//     }
 
-    // Generate JWT tokens
-    const accessToken = createToken(
-      { userId: user.id, username, userType, roleName, permissions },
-      process.env.ACCESS_TOKEN_SECRET,
-      process.env.JWT_EXPIRES_IN
-    );
-    const refreshToken = createToken(
-      { userId: user.id, username, userType, roleName, permissions },
-      process.env.REFRESH_TOKEN_SECRET,
-      process.env.JWT_REFRESH_EXPIRES_IN
-    );
+//     // Generate JWT tokens
+//     const accessToken = createToken(
+//       { userId: user.id, username, userType, roleName, permissions },
+//       process.env.ACCESS_TOKEN_SECRET,
+//       process.env.JWT_EXPIRES_IN
+//     );
+//     const refreshToken = createToken(
+//       { userId: user.id, username, userType, roleName, permissions },
+//       process.env.REFRESH_TOKEN_SECRET,
+//       process.env.JWT_REFRESH_EXPIRES_IN
+//     );
 
-    // Set the refresh token in an HTTP-only cookie
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Set to true if using HTTPS
-      sameSite: "Strict", // Adjust as needed
-    });
+//     // Set the refresh token in an HTTP-only cookie
+//     res.cookie("refreshToken", refreshToken, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production", // Set to true if using HTTPS
+//       sameSite: "Strict", // Adjust as needed
+//     });
 
-    // Respond with access token, user type, role name, and permissions
-    return res.status(200).json({
-      success: true,
-      userType,
-      roleName,
-      permissions,
-      accessToken,
-    });
-  } catch (err) {
-    console.error("Error handling login:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error" });
-  }
-};
+//     // Respond with access token, user type, role name, and permissions
+//     return res.status(200).json({
+//       success: true,
+//       userType,
+//       roleName,
+//       permissions,
+//       accessToken,
+//     });
+//   } catch (err) {
+//     console.error("Error handling login:", err);
+//     return res
+//       .status(500)
+//       .json({ success: false, message: "Internal Server Error" });
+//   }
+// };

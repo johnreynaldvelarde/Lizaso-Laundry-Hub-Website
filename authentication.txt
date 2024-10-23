@@ -46,16 +46,6 @@ isStatus
 isArchive
 date_created
 
-Role_Permissions
-id
-user_id (Foregin Key)
-can_read
-can_write
-can_edit
-can_delete
-date_created
-isArchive
-
 Users_Securty
 id
 user_id (Foregin Key)
@@ -69,3 +59,15 @@ lockout_time
 last_login
 last_logout
 last_password_change
+
+Role_Permissions
+id
+user_id (Foregin Key)
+can_read
+can_write
+can_edit
+can_delete
+date_created
+isArchive
+
+

@@ -4,9 +4,9 @@ import {
   handleRegister,
   handleLogin,
   getUserDetails,
-  handleLoginMobile,
 } from "../services/authService.js";
 import jwt from "jsonwebtoken";
+import { handleRegisterCustomer } from "../services/authentication.js";
 
 const router = express.Router();
 
@@ -36,22 +36,23 @@ router.post(
   })
 );
 
-router.post(
-  "/login-mobile",
-  withDatabaseConnection(async (req, res, connection) => {
-    try {
-      await handleLoginMobile(req, res, connection);
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  })
-);
+// router.post(
+//   "/login-mobile",
+//   withDatabaseConnection(async (req, res, connection) => {
+//     try {
+//       await handleLoginMobile(req, res, connection);
+//     } catch (error) {
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   })
+// );
 
 // Register route
 router.post(
   "/register",
   withDatabaseConnection(async (req, res, connection) => {
     await handleRegister(req, res, connection);
+    // await handleRegisterCustomer(req, res, connection);
   })
 );
 

@@ -12,7 +12,12 @@ import {
   handleUpdateServiceRequestCancel,
   handleUpdateServiceRequestOngoing,
 } from "../../services/user/staff.js";
-import { handleRegisterCustomer } from "../../services/authentication.js";
+import {
+  getUserMobileDetails,
+  handleCheckCustomerDetailsMobile,
+  handleLoginMobile,
+  handleRegisterCustomer,
+} from "../../services/authentication.js";
 
 const router = express.Router();
 
@@ -31,6 +36,17 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 // CUSTOMER SECTION
 // #POST
 router.post(
+  "/login-mobile",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleLoginMobile(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.post(
   "/register-mobile",
   withDatabaseConnection(async (req, res, connection) => {
     try {
@@ -38,6 +54,24 @@ router.post(
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
+  })
+);
+
+router.get(
+  "/customers/:id/check-customer-details",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleCheckCustomerDetailsMobile(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/mobile-users/me",
+  withDatabaseConnection(async (req, res, connection) => {
+    await getUserMobileDetails(req, res, connection);
   })
 );
 
