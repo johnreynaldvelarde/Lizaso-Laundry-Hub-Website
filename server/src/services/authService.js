@@ -14,11 +14,11 @@ const createToken = (payload, secret, expiresIn) => {
 
 export const handleLogin = async (req, res, db) => {
   const { username, password } = req.body;
+  console.log(req.body);
 
   try {
     let user, userType, roleName, permissions;
 
-    // Check User_Account table
     const [userAccountResults] = await db.query(
       `SELECT 
           ua.*, 
@@ -559,7 +559,7 @@ export const getUserDetails = async (req, res, db) => {
       };
 
       // If user type is not 'Customer', add role permissions
-      if (user.user_type !== 'Customer') {
+      if (user.user_type !== "Customer") {
         response.user.roleName = user.role_name;
         response.user.permissions = {
           canRead: user.can_read,
@@ -571,7 +571,9 @@ export const getUserDetails = async (req, res, db) => {
 
       return res.status(200).json(response);
     } else {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -599,14 +601,14 @@ export const getUserDetails = async (req, res, db) => {
 
 //   try {
 //     const [userAccountResults] = await db.query(
-//       `SELECT ua.*, 
-//               rp.role_name, 
-//               rp.can_read, 
-//               rp.can_write, 
-//               rp.can_edit, 
-//               rp.can_delete 
-//        FROM User_Account ua 
-//        JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id 
+//       `SELECT ua.*,
+//               rp.role_name,
+//               rp.can_read,
+//               rp.can_write,
+//               rp.can_edit,
+//               rp.can_delete
+//        FROM User_Account ua
+//        JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
 //        WHERE ua.id = ?`,
 //       [userId] // Only use userId to find the account
 //     );
