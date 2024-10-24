@@ -55,7 +55,7 @@ router.post(
 );
 
 router.get(
-  "/mobile-customer-staff/:ids/get-messages",
+  "/mobile-customer-staff/:user_one_id/:user_two_id/get-messages",
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetMessages(req, res, connection);

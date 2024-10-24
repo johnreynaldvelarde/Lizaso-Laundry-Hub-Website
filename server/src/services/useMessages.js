@@ -83,12 +83,13 @@ export const handleSetNewMessages = async (req, res, connection) => {
 };
 
 export const handleGetMessages = async (req, res, connection) => {
-  const { user_one_id, user_two_id } = req.params; // Extracting user_one_id and user_two_id from request parameters
+  const { user_one_id, user_two_id } = req.params;
 
   console.log(req.params);
+  console.log(user_one_id);
+  console.log(user_two_id);
 
   try {
-    // Start transaction
     await connection.beginTransaction();
 
     // Step 1: Fetch conversation_id based on user_one_id and user_two_id
@@ -96,7 +97,7 @@ export const handleGetMessages = async (req, res, connection) => {
       `SELECT id FROM Conversations
          WHERE (user_one_id = ? AND user_two_id = ?) 
             OR (user_one_id = ? AND user_two_id = ?)`,
-      [user_one_id, user_two_id, user_two_id, user_one_id] // Check both directions
+      [user_one_id, user_two_id, user_two_id, user_one_id]
     );
 
     if (conversationRows.length === 0) {
