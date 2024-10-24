@@ -9,8 +9,6 @@ export const handleSetNewMessages = async (req, res, connection) => {
     // Start a transaction
     await connection.beginTransaction();
 
-    console.log("Encrypted Message:", message);
-
     // Check if a conversation exists between sender and recipient
     const [conversationRows] = await connection.query(
       `SELECT id FROM Conversations 
@@ -36,8 +34,8 @@ export const handleSetNewMessages = async (req, res, connection) => {
 
     // Insert the new message into the Messages table
     const query = `
-        INSERT INTO Messages (conversation_id, sender_id, recipient_id, message)
-        VALUES (?, ?, ?, ?);
+        INSERT INTO Messages (conversation_id, sender_id, recipient_id, message, date_sent)
+        VALUES (?, ?, ?, ?, NOW());
       `;
     const [result] = await connection.query(query, [
       conversation_id,
@@ -57,7 +55,6 @@ export const handleSetNewMessages = async (req, res, connection) => {
       [lastMessageId, conversation_id]
     );
 
-    // Commit the transaction
     await connection.commit();
 
     // Respond with success
@@ -81,7 +78,6 @@ export const handleSetNewMessages = async (req, res, connection) => {
       message: "An error occurred while sending the message.",
     });
   } finally {
-    // Release the connection
     connection.release();
   }
 };
