@@ -28,7 +28,7 @@ longitude
 updated_at
 
 
-Role_Permissions
+Roles_Permissions
 id
 role_name
 can_read

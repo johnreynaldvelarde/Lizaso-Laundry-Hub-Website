@@ -25,7 +25,7 @@ export const handleLoginMobile = async (req, res, db) => {
     await db.beginTransaction();
 
     const [users] = await db.query(
-      "SELECT * FROM User_Account WHERE username = ? AND user_type IN ('Customer', 'Delivery_Staff')",
+      "SELECT * FROM User_Account WHERE username = ? AND user_type IN ('Customer', 'Delivery Staff')",
       [username]
     );
 
@@ -168,7 +168,7 @@ export const handleRegisterCustomer = async (req, res, db) => {
         isAgreement,
         false,
         true,
-        false,
+        true,
       ]
     );
 
@@ -246,11 +246,14 @@ export const getUserMobileDetails = async (req, res, db) => {
           ua.user_type, 
           a.address_line, 
           a.province, 
-          a.city 
+          a.city,
+          s.store_name 
        FROM 
           User_Account ua 
        LEFT JOIN 
-          Addresses a ON ua.address_id = a.id 
+          Addresses a ON ua.address_id = a.id
+       LEFT JOIN 
+          Stores s ON ua.store_id = s.id 
        WHERE 
           ua.id = ?`,
       [userId]
@@ -268,6 +271,7 @@ export const getUserMobileDetails = async (req, res, db) => {
       id: user.id,
       store_id: user.store_id,
       address_id: user.address_id,
+      store_name: user.store_name,
       header_address: user.address_line,
       sub_province: user.province,
       sub_city: user.city,

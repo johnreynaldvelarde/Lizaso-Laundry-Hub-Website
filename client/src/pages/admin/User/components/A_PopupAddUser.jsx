@@ -28,6 +28,7 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
   const [middlename, setMiddlename] = useState("");
   const [lastname, setLastname] = useState("");
   const [number, setNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedStore, setSelectedStore] = useState("");
@@ -71,6 +72,8 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
         value = lastname;
       } else if (field === "number") {
         value = number;
+      } else if (field === "email") {
+        value = email;
       } else if (field === "selectedStore") {
         value = selectedStore;
       }
@@ -93,6 +96,7 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
       lastname: setLastname,
       middlename: setMiddlename,
       number: setNumber,
+      email: setEmail,
       selectedRole: setSelectedRole,
       selectedStatus: setSelectedStatus,
       selectedStore: setSelectedStore,
@@ -122,6 +126,7 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
         username: username,
         password: defaultPassword,
         mobile_number: number,
+        email: email,
         first_name: firstname,
         middle_name: middlename,
         last_name: lastname,
@@ -157,8 +162,10 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
   const handleDialogClose = () => {
     setUsername("");
     setFirstname("");
+    setMiddlename("");
     setLastname("");
     setNumber("");
+    setEmail("");
     setSelectedRole("");
     setSelectedStatus("");
     setSelectedStore("");
@@ -348,6 +355,39 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
             },
           }}
         />
+
+        {/* Email */}
+        <TextField
+          margin="dense"
+          label="Email"
+          type="email"
+          fullWidth
+          variant="outlined"
+          value={email}
+          error={Boolean(errors.email)}
+          helperText={errors.email}
+          onChange={(e) => {
+            const { value } = e.target;
+            handleInputChange("email")({
+              target: { value: value.replace(/[^a-zA-Z0-9@._-]/g, "") },
+            });
+          }}
+          inputProps={{
+            inputMode: "email",
+          }}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        />
+
         {/* Select a role */}
         <TextField
           select

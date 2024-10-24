@@ -67,6 +67,7 @@ export const handleAdminBasedSetNewUser = async (req, res, connection) => {
     username,
     password,
     mobile_number,
+    email,
     first_name,
     middle_name,
     last_name,
@@ -92,31 +93,48 @@ export const handleAdminBasedSetNewUser = async (req, res, connection) => {
     const hashedPassword = await hashPassword(password);
     const passwordSalt = await generatePasswordSalt();
 
-    const userAccountQuery = `
-     INSERT INTO User_Account 
-     (store_id, role_permissions_id, username, email, mobile_number, first_name, middle_name, last_name, isStatus, date_created)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    const roleNameQuery = `
+     SELECT role_name FROM Roles_Permissions WHERE id = ?
    `;
+    const [roleResult] = await connection.execute(roleNameQuery, [
+      role_permissions_id,
+    ]);
+
+    if (roleResult.length === 0) {
+      await connection.rollback();
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid role_permissions_id." });
+    }
+
+    const role_name = roleResult[0].role_name;
+
+    const userAccountQuery = `
+      INSERT INTO User_Account
+      (store_id, role_permissions_id, username, email, mobile_number, first_name, middle_name, last_name, user_type, isStatus, date_created, isOnline, isAgreement, isArchive)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), FALSE, TRUE, FALSE)
+    `;
 
     const [insertUserResult] = await connection.execute(userAccountQuery, [
       store_id,
       role_permissions_id,
       username,
-      "",
+      email || null,
       mobile_number,
       first_name,
       middle_name,
       last_name,
+      role_name,
       isStatus,
     ]);
 
     const newUserId = insertUserResult.insertId;
 
     const userSecurityQuery = `
-     INSERT INTO User_Security 
-     (user_id, password, password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
-     VALUES (?, ?, ?, 0, 0, 0, null, null, NOW())
-   `;
+       INSERT INTO User_Security
+       (user_id, password, password_salt, mfa_enabled, failed_login_attempts, account_locked, last_login, last_logout, last_password_change)
+       VALUES (?, ?, ?, 0, 0, 0, null, null, NOW())
+     `;
     await connection.execute(userSecurityQuery, [
       newUserId,
       hashedPassword,

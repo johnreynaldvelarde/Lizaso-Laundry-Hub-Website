@@ -112,6 +112,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     await connection.commit();
 
     res.status(201).json({
+      success: true,
       message: "Service request created!",
       service_request_id: newRequestId,
       qr_code: qrCodeData,
