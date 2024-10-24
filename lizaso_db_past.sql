@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2024 at 03:58 PM
+-- Generation Time: Oct 23, 2024 at 01:51 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -36,6 +36,18 @@ CREATE TABLE `activity_log` (
   `timestamp` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `activity_log`
+--
+
+INSERT INTO `activity_log` (`id`, `user_id`, `user_type`, `action_type`, `action_description`, `timestamp`) VALUES
+(1, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-19 21:15:34'),
+(2, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-19 22:35:13'),
+(3, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 05:34:25'),
+(4, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 07:31:47'),
+(6, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-20 22:12:27'),
+(12, 1, 'Administrator', 'authentication', 'admin logged in.', '2024-10-23 10:42:14');
+
 -- --------------------------------------------------------
 
 --
@@ -44,25 +56,26 @@ CREATE TABLE `activity_log` (
 
 CREATE TABLE `addresses` (
   `id` bigint(20) NOT NULL,
-  `address_line` varchar(255) NOT NULL,
+  `address_line1` varchar(255) NOT NULL,
+  `address_line2` varchar(255) DEFAULT NULL,
   `country` varchar(100) NOT NULL,
   `province` varchar(100) NOT NULL,
   `city` varchar(100) NOT NULL,
   `postal_code` varchar(20) NOT NULL,
   `latitude` decimal(9,6) NOT NULL,
   `longitude` decimal(9,6) NOT NULL,
-  `updated_at` datetime DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `addresses`
 --
 
-INSERT INTO `addresses` (`id`, `address_line`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
-(1, 'Balagtas, Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-23 22:13:41'),
-(2, 'Balagtas, Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-23 22:13:41'),
-(3, 'Anak Ng Lupa Perez , Bulakan, Bulacan', 'Philippines', 'Bulacan', 'Bulakan', '3017', 14.763445, 120.897676, '2024-10-23 23:19:35'),
-(4, 'Perez Bulakan, Bulacan', 'Philippines', 'Bulacan', 'Bulakan', '3017', 14.763457, 120.897671, '2024-10-24 21:07:05');
+INSERT INTO `addresses` (`id`, `address_line1`, `address_line2`, `country`, `province`, `city`, `postal_code`, `latitude`, `longitude`, `updated_at`) VALUES
+(1, 'Balagtas', 'Bulacan', 'Philippines', 'Bulacan', 'Balagtas', '3016', 14.814821, 120.911270, '2024-10-19 13:15:27'),
+(2, 'Perez, Bulakan, Bulacan', 'Perez, Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.766846, 120.896249, '2024-10-19 14:32:04'),
+(3, 'Taliptip Bulakan, Bulacan', 'Taliptip Bulakan, Bulacan', 'PH', 'Bulacan', 'Bulakan', '3017', 14.759256, 120.904878, '2024-10-19 23:30:32'),
+(15, 'Uaja', NULL, 'Philippines', 'Bulacan', 'Bulakan', '646464', 14.763455, 120.897670, '2024-10-23 09:42:48');
 
 -- --------------------------------------------------------
 
@@ -72,9 +85,11 @@ INSERT INTO `addresses` (`id`, `address_line`, `country`, `province`, `city`, `p
 
 CREATE TABLE `conversations` (
   `id` bigint(20) NOT NULL,
-  `user_one_id` bigint(20) NOT NULL,
-  `user_two_id` bigint(20) NOT NULL,
-  `last_message_id` bigint(20) DEFAULT NULL,
+  `user_sender_id` bigint(20) DEFAULT NULL,
+  `customer_sender_id` bigint(20) DEFAULT NULL,
+  `user_receiver_id` bigint(20) DEFAULT NULL,
+  `customer_receiver_id` bigint(20) DEFAULT NULL,
+  `last_message` text DEFAULT NULL,
   `last_message_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -84,8 +99,9 @@ CREATE TABLE `conversations` (
 -- Dumping data for table `conversations`
 --
 
-INSERT INTO `conversations` (`id`, `user_one_id`, `user_two_id`, `last_message_id`, `last_message_date`, `created_at`, `updated_at`) VALUES
-(11, 5, 4, 15, '2024-10-24 13:48:33', '2024-10-24 13:47:11', '2024-10-24 13:48:33');
+INSERT INTO `conversations` (`id`, `user_sender_id`, `customer_sender_id`, `user_receiver_id`, `customer_receiver_id`, `last_message`, `last_message_date`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, NULL, 2410192231000000, '1', '2024-10-20 01:51:23', '2024-10-19 21:44:51', '2024-10-20 01:51:23'),
+(2, 1, NULL, NULL, 2410200729000000, '2', '2024-10-19 23:31:11', '2024-10-19 23:31:06', '2024-10-19 23:31:11');
 
 -- --------------------------------------------------------
 
@@ -108,6 +124,45 @@ CREATE TABLE `customer` (
   `isArchive` tinyint(1) NOT NULL,
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer`
+--
+
+INSERT INTO `customer` (`id`, `store_id`, `address_id`, `c_firstname`, `c_middlename`, `c_lastname`, `c_username`, `c_number`, `c_email`, `isAgreement`, `isOnline`, `isArchive`, `date_created`) VALUES
+(2410192231000000, 1, 2, 'Rose', '', 'Oriana', 'rose16', '09264545098', 'roseoriana16@gmail.com', 1, 1, 0, '2024-10-19 22:31:21'),
+(2410200729000000, 1, 3, 'Alexia', '', 'Midgar', 'alexia16', '09785656051', 'alexia16@gmail.com', 1, 1, 0, '2024-10-20 07:29:52'),
+(2410231049000000, NULL, NULL, 'John Reynald', 'P', 'Velarde', 'velarde16', '', '', 1, 1, 0, '2024-10-23 10:49:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_security`
+--
+
+CREATE TABLE `customer_security` (
+  `id` bigint(20) NOT NULL,
+  `customer_id` bigint(20) NOT NULL,
+  `c_password` varchar(255) NOT NULL,
+  `c_password_salt` varchar(255) NOT NULL,
+  `mfa_enabled` tinyint(1) NOT NULL,
+  `mfa_secret` varchar(255) NOT NULL,
+  `failed_login_attempts` int(11) NOT NULL,
+  `account_locked` tinyint(1) NOT NULL,
+  `lockout_time` timestamp NULL DEFAULT NULL,
+  `last_login` timestamp NULL DEFAULT NULL,
+  `last_logout` timestamp NULL DEFAULT NULL,
+  `last_password_change` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `customer_security`
+--
+
+INSERT INTO `customer_security` (`id`, `customer_id`, `c_password`, `c_password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
+(12, 2410192231000000, '$2b$12$BdwzDItUXwZUl5NFOMQDNesFJtPAD3bUmBdjhH/peiBWwByIguGlW', '$2b$12$06v.JgBdbJ.ddslg7CIxEu', 0, '', 0, 0, NULL, NULL, NULL, NULL),
+(13, 2410200729000000, '$2b$12$ZHeV6VILia3/hFpJlpNVV.1DuX6nD./WWabrPc5EIBkZgPoEmiUHC', '$2b$12$DEkEDZHAyfvWEFJBsdEwN.', 0, '', 0, 0, NULL, NULL, NULL, NULL),
+(14, 2410231049000000, '$2b$12$X.be9Adr3AnKonikgGxIp.qyXFCRgdGgrxzwaneumaxyKV0jicDKu', '$2b$12$sXN6NC8Bk3J8NZ7dA6W5Je', 0, '', 0, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -149,8 +204,8 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `store_id`, `item_id`, `price`, `quantity`, `isStatus`) VALUES
-(1, 1, 1, 8.00, 50, 0),
-(2, 1, 2, 10.00, 50, 0);
+(4, 1, 4, 10.00, 0, 0),
+(5, 1, 5, 8.00, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -172,8 +227,8 @@ CREATE TABLE `item` (
 --
 
 INSERT INTO `item` (`id`, `category_id`, `item_name`, `isArchive`, `updated_at`, `date_created`) VALUES
-(1, 1, 'Soap Ariel', 0, '2024-10-24 17:24:19', '2024-10-24 17:24:19'),
-(2, 2, 'Detergent Ariel', 0, '2024-10-24 17:24:45', '2024-10-24 17:24:45');
+(4, 3, 'Champion', 0, '2024-10-21 18:00:17', '2024-10-21 18:00:17'),
+(5, 1, 'Ariel', 0, '2024-10-21 19:20:29', '2024-10-21 19:20:29');
 
 -- --------------------------------------------------------
 
@@ -194,8 +249,9 @@ CREATE TABLE `item_category` (
 --
 
 INSERT INTO `item_category` (`id`, `category_name`, `isArchive`, `updated_at`, `date_created`) VALUES
-(1, 'Soap', 0, '2024-10-24 17:23:58', '2024-10-24 17:23:58'),
-(2, 'Detergent', 0, '2024-10-24 17:24:25', '2024-10-24 17:24:25');
+(1, 'Soap', 0, '2024-10-21 00:31:19', '2024-10-21 00:31:19'),
+(2, 'Detergent', 0, '2024-10-21 00:31:26', '2024-10-21 00:31:26'),
+(3, 'Powder', 0, '2024-10-21 17:59:54', '2024-10-21 17:59:54');
 
 -- --------------------------------------------------------
 
@@ -220,8 +276,8 @@ CREATE TABLE `laundry_assignment` (
 --
 
 INSERT INTO `laundry_assignment` (`id`, `service_request_id`, `unit_id`, `assigned_by`, `weight`, `assigned_at`, `completed_at`, `isAssignmentStatus`, `isCompleted`) VALUES
-(1, 1, 1, 1, '5', '2024-10-24 11:59:39', NULL, 0, 0),
-(2, 2, 2, 1, '1', '2024-10-24 12:35:58', NULL, 0, 0);
+(11, 16, 1, 1, '5', '2024-10-20 23:29:14', NULL, 1, 0),
+(12, 17, 1, 1, '5', '2024-10-21 00:06:25', NULL, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -243,8 +299,8 @@ CREATE TABLE `laundry_unit` (
 --
 
 INSERT INTO `laundry_unit` (`id`, `store_id`, `unit_name`, `date_created`, `isUnitStatus`, `isArchive`) VALUES
-(1, 1, 'Unit 1', '2024-10-23 23:46:23', 1, 0),
-(2, 1, 'Unit 2', '2024-10-24 12:35:23', 1, 0);
+(1, 1, 'Unit 1', '2024-10-19 21:17:58', 0, 0),
+(2, 1, 'Unit 2', '2024-10-19 21:18:01', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -256,22 +312,24 @@ CREATE TABLE `messages` (
   `id` bigint(20) NOT NULL,
   `conversation_id` bigint(20) NOT NULL,
   `sender_id` bigint(20) NOT NULL,
-  `recipient_id` bigint(20) NOT NULL,
+  `receiver_id` bigint(20) NOT NULL,
+  `sender_type` enum('User','Customer') NOT NULL,
+  `receiver_type` enum('User','Customer') NOT NULL,
   `message` text NOT NULL,
-  `is_read` tinyint(1) NOT NULL,
-  `date_sent` datetime NOT NULL,
-  `date_read` datetime NOT NULL
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `isRead` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `messages`
 --
 
-INSERT INTO `messages` (`id`, `conversation_id`, `sender_id`, `recipient_id`, `message`, `is_read`, `date_sent`, `date_read`) VALUES
-(12, 11, 5, 4, 'U2FsdGVkX1+SobBqwLPtnJyN2zUPKY6MixR0vcWUmv4=', 0, '2024-10-24 21:47:11', '0000-00-00 00:00:00'),
-(13, 11, 5, 4, 'U2FsdGVkX1+Sfvljw04f4Dt329HseTP7rXg4w9kHIXM=', 0, '2024-10-24 21:47:16', '0000-00-00 00:00:00'),
-(14, 11, 5, 4, 'U2FsdGVkX1/Dc+GSXO5R+sFnn8maAZ422wjcNx6C/9U=', 0, '2024-10-24 21:47:20', '0000-00-00 00:00:00'),
-(15, 11, 4, 5, 'U2FsdGVkX1++gmUMpMpGiYs7u/Qb1HzVsEIRCLk+HLM=', 0, '2024-10-24 21:48:33', '0000-00-00 00:00:00');
+INSERT INTO `messages` (`id`, `conversation_id`, `sender_id`, `receiver_id`, `sender_type`, `receiver_type`, `message`, `created_at`, `isRead`) VALUES
+(1, 1, 1, 2410192231000000, 'User', 'Customer', 'Hi po saan po bahay nila', '2024-10-19 21:44:51', 1),
+(2, 1, 2410192231000000, 1, 'Customer', 'User', 'Dito sa my bandang kaitaasan', '2024-10-19 21:46:29', 1),
+(3, 2, 1, 2410200729000000, 'User', 'Customer', '1', '2024-10-19 23:31:06', 1),
+(4, 2, 2410200729000000, 1, 'Customer', 'User', '2', '2024-10-19 23:31:11', 1),
+(5, 1, 1, 2410192231000000, 'User', 'Customer', '1', '2024-10-20 01:51:23', 1);
 
 -- --------------------------------------------------------
 
@@ -325,10 +383,10 @@ CREATE TABLE `roles_permissions` (
 --
 
 INSERT INTO `roles_permissions` (`id`, `role_name`, `can_read`, `can_write`, `can_edit`, `can_delete`, `date_created`, `isArchive`) VALUES
-(1, 'Administrator', 1, 1, 1, 1, '2024-10-23 22:13:41', 0),
-(2, 'Manager', 1, 1, 1, 0, '2024-10-23 23:46:10', 0),
-(3, 'Store Staff', 1, 1, 0, 0, '2024-10-24 10:45:37', 0),
-(4, 'Delivery Staff', 1, 1, 0, 0, '2024-10-24 10:45:45', 0);
+(1, 'Administrator', 1, 1, 1, 1, '2024-10-19 21:15:27', 0),
+(2, 'Manager', 1, 1, 1, 0, '2024-10-19 21:16:20', 0),
+(3, 'Store Staff', 1, 1, 0, 0, '2024-10-19 21:16:36', 0),
+(4, 'Delivery Staff', 1, 1, 0, 0, '2024-10-19 21:16:54', 0);
 
 -- --------------------------------------------------------
 
@@ -351,36 +409,36 @@ CREATE TABLE `service_progress` (
 --
 
 INSERT INTO `service_progress` (`id`, `service_request_id`, `stage`, `description`, `status_date`, `completed`, `false_description`) VALUES
-(1, 1, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-24 09:58:02', 1, 'Pickup request received; waiting for staff assignment.'),
-(2, 1, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-24 11:55:24', 1, 'Pickup has not yet started.'),
-(3, 1, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-24 11:55:34', 1, 'Pickup has not been completed.'),
-(4, 1, 'At Store', 'Dropped off at the laundry store.', '2024-10-24 11:59:30', 1, 'The clothes have not yet arrived at the store.'),
-(5, 1, 'In Queue', 'Waiting for processing.', '2024-10-24 11:59:30', 1, 'Not yet in queue for processing.'),
-(6, 1, 'In Laundry', 'Currently being washed/dried.', '2024-10-24 11:59:39', 1, 'Laundry has not started processing yet.'),
-(7, 1, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
-(8, 1, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
-(9, 1, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
-(10, 1, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
-(11, 2, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-24 10:00:23', 1, 'Pickup request received; waiting for staff assignment.'),
-(12, 2, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-24 11:56:01', 1, 'Pickup has not yet started.'),
-(13, 2, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-24 11:56:01', 1, 'Pickup has not been completed.'),
-(14, 2, 'At Store', 'Dropped off at the laundry store.', '2024-10-24 12:00:07', 1, 'The clothes have not yet arrived at the store.'),
-(15, 2, 'In Queue', 'Waiting for processing.', '2024-10-24 12:00:07', 1, 'Not yet in queue for processing.'),
-(16, 2, 'In Laundry', 'Currently being washed/dried.', '2024-10-24 12:35:58', 1, 'Laundry has not started processing yet.'),
-(17, 2, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
-(18, 2, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
-(19, 2, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
-(20, 2, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
-(21, 3, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-24 21:35:52', 1, 'Pickup request received; waiting for staff assignment.'),
-(22, 3, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-24 21:37:26', 1, 'Pickup has not yet started.'),
-(23, 3, 'Completed Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
-(24, 3, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
-(25, 3, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
-(26, 3, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
-(27, 3, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
-(28, 3, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
-(29, 3, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
-(30, 3, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
+(141, 16, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 23:29:14', 1, 'Pickup request received; waiting for staff assignment.'),
+(142, 16, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-20 23:29:14', 1, 'Pickup has not yet started.'),
+(143, 16, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-20 23:29:14', 1, 'Pickup has not been completed.'),
+(144, 16, 'At Store', 'Dropped off at the laundry store.', '2024-10-20 23:29:14', 1, 'The clothes have not yet arrived at the store.'),
+(145, 16, 'In Queue', 'Waiting for processing.', '2024-10-20 23:29:14', 1, 'Not yet in queue for processing.'),
+(146, 16, 'In Laundry', 'Currently being washed/dried.', '2024-10-20 23:29:14', 1, 'Laundry has not started processing yet.'),
+(147, 16, 'Laundry Completed', 'Washing/drying finished.', '2024-10-20 23:58:50', 1, 'Laundry processing has not been completed.'),
+(148, 16, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-20 23:58:50', 1, 'Laundry is not yet ready for delivery.'),
+(149, 16, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(150, 16, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(151, 17, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 23:41:14', 1, 'Pickup request received; waiting for staff assignment.'),
+(152, 17, 'Ongoing Pickup', 'Pickup in progress.', '2024-10-21 00:05:00', 1, 'Pickup has not yet started.'),
+(153, 17, 'Completed Pickup', 'Pickup completed successfully.', '2024-10-21 00:05:02', 1, 'Pickup has not been completed.'),
+(154, 17, 'At Store', 'Dropped off at the laundry store.', '2024-10-21 00:06:22', 1, 'The clothes have not yet arrived at the store.'),
+(155, 17, 'In Queue', 'Waiting for processing.', '2024-10-21 00:06:22', 1, 'Not yet in queue for processing.'),
+(156, 17, 'In Laundry', 'Currently being washed/dried.', '2024-10-21 00:06:25', 1, 'Laundry has not started processing yet.'),
+(157, 17, 'Laundry Completed', 'Washing/drying finished.', '2024-10-21 00:07:05', 1, 'Laundry processing has not been completed.'),
+(158, 17, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-21 00:07:05', 1, 'Laundry is not yet ready for delivery.'),
+(159, 17, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(160, 17, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(161, 18, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-20 23:44:05', 1, 'Pickup request received; waiting for staff assignment.'),
+(162, 18, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
+(163, 18, 'Completed Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
+(164, 18, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(165, 18, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(166, 18, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(167, 18, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(168, 18, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(169, 18, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(170, 18, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
 
 -- --------------------------------------------------------
 
@@ -433,9 +491,9 @@ CREATE TABLE `service_request` (
 --
 
 INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `service_type_id`, `tracking_code`, `customer_fullname`, `customer_type`, `notes`, `request_date`, `pickup_date`, `delivery_date`, `request_status`, `qr_code`, `qr_code_generated`, `isPickup`, `isDelivery`, `payment_method`) VALUES
-(1, 1, 4, 3, 1, '#A503A0C1BAF5458F9960', 'John Reynald Velarde', 'Online', '', '2024-10-24 01:58:02', '2024-10-24 03:55:34', NULL, 'In Laundry', 'SR-1-#A503A0C1BAF5458F9960', 1, 1, 0, 'Cash on Delivery'),
-(2, 1, 4, 3, 5, '#0695D9EF53C6485AAB3E', 'John Reynald Velarde', 'Online', '', '2024-10-24 02:00:23', '2024-10-24 03:56:01', NULL, 'In Laundry', 'SR-2-#0695D9EF53C6485AAB3E', 1, 1, 0, 'Cash on Delivery'),
-(3, 1, 4, 5, 4, '#A6A3E160134246BD930C', 'Alexia Midgar', 'Online', '', '2024-10-24 13:35:52', NULL, NULL, 'Ongoing Pickup', 'SR-3-#A6A3E160134246BD930C', 1, 0, 0, 'Cash on Delivery');
+(16, 1, 1, 2410200729000000, 1, '#48AD4A021EA041EE978D', 'Midgar, Alexia ', 'Walk-In', '', '2024-10-20 15:29:14', '2024-10-20 15:27:45', NULL, 'Laundry Completed', 'SR-16-#48AD4A021EA041EE978D', 1, 1, 0, 'Cash'),
+(17, 1, 1, 2410200729000000, 1, '#4D33D3831FD84E7081FA', 'Alexia Midgar', 'Online', '', '2024-10-20 15:41:14', '2024-10-20 16:05:02', NULL, 'Ready for Delivery', 'SR-17-#4D33D3831FD84E7081FA', 1, 1, 0, 'Cash on Delivery'),
+(18, 1, NULL, 2410200729000000, 1, '#9424D00F27A54735A65D', 'Alexia Midgar', 'Online', '', '2024-10-20 15:44:05', NULL, NULL, 'Pending Pickup', 'SR-18-#9424D00F27A54735A65D', 1, 0, 0, 'Cash on Delivery');
 
 -- --------------------------------------------------------
 
@@ -458,11 +516,10 @@ CREATE TABLE `service_type` (
 --
 
 INSERT INTO `service_type` (`id`, `store_id`, `service_name`, `description`, `default_price`, `date_created`, `isArchive`) VALUES
-(1, 1, 'Wash', NULL, 65.00, '2024-10-23 22:13:41', 0),
-(2, 1, 'Dry', NULL, 60.00, '2024-10-23 22:13:41', 0),
-(3, 1, 'Fold', NULL, 30.00, '2024-10-23 22:13:41', 0),
-(4, 1, 'Wash/Dry', NULL, 125.00, '2024-10-23 22:13:41', 0),
-(5, 1, 'Wash/Dry/Fold', NULL, 155.00, '2024-10-23 22:13:41', 0);
+(1, 1, 'Wash', NULL, 65.00, '2024-10-19 21:15:27', 0),
+(2, 1, 'Dry', NULL, 55.00, '2024-10-19 21:15:27', 0),
+(3, 1, 'Fold', NULL, 30.00, '2024-10-19 21:15:27', 0),
+(4, 1, 'Wash/Dry', 'Basic wash and dry', 120.00, '2024-10-20 12:08:27', 0);
 
 -- --------------------------------------------------------
 
@@ -489,7 +546,7 @@ CREATE TABLE `stores` (
 --
 
 INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_contact`, `store_email`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
-(1, 1, 'LIZASO-1729692821701', 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', 1, '2024-10-23 22:13:41', '2024-10-23 22:13:41', 0, 0);
+(1, 1, 'LIZASO-1729343727423', 'Lizaso Laundry Hub', 'Main Contact', '', 1, '0000-00-00 00:00:00', '2024-10-19 21:15:27', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -508,20 +565,27 @@ CREATE TABLE `transactions` (
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`id`, `assignment_id`, `transaction_code`, `total_amount`, `payment_method`, `status`, `created_at`, `updated_at`) VALUES
+(18, 11, 'LLH-20241020-0002', 325.00, 'Cash', 'Completed', '2024-10-20 23:58:50', '2024-10-20 23:58:50'),
+(19, 12, 'LLH-20241020-0004', 325.00, 'Cash on Delivery', 'Pending', '2024-10-21 00:07:05', '2024-10-21 00:07:05');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_account`
+-- Table structure for table `users_account`
 --
 
-CREATE TABLE `user_account` (
+CREATE TABLE `users_account` (
   `id` bigint(20) NOT NULL,
   `store_id` bigint(20) DEFAULT NULL,
   `address_id` bigint(20) DEFAULT NULL,
-  `role_permissions_id` bigint(20) DEFAULT NULL,
   `username` varchar(255) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `mobile_number` varchar(20) NOT NULL,
+  `mobile_number` varchar(20) DEFAULT NULL,
   `first_name` varchar(255) NOT NULL,
   `middle_name` varchar(255) DEFAULT NULL,
   `last_name` varchar(255) NOT NULL,
@@ -534,22 +598,19 @@ CREATE TABLE `user_account` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `user_account`
+-- Dumping data for table `users_account`
 --
 
-INSERT INTO `user_account` (`id`, `store_id`, `address_id`, `role_permissions_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `user_type`, `isOnline`, `isAgreement`, `isStatus`, `isArchive`, `date_created`) VALUES
-(1, 1, 2, 1, 'admin', 'admin@example.com', '09310064466', 'Admin', '', 'User', 'Administrator', 1, 1, 1, 0, '2024-10-23 22:13:41'),
-(3, 1, 3, 0, 'velarde16', 'johnreynaldvelarde@gmail.com', '094727061', 'John Reynald', 'P', 'Velarde', 'Customer', 1, 1, 1, 0, '2024-10-23 22:17:35'),
-(4, 1, NULL, 4, 'juan16', NULL, '09228923917', 'Juan', 'T', 'Tamad', 'Delivery Staff', 1, 1, 1, 0, '2024-10-24 11:08:08'),
-(5, 1, 4, NULL, 'alexia16', 'alexia16@gmail.com', '0947232326051', 'Alexia', '', 'Midgar', 'Customer', 1, 1, 1, 0, '2024-10-24 21:05:45');
+INSERT INTO `users_account` (`id`, `store_id`, `address_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `user_type`, `isOnline`, `isAgreement`, `isStatus`, `isArchive`, `date_created`) VALUES
+(9, 1, 15, 'Guzemo16', 'johnreynaldvelarde@gmail.com', '0947227061', 'Reynald ', 'P', 'Velarde ', 'Customer', 1, 1, 1, 0, '2024-10-23 17:41:09');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_security`
+-- Table structure for table `users_security`
 --
 
-CREATE TABLE `user_security` (
+CREATE TABLE `users_security` (
   `id` bigint(20) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -565,14 +626,70 @@ CREATE TABLE `user_security` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `users_security`
+--
+
+INSERT INTO `users_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
+(6, 9, '$2b$12$iTmrjs5Khy42em/SdOi8YekhKEppbn9wgmd/69sZWJV1VV9eBNs5q', '$2b$12$9aGbHJuUyS6Il1jUQUVmXO', 0, NULL, 0, 0, NULL, '2024-10-23 19:46:27', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_account`
+--
+
+CREATE TABLE `user_account` (
+  `id` bigint(20) NOT NULL,
+  `store_id` bigint(20) NOT NULL,
+  `role_permissions_id` bigint(20) NOT NULL,
+  `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `mobile_number` varchar(255) NOT NULL,
+  `first_name` varchar(20) NOT NULL,
+  `middle_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `isOnline` tinyint(4) NOT NULL,
+  `isStatus` tinyint(1) NOT NULL,
+  `isArchive` tinyint(1) NOT NULL,
+  `date_created` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_account`
+--
+
+INSERT INTO `user_account` (`id`, `store_id`, `role_permissions_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `isOnline`, `isStatus`, `isArchive`, `date_created`) VALUES
+(1, 1, 1, 'admin', 'admin@example.com', '', 'Admin', '', 'User', 1, 0, 0, '2024-10-19 21:15:27'),
+(2, 1, 2, 'juan12', '', '09564545069', 'Juan', '', 'Tamad', 0, 0, 0, '2024-10-19 21:17:30');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_security`
+--
+
+CREATE TABLE `user_security` (
+  `id` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `password_salt` varchar(255) NOT NULL,
+  `mfa_enabled` tinyint(1) NOT NULL,
+  `mfa_secret` varchar(255) NOT NULL,
+  `failed_login_attempts` int(11) NOT NULL DEFAULT 0,
+  `account_locked` tinyint(1) NOT NULL,
+  `lockout_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `last_login` timestamp NULL DEFAULT NULL,
+  `last_logout` timestamp NULL DEFAULT NULL,
+  `last_password_change` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
 -- Dumping data for table `user_security`
 --
 
 INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
-(1, 1, '$2b$10$NK4R91oxL5y7rA2ccPBYxu1ESsbOLe/Ti1f5n.iGxugOZqEfHGmJi', '$2b$10$xaBBdCD2hG3DVfv97aUzDe', 0, NULL, 0, 0, NULL, NULL, NULL, NULL),
-(2, 3, '$2b$12$Ic2ZHeST0QD1GGCwH0.7OOK.wuABzFP2zOSkYN5L3dz5CdUzKPGYm', '$2b$12$d6rcgmjAc2rzoW2QLYb3f.', 0, NULL, 0, 0, NULL, '2024-10-24 20:48:19', NULL, NULL),
-(3, 4, '$2b$12$4KnKAhLQfVtbWA1p5vJ7betN9bo7ozOhlLQ1IyPC0KCYOjp0BKpC2', '$2b$12$i1B0tIsOYGQj4TYm9Km/UO', 0, NULL, 0, 0, NULL, '2024-10-24 21:48:23', NULL, '2024-10-24 11:08:08'),
-(4, 5, '$2b$12$KXUAn5iYZx/sMvphieICLeAf32VSLE/DC3yAmPByse6QgUB.gFWpC', '$2b$12$.T7o50/6JTR8QoyLaPTZp.', 0, NULL, 0, 0, NULL, '2024-10-24 21:49:02', NULL, NULL);
+(1, 1, '$2b$10$Y8ZIiNMpOhqMu0YsVR/cle1ndMb8GchEueMErpohizpdswwdZeuMy', '$2b$10$MwelQngr1iyFXVYl065mRO', 0, '', 0, 0, '2024-10-19 13:15:27', NULL, NULL, NULL),
+(2, 2, '$2b$12$N6Qafnn111RyKu7Gg.iXS.fFgB2I5AQ5fdr3OKCCuRb0AY3A/YsOK', '$2b$12$TxCq.19AZtC0KE3EuYCESu', 0, '', 0, 0, '2024-10-19 13:17:30', NULL, NULL, '2024-10-19 13:17:30');
 
 --
 -- Indexes for dumped tables
@@ -596,9 +713,10 @@ ALTER TABLE `addresses`
 --
 ALTER TABLE `conversations`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk1_conversation_user_account` (`user_one_id`),
-  ADD KEY `fk2_conversation_user_account` (`user_two_id`),
-  ADD KEY `fk1_conversation_messages` (`last_message_id`);
+  ADD KEY `Conversations_Sender_User_Account` (`user_sender_id`),
+  ADD KEY `Conversations_Receiver_User_Account` (`user_receiver_id`),
+  ADD KEY `Conversations_Sender_Customer` (`customer_sender_id`),
+  ADD KEY `Conversations_Receiver_Customer` (`customer_receiver_id`);
 
 --
 -- Indexes for table `customer`
@@ -607,6 +725,13 @@ ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`),
   ADD KEY `Customer_Stores` (`store_id`),
   ADD KEY `Customer_Addresses` (`address_id`);
+
+--
+-- Indexes for table `customer_security`
+--
+ALTER TABLE `customer_security`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Customer_Security` (`customer_id`);
 
 --
 -- Indexes for table `feedback_review`
@@ -659,9 +784,7 @@ ALTER TABLE `laundry_unit`
 --
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `Messages_Conversations` (`conversation_id`),
-  ADD KEY `fk2_messages_user_account` (`sender_id`),
-  ADD KEY `fk3_messages_user_account` (`recipient_id`);
+  ADD KEY `Messages_Conversations` (`conversation_id`);
 
 --
 -- Indexes for table `notifications`
@@ -731,20 +854,34 @@ ALTER TABLE `transactions`
   ADD KEY `Transactions_Laundry_Assignment` (`assignment_id`);
 
 --
+-- Indexes for table `users_account`
+--
+ALTER TABLE `users_account`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Users_Account_Stores` (`store_id`),
+  ADD KEY `Users_Account_Address` (`address_id`);
+
+--
+-- Indexes for table `users_security`
+--
+ALTER TABLE `users_security`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Users_Security_Users_Account` (`user_id`);
+
+--
 -- Indexes for table `user_account`
 --
 ALTER TABLE `user_account`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_1_addresses` (`address_id`),
-  ADD KEY `fk_2_stores` (`store_id`),
-  ADD KEY `fk_3_role_permissions` (`role_permissions_id`);
+  ADD KEY `User_Account_Stores` (`store_id`),
+  ADD KEY `User_Account_Roles_Permissions` (`role_permissions_id`);
 
 --
 -- Indexes for table `user_security`
 --
 ALTER TABLE `user_security`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk1_user_account` (`user_id`);
+  ADD KEY `User_Security_User_Account` (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -754,25 +891,31 @@ ALTER TABLE `user_security`
 -- AUTO_INCREMENT for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `conversations`
 --
 ALTER TABLE `conversations`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17293469439970002;
+
+--
+-- AUTO_INCREMENT for table `customer_security`
+--
+ALTER TABLE `customer_security`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `feedback_review`
@@ -784,25 +927,25 @@ ALTER TABLE `feedback_review`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `item_category`
 --
 ALTER TABLE `item_category`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `laundry_unit`
@@ -814,7 +957,7 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -838,7 +981,7 @@ ALTER TABLE `roles_permissions`
 -- AUTO_INCREMENT for table `service_progress`
 --
 ALTER TABLE `service_progress`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=171;
 
 --
 -- AUTO_INCREMENT for table `service_promo`
@@ -850,13 +993,13 @@ ALTER TABLE `service_promo`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `service_type`
 --
 ALTER TABLE `service_type`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `stores`
@@ -868,19 +1011,31 @@ ALTER TABLE `stores`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` bigint(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT for table `users_account`
+--
+ALTER TABLE `users_account`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `users_security`
+--
+ALTER TABLE `users_security`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `user_account`
 --
 ALTER TABLE `user_account`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `user_security`
 --
 ALTER TABLE `user_security`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -890,15 +1045,16 @@ ALTER TABLE `user_security`
 -- Constraints for table `activity_log`
 --
 ALTER TABLE `activity_log`
-  ADD CONSTRAINT `fk1_activity_log_user_account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
+  ADD CONSTRAINT `Activity_Log_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
 
 --
 -- Constraints for table `conversations`
 --
 ALTER TABLE `conversations`
-  ADD CONSTRAINT `fk1_conversation_messages` FOREIGN KEY (`last_message_id`) REFERENCES `messages` (`id`),
-  ADD CONSTRAINT `fk1_conversation_user_account` FOREIGN KEY (`user_one_id`) REFERENCES `user_account` (`id`),
-  ADD CONSTRAINT `fk2_conversation_user_account` FOREIGN KEY (`user_two_id`) REFERENCES `user_account` (`id`);
+  ADD CONSTRAINT `Conversations_Receiver_Customer` FOREIGN KEY (`customer_receiver_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `Conversations_Receiver_User_Account` FOREIGN KEY (`user_receiver_id`) REFERENCES `user_account` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `Conversations_Sender_Customer` FOREIGN KEY (`customer_sender_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `Conversations_Sender_User_Account` FOREIGN KEY (`user_sender_id`) REFERENCES `user_account` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `customer`
@@ -911,9 +1067,9 @@ ALTER TABLE `customer`
 -- Constraints for table `feedback_review`
 --
 ALTER TABLE `feedback_review`
-  ADD CONSTRAINT `fk1_review_stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`),
-  ADD CONSTRAINT `fk2_review_customer` FOREIGN KEY (`customer_id`) REFERENCES `user_account` (`id`),
-  ADD CONSTRAINT `fk3_review_service_request` FOREIGN KEY (`service_request_id`) REFERENCES `service_request` (`id`);
+  ADD CONSTRAINT `Review_Customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `Review_Service_Request` FOREIGN KEY (`service_request_id`) REFERENCES `service_request` (`id`),
+  ADD CONSTRAINT `Review_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
 
 --
 -- Constraints for table `inventory`
@@ -932,9 +1088,9 @@ ALTER TABLE `item`
 -- Constraints for table `laundry_assignment`
 --
 ALTER TABLE `laundry_assignment`
-  ADD CONSTRAINT `fk1_assignment_unit` FOREIGN KEY (`unit_id`) REFERENCES `laundry_unit` (`id`),
-  ADD CONSTRAINT `fk2_assignment_service` FOREIGN KEY (`service_request_id`) REFERENCES `service_request` (`id`),
-  ADD CONSTRAINT `fk3_assignment_user` FOREIGN KEY (`assigned_by`) REFERENCES `user_account` (`id`);
+  ADD CONSTRAINT `Laundry_Assignment_Laundry_Unit` FOREIGN KEY (`unit_id`) REFERENCES `laundry_unit` (`id`),
+  ADD CONSTRAINT `Laundry_Assignment_Service_Request` FOREIGN KEY (`service_request_id`) REFERENCES `service_request` (`id`),
+  ADD CONSTRAINT `Laundry_Assignment_User_Account` FOREIGN KEY (`assigned_by`) REFERENCES `user_account` (`id`);
 
 --
 -- Constraints for table `laundry_unit`
@@ -946,15 +1102,14 @@ ALTER TABLE `laundry_unit`
 -- Constraints for table `messages`
 --
 ALTER TABLE `messages`
-  ADD CONSTRAINT `fk1_messages_conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk2_messages_user_account` FOREIGN KEY (`sender_id`) REFERENCES `user_account` (`id`),
-  ADD CONSTRAINT `fk3_messages_user_account` FOREIGN KEY (`recipient_id`) REFERENCES `user_account` (`id`);
+  ADD CONSTRAINT `Messages_Conversations` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `notifications`
 --
 ALTER TABLE `notifications`
-  ADD CONSTRAINT `Notifications_Customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`);
+  ADD CONSTRAINT `Notifications_Customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `Notifications_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
 
 --
 -- Constraints for table `related_item`
@@ -979,9 +1134,10 @@ ALTER TABLE `service_promo`
 -- Constraints for table `service_request`
 --
 ALTER TABLE `service_request`
-  ADD CONSTRAINT `fk1_customers` FOREIGN KEY (`customer_id`) REFERENCES `user_account` (`id`),
-  ADD CONSTRAINT `fk2_user_acccount` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`),
-  ADD CONSTRAINT `fk3_stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+  ADD CONSTRAINT `Service_Request_Customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  ADD CONSTRAINT `Service_Request_Service_Type` FOREIGN KEY (`service_type_id`) REFERENCES `service_type` (`id`),
+  ADD CONSTRAINT `Service_Request_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`),
+  ADD CONSTRAINT `Service_Request_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
 
 --
 -- Constraints for table `service_type`
@@ -1002,18 +1158,30 @@ ALTER TABLE `transactions`
   ADD CONSTRAINT `Transactions_Laundry_Assignment` FOREIGN KEY (`assignment_id`) REFERENCES `laundry_assignment` (`id`);
 
 --
+-- Constraints for table `users_account`
+--
+ALTER TABLE `users_account`
+  ADD CONSTRAINT `Users_Account_Address` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`),
+  ADD CONSTRAINT `Users_Account_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
+
+--
+-- Constraints for table `users_security`
+--
+ALTER TABLE `users_security`
+  ADD CONSTRAINT `Users_Security_Users_Account` FOREIGN KEY (`user_id`) REFERENCES `users_account` (`id`);
+
+--
 -- Constraints for table `user_account`
 --
 ALTER TABLE `user_account`
-  ADD CONSTRAINT `fk_1_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`),
-  ADD CONSTRAINT `fk_2_stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`),
-  ADD CONSTRAINT `fk_3_role_permissions` FOREIGN KEY (`role_permissions_id`) REFERENCES `roles_permissions` (`id`);
+  ADD CONSTRAINT `User_Account_Roles_Permissions` FOREIGN KEY (`role_permissions_id`) REFERENCES `roles_permissions` (`id`),
+  ADD CONSTRAINT `User_Account_Stores` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`);
 
 --
 -- Constraints for table `user_security`
 --
 ALTER TABLE `user_security`
-  ADD CONSTRAINT `fk1_user_account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
+  ADD CONSTRAINT `User_Security_User_Account` FOREIGN KEY (`user_id`) REFERENCES `user_account` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
