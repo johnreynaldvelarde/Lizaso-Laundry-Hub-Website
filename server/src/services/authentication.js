@@ -227,7 +227,7 @@ export const getUserMobileDetails = async (req, res, db) => {
   const decoded = decodeToken(token);
 
   if (!decoded) {
-    return res.status(401).json({ success: false, message: "Invalid token" });
+    return res.status(200).json({ success: false, message: "Invalid token" });
   }
 
   const { userId } = decoded;

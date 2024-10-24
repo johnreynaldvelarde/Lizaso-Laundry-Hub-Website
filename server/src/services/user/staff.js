@@ -518,66 +518,6 @@ export const handleUpdateServiceRequestUsingQrCode = async (
   }
 };
 
-export const handleGetStaffConvo = async (req, res, connection) => {
-  const { id } = req.params;
-
-  try {
-    await connection.beginTransaction();
-
-    const updateQuery = `
-      UPDATE Messages
-      SET isRead = 1
-      WHERE conversation_id IN (
-        SELECT id FROM Conversations 
-        WHERE customer_sender_id = ? OR customer_receiver_id = ?
-      )
-      AND (receiver_id = ? OR sender_id = ?)
-    `;
-
-    await connection.execute(updateQuery, [id, id, id, id]);
-
-    const query = `
-      SELECT
-        m.id AS message_id,
-        m.conversation_id,
-        m.sender_id,
-        m.receiver_id,
-        m.sender_type,
-        m.receiver_type,
-        m.message,
-        m.created_at,
-        c.last_message,
-        c.last_message_date
-      FROM
-        Messages m
-      JOIN
-        Conversations c ON m.conversation_id = c.id
-      WHERE
-        c.customer_sender_id = ? OR c.customer_receiver_id = ?
-      ORDER BY
-        m.created_at ASC
-    `;
-
-    const [rows] = await connection.execute(query, [id, id]);
-
-    await connection.commit();
-
-    res.status(200).json({
-      success: true,
-      data: rows,
-    });
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error fetching messages:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching messages.",
-    });
-  } finally {
-    connection.release();
-  }
-};
-
 // export const handleSetMessagesSenderIsStaff = async (req, res, connection) => {
 //   const { sender_id, receiver_id, message } = req.body; // sender_id = staff ID, receiver_id = customer ID
 //   try {

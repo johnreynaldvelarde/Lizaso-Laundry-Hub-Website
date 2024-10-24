@@ -213,7 +213,4 @@ router.get(
   })
 );
 
-// console.log("Ako")
-// User management Section
-
 export default router;

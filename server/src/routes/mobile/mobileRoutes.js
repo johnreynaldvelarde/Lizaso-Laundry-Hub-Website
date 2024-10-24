@@ -1,7 +1,6 @@
 import express from "express";
 import {
   handleGetLaundryPickup,
-  handleGetStaffConvo,
   handleSetMessagesSenderIsStaff,
   handleUpdateServiceRequestBackToPending,
   handleUpdateServiceRequestFinishPickup,
@@ -23,6 +22,10 @@ import {
   handleUpdateCustomerBasicInformation,
   handleUpdateCustomerBasicInformationMobile,
 } from "../../services/user/customer.js";
+import {
+  handleGetMessages,
+  handleSetNewMessages,
+} from "../../services/useMessages.js";
 
 const router = express.Router();
 
@@ -38,6 +41,30 @@ const withDatabaseConnection = (handler) => async (req, res) => {
     connection.release();
   }
 };
+
+// ALL AROUND API
+router.post(
+  "/mobile-customer-staff/set-new-messsages",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetNewMessages(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/mobile-customer-staff/:ids/get-messages",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetMessages(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 // CUSTOMER SECTION
 // #POST
 router.post(
@@ -88,18 +115,9 @@ router.get(
 router.get(
   "/mobile-users/me",
   withDatabaseConnection(async (req, res, connection) => {
-    await getUserMobileDetails(req, res, connection);
-  })
-);
-
-// #GET
-router.get(
-  "/customer/:id/get-customer-list-convo",
-  withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleGetCustomerConvo(req, res, connection);
+      await getUserMobileDetails(req, res, connection);
     } catch (error) {
-      console.error("Error retrieving customer request:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   })
@@ -148,7 +166,7 @@ router.get(
   "/staff/:id/get-staff-convo",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleGetStaffConvo(req, res, connection);
+      await handleGetMessages(req, res, connection);
     } catch (error) {
       console.error("Error retrieving staff message request:", error);
       res.status(500).json({ error: "Internal Server Error" });
