@@ -23,6 +23,7 @@ import {
   handleUpdateCustomerBasicInformationMobile,
 } from "../../services/user/customer.js";
 import {
+  handleGetInbox,
   handleGetMessages,
   handleSetNewMessages,
 } from "../../services/useMessages.js";
@@ -59,6 +60,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetMessages(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/mobile-customer-staff/:id/get-inbox",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetInbox(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

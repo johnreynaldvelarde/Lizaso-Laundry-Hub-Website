@@ -16,6 +16,28 @@ isStatus
 isArchive
 date_created
 
+
+---> Conversations <---
+id (Primary Key)
+user_one_id (Foregin Key)
+user_two_id (Foregin Key)
+last_message_id
+last_message_date
+created_at
+updated_at
+
+---> Messages <---
+id (Primary Key)
+conversation_id (Foregin Key)
+sender_id (Foregin Key)
+recipient_id (Foregin Key)
+message
+is_read
+date_sent
+date_read
+
+
+
 --> Addresses <--
 id (Primary Key)
 address_line
@@ -52,64 +74,4 @@ last_login
 last_logout
 last_password_change
 
-
---> Addresses <--
-id (Primary Key)
-address_line1
-address_line2
-country
-province
-city
-postal_code
-latitude
-longitude
-updated_at
-
-Customer
-id (Primary Key)
-store_id (Foregin Key)
-address_id (Foregin Key)  
-c_firstname
-c_middlename
-c_lastname
-c_username
-c_number
-c_email
-isAgreement
-isOnline
-isArchive
-date_created
-
-Customer_Securty
-id (Primary Key)
-customer_id (Foregin Key)
-c_password
-c_password_salt
-mfa_enabled
-mfa_secret
-failed_login_attempts
-account_locked
-lockout_time
-last_login
-last_logout
-last_password_change
-
-    ---> Conversations <---
-    id (Primary Key)
-    user_one_id (Foregin Key)
-    user_two_id (Foregin Key)
-    last_message_id
-    last_message_date
-    created_at
-    updated_at
-
-    ---> Messages <---
-    id (Primary Key)
-    conversation_id (Foregin Key)
-    sender_id (Foregin Key)
-    recipient_id (Foregin Key)
-    message
-    is_read
-    date_sent
-    date_read
 

@@ -144,3 +144,99 @@ export const handleGetMessages = async (req, res, connection) => {
     connection.release();
   }
 };
+
+export const handleGetInbox = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    // Start a transaction
+    await connection.beginTransaction();
+
+    // Query to get conversations where the user is either user_one_id or user_two_id
+    const [conversations] = await connection.query(
+      `SELECT 
+        conv.id AS conversation_id,
+        conv.user_one_id,
+        conv.user_two_id,
+        conv.last_message_id,
+        conv.last_message_date,
+        CONCAT(ua1.first_name, ' ', IFNULL(ua1.middle_name, ''), ' ', ua1.last_name) AS user_one_name,
+        CONCAT(ua2.first_name, ' ', IFNULL(ua2.middle_name, ''), ' ', ua2.last_name) AS user_two_name,
+        m.message,
+        m.is_read,
+        m.sender_id,
+        m.recipient_id,
+        m.date_sent
+      FROM 
+        Conversations conv
+      LEFT JOIN User_Account ua1 ON conv.user_one_id = ua1.id
+      LEFT JOIN User_Account ua2 ON conv.user_two_id = ua2.id
+      LEFT JOIN Messages m ON conv.last_message_id = m.id
+      WHERE 
+        (conv.user_one_id = ? OR conv.user_two_id = ?)
+      ORDER BY conv.last_message_date DESC`,
+      [id, id]
+    );
+
+    if (conversations.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No conversations found.",
+      });
+    }
+
+    // Commit the transaction
+    await connection.commit();
+
+    // Return the list of conversations as the inbox
+    res.status(200).json({
+      success: true,
+      data: conversations.map((conv) => ({
+        conversation_id: conv.conversation_id,
+        user_one: {
+          id: conv.user_one_id,
+          full_name: conv.user_one_name.trim(), // Trim in case middle name is null
+        },
+        user_two: {
+          id: conv.user_two_id,
+          full_name: conv.user_two_name.trim(), // Trim in case middle name is null
+        },
+        last_message: {
+          message: conv.message,
+          is_read: conv.is_read,
+          sender_id: conv.sender_id,
+          recipient_id: conv.recipient_id,
+          date_sent: conv.date_sent,
+        },
+      })),
+    });
+  } catch (error) {
+    // Rollback in case of any errors
+    await connection.rollback();
+    console.error("Error fetching inbox:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching the inbox.",
+    });
+  } finally {
+    // Release the connection
+    connection.release();
+  }
+};
+
+// export const handleGetInbox = async (req, res, connection) => {
+//   const { id } = req.params;
+
+//   try {
+//     await connection.beginTransaction();
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching inboxx:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching inbox.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
