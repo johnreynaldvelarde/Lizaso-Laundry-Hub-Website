@@ -198,7 +198,39 @@ const TrackOrders = () => {
                         {orders[currentIndex].service_request.user_name}
                       </span>
                     </p>
-                    <button
+
+                    <div className="relative inline-block">
+                      <button
+                        className={`bg-[#5787C8] text-white px-4 py-2 rounded mt-2 ${
+                          orders[currentIndex].service_request.user_id
+                            ? "hover:bg-[#3E5B8C]"
+                            : "opacity-50 cursor-not-allowed"
+                        }`}
+                        onClick={() => {
+                          openPopup(
+                            "messageStaff",
+                            orders[currentIndex].service_request.user_id
+                          );
+                        }}
+                        disabled={!orders[currentIndex].service_request.user_id}
+                      >
+                        Message the Delivery Staff
+                      </button>
+
+                      {/* Badge element */}
+                      {orders[currentIndex].service_request.user_id > 0 &&
+                        orders[currentIndex].service_request.unread_messages >
+                          0 && (
+                          <span className="absolute top-3 right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                            {
+                              orders[currentIndex].service_request
+                                .unread_messages
+                            }
+                          </span>
+                        )}
+                    </div>
+
+                    {/* <button
                       className={`bg-[#5787C8] text-white px-4 py-2 rounded mt-2 ${
                         orders[currentIndex].service_request.user_id
                           ? "hover:bg-[#3E5B8C]"
@@ -213,7 +245,7 @@ const TrackOrders = () => {
                       disabled={!orders[currentIndex].service_request.user_id}
                     >
                       Message the Delivery Staff
-                    </button>
+                    </button> */}
                   </div>
                   <div>
                     <p className="mb-2 flex" style={{ color: styles.primary }}>

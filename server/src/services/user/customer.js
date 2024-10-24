@@ -403,7 +403,14 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         COALESCE(lu.unit_name, 'Waiting...') AS unit_name,
         COALESCE(la.id, 'Waiting for total amount...') AS assignment_id,
         COALESCE(t.status, 'Waiting...') AS transaction_status,
-        COALESCE(sr.payment_method, 'Waiting...') AS payment_method
+        COALESCE(sr.payment_method, 'Waiting...') AS payment_method,
+        (
+          SELECT COUNT(*)
+          FROM Messages m
+          INNER JOIN Conversations conv ON conv.id = m.conversation_id
+          WHERE m.is_read = 0 
+          AND m.recipient_id = ?
+        ) AS unread_messages
       FROM 
         Service_Request sr
       LEFT JOIN 
@@ -426,7 +433,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         sr.request_date DESC;
     `;
 
-    const [rows] = await connection.execute(query, [id]);
+    const [rows] = await connection.execute(query, [id, id]);
 
     // Structure the response data
     const result = rows.reduce((acc, row) => {
@@ -461,6 +468,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
             assignment_id: row.assignment_id,
             transaction_status: row.transaction_status,
             payment_method: row.payment_method,
+            unread_messages: row.unread_messages,
           },
           progress: [],
           total_amount: null,
