@@ -1,7 +1,3 @@
-// export const handleSetNewMessages = async (req, res, connection) => {
-//   const {} = req.body;
-// };
-
 export const handleSetNewMessages = async (req, res, connection) => {
   const { sender_id, recipient_id, message } = req.body;
 
@@ -219,6 +215,94 @@ export const handleGetInbox = async (req, res, connection) => {
     connection.release();
   }
 };
+
+export const handleUpdateMessageIsRead = async (req, res, connection) => {
+  const { user_one_id, user_two_id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    // Step 1: Check if the conversation exists and get its ID
+    const [conversationResult] = await connection.query(
+      `SELECT id FROM Conversations 
+         WHERE (user_one_id = ? AND user_two_id = ?) 
+            OR (user_one_id = ? AND user_two_id = ?);`,
+      [user_one_id, user_two_id, user_two_id, user_one_id]
+    );
+
+    if (conversationResult.length === 0) {
+      // If no conversation exists, commit the transaction and return
+      await connection.commit();
+      return res.status(404).json({
+        success: false,
+        message: "No conversation found between these users.",
+      });
+    }
+
+    const conversationId = conversationResult[0].id;
+
+    // Step 2: Update `is_read` to 1 in Messages table where recipient_id matches user_one_id
+    const [updateResult] = await connection.query(
+      `UPDATE Messages 
+         SET is_read = 1 
+         WHERE conversation_id = ? 
+           AND recipient_id = ?;`,
+      [conversationId, user_one_id]
+    );
+
+    // Commit the transaction after updating
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Messages marked as read.",
+      affectedRows: updateResult.affectedRows,
+    });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating messages.",
+      error: error.message,
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+// export const handleUpdateMessageIsRead = async (req, res, connection) => {
+//   const { user_one_id, user_two_id } = req.params;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const [a] = await connection.query(
+//       `SELECT id FROM Conversations
+//          WHERE (user_one_id = ? AND user_two_id = ?)
+//             OR (user_one_id = ? AND user_two_id = ?);`,
+//       [sender_id, recipient_id, recipient_id, sender_id]
+//     );
+
+//     const [result] = await connection.query(query, []);
+
+//     await connection.commit();
+
+//     res.status(201).json({
+//       success: true,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     res.status(500).json({
+//       success: false,
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
+
+// export const handleSetNewMessages = async (req, res, connection) => {
+//   const {} = req.body;
+// };
 
 // export const handleGetInbox = async (req, res, connection) => {
 //   const { id } = req.params;

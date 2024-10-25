@@ -180,6 +180,7 @@ export const handleGetDelivery = async (req, res, connection) => {
           sr.pickup_date,
           sr.delivery_date,
           sr.request_status,
+          sr.payment_method,
           st.service_name,
           st.default_price,
           a.address_line,
@@ -190,9 +191,17 @@ export const handleGetDelivery = async (req, res, connection) => {
           (
             SELECT COUNT(*)
             FROM Messages m
-            INNER JOIN Conversations conv ON conv.id = m.conversation_id
             WHERE m.is_read = 0 
             AND m.recipient_id = ?
+            AND m.conversation_id IN (
+              -- Subquery to find conversation between user_id and customer_id
+              SELECT conv.id
+              FROM Conversations conv
+              WHERE 
+                (conv.user_one_id = ? AND conv.user_two_id = c.id) 
+                OR 
+                (conv.user_one_id = c.id AND conv.user_two_id = ?)
+            )
           ) AS unread_messages
         FROM 
           Service_Request sr
@@ -208,12 +217,17 @@ export const handleGetDelivery = async (req, res, connection) => {
           Addresses store_address ON s.address_id = store_address.id 
         WHERE 
           sr.store_id = ? 
-          AND sr.request_status IN ('Pending Pickup', 'Ongoing Pickup', 'Canceled')
+          AND sr.request_status IN ('Ready for Delivery', 'Out for Delivery', 'Completed Delivery')
           AND st.isArchive = 0
           AND c.isArchive = 0
       `;
 
-    const [rows] = await connection.execute(query, [user_id, id]);
+    const [rows] = await connection.execute(query, [
+      user_id,
+      user_id,
+      user_id,
+      id,
+    ]);
 
     // Compute distances for each row
     const resultsWithDistance = rows.map((row) => {

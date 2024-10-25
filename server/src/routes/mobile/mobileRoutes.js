@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  handleGetDelivery,
   handleGetLaundryPickup,
   handleSetMessagesSenderIsStaff,
   handleUpdateServiceRequestBackToPending,
@@ -26,6 +27,7 @@ import {
   handleGetInbox,
   handleGetMessages,
   handleSetNewMessages,
+  handleUpdateMessageIsRead,
 } from "../../services/useMessages.js";
 
 const router = express.Router();
@@ -71,6 +73,18 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetInbox(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/mobile-customer-staff/:user_one_id/:user_two_id/put-update-message",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      console.log(1);
+      await handleUpdateMessageIsRead(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
@@ -166,6 +180,18 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetLaundryPickup(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/staff/:id/get-laundry-delivery",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetDelivery(req, res, connection);
     } catch (error) {
       console.error("Error retrieving service request:", error);
       res.status(500).json({ error: "Internal Server Error" });
