@@ -244,7 +244,8 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
     // Step 2: Update `is_read` to 1 in Messages table where recipient_id matches user_one_id
     const [updateResult] = await connection.query(
       `UPDATE Messages 
-         SET is_read = 1 
+         SET is_read = 1,
+             date_read = NOW()
          WHERE conversation_id = ? 
            AND recipient_id = ?;`,
       [conversationId, user_one_id]
