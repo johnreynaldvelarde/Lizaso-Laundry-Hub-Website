@@ -85,10 +85,6 @@ export const handleSetNewMessages = async (req, res, connection) => {
 export const handleGetMessages = async (req, res, connection) => {
   const { user_one_id, user_two_id } = req.params;
 
-  console.log(req.params);
-  console.log(user_one_id);
-  console.log(user_two_id);
-
   try {
     await connection.beginTransaction();
 
