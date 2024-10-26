@@ -171,8 +171,8 @@ export const handleGetInbox = async (req, res, connection) => {
     );
 
     if (conversations.length === 0) {
-      return res.status(404).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "No conversations found.",
       });
     }
@@ -233,8 +233,8 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
     if (conversationResult.length === 0) {
       // If no conversation exists, commit the transaction and return
       await connection.commit();
-      return res.status(404).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "No conversation found between these users.",
       });
     }

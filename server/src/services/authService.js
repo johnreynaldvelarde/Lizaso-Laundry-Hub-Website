@@ -14,7 +14,6 @@ const createToken = (payload, secret, expiresIn) => {
 
 export const handleLogin = async (req, res, db) => {
   const { username, password } = req.body;
-  console.log(req.body);
 
   try {
     let user, userType, roleName, permissions;
