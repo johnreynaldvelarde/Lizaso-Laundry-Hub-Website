@@ -34,14 +34,25 @@ import DateCell from "../../../../components/table/DateCell";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { viewStoreByAdmin } from "../../../../services/api/getApi";
 
-const PerformanceMetrics = ({ storeName }) => {
-  const performanceData = {
-    totalSales: "$20,000",
-    inStoreVisits: 300,
-    remoteServiceCustomers: 200,
-    performanceRating: 4.5,
-  };
+const PerformanceMetrics = ({
+  storeName,
+  online_count,
+  walkin_count,
+  average_rating,
+  total_sales,
+}) => {
+  const formattedRating =
+    typeof average_rating === "number" && !isNaN(average_rating)
+      ? average_rating.toFixed(1)
+      : "0.0";
 
+  const formattedTotalSales =
+    total_sales !== null && !isNaN(Number(total_sales))
+      ? Number(total_sales).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+      : "0.00";
   return (
     <Paper
       sx={{
@@ -69,7 +80,7 @@ const PerformanceMetrics = ({ storeName }) => {
             Total Sales:
           </Typography>
           <Typography fontWeight="bold" sx={{ color: COLORS.secondary }}>
-            {performanceData.totalSales}
+            ₱{formattedTotalSales}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={12} lg={4}>
@@ -77,7 +88,7 @@ const PerformanceMetrics = ({ storeName }) => {
             In-Store Visits:
           </Typography>
           <Typography fontWeight="bold" sx={{ color: COLORS.secondary }}>
-            {performanceData.inStoreVisits}
+            {walkin_count}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={12} lg={4}>
@@ -85,14 +96,14 @@ const PerformanceMetrics = ({ storeName }) => {
             Online Laundry Usage:
           </Typography>
           <Typography fontWeight="bold" sx={{ color: COLORS.secondary }}>
-            {performanceData.remoteServiceCustomers}
+            {online_count}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={12} lg={4}>
           <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
             Performance Rating:
           </Typography>
-          <CustomStarRating rating={performanceData.performanceRating} />
+          <CustomStarRating rating={formattedRating} />
         </Grid>
       </Grid>
     </Paper>
@@ -183,14 +194,14 @@ const SectionAdminStore = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sampleStores.map((store) => (
-                <TableRow key={store.id}>
+              {storeData.map((store) => (
+                <TableRow key={store.store_id}>
                   <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
                     <Typography
                       variant="body2"
                       sx={{ fontWeight: "600", color: COLORS.secondary }}
                     >
-                      # {store.id}
+                      # {store.store_id}
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
@@ -198,23 +209,28 @@ const SectionAdminStore = () => {
                       variant="body2"
                       sx={{ fontWeight: "600", color: COLORS.text }}
                     >
-                      {store.storeName}
+                      {store.store_name}
                     </Typography>
-
-                    <PerformanceMetrics storeName={store.storeName} />
+                    <PerformanceMetrics
+                      storeName={store.storeName}
+                      online_count={store.online_count}
+                      walkin_count={store.walkin_count}
+                      average_rating={store.average_rating}
+                      total_sales={store.total_sales}
+                    />
                   </TableCell>
                   <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
                     <Typography
                       variant="body2"
                       sx={{ fontWeight: "600", color: COLORS.text }}
                     >
-                      {store.storeAddress}
+                      {store.address_line}
                     </Typography>
                     <Typography
                       variant="body2"
                       sx={{ fontWeight: "500", color: COLORS.text4 }}
                     >
-                      {store.storeAddress}
+                      {store.province}, {store.city}
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
@@ -222,7 +238,7 @@ const SectionAdminStore = () => {
                       variant="body2"
                       sx={{ fontWeight: "500", color: COLORS.text4 }}
                     >
-                      {store.storeContact}
+                      {store.store_contact}
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
@@ -234,7 +250,7 @@ const SectionAdminStore = () => {
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
-                    <DateCell dateCreated={store.dateCreated} />
+                    <DateCell dateCreated={store.date_created} />
                   </TableCell>
                   <TableCell sx={{ paddingY: 3, paddingX: 2 }}>
                     <Tooltip title="View Store" arrow>

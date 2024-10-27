@@ -111,6 +111,7 @@ export const handleViewStoreByAdmin = async (req, res, connection) => {
           s.store_name,
           s.store_contact,
           s.store_email,
+          s.date_created,
           a.address_line,
           a.country,
           a.province,
@@ -126,14 +127,14 @@ export const handleViewStoreByAdmin = async (req, res, connection) => {
       RequestCounts AS (
         SELECT 
           sr.store_id,
-          sr.customer_type,
-          COUNT(sr.id) AS request_count
+          SUM(CASE WHEN sr.customer_type = 'Online' THEN 1 ELSE 0 END) AS online_count,
+          SUM(CASE WHEN sr.customer_type = 'Walk-in' THEN 1 ELSE 0 END) AS walkin_count
         FROM 
           Service_Request sr
         JOIN 
           StoreInfo si ON sr.store_id = si.store_id
         GROUP BY 
-          sr.store_id, sr.customer_type
+          sr.store_id
       ),
       Sales AS (
         SELECT 
@@ -168,8 +169,8 @@ export const handleViewStoreByAdmin = async (req, res, connection) => {
 
       SELECT 
         si.*,
-        rc.customer_type,
-        rc.request_count,
+        COALESCE(rc.online_count, 0) AS online_count,  -- Count of online customers
+        COALESCE(rc.walkin_count, 0) AS walkin_count,  -- Count of walk-in customers
         sa.total_sales,
         COALESCE(r.average_rating, 0) AS average_rating -- Return 0 if no ratings exist
       FROM 
@@ -184,7 +185,7 @@ export const handleViewStoreByAdmin = async (req, res, connection) => {
 
     const [rows] = await connection.execute(query);
 
-    await connection.commit();
+    await connection.commit(); // Commit the transaction
 
     res.status(200).json({
       success: true,
