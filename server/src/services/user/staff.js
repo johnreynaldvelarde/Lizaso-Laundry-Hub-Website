@@ -526,6 +526,120 @@ export const handleUpdateServiceRequestFinishPickup = async (
   }
 };
 
+export const handleUpdateServiceRequestReadyDeliveryToOngoing = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Service_Request
+      SET request_status = 'Out for Delivery'
+      WHERE id = ?`;
+
+    await connection.execute(updateQuery, [id]);
+
+    const updateProgressQuery = `
+      UPDATE Service_Progress
+      SET completed = true,
+          status_date = NOW()
+      WHERE service_request_id = ? AND stage = 'Out for Delivery'`;
+
+    await connection.execute(updateProgressQuery, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Request status updated to Completed Pickup.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating service request status:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the request.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+export const handleUpdateServiceRequestFinishTheDelivery = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Service_Request
+      SET request_status = 'Completed Delivery',
+          delivery_date = NOW(),
+          isDelivery = TRUE
+      WHERE id = ?`;
+
+    await connection.execute(updateQuery, [id]);
+
+    const updateProgressQuery = `
+      UPDATE Service_Progress
+      SET completed = true,
+          status_date = NOW()
+      WHERE service_request_id = ? AND stage = 'Completed Delivery'`;
+
+    await connection.execute(updateProgressQuery, [id]);
+
+    // Get the assignment_id from Laundry_Assignment for the given service_request_id
+    const getAssignmentQuery = `
+      SELECT id
+      FROM Laundry_Assignment
+      WHERE service_request_id = ? AND isAssignmentStatus = 1`; // Assuming `1` means Completed
+
+    const [assignmentResult] = await connection.execute(getAssignmentQuery, [
+      id,
+    ]);
+
+    if (assignmentResult.length === 0) {
+      throw new Error(
+        "No completed assignment found for this service request."
+      );
+    }
+
+    const assignmentId = assignmentResult[0].id;
+
+    const updateTransactionQuery = `
+      UPDATE Transactions
+      SET status = 'Completed', updated_at = NOW()
+      WHERE assignment_id = ?`;
+
+    await connection.execute(updateTransactionQuery, [assignmentId]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message:
+        "Request status updated to Completed Delivery, and transaction marked as Completed.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating service request status:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the request.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
 //#SCAN QRCODE
 export const handleUpdateServiceRequestUsingQrCode = async (
   req,
@@ -602,6 +716,27 @@ export const handleUpdateServiceRequestUsingQrCode = async (
          WHERE service_request_id = ? AND (stage = 'Out for Delivery' OR stage = 'Completed Delivery')`,
         [id]
       );
+
+      // Get the assignment_id from Laundry_Assignment for the given service_request_id
+      const [assignmentResult] = await connection.execute(
+        `SELECT id 
+       FROM Laundry_Assignment 
+       WHERE service_request_id = ? AND isAssignmentStatus = 1`, // Assuming '1' indicates Completed
+        [id]
+      );
+
+      if (assignmentResult.length > 0) {
+        const assignmentId = assignmentResult[0].id;
+
+        // Update the Transactions status to "Completed" for the obtained assignment_id
+        await connection.execute(
+          `UPDATE Transactions 
+           SET status = 'Completed', 
+               updated_at = NOW() 
+           WHERE assignment_id = ?`,
+          [assignmentId]
+        );
+      }
     } else {
       return res.status(200).json({
         success: false,

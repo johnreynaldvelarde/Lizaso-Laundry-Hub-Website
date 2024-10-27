@@ -171,8 +171,8 @@ export const handleGetInbox = async (req, res, connection) => {
     );
 
     if (conversations.length === 0) {
-      return res.status(404).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "No conversations found.",
       });
     }
@@ -216,6 +216,149 @@ export const handleGetInbox = async (req, res, connection) => {
   }
 };
 
+export const handleGetMessagesOnlyWeb = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const [messageRows] = await connection.query(
+      `SELECT * FROM Messages WHERE conversation_id = ? ORDER BY date_sent ASC`,
+      [id]
+    );
+
+    // Commit transaction
+    await connection.commit();
+
+    if (messageRows.length > 0) {
+      res.status(200).json({
+        success: true,
+        data: messageRows, // Return the fetched messages
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        data: [],
+        message: "No messages found for this conversation.",
+      });
+    }
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching messages:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching messages.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+export const handleGetInboxOnlyAdmin = async (req, res, connection) => {
+  const { id } = req.params; // user_id
+
+  try {
+    // Start a transaction
+    await connection.beginTransaction();
+
+    // Query to get conversations where the user is either user_one_id or user_two_id
+    const [conversations] = await connection.query(
+      `SELECT 
+        conv.id AS conversation_id,
+        conv.user_one_id,
+        conv.user_two_id,
+        conv.last_message_id,
+        conv.last_message_date,
+        CONCAT(ua1.first_name, ' ', IFNULL(ua1.middle_name, ''), ' ', ua1.last_name) AS user_one_name,
+        CONCAT(ua2.first_name, ' ', IFNULL(ua2.middle_name, ''), ' ', ua2.last_name) AS user_two_name,
+        ua1.user_type AS user_type_one,
+        ua2.user_type AS user_type_two,
+        m.message,
+        m.is_read,
+        m.sender_id,
+        m.recipient_id,
+        m.date_sent
+      FROM 
+        Conversations conv
+      LEFT JOIN User_Account ua1 ON conv.user_one_id = ua1.id
+      LEFT JOIN User_Account ua2 ON conv.user_two_id = ua2.id
+      LEFT JOIN Messages m ON conv.last_message_id = m.id
+      WHERE 
+        (conv.user_one_id = ? OR conv.user_two_id = ?)
+      ORDER BY conv.last_message_date DESC`,
+      [id, id]
+    );
+
+    // If no conversations exist, fetch the list of users
+    if (conversations.length === 0) {
+      // Query to get all users except the current user
+      const [users] = await connection.query(
+        `SELECT 
+          id,
+          CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) AS full_name,
+          user_type
+         FROM User_Account
+         WHERE id != ? AND isStatus = 0 AND isArchive = 0`,
+        [id]
+      );
+
+      // Commit the transaction
+      await connection.commit();
+
+      // Return user list with "Start a conversation" option
+      return res.status(200).json({
+        success: true,
+        message: "No conversations found. Here is a list of users.",
+        data: users.map((user) => ({
+          user_id: user.id,
+          full_name: user.full_name.trim(), // Trim to handle potential null middle names
+          user_type: user.user_type,
+          start_conversation: "Start a conversation",
+        })),
+      });
+    }
+
+    // Commit the transaction
+    await connection.commit();
+
+    // Return the list of conversations as the inbox if conversations are found
+    res.status(200).json({
+      success: true,
+      data: conversations.map((conv) => ({
+        conversation_id: conv.conversation_id,
+        user_one: {
+          id: conv.user_one_id,
+          full_name: conv.user_one_name.trim(),
+          user_type_one: conv.user_type_one,
+        },
+        user_two: {
+          id: conv.user_two_id,
+          full_name: conv.user_two_name.trim(),
+          user_type_two: conv.user_type_one,
+        },
+        last_message: {
+          message: conv.message,
+          is_read: conv.is_read,
+          sender_id: conv.sender_id,
+          recipient_id: conv.recipient_id,
+          date_sent: conv.date_sent,
+        },
+      })),
+    });
+  } catch (error) {
+    // Rollback in case of any errors
+    await connection.rollback();
+    console.error("Error fetching inbox:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching the inbox.",
+    });
+  } finally {
+    // Release the connection
+    connection.release();
+  }
+};
+
 export const handleUpdateMessageIsRead = async (req, res, connection) => {
   const { user_one_id, user_two_id } = req.params;
 
@@ -233,8 +376,8 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
     if (conversationResult.length === 0) {
       // If no conversation exists, commit the transaction and return
       await connection.commit();
-      return res.status(404).json({
-        success: false,
+      return res.status(200).json({
+        success: true,
         message: "No conversation found between these users.",
       });
     }
@@ -244,7 +387,8 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
     // Step 2: Update `is_read` to 1 in Messages table where recipient_id matches user_one_id
     const [updateResult] = await connection.query(
       `UPDATE Messages 
-         SET is_read = 1 
+         SET is_read = 1,
+             date_read = NOW()
          WHERE conversation_id = ? 
            AND recipient_id = ?;`,
       [conversationId, user_one_id]
@@ -269,54 +413,3 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
     connection.release();
   }
 };
-
-// export const handleUpdateMessageIsRead = async (req, res, connection) => {
-//   const { user_one_id, user_two_id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const [a] = await connection.query(
-//       `SELECT id FROM Conversations
-//          WHERE (user_one_id = ? AND user_two_id = ?)
-//             OR (user_one_id = ? AND user_two_id = ?);`,
-//       [sender_id, recipient_id, recipient_id, sender_id]
-//     );
-
-//     const [result] = await connection.query(query, []);
-
-//     await connection.commit();
-
-//     res.status(201).json({
-//       success: true,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     res.status(500).json({
-//       success: false,
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
-
-// export const handleSetNewMessages = async (req, res, connection) => {
-//   const {} = req.body;
-// };
-
-// export const handleGetInbox = async (req, res, connection) => {
-//   const { id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching inboxx:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching inbox.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };

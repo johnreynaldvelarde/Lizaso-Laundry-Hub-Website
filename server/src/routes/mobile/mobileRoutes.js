@@ -5,6 +5,7 @@ import {
   handleSetMessagesSenderIsStaff,
   handleUpdateServiceRequestBackToPending,
   handleUpdateServiceRequestFinishPickup,
+  handleUpdateServiceRequestReadyDeliveryToOngoing,
   handleUpdateServiceRequestUsingQrCode,
 } from "../../services/user/staff.js";
 import { getPool } from "../../db/dbConfig.js";
@@ -257,6 +258,23 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateServiceRequestFinishPickup(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//# DELIVERY SECTION
+router.put(
+  "/staff/:id/update-request-proceed-delivery",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestReadyDeliveryToOngoing(
+        req,
+        res,
+        connection
+      );
     } catch (error) {
       console.error("Error retrieving service request:", error);
       res.status(500).json({ error: "Internal Server Error" });

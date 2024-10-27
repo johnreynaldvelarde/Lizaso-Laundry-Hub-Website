@@ -95,6 +95,10 @@ npm install qrcode.react
 npm install jspdf
 npm install --save react-to-print
 
+npm install socket.io
+npm install socket.io-client
+
+
 
 
 

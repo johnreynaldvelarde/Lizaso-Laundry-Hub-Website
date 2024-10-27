@@ -125,7 +125,7 @@ const SectionAdminUser = () => {
       fetchRolesData();
       fetchStoresData();
       fetchUsersData();
-    }, 1000);
+    }, 10000);
 
     return () => {
       clearInterval(intervalId);

@@ -82,8 +82,7 @@ isArchive
 
 --> Addresses <--
 id (Primary Key)
-address_line1
-address_line2
+address_line
 country
 province
 city
@@ -149,6 +148,7 @@ qr_code
 qr_code_generated (BOOLEAN)
 isPickup (BOOLEAN)
 isDelivery  (BOOLEAN)
+payment_method
 
 
 --> Service_Type <--
@@ -341,23 +341,16 @@ updated_at
 
 --> Messages <--
 id (Primary Key)
-conversation_id (FOREIGN)
-sender_id 
-receiver_id
-sender_type
-receiver_type
-message
-created_at
-isRead
+conversation_id (FOREIGN KEY)
+sender_id,
+recipient_id,
+message,
+is_read,
+date_send,
+date_read,
 
-#here the customer who start convo to user
-id | user_sender_id | customer_sender_id | user_receiver_id | customer_receiver_id
-41        NULL                  1                  6                    NULL
 
-BUT WHEN THE STAFF REPLAYING BACK ITS CREATE NEW CONVE WHY
-id | user_sender_id | customer_sender_id | user_receiver_id | customer_receiver_id
-41        NULL                  1                  6                    NULL
-42          6                 NULL                 NULL                  1       <--- here the 
+
 
 
 

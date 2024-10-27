@@ -167,8 +167,8 @@ export const handleRegisterCustomer = async (req, res, db) => {
         "Customer",
         isAgreement,
         false,
-        true,
-        true,
+        0,
+        false,
       ]
     );
 
@@ -300,7 +300,6 @@ export const getUserMobileDetails = async (req, res, db) => {
 
 export const handleCheckCustomerDetailsMobile = async (req, res, db) => {
   const { id } = req.params;
-  console.log(id);
 
   try {
     await db.beginTransaction();
@@ -338,8 +337,3 @@ export const handleCheckCustomerDetailsMobile = async (req, res, db) => {
     if (db) db.release();
   }
 };
-
-// const [userAccountResults] = await db.query(
-//   "SELECT id, store_id, address_id, username, mobile_number, first_name, middle_name, last_name, user_type FROM Users_Account WHERE id = ?",
-//   [userId]
-// );

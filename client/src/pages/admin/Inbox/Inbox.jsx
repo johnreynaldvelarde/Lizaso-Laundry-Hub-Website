@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -12,66 +12,55 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { COLORS } from "../../../constants/color";
+import useAuth from "../../../contexts/AuthContext";
+import useMessages from "../../../hooks/common/useMessages";
+import { decryptMessage } from "../../../utils/messages";
 
 const Inbox = () => {
-  const [searchTerm, setSearchTerm] = useState(""); // State to hold search input
-  const conversations = [
-    {
-      id: 1,
-      name: "John Doe",
-      avatar: "https://via.placeholder.com/150",
-      lastMessage: "How are you?",
-      messages: ["Hello!", "How are you?", "I'm doing great!"],
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      avatar: "https://via.placeholder.com/150",
-      lastMessage: "Can we talk later?",
-      messages: ["Hey!", "Can we talk later?"],
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      avatar: "https://via.placeholder.com/150",
-      lastMessage: "See you soon!",
-      messages: ["See you soon!", "Bye!"],
-    },
-  ];
-
-  // State to manage the selected conversation
-  const [selectedConversation, setSelectedConversation] = useState(
-    conversations[0]
-  );
+  const { userDetails } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
   const [newMessage, setNewMessage] = useState("");
+  const [fullname, setFullname] = useState("");
+  const messagesEndRef = useRef(null); // ref for scrolling
 
-  const filteredConversations = conversations.filter((conversation) =>
-    conversation.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const { inbox, loading, error, selectedConversation, selectConversation } =
+    useMessages(userDetails.userId);
+
+  // Filter conversations based on search term
+  const filteredConversations = inbox.filter((conversation) =>
+    conversation.user_one.full_name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
+
+  // Automatically select the first conversation if none is selected
+  useEffect(() => {
+    if (!selectedConversation && inbox.length > 0) {
+      selectConversation(inbox[0].conversation_id);
+      setFullname(inbox[0].user_one.full_name);
+    }
+  }, [inbox, selectedConversation, selectConversation]);
+
+  // Scroll to the bottom when messages change or a conversation is selected
+  useEffect(() => {
+    // Use a slight delay to ensure the container has rendered completely
+    if (messagesEndRef.current) {
+      setTimeout(() => {
+        messagesEndRef.current.scrollIntoView({ behavior: "instant" });
+      }, 0);
+    }
+  }, [selectedConversation, selectedConversation?.messages]);
 
   // Function to handle sending messages
-  const handleSendMessage = () => {
-    if (newMessage.trim() !== "") {
-      const updatedConversation = {
-        ...selectedConversation,
-        messages: [...selectedConversation.messages, `You: ${newMessage}`],
-      };
-      setSelectedConversation(updatedConversation);
-      setNewMessage(""); // Clear the input
-    }
+  const handleSendMessage = async () => {
+    // Logic for sending a message here
   };
 
-  // Use media query to determine if the screen size is small
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   return (
     <Box sx={{ pt: "100px" }}>
-      <Box
-        sx={{
-          display: "flex",
-          height: "calc(100vh - 120px)",
-        }}
-      >
+      <Box sx={{ display: "flex", height: "calc(100vh - 120px)" }}>
         {/* Left side - Inbox list, hidden on small screens */}
         {!isSmallScreen && (
           <Box
@@ -95,49 +84,50 @@ const Inbox = () => {
             >
               Inbox
             </Typography>
-
             <Divider />
-
             <TextField
               variant="outlined"
               placeholder="Search name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{
-                margin: "16px",
-                borderRadius: "8px",
-                width: "90%",
-              }}
+              sx={{ margin: "16px", borderRadius: "8px", width: "90%" }}
             />
             <List>
-              {conversations.map((conversation) => {
-                const isSelected = selectedConversation.id === conversation.id; // Check if this conversation is selected
+              {filteredConversations.map((conversation) => {
+                const isSelected =
+                  selectedConversation?.conversation_id ===
+                  conversation.conversation_id;
+
+                const decryptedMessage = decryptMessage(
+                  conversation.last_message.message
+                );
 
                 return (
                   <ListItem
                     component="button"
-                    key={conversation.id}
-                    onClick={() => setSelectedConversation(conversation)} // Update selected conversation
+                    key={conversation.conversation_id}
+                    onClick={() => {
+                      selectConversation(conversation.conversation_id);
+                      setFullname(conversation.user_one.full_name);
+                    }}
                     sx={{
-                      borderRadius: "10px", // Rounded corners for list item
+                      borderRadius: "10px",
                       padding: "10px 16px",
-                      mb: "8px", // Space between items
+                      mb: "8px",
                       backgroundColor: isSelected
                         ? COLORS.secondaryLight
-                        : "transparent", // Change background based on selection
-                      "&:hover": {
-                        backgroundColor: "#E8F0FE", // Hover effect
-                      },
+                        : "transparent",
+                      "&:hover": { backgroundColor: "#E8F0FE" },
                     }}
                   >
                     <Avatar
-                      src={conversation.avatar}
-                      alt={conversation.name}
+                      src={conversation.user_one.avatar}
+                      alt={conversation.user_one.full_name}
                       sx={{ marginRight: "10px" }}
                     />
                     <ListItemText
-                      primary={conversation.name}
-                      secondary={conversation.lastMessage}
+                      primary={conversation.user_one.full_name}
+                      secondary={decryptedMessage}
                       primaryTypographyProps={{ fontWeight: "500" }}
                       secondaryTypographyProps={{ color: "gray" }}
                     />
@@ -151,7 +141,7 @@ const Inbox = () => {
         {/* Right side - Conversation */}
         <Box
           sx={{
-            width: isSmallScreen ? "100%" : "70%", // Full width on small screens
+            width: isSmallScreen ? "100%" : "70%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -164,50 +154,50 @@ const Inbox = () => {
           }}
         >
           {/* Chat header */}
-          <Box
-            sx={{
-              borderBottom: `1px solid ${COLORS.border2}`, // Border for separation
-              paddingBottom: "8px",
-              marginBottom: "16px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Avatar
-              src={selectedConversation.avatar}
-              alt={selectedConversation.name}
-              sx={{ marginRight: "10px" }}
-            />
-            <Typography variant="h6" fontWeight="bold" color={COLORS.secondary}>
-              {selectedConversation.name}
-            </Typography>
-          </Box>
+          {selectedConversation && (
+            <Box
+              sx={{
+                borderBottom: `1px solid ${COLORS.border2}`,
+                paddingBottom: "8px",
+                marginBottom: "16px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Avatar sx={{ marginRight: "10px" }} />
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                color={COLORS.secondary}
+              >
+                {fullname}
+              </Typography>
+            </Box>
+          )}
 
           {/* Chat messages */}
           <Box
             sx={{
               flexGrow: 1,
-              overflowY: "auto", // Scrollable if content overflows
+              overflowY: "auto",
               paddingBottom: "16px",
-              borderRadius: "8px", // Rounded for message box
-              padding: "10px", // Padding inside chat box
+              borderRadius: "8px",
+              padding: "10px",
               display: "flex",
-              flexDirection: "column", // Change to default column direction
+              flexDirection: "column",
               marginBottom: 1,
-              // Additional styles
-              overflow: "hidden", // Prevent horizontal scrolling
             }}
           >
-            {/* Display chat messages */}
-            {selectedConversation.messages.map((message, index) => {
-              const isSentByUser = message.startsWith("You:"); // Identify user-sent messages
+            {selectedConversation?.messages?.map((message, index) => {
+              const isSentByUser = message.sender_id === userDetails.userId;
+              const decryptedMessage = decryptMessage(message.message);
 
               return (
                 <Box
                   key={index}
                   sx={{
                     display: "flex",
-                    justifyContent: isSentByUser ? "flex-end" : "flex-start", // Align right for sent, left for received
+                    justifyContent: isSentByUser ? "flex-end" : "flex-start",
                     mb: "8px",
                   }}
                 >
@@ -216,50 +206,45 @@ const Inbox = () => {
                       padding: "10px",
                       backgroundColor: isSentByUser
                         ? COLORS.secondary
-                        : "#F0F0F0", // Blue for sent, light gray for received
-                      borderRadius: "18px", // Rounded corners
-                      maxWidth: "60%", // Limit message width
-                      color: isSentByUser ? "#fff" : COLORS.primary, // White text for sent messages
-                      textAlign: isSentByUser ? "right" : "left", // Align text accordingly
-                      overflow: "hidden", // Prevent horizontal overflow
-                      overflowWrap: "break-word", // Break long words to prevent overflow
-                      wordWrap: "break-word", // Support for older browsers
-                      whiteSpace: "normal", // Allow text to wrap
+                        : "#F0F0F0",
+                      borderRadius: "18px",
+                      maxWidth: "60%",
+                      color: isSentByUser ? "#fff" : COLORS.primary,
+                      textAlign: isSentByUser ? "right" : "left",
+                      overflowWrap: "break-word",
+                      whiteSpace: "normal",
                     }}
                   >
-                    {message.replace("You: ", "")}{" "}
-                    {/* Remove the "You:" label from the message */}
+                    {decryptedMessage}
                   </Box>
                 </Box>
               );
             })}
+            <div ref={messagesEndRef} />
           </Box>
 
-          {/* Input box for typing messages */}
-          <Box
-            sx={{
-              display: "flex",
-              borderTop: "1px solid #e0e0e0",
-              paddingTop: "8px",
-            }}
-          >
+          {/* Message input */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <TextField
-              fullWidth
               variant="outlined"
+              fullWidth
               placeholder="Type a message..."
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)} // Update input value
-              sx={{ marginRight: "10px", borderRadius: "8px" }}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
             />
             <Button
+              variant="contained"
               onClick={handleSendMessage}
               sx={{
-                borderRadius: "8px",
-                backgroundColor: COLORS.secondary,
+                marginLeft: "8px",
                 color: COLORS.white,
-                "&:hover": {
-                  backgroundColor: COLORS.secondaryHover,
-                },
+                background: COLORS.secondary,
+                textTransform: "none",
               }}
             >
               Send
@@ -272,3 +257,269 @@ const Inbox = () => {
 };
 
 export default Inbox;
+
+// import React, { useState } from "react";
+// import {
+//   Box,
+//   Typography,
+//   List,
+//   ListItem,
+//   ListItemText,
+//   Divider,
+//   TextField,
+//   Button,
+//   Avatar,
+//   useMediaQuery,
+// } from "@mui/material";
+// import { COLORS } from "../../../constants/color";
+// import useAuth from "../../../contexts/AuthContext";
+// import useMessages from "../../../hooks/common/useMessages";
+// import { decryptMessage } from "../../../utils/messages";
+
+// const Inbox = () => {
+//   const { userDetails } = useAuth();
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [newMessage, setNewMessage] = useState("");
+//   const [fullname, setFullname] = useState("");
+//   const { inbox, loading, error, selectedConversation, selectConversation } =
+//     useMessages(userDetails.userId);
+
+//   // Filter conversations based on search term
+//   const filteredConversations = inbox.filter((conversation) =>
+//     conversation.user_one.full_name
+//       .toLowerCase()
+//       .includes(searchTerm.toLowerCase())
+//   );
+
+//   // Function to handle sending messages
+//   const handleSendMessage = async () => {
+//     // if (newMessage.trim() !== "" && selectedConversation) {
+//     //   try {
+//     //     const response = await axiosPrivate.post(
+//     //       `/inbox/${selectedConversation.conversation_id}/send-message`,
+//     //       { message: newMessage }
+//     //     );
+//     //     // Update selected conversation messages locally
+//     //     setSelectedConversation((prev) => ({
+//     //       ...prev,
+//     //       messages: [
+//     //         ...(prev.messages || []),
+//     //         {
+//     //           message: newMessage, // Include the new message
+//     //           sender_id: userDetails.userId, // Set sender_id for tracking
+//     //           date_sent: new Date().toISOString(), // Add a timestamp
+//     //           is_read: 0, // Mark as unread (or adjust as needed)
+//     //         },
+//     //       ],
+//     //     }));
+//     //     setNewMessage(""); // Clear the input
+//     //   } catch (error) {
+//     //     console.error("Failed to send message:", error);
+//     //   }
+//     // }
+//   };
+
+//   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+
+//   return (
+//     <Box sx={{ pt: "100px" }}>
+//       <Box sx={{ display: "flex", height: "calc(100vh - 120px)" }}>
+//         {/* Left side - Inbox list, hidden on small screens */}
+//         {!isSmallScreen && (
+//           <Box
+//             sx={{
+//               width: "30%",
+//               overflowY: "auto",
+//               border: `1px solid ${COLORS.border2}`,
+//               borderRadius: "10px",
+//               padding: "10px",
+//               backgroundColor: COLORS.white,
+//               boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+//             }}
+//           >
+//             <Typography
+//               variant="h6"
+//               sx={{
+//                 padding: "16px",
+//                 fontWeight: "bold",
+//                 color: COLORS.secondary,
+//               }}
+//             >
+//               Inbox
+//             </Typography>
+//             <Divider />
+//             <TextField
+//               variant="outlined"
+//               placeholder="Search name..."
+//               value={searchTerm}
+//               onChange={(e) => setSearchTerm(e.target.value)}
+//               sx={{ margin: "16px", borderRadius: "8px", width: "90%" }}
+//             />
+//             <List>
+//               {filteredConversations.map((conversation) => {
+//                 const isSelected =
+//                   selectedConversation?.conversation_id ===
+//                   conversation.conversation_id;
+
+//                 const decryptedMessage = decryptMessage(
+//                   conversation.last_message.message
+//                 );
+
+//                 return (
+//                   <ListItem
+//                     component="button"
+//                     key={conversation.conversation_id}
+//                     onClick={() => {
+//                       selectConversation(conversation.conversation_id);
+//                       setFullname(conversation.user_one.full_name);
+//                     }}
+//                     sx={{
+//                       borderRadius: "10px",
+//                       padding: "10px 16px",
+//                       mb: "8px",
+//                       backgroundColor: isSelected
+//                         ? COLORS.secondaryLight
+//                         : "transparent",
+//                       "&:hover": { backgroundColor: "#E8F0FE" },
+//                     }}
+//                   >
+//                     <Avatar
+//                       src={conversation.user_one.avatar}
+//                       alt={conversation.user_one.full_name}
+//                       sx={{ marginRight: "10px" }}
+//                     />
+//                     <ListItemText
+//                       primary={conversation.user_one.full_name}
+//                       secondary={decryptedMessage}
+//                       primaryTypographyProps={{ fontWeight: "500" }}
+//                       secondaryTypographyProps={{ color: "gray" }}
+//                     />
+//                   </ListItem>
+//                 );
+//               })}
+//             </List>
+//           </Box>
+//         )}
+
+//         {/* Right side - Conversation */}
+//         <Box
+//           sx={{
+//             width: isSmallScreen ? "100%" : "70%",
+//             display: "flex",
+//             flexDirection: "column",
+//             justifyContent: "space-between",
+//             border: `1px solid ${COLORS.border2}`,
+//             borderRadius: "10px",
+//             padding: "16px",
+//             marginLeft: isSmallScreen ? "0" : "10px",
+//             backgroundColor: COLORS.white,
+//             boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+//           }}
+//         >
+//           {/* Chat header */}
+//           {selectedConversation && (
+//             <Box
+//               sx={{
+//                 borderBottom: `1px solid ${COLORS.border2}`,
+//                 paddingBottom: "8px",
+//                 marginBottom: "16px",
+//                 display: "flex",
+//                 alignItems: "center",
+//               }}
+//             >
+//               <Avatar
+//                 // src={selectedConversation.user_one.avatar}
+//                 // alt={selectedConversation.user_one.full_name}
+//                 sx={{ marginRight: "10px" }}
+//               />
+//               <Typography
+//                 variant="h6"
+//                 fontWeight="bold"
+//                 color={COLORS.secondary}
+//               >
+//                 {fullname}
+//               </Typography>
+//             </Box>
+//           )}
+
+//           {/* Chat messages */}
+//           <Box
+//             sx={{
+//               flexGrow: 1,
+//               overflowY: "auto",
+//               paddingBottom: "16px",
+//               borderRadius: "8px",
+//               padding: "10px",
+//               display: "flex",
+//               flexDirection: "column",
+//               marginBottom: 1,
+//             }}
+//           >
+//             {selectedConversation?.messages?.map((message, index) => {
+//               const isSentByUser = message.sender_id === userDetails.userId;
+//               const decryptedMessage = decryptMessage(message.message);
+
+//               return (
+//                 <Box
+//                   key={index}
+//                   sx={{
+//                     display: "flex",
+//                     justifyContent: isSentByUser ? "flex-end" : "flex-start",
+//                     mb: "8px",
+//                   }}
+//                 >
+//                   <Box
+//                     sx={{
+//                       padding: "10px",
+//                       backgroundColor: isSentByUser
+//                         ? COLORS.secondary
+//                         : "#F0F0F0",
+//                       borderRadius: "18px",
+//                       maxWidth: "60%",
+//                       color: isSentByUser ? "#fff" : COLORS.primary,
+//                       textAlign: isSentByUser ? "right" : "left",
+//                       overflowWrap: "break-word",
+//                       whiteSpace: "normal",
+//                     }}
+//                   >
+//                     {decryptedMessage}
+//                   </Box>
+//                 </Box>
+//               );
+//             })}
+//           </Box>
+
+//           {/* Message input */}
+//           <Box sx={{ display: "flex", alignItems: "center" }}>
+//             <TextField
+//               variant="outlined"
+//               fullWidth
+//               placeholder="Type a message..."
+//               value={newMessage}
+//               onChange={(e) => setNewMessage(e.target.value)}
+//               onKeyPress={(e) => {
+//                 if (e.key === "Enter") {
+//                   handleSendMessage();
+//                 }
+//               }}
+//             />
+//             <Button
+//               variant="contained"
+//               onClick={handleSendMessage}
+//               sx={{
+//                 marginLeft: "8px",
+//                 color: COLORS.white,
+//                 background: COLORS.secondary,
+//                 textTransform: "none",
+//               }}
+//             >
+//               Send
+//             </Button>
+//           </Box>
+//         </Box>
+//       </Box>
+//     </Box>
+//   );
+// };
+
+// export default Inbox;

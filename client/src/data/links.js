@@ -48,22 +48,9 @@ export const links = [
     url: "/main/schedule",
   },
   {
-    name: "Store Operations",
+    name: "Store Management",
     icon: React.createElement(IoStorefrontOutline),
-    subLinks: [
-      {
-        name: "All Branch Store",
-        url: "/main/store",
-      },
-      {
-        name: "Add new store",
-        url: "/main/add-store",
-      },
-      {
-        name: "Branch Statistic",
-        url: "",
-      },
-    ],
+    url: "/main/store",
   },
   {
     name: "Inventory",

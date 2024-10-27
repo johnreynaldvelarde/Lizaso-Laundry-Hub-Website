@@ -9,7 +9,7 @@ mobile_number
 first_name
 middle_name
 last_name
-user_type
+user_type (Manager or Customer or etc)
 isOnline
 isAgreement
 isStatus

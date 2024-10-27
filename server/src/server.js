@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import http from "http"; // Import http to create an HTTP server
 
-// Import routes and middleware
+// Import routes
 import authRoutes from "./routes/authRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import getRoutes from "./routes/getRoutes.js";
@@ -19,6 +20,7 @@ import {
 
 // Database Connection
 import { getPool } from "./db/dbConfig.js";
+import setupSocketIO from "./socket/socket.js";
 
 const app = express();
 const port = process.env.PORT;
@@ -45,6 +47,11 @@ app.use(
   mobileRoutes
 );
 
+// Create an HTTP server
+const server = http.createServer(app);
+
+const io = setupSocketIO(server);
+
 // Ensure main store exists and start the server
 const initServer = async () => {
   try {
@@ -66,14 +73,3 @@ const initServer = async () => {
 };
 
 initServer();
-
-// // Protected routes
-// app.use("/api/protected", authenticateToken, (req, res) => {
-//   res.json({ message: "This is a protected route." });
-// });
-
-// // Error handling middleware
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).json({ message: "Something went wrong!" });
-// });

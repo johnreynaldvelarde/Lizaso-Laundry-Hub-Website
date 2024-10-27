@@ -37,8 +37,6 @@ const styles = {
   // Admin Color
   backgroundColor1: "#f1f1f1",
 
-  // COLORS VARIATIONS
-
   // Basic colors
   white: "#FFFFFF",
   black: "#222222",

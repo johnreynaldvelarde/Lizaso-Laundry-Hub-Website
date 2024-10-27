@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 import { createAdminBasedNewUser } from "../../../../services/api/postApi";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
+import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
 const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
   const { userDetails } = useAuth();
@@ -187,22 +188,13 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
         },
       }}
     >
-      <DialogTitle className="flex flex-col">
-        <div className="flex justify-between items-center mt-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold">Add a new user</span>
-          </div>
-          <IconButton
-            onClick={handleDialogClose}
-            className="text-[#5787C8] hover:text-[#5787C8]"
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Typography variant="body2" color="textSecondary" className="mt-1">
-          Provide the details for the new user below.
-        </Typography>
-      </DialogTitle>
+      {/* Header */}
+      <CustomPopHeaderTitle
+        title={"Add New User"}
+        subtitle={" Provide the details for the new user below"}
+        onClose={onClose}
+      />
+
       <DialogContent>
         {/* Username */}
         <TextField

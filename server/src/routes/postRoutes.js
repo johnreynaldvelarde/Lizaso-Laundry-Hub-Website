@@ -89,9 +89,13 @@ router.post(
 
 // Store Section
 router.post(
-  "/create-store",
+  "/stores/set-new-stores",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleCreateStore(req, res, connection);
+    try {
+      await handleCreateStore(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 
