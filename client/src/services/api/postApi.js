@@ -84,6 +84,17 @@ export const createNewTransactionWalkIn = {
 };
 
 // STORE SECTION
+export const createNewStore = {
+  setNewStore: async (data) => {
+    try {
+      const response = await axiosPrivate.post(`/stores/set-new-stores`, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export const createStore = {
   setStore: async (data) => {
     try {

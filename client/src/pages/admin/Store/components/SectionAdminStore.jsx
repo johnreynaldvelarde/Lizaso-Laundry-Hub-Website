@@ -27,6 +27,8 @@ import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomerAddButton from "../../../../components/common/CustomAddButton";
 import usePopup from "../../../../hooks/common/usePopup";
 import PopAddNewStore from "./PopAddNewStore";
+import CustomMap from "../../../../components/common/CustomMap";
+import CustomStarRating from "../../../../components/common/CustomStartRating";
 
 const PerformanceMetrics = ({ storeName }) => {
   const performanceData = {
@@ -39,41 +41,53 @@ const PerformanceMetrics = ({ storeName }) => {
   return (
     <Box
       sx={{
-        my: 4,
+        my: 2,
         padding: 2,
         border: "1px solid",
-        borderColor: COLORS.secondary,
+        borderColor: COLORS.border,
         borderRadius: "8px",
         backgroundColor: COLORS.white,
       }}
     >
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Performance Metrics for {storeName}
+      <Typography
+        variant="h6"
+        sx={{ mb: 2, color: COLORS.text, fontWeight: 600 }}
+      >
+        Performance Metrics for
+        <span className="ml-1 font-bold" style={{ color: COLORS.secondary }}>
+          {storeName}
+        </span>
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={4}>
-          <Typography>Total Sales:</Typography>
-          <Typography fontWeight="bold">
+          <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
+            Total Sales:
+          </Typography>
+          <Typography fontWeight="bold" sx={{ color: COLORS.secondary }}>
             {performanceData.totalSales}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Typography>In-Store Visits:</Typography>
-          <Typography fontWeight="bold">
+          <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
+            In-Store Visits:
+          </Typography>
+          <Typography fontWeight="bold" sx={{ color: COLORS.secondary }}>
             {performanceData.inStoreVisits}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Typography>Remote Service Usage:</Typography>
-          <Typography fontWeight="bold">
+          <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
+            Remote Service Usage:
+          </Typography>
+          <Typography fontWeight="bold" sx={{ color: COLORS.secondary }}>
             {performanceData.remoteServiceCustomers}
           </Typography>
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Typography>Performance Rating:</Typography>
-          <Typography fontWeight="bold">
-            {performanceData.performanceRating} ⭐
+          <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
+            Performance Rating:
           </Typography>
+          <CustomStarRating rating={performanceData.performanceRating} />
         </Grid>
       </Grid>
     </Box>
@@ -99,22 +113,6 @@ const SectionAdminStore = () => {
       manager: "Jane Smith",
       dateCreated: "2024-02-15",
     },
-    {
-      id: 3,
-      storeName: "LIZASO Branch 2",
-      storeAddress: "789 Oak St, City",
-      storeContact: "345-678-9012",
-      manager: "Michael Johnson",
-      dateCreated: "2024-03-10",
-    },
-    {
-      id: 4,
-      storeName: "LIZASO Branch 3",
-      storeAddress: "321 Pine St, City",
-      storeContact: "456-789-0123",
-      manager: "Emily Davis",
-      dateCreated: "2024-04-20",
-    },
   ];
 
   // Sample notification state
@@ -123,11 +121,6 @@ const SectionAdminStore = () => {
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
-  };
-
-  const handleAddStore = () => {
-    // setSnackbarMessage("New store added successfully!");
-    // setOpenSnackbar(true);
   };
 
   return (
@@ -150,6 +143,56 @@ const SectionAdminStore = () => {
           label={"Add new store"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
         />
+      </Box>
+
+      <Box>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>Store Name</TableCell>
+                <TableCell>Store Address</TableCell>
+                <TableCell>Store Contact</TableCell>
+                <TableCell>Manager</TableCell>
+                <TableCell>Date Created</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sampleStores.map((store) => (
+                <TableRow key={store.id}>
+                  <TableCell>{store.id}</TableCell>
+                  <TableCell>
+                    {store.storeName}
+                    <PerformanceMetrics storeName={store.storeName} />
+                  </TableCell>
+                  <TableCell>{store.storeAddress}</TableCell>
+                  <TableCell>{store.storeContact}</TableCell>
+                  <TableCell>{store.manager}</TableCell>
+                  <TableCell>{store.dateCreated}</TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="View Details" arrow>
+                      <IconButton>
+                        <Eye size={20} color={COLORS.primary} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit Store" arrow>
+                      <IconButton>
+                        <PencilLine size={20} color={COLORS.secondary} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Store" arrow>
+                      <IconButton>
+                        <Trash size={20} color={COLORS.error} />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
 
       {/* Popup */}
@@ -197,55 +240,6 @@ export default SectionAdminStore;
 
 {
   /* Sample list of stores */
-}
-{
-  /* <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Store Name</TableCell>
-              <TableCell>Store Address</TableCell>
-              <TableCell>Store Contact</TableCell>
-              <TableCell>Manager</TableCell>
-              <TableCell>Date Created</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sampleStores.map((store) => (
-              <TableRow key={store.id}>
-                <TableCell>{store.id}</TableCell>
-                <TableCell>
-                  {store.storeName}
-                  <PerformanceMetrics storeName={store.storeName} />
-                </TableCell>
-                <TableCell>{store.storeAddress}</TableCell>
-                <TableCell>{store.storeContact}</TableCell>
-                <TableCell>{store.manager}</TableCell>
-                <TableCell>{store.dateCreated}</TableCell>
-                <TableCell align="right">
-                  <Tooltip title="View Details" arrow>
-                    <IconButton>
-                      <Eye size={20} color={COLORS.primary} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Edit Store" arrow>
-                    <IconButton>
-                      <PencilLine size={20} color={COLORS.secondary} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete Store" arrow>
-                    <IconButton>
-                      <Trash size={20} color={COLORS.error} />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */
 }
 
 {

@@ -25,6 +25,10 @@ import {
   provinces,
   regions,
 } from "../../../../utils/country_selection";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import mark from "../../../../assets/images/mark_1.png";
+import axios from "axios";
+import { createNewStore } from "../../../../services/api/postApi";
 
 const PopAddNewStore = ({ open, onClose }) => {
   // Store
@@ -40,11 +44,41 @@ const PopAddNewStore = ({ open, onClose }) => {
   const [province, setProvince] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-
+  const [latitude, setLatitude] = useState(14.814821);
+  const [longitude, setLongitude] = useState(120.91127);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const defaultIcon = new L.Icon({
+    iconUrl: mark,
+    iconSize: [40, 40],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  });
+
+  const getCoordinates = async () => {
+    const fullAddress = `${addressLine}, ${city}, ${province}, ${region}, ${country}`;
+
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          fullAddress
+        )}`
+      );
+
+      if (response.data.length > 0) {
+        const location = response.data[0];
+        setLatitude(location.lat);
+        setLongitude(location.lon);
+        console.log("Latitude:", location.lat, "Longitude:", location.lon);
+      } else {
+        console.log("No results found for the given address.");
+      }
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+    }
+  };
 
   const validateFields = () => {
     const newErrors = {};
@@ -64,6 +98,8 @@ const PopAddNewStore = ({ open, onClose }) => {
       province: "Province is required",
       city: "City is required",
       postalCode: "Postal code is required",
+      latitude: "Latitude is required",
+      longitude: "Longitude is required",
     };
 
     for (const field in fields) {
@@ -90,6 +126,10 @@ const PopAddNewStore = ({ open, onClose }) => {
         value = city;
       } else if (field === "postalCode") {
         value = postalCode;
+      } else if (field === "latitude") {
+        value = latitude;
+      } else if (field === "longitude") {
+        value = longitude;
       }
 
       if (value === undefined || value === null || value === "") {
@@ -122,6 +162,8 @@ const PopAddNewStore = ({ open, onClose }) => {
       province: setProvince,
       city: setCity,
       postalCode: setPostalCode,
+      latitude: setLatitude,
+      longitude: setLongitude,
     };
 
     const setFieldValue = fieldToStateMap[field];
@@ -156,53 +198,44 @@ const PopAddNewStore = ({ open, onClose }) => {
         longitude: longitude,
       };
 
-      // try {
-      //   const response = await createAdminBasedNewUser.setAdminBasedNewUser(
-      //     storeData
-      //   );
+      try {
+        const response = await createNewStore.setNewStore(storeData);
 
-      //   if (response.success) {
-      //     toast.success(response.message);
-      //     onClose();
-      //   } else {
-      //     setErrors((prevErrors) => ({
-      //       ...prevErrors,
-      //       username: response.message,
-      //     }));
-      //   }
-      // } catch (error) {
-      //   toast.error(
-      //     `Error posting new user: ${error.message || "Something went wrong"}`
-      //   );
-      // } finally {
-      //   setLoading(false);
-      // }
+        if (response.success) {
+          toast.success(response.message);
+          onClose();
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            storeName: response.message_store_name,
+            storeNo: response.message_store_no,
+          }));
+        }
+      } catch (error) {
+        toast.error(
+          `Error posting new user: ${error.message || "Something went wrong"}`
+        );
+      } finally {
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }
   };
 
-  // const handleDialogClose = () => {
-  //   setUsername("");
-  //   setFirstname("");
-  //   setMiddlename("");
-  //   setLastname("");
-  //   setNumber("");
-  //   setEmail("");
-  //   setSelectedRole("");
-  //   setSelectedStatus("");
-  //   setSelectedStore("");
+  const handleMarkerDragEnd = (event) => {
+    const marker = event.target;
+    const newLatLng = marker.getLatLng();
 
-  //   setErrors({});
-
-  //   onClose();
-  // };
+    setLatitude(newLatLng.lat);
+    setLongitude(newLatLng.lng);
+  };
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      maxWidth="lg"
       fullWidth
       PaperProps={{
         style: {
@@ -354,10 +387,44 @@ const PopAddNewStore = ({ open, onClose }) => {
                   },
                 }}
               />
+
+              {/* Map Container */}
+              <Box
+                sx={{
+                  flex: "0 0 auto", // Allows the box to take only the necessary space
+                  height: "300px", // Set a specific height for the map
+                  width: "100%",
+                  padding: 1,
+                  borderWidth: 1,
+                  borderColor: COLORS.border,
+                }}
+              >
+                <MapContainer
+                  center={[latitude, longitude]}
+                  zoom={15}
+                  style={{ height: "100%", width: "100%" }}
+                  scrollWheelZoom={false}
+                >
+                  <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  />
+                  <Marker
+                    position={[latitude, longitude]}
+                    icon={defaultIcon}
+                    draggable={true}
+                    eventHandlers={{
+                      dragend: handleMarkerDragEnd,
+                    }}
+                  >
+                    <Popup>Drag me to change the location</Popup>
+                  </Marker>
+                </MapContainer>
+              </Box>
             </Box>
           </Grid>
 
-          {/* Second Row */}
+          {/* Second Row its Address Section*/}
           <Grid item xs={12} sm={6}>
             <Box
               sx={{
@@ -543,6 +610,53 @@ const PopAddNewStore = ({ open, onClose }) => {
                 onChange={handleInputChange("postalCode")}
                 error={Boolean(errors.postalCode)}
                 helperText={errors.postalCode}
+                sx={{
+                  mb: 2,
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused fieldset": {
+                      borderColor: COLORS.secondary,
+                    },
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: COLORS.secondary,
+                  },
+                }}
+              />
+              {/* Latitude */}
+              <TextField
+                margin="dense"
+                label="Latitude"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={latitude}
+                onChange={handleInputChange("latitude")}
+                error={Boolean(errors.latitude)}
+                helperText={errors.latitude}
+                sx={{
+                  mb: 2,
+                  "& .MuiOutlinedInput-root": {
+                    "&.Mui-focused fieldset": {
+                      borderColor: COLORS.secondary,
+                    },
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: COLORS.secondary,
+                  },
+                }}
+              />
+
+              {/* Longitude */}
+              <TextField
+                margin="dense"
+                label="Longitude"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={longitude}
+                onChange={handleInputChange("longitude")}
+                error={Boolean(errors.longitude)}
+                helperText={errors.longitude}
                 sx={{
                   mb: 2,
                   "& .MuiOutlinedInput-root": {

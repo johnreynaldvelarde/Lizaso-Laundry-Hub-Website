@@ -21,6 +21,7 @@
     "framer-motion": "^11.3.28",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
+    "leaflet": "^1.9.4",
     "material-react-table": "^2.13.1",
     "nprogress": "^0.2.0",
     "qrcode.react": "^4.0.1",
@@ -29,6 +30,7 @@
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^5.2.1",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.25.1",
     "react-to-print": "^3.0.2",
     "socket.io-client": "^4.8.1"

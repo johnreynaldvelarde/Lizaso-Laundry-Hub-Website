@@ -82,8 +82,7 @@ isArchive
 
 --> Addresses <--
 id (Primary Key)
-address_line1
-address_line2
+address_line
 country
 province
 city
