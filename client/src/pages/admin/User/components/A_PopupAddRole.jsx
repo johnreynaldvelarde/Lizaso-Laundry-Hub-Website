@@ -17,6 +17,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
+import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
 const A_PopupAddRole = ({ open, onClose }) => {
   const { userDetails } = useAuth();
@@ -112,22 +113,13 @@ const A_PopupAddRole = ({ open, onClose }) => {
         },
       }}
     >
-      <DialogTitle className="flex flex-col">
-        <div className="flex justify-between items-center mt-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold">Add a New Role</span>
-          </div>
-          <IconButton
-            onClick={handleDialogClose}
-            className="text-[#5787C8] hover:text-[#5787C8]"
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Typography variant="body2" color="textSecondary" className="mt-1">
-          Provide the details for the new role below.
-        </Typography>
-      </DialogTitle>
+      {/* Header */}
+      <CustomPopHeaderTitle
+        title={"Add New Role"}
+        subtitle={" Provide the details for the new role below"}
+        onClose={onClose}
+      />
+
       <DialogContent>
         {/* Role Name */}
         <TextField

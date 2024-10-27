@@ -15,6 +15,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 import { updatePermissions } from "../../../../services/api/putApi";
+import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
 const A_PopupEditPermissions = ({ open, onClose, permissionsData }) => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
@@ -81,22 +82,13 @@ const A_PopupEditPermissions = ({ open, onClose, permissionsData }) => {
         },
       }}
     >
-      <DialogTitle className="flex flex-col">
-        <div className="flex justify-between items-center mt-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold">Edit Role Permission</span>
-          </div>
-          <IconButton
-            onClick={onClose}
-            className="text-[#5787C8] hover:text-[#5787C8]"
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Typography variant="body2" color="textSecondary" className="mt-1">
-          Select permissions for this role
-        </Typography>
-      </DialogTitle>
+      {/* Header */}
+      <CustomPopHeaderTitle
+        title={"Edit Role Permission"}
+        subtitle={" Select permissions for this role"}
+        onClose={onClose}
+      />
+
       <DialogContent>
         {/* Permission Selection */}
         <Typography variant="subtitle1" color="textSecondary" sx={{ mt: 1 }}>

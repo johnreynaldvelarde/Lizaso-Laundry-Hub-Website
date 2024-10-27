@@ -18,6 +18,7 @@ import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
 import { createNewRoleAndPermissions } from "../../../../services/api/postApi";
 import { updateRenameRole } from "../../../../services/api/putApi";
+import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
 const A_PopupRenameRole = ({ open, onClose, roleData }) => {
   const { userDetails } = useAuth();
@@ -101,6 +102,12 @@ const A_PopupRenameRole = ({ open, onClose, roleData }) => {
         },
       }}
     >
+      {/* Header */}
+      <CustomPopHeaderTitle
+        title={"Rename Role Name"}
+        subtitle={"Please provide the role details below"}
+        onClose={onClose}
+      />
       <DialogTitle className="flex flex-col">
         <div className="flex justify-between items-center mt-2">
           <div className="flex items-center space-x-2">
