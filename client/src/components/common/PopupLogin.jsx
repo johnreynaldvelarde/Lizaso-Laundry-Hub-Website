@@ -106,7 +106,7 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
                   </button>
                 </div>
               </div>
-              <div className="flex items-center mb-4">
+              <div className="hidden items-center mb-4">
                 <input
                   type="checkbox"
                   id="rememberMe"
@@ -123,7 +123,7 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
               </div>
               <button
                 type="submit"
-                className="w-full py-2 px-4 text-white font-semibold rounded-lg flex items-center justify-center mb-4"
+                className="w-full py-2 px-4 text-white font-semibold rounded-lg flex items-center justify-center mb-4 mt-6"
                 style={{ background: styles.buttonColor1 }}
               >
                 {loading ? (

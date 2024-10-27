@@ -25,6 +25,10 @@ import {
   handleGetStoresBasedAdmin,
 } from "../services/admin/useUser.js";
 import { handleGetServiceTypeAndStore } from "../services/admin/useSettings.js";
+import {
+  handleGetInboxOnlyAdmin,
+  handleGetMessagesOnlyWeb,
+} from "../services/useMessages.js";
 
 const router = express.Router();
 
@@ -200,11 +204,42 @@ router.get(
   })
 );
 
-// SETTINGS SECTION
-// -> TAB DASHBOARD CONFIG <-
-// router.post('/settings/set-dashboard-config', withDatabaseConnection(async (req, res, connection) => {
-// }));
+// INBOX SECTION ADMIN AND MANAGER
+router.get(
+  "/inbox/:id/get-inbox",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetInboxOnlyAdmin(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
+router.get(
+  "/inbox/:id/get-messages",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetMessagesOnlyWeb(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// REVIEWS SECTION
+router.get(
+  "/reviews/:id/get-reviews",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetBasedUser(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// SETTINGS SECTION
 // -> TAB SERVICE TYPES <-
 router.get(
   "/settings/:id/get-service-types",

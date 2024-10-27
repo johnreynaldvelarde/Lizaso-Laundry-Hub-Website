@@ -167,7 +167,7 @@ export const handleRegisterCustomer = async (req, res, db) => {
         "Customer",
         isAgreement,
         false,
-        true,
+        0,
         false,
       ]
     );
