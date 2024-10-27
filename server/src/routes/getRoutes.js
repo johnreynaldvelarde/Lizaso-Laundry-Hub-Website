@@ -1,5 +1,8 @@
 import express from "express";
-import { handleViewStore } from "../services/admin/useStore.js";
+import {
+  handleViewStore,
+  handleViewStoreByAdmin,
+} from "../services/admin/useStore.js";
 import {
   handleGetCalculatedTransaction,
   handleGetCountLaundryAssignment,
@@ -139,6 +142,18 @@ router.get(
   })
 );
 
+// STORE MANAGEMENT SECTION
+router.get(
+  "/stores/admin-get-stores",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleViewStoreByAdmin(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 // INVENTORY SECTION
 router.get(
   "/get-category",
@@ -150,7 +165,11 @@ router.get(
 router.get(
   "/inventory/view-inventory/",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleViewInventory(req, res, connection);
+    try {
+      await handleViewInventory(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

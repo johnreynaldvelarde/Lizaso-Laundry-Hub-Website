@@ -11,6 +11,7 @@ const OutlinedIconButton = React.forwardRef(({ children, ...props }, ref) => {
         borderRadius: "4px",
         marginRight: "5px",
         // padding: "4px",
+        marginBottom: { xs: 1, sm: 1, md: 1, lg: 1, xl: 0 },
       }}
     >
       <IconButton ref={ref} {...props}>

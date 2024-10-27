@@ -74,6 +74,21 @@ status
 created_at
 updated_at
 
+--> Feedback_Review <--
+id (Primary Key)
+store_id (Foregin Key)
+customer_id (Foregin Key)
+service_request_id (Foregin Key)
+rating
+comment
+created_at
+updated_at
+is_approved
+response
+response_created_at
+
+
+
 --> Related_Item <--
 id (Primary Key)
 assigment_id (Foregin Key)

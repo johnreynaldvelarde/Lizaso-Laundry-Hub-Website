@@ -253,6 +253,17 @@ export const viewStore = {
   },
 };
 
+export const viewStoreByAdmin = {
+  getStoreByAdmin: async () => {
+    try {
+      const response = await axiosPrivate.get("/stores/admin-get-stores");
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // USER MANAGEMENT SECTION
 export const viewUser = {
   getUser: async (userId) => {

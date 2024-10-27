@@ -148,6 +148,7 @@ qr_code
 qr_code_generated (BOOLEAN)
 isPickup (BOOLEAN)
 isDelivery  (BOOLEAN)
+payment_method
 
 
 --> Service_Type <--

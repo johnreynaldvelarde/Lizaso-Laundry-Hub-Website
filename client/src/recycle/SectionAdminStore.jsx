@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React from "react";
 import {
   Box,
   Typography,
@@ -31,8 +31,6 @@ import CustomMap from "../../../../components/common/CustomMap";
 import CustomStarRating from "../../../../components/common/CustomStartRating";
 import OutlinedIconButton from "../../../../components/table/OutlinedIconButton";
 import DateCell from "../../../../components/table/DateCell";
-import useFetchData from "../../../../hooks/common/useFetchData";
-import { viewStoreByAdmin } from "../../../../services/api/getApi";
 
 const PerformanceMetrics = ({ storeName }) => {
   const performanceData = {
@@ -43,11 +41,10 @@ const PerformanceMetrics = ({ storeName }) => {
   };
 
   return (
-    <Paper
+    <Box
       sx={{
         my: 2,
         padding: 2,
-        boxShadow: "none",
         border: "1px solid",
         borderColor: COLORS.border,
         borderRadius: "8px",
@@ -64,7 +61,7 @@ const PerformanceMetrics = ({ storeName }) => {
         </span>
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={12} lg={4}>
+        <Grid item xs={12} sm={4}>
           <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
             Total Sales:
           </Typography>
@@ -72,7 +69,7 @@ const PerformanceMetrics = ({ storeName }) => {
             {performanceData.totalSales}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={12} lg={4}>
+        <Grid item xs={12} sm={4}>
           <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
             In-Store Visits:
           </Typography>
@@ -80,37 +77,27 @@ const PerformanceMetrics = ({ storeName }) => {
             {performanceData.inStoreVisits}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={12} lg={4}>
+        <Grid item xs={12} sm={4}>
           <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
-            Online Laundry Usage:
+            Remote Service Usage:
           </Typography>
           <Typography fontWeight="bold" sx={{ color: COLORS.secondary }}>
             {performanceData.remoteServiceCustomers}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={12} lg={4}>
+        <Grid item xs={12} sm={4}>
           <Typography sx={{ fontWeight: 500, color: COLORS.primary }}>
             Performance Rating:
           </Typography>
           <CustomStarRating rating={performanceData.performanceRating} />
         </Grid>
       </Grid>
-    </Paper>
+    </Box>
   );
 };
 
 const SectionAdminStore = () => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
-  const { data: storeData, fetchData: fetchStores } = useFetchData();
-
-  const fetchStoresData = useCallback(() => {
-    fetchStores(viewStoreByAdmin.getStoreByAdmin);
-  }, [fetchStores]);
-
-  useEffect(() => {
-    fetchStoresData();
-  }, [fetchStoresData]);
-
   const sampleStores = [
     {
       id: 1,
@@ -176,7 +163,7 @@ const SectionAdminStore = () => {
                 <TableCell sx={cellHeadStyles}>ID</TableCell>
                 <TableCell sx={cellHeadStyles}>Store Name</TableCell>
                 <TableCell sx={cellHeadStyles}>Address</TableCell>
-                <TableCell sx={cellHeadStyles}>Contact</TableCell>
+                <TableCell sx={cellHeadStyles}>Store Contact</TableCell>
                 <TableCell sx={cellHeadStyles}>Manager</TableCell>
                 <TableCell sx={cellHeadStyles}>Date Created</TableCell>
                 <TableCell sx={cellHeadStyles}>Actions</TableCell>
@@ -185,7 +172,7 @@ const SectionAdminStore = () => {
             <TableBody>
               {sampleStores.map((store) => (
                 <TableRow key={store.id}>
-                  <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
+                  <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                     <Typography
                       variant="body2"
                       sx={{ fontWeight: "600", color: COLORS.secondary }}
@@ -193,7 +180,7 @@ const SectionAdminStore = () => {
                       # {store.id}
                     </Typography>
                   </TableCell>
-                  <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
+                  <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                     <Typography
                       variant="body2"
                       sx={{ fontWeight: "600", color: COLORS.text }}
@@ -201,31 +188,15 @@ const SectionAdminStore = () => {
                       {store.storeName}
                     </Typography>
 
-                    <PerformanceMetrics storeName={store.storeName} />
+                    {/* <PerformanceMetrics storeName={store.storeName} /> */}
                   </TableCell>
-                  <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "600", color: COLORS.text }}
-                    >
-                      {store.storeAddress}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "500", color: COLORS.text4 }}
-                    >
-                      {store.storeAddress}
-                    </Typography>
+                  <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                    {store.storeAddress}
                   </TableCell>
-                  <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: "500", color: COLORS.text4 }}
-                    >
-                      {store.storeContact}
-                    </Typography>
+                  <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                    {store.storeContact}
                   </TableCell>
-                  <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
+                  <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                     <Typography
                       variant="body2"
                       sx={{ fontWeight: "500", color: COLORS.text4 }}
@@ -233,10 +204,10 @@ const SectionAdminStore = () => {
                       {store.manager}
                     </Typography>
                   </TableCell>
-                  <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
+                  <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                     <DateCell dateCreated={store.dateCreated} />
                   </TableCell>
-                  <TableCell sx={{ paddingY: 3, paddingX: 2 }}>
+                  <TableCell sx={{ paddingY: 3, paddingX: 4 }}>
                     <Tooltip title="View Store" arrow>
                       <OutlinedIconButton>
                         <Eye color={COLORS.primary} weight="duotone" />
@@ -272,7 +243,7 @@ export default SectionAdminStore;
 
 const cellHeadStyles = {
   paddingY: 2,
-  paddingX: 2,
+  paddingX: 4,
   textAlign: "left",
   color: "#595959",
   fontSize: "1",
