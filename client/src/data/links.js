@@ -36,10 +36,6 @@ export const links = [
         name: "Add new laundry units",
         url: "/main/add-unit",
       },
-      {
-        name: "Units Statistic",
-        url: "",
-      },
     ],
   },
   {

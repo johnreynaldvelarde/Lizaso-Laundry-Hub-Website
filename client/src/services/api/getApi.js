@@ -39,7 +39,9 @@ export const getInventoryLaundryItem = {
 export const getCountRequestInQueue = {
   getCountInQueue: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/count-inqueue`);
+      const response = await axiosPrivate.get(
+        `/monitored-unit/${storeId}/count-inqueue`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching customer requests:", error);
@@ -52,7 +54,7 @@ export const getCountLaundryAssignment = {
   getCountAssignment: async (storeId) => {
     try {
       const response = await axiosPrivate.get(
-        `/user/${storeId}/count-assignment`
+        `/monitored-unit/${storeId}/count-assignment`
       );
       return response.data;
     } catch (error) {
@@ -66,7 +68,7 @@ export const getAssignmentInProgress = {
   getInProgress: async (storeId) => {
     try {
       const response = await axiosPrivate.get(
-        `/user/${storeId}/get-assignment`
+        `/monitored-unit/${storeId}/get-assignment`
       );
       return response.data;
     } catch (error) {
@@ -97,7 +99,9 @@ export const getUnitName = {
 export const viewRequestInQueue = {
   getRequestInQueue: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/get-inqueue`);
+      const response = await axiosPrivate.get(
+        `/monitored-unit/${storeId}/get-inqueue`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching customer requests:", error);
@@ -129,7 +133,7 @@ export const viewUnitAvailable = {
   getUnitAvailable: async (storeId) => {
     try {
       const response = await axiosPrivate.get(
-        `/user/${storeId}/unit-available`
+        `/monitored-unit/${storeId}/unit-available`
       );
       return response.data;
     } catch (error) {
@@ -142,7 +146,9 @@ export const viewUnitAvailable = {
 export const getListCustomer = {
   getSelectedCustomer: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/get-inqueue`);
+      const response = await axiosPrivate.get(
+        `/monitored-unit/${storeId}/get-inqueue`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching customer requests:", error);
@@ -154,7 +160,9 @@ export const getListCustomer = {
 export const getSelectedCustomer = {
   getSelectCustomer: async (storeId) => {
     try {
-      const response = await axiosPrivate.get(`/user/${storeId}/get-customer`);
+      const response = await axiosPrivate.get(
+        `/monitored-unit/${storeId}/get-customer`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching selected customer:", error);

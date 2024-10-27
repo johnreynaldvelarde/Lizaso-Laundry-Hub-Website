@@ -651,11 +651,11 @@ export const handleGetSelectedCustomer = async (req, res, connection) => {
     const query = `
       SELECT 
         id,
-        CONCAT(c_lastname, ', ', c_firstname, ' ', c_middlename) AS fullname,
-        c_username,
+        CONCAT(first_name, ' ', middle_name, ' ', last_name) AS fullname,
+        username,
         date_created
-      FROM Customer
-      WHERE store_id = ? AND isArchive = 0
+      FROM User_Account
+      WHERE store_id = ? AND isArchive = 0 AND user_type = 'Customer'
       ORDER BY date_created DESC
     `;
 

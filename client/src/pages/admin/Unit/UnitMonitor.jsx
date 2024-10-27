@@ -14,7 +14,12 @@ import {
   useTheme,
 } from "@mui/material";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
-import { HourglassLow, CaretDown, CaretUp } from "@phosphor-icons/react";
+import {
+  HourglassLow,
+  CaretDown,
+  CaretUp,
+  PlusCircle,
+} from "@phosphor-icons/react";
 import PopupSelectUnit from "./components/PopupSelectUnit";
 import PopupInQueue from "./components/PopupInQueue";
 import nodata from "../../../assets/images/no_data.png";
@@ -30,6 +35,8 @@ import {
   viewUnits,
 } from "../../../services/api/getApi";
 import { getUnitImage } from "./components/unit_helpers";
+import CustomHeaderTitle from "../../../components/common/CustomHeaderTitle";
+import CustomeAddButton from "../../../components/common/CustomAddButton";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -122,8 +129,33 @@ const UnitMonitor = () => {
   }, [searchTerm, unitsData, filterStatus]);
 
   return (
-    <Box sx={{ pt: "90px", pb: "20px", px: { xs: 1, md: 2 } }}>
+    <Box sx={{ pt: "100px", pb: "20px", px: { xs: 1, md: 2 } }}>
       {/* Header */}
+      <Box
+        className="flex items-center justify-between mb-8"
+        sx={{
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "center", sm: "flex-start" },
+          width: "100%",
+        }}
+      >
+        <CustomHeaderTitle
+          title={"Monitored Units"}
+          subtitle={"Tracking and managing all active laundry units"}
+        />
+        <CustomeAddButton
+          label={"Add new units"}
+          // onClick={handleOpenPopupAddRole}
+          icon={
+            <PlusCircle
+              size={24}
+              color={COLORS.white}
+              weight="duotone"
+              sx={{ display: { xs: "none", sm: "inline" } }}
+            />
+          }
+        />
+      </Box>
       <Box
         sx={{
           mb: 3,

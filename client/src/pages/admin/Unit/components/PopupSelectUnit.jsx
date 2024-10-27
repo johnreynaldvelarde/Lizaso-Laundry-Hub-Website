@@ -120,7 +120,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
 
   const filterOptions = createFilterOptions({
     matchFrom: "any", // This will match from any part of the string (name or username)
-    stringify: (option) => `${option.fullname} ${option.c_username}`, // Combine both fields for search purposes
+    stringify: (option) => `${option.fullname} ${option.username}`,
   });
 
   const handleInputChange = (field) => (e) => {
@@ -337,7 +337,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
                       fontSize: "smaller",
                     }}
                   >
-                    {option.c_username}
+                    {option.username}
                   </span>
                 </li>
               );

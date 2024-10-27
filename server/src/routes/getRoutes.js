@@ -56,7 +56,7 @@ router.get(
   })
 );
 
-// Laundry Unit Section
+// UNIT MONITORED SECTIOn
 router.get(
   "/monitored-unit/:id/get-calculated-transaction",
   withDatabaseConnection(async (req, res, connection) => {
@@ -80,35 +80,35 @@ router.get(
 );
 
 router.get(
-  "/user/:id/count-inqueue",
+  "/monitored-unit/:id/count-inqueue",
   withDatabaseConnection(async (req, res, connection) => {
     await handleGetCountRequestInQueue(req, res, connection);
   })
 );
 
 router.get(
-  "/user/:id/count-assignment",
+  "/monitored-unit/:id/count-assignment",
   withDatabaseConnection(async (req, res, connection) => {
     await handleGetCountLaundryAssignment(req, res, connection);
   })
 );
 
 router.get(
-  "/user/:id/get-customer",
+  "/monitored-unit/:id/get-customer",
   withDatabaseConnection(async (req, res, connection) => {
     await handleGetSelectedCustomer(req, res, connection);
   })
 );
 
 router.get(
-  "/user/:id/get-assignment",
+  "/monitored-unit/:id/get-assignment",
   withDatabaseConnection(async (req, res, connection) => {
     await handleGetLaundryAssignments(req, res, connection);
   })
 );
 
 router.get(
-  "/user/:id/unit-available",
+  "/monitored-unit/:id/unit-available",
   withDatabaseConnection(async (req, res, connection) => {
     await handleGetUnitListAvaiable(req, res, connection);
   })
@@ -136,7 +136,7 @@ router.get(
 );
 
 router.get(
-  "/user/:id/get-inqueue",
+  "/monitored-unit/:id/get-inqueue",
   withDatabaseConnection(async (req, res, connection) => {
     await handleGetServiceInQueue(req, res, connection);
   })
