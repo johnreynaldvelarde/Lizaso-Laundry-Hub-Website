@@ -16,6 +16,7 @@
     "@react-pdf/renderer": "^4.0.0",
     "apexcharts": "^3.52.0",
     "axios": "^1.7.2",
+    "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "framer-motion": "^11.3.28",
     "html2canvas": "^1.4.1",
