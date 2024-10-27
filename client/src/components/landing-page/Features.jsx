@@ -21,7 +21,7 @@ const Features = () => {
         backgroundPosition: "center",
       }}
     >
-      <h2 className="text-4xl font-bold text-white mb-8">
+      <h2 className="text-4xl font-bold text-white mb-8 flex items-center justify-center mx-auto px-10 ">
         Features of Lizaso Laundry Hub
       </h2>
       <div className="container mx-auto flex flex-wrap justify-center">

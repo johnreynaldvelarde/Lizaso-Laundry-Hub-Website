@@ -8,7 +8,7 @@ import Features from "../../components/landing-page/Features";
 import Pricing from "../../components/landing-page/Pricing";
 import Services from "../../components/landing-page/Services";
 import Footer from "../../components/landing-page/Footer";
-import About from "../../components/landing-page/About";
+import About from "../../components/landing-page/about-f/About";
 import Contact from "../../components/landing-page/Contact";
 
 const StartingPage = () => {
@@ -80,7 +80,7 @@ const StartingPage = () => {
           <Pricing />
         </div>
         <div id="about" ref={(el) => (sectionRefs.current[4] = el)}>
-          <About />
+          <About/>
         </div>
         <div id="contact" ref={(el) => (sectionRefs.current[5] = el)}>
           <Contact />
