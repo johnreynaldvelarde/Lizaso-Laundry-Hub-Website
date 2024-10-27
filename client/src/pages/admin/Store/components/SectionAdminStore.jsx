@@ -246,7 +246,7 @@ const SectionAdminStore = () => {
                       variant="body2"
                       sx={{ fontWeight: "500", color: COLORS.text4 }}
                     >
-                      {store.manager}
+                      {store.manager_name}
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ paddingY: 2, paddingX: 2 }}>
