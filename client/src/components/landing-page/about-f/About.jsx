@@ -5,7 +5,7 @@ import EcoFriendly from "./EcoFriendly";
 import QualityService from "./QualityService";
 
 const About = () => {
-  return (
+  return ( 
     <div
       className="bg-blue-50   min-h-[915px] flex items-center pt-10 lg:pt-0"
       id="about"
@@ -21,16 +21,16 @@ const About = () => {
           with the utmost attention to detail.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-1 lg:gap-6 px-5">
-  <div className="bg-white rounded-lg shadow-lg flex items-center justify-center">
-    <QualityService />
-  </div>
-  <div className="bg-white rounded-lg shadow-lg flex items-center justify-center">
-    <EcoFriendly />
-  </div>
-  <div className="bg-white rounded-lg shadow-lg flex items-center justify-center">
-    <CustomerSatisfaction />
-  </div>
-</div>
+        <div className="bg-white rounded-lg shadow-lg flex items-center justify-center">
+          <QualityService />
+        </div>
+        <div className="bg-white rounded-lg shadow-lg flex items-center justify-center">
+          <EcoFriendly />
+        </div>
+        <div className="bg-white rounded-lg shadow-lg flex items-center justify-center">
+          <CustomerSatisfaction />
+        </div>
+      </div>
       </div>
     </div>
   );
