@@ -29,7 +29,6 @@ export const handleLogin = async (req, res, db) => {
        FROM User_Account ua
        LEFT JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
        WHERE BINARY ua.username = ? 
-         AND ua.isStatus = 0 
          AND ua.isArchive = 0`,
       [username]
     );
