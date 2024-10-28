@@ -58,6 +58,7 @@ export const COLORS = {
 
   // Status Colors
   success: "#28a745", // For success messages or indicators
+  pale_sucess: "#E8F5E9",
   error: "#dc3545", // For error messages or alerts
   errorHover: "#c82333",
   warning: "#ffc107", // For warning alerts

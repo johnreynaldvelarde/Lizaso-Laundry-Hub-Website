@@ -36,7 +36,7 @@ import {
 } from "../../../services/api/getApi";
 import { getUnitImage } from "./components/unit_helpers";
 import CustomHeaderTitle from "../../../components/common/CustomHeaderTitle";
-import CustomeAddButton from "../../../components/common/CustomAddButton";
+import CustomAddButton from "../../../components/common/CustomAddButton";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -143,7 +143,7 @@ const UnitMonitor = () => {
           title={"Monitored Units"}
           subtitle={"Tracking and managing all active laundry units"}
         />
-        <CustomeAddButton
+        <CustomAddButton
           label={"Add new units"}
           // onClick={handleOpenPopupAddRole}
           icon={

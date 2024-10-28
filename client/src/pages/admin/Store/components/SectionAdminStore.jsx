@@ -32,7 +32,7 @@ import OutlinedIconButton from "../../../../components/table/OutlinedIconButton"
 import DateCell from "../../../../components/table/DateCell";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { viewStoreByAdmin } from "../../../../services/api/getApi";
-import CustomeAddButton from "../../../../components/common/CustomAddButton";
+import CustomAddButton from "../../../../components/common/CustomAddButton";
 
 const PerformanceMetrics = ({
   storeName,
@@ -164,7 +164,7 @@ const SectionAdminStore = () => {
           title={" Store Management"}
           subtitle={"Add New Stores and Track Stats"}
         />
-        <CustomeAddButton
+        <CustomAddButton
           onClick={() => openPopup("addNewStore")}
           label={"Add new store"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}

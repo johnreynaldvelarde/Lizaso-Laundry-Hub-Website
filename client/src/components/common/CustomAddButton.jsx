@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import { COLORS } from "../../constants/color";
 
-const CustomeAddButton = ({
+const CustomAddButton = ({
   label,
   onClick,
   icon,
@@ -35,4 +35,4 @@ const CustomeAddButton = ({
   );
 };
 
-export default CustomeAddButton;
+export default CustomAddButton;
