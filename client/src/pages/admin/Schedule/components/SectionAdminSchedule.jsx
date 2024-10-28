@@ -8,6 +8,11 @@ import {
   Paper,
   Box,
   Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
 } from "@mui/material";
 import React from "react";
 import usePopup from "../../../../hooks/common/usePopup";
@@ -23,11 +28,11 @@ import {
   Truck,
 } from "@phosphor-icons/react";
 import { COLORS } from "../../../../constants/color";
+import CustomAddButton from "../../../../components/common/CustomAddButton";
 
 const SectionAdminSchedule = () => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
 
-  // Dummy data for the boxes with different icons and background colors
   const data = [
     {
       title: "Total Service Request",
@@ -59,6 +64,30 @@ const SectionAdminSchedule = () => {
     },
   ];
 
+  const handleGoToMonitoredUnits = () => {
+    // Your logic here
+  };
+
+  const handleSearchChange = (event) => {
+    // Handle search input change
+    console.log(event.target.value);
+  };
+
+  const handleDateChange = (event) => {
+    // Handle date filter change
+    console.log(event.target.value);
+  };
+
+  const handleTypeChange = (event) => {
+    // Handle type filter change
+    console.log(event.target.value);
+  };
+
+  const handleScheduleChange = (event) => {
+    // Handle schedule filter change
+    console.log(event.target.value);
+  };
+
   return (
     <>
       {/* Header */}
@@ -75,12 +104,13 @@ const SectionAdminSchedule = () => {
           subtitle={"Organize and Oversee Service Requests"}
         />
         <CustomeAddButton
-          onClick={() => openPopup("addNewStore")}
-          label={"Add new store"}
+          onClick={handleGoToMonitoredUnits}
+          label={"Create new request"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
         />
       </Box>
 
+      {/* Header */}
       <Box display="flex" gap={2} flexWrap="wrap" sx={{ width: "100%" }}>
         {data.map((item, index) => (
           <Paper
@@ -175,6 +205,55 @@ const SectionAdminSchedule = () => {
             </Box>
           </Paper>
         ))}
+      </Box>
+
+      <Box sx={{ mt: 5 }}>
+        <Box
+          className="flex items-center justify-between mb-"
+          sx={{
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
+          >
+            All Service Request
+          </Typography>
+
+          <Box
+            className="flex items-center"
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+              },
+              "& button": {
+                width: {
+                  xs: "100%",
+                  sm: "auto",
+                },
+                marginBottom: {
+                  xs: 2,
+                  sm: 0,
+                },
+              },
+            }}
+          >
+            <CustomAddButton
+              onClick={() => openPopup("addItem")}
+              label={"Add new item"}
+              icon={<PlusCircle size={24} color="#fcfcfc" weight="duotone" />}
+            />
+          </Box>
+        </Box>
       </Box>
     </>
   );
