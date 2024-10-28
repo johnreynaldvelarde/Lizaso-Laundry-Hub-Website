@@ -185,6 +185,31 @@ export const getServiceType = {
   },
 };
 
+// MANAGE SCHEDULES SECTION
+export const viewScheduleRequestStats = {
+  getScheduleRequestStats: async () => {
+    try {
+      const response = await axiosPrivate.get(
+        "/schedules/user-get-schedules-stats"
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const viewScheduleRequestByUser = {
+  getScheduleRequestByUser: async () => {
+    try {
+      const response = await axiosPrivate.get("/schedules/user-get-schedules");
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // INVENTORY SECTION
 export const getCategoryItem = {
   getCategory: async () => {

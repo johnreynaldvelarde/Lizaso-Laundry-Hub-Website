@@ -36,6 +36,7 @@ import {
   statusOptions,
 } from "../../../../data/schedule/serviceStatus";
 import { ArrowDropDown, KeyboardArrowDown } from "@mui/icons-material";
+import CustomScheduleTable from "../../../../components/common/table/CustomScheduleTable";
 
 const SectionAdminSchedule = () => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -122,7 +123,7 @@ const SectionAdminSchedule = () => {
         />
       </Box>
 
-      {/* Header */}
+      {/* Sub Header */}
       <Box display="flex" gap={2} flexWrap="wrap" sx={{ width: "100%" }}>
         {data.map((item, index) => (
           <Paper
@@ -219,6 +220,7 @@ const SectionAdminSchedule = () => {
         ))}
       </Box>
 
+      {/* Content */}
       <Box mt={5}>
         <Box
           mb={2}
@@ -232,7 +234,10 @@ const SectionAdminSchedule = () => {
         >
           <Box sx={{ display: "flex" }}>
             {/* Title */}
-            <Typography variant="h6" sx={{ marginRight: 2 }}>
+            <Typography
+              variant="h6"
+              sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
+            >
               All Service Request
             </Typography>
           </Box>
@@ -334,6 +339,10 @@ const SectionAdminSchedule = () => {
               </Select>
             </FormControl>
           </Box>
+        </Box>
+
+        <Box>
+          <CustomScheduleTable tableData={[]} />
         </Box>
       </Box>
     </>
