@@ -6,6 +6,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import useLoginForm from "../../hooks/useLoginForm";
+import { COLORS } from "../../constants/color";
 
 const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
   const {
@@ -123,7 +124,7 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
               </div>
               <button
                 type="submit"
-                className="w-full py-2 px-4 text-white font-semibold rounded-lg flex items-center justify-center mb-4 mt-6"
+                className="w-full py-2 px-4 text-white font-semibold rounded-lg flex items-center justify-center mb-4 mt-7"
                 style={{ background: styles.buttonColor1 }}
               >
                 {loading ? (
@@ -143,16 +144,20 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
             </div>
             <button
               onClick={handleLogin}
-              className="w-full mb-4 py-2 px-4 bg-blue-500 text-white rounded-lg flex items-center justify-center"
+              className="mt-2 w-full mb-4 py-2 px-4 border border-blue-500 text-blue-500 rounded-lg flex items-center justify-center"
             >
-              <GoogleIcon className="mr-2" /> Sign in with Google
+              <GoogleIcon className="mr-2" />{" "}
+              <span className="font-base" style={{ color: COLORS.secondary }}>
+                Continue with Google
+              </span>
             </button>
-            <button
+
+            {/* <button
               onClick={handleLogin}
               className="w-full py-2 px-4 bg-blue-700 text-white rounded-lg flex items-center justify-center"
             >
               <FacebookIcon className="mr-2" /> Sign in with Facebook
-            </button>
+            </button> */}
           </div>
         </div>
       )}

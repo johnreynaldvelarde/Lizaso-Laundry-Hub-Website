@@ -10,6 +10,7 @@ import {
 import toast from "react-hot-toast";
 
 const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
+  const [loading, setLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(showCreateAccountPopup);
@@ -31,6 +32,8 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [number, setNumber] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isAgreement, setIsAgreement] = useState("");
@@ -69,19 +72,6 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
         return;
       }
 
-      // const data = {
-      //   firstname: firstName,
-      //   middlename: middleName,
-      //   lastname: lastName,
-      //   username: userName,
-      //   password: password,
-      //   email: "",
-      //   mobile_number: "",
-      //   isAgreement: isAgreement,
-      // };
-
-      // const response = await registerService.register(data);
-
       // Proceed with registration if the username is available
       const response = await registerService.register({
         c_firstname: firstName,
@@ -113,7 +103,6 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
               await checkCustomerDetails.getCheckCustomerDetails(userName);
 
             if (customerDetails.success !== false) {
-              // Navigate based on customer details
               if (
                 customerDetails.storeIdIsNull ||
                 customerDetails.cNumberIsNull ||
@@ -152,6 +141,8 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
         setMiddleName("");
         setLastName("");
         setUserName("");
+        setEmail("");
+        setNumber("");
         setPassword("");
         setConfirmPassword("");
         setIsAgreement("");
@@ -181,6 +172,10 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
     setLastName,
     userName,
     setUserName,
+    email,
+    setEmail,
+    number,
+    setNumber,
     password,
     setPassword,
     confirmPassword,
@@ -189,6 +184,7 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
     setIsAgreement,
     handleRegister,
     setData,
+    loading,
   };
 };
 
