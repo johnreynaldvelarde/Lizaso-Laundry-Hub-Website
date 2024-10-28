@@ -1,18 +1,3 @@
-Customer
-id (Primary Key)
-store_id (Foregin Key)
-address_id (Foregin Key)  
-c_firstname
-c_middlename
-c_lastname
-c_username
-c_number
-c_email
-isAgreement
-isOnline
-isArchive
-date_created
-
 --> Service_Promo <--
 id (Primary Key)
 service_id (Foregin Key)

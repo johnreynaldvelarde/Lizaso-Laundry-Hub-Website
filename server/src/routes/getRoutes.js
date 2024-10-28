@@ -32,6 +32,10 @@ import {
   handleGetInboxOnlyAdmin,
   handleGetMessagesOnlyWeb,
 } from "../services/useMessages.js";
+import {
+  handleGetScheduleServiceRequest,
+  handleGetScheduleStatsByUser,
+} from "../services/admin/useSchedule.js";
 
 const router = express.Router();
 
@@ -56,7 +60,7 @@ router.get(
   })
 );
 
-// UNIT MONITORED SECTIOn
+// UNIT MONITORED SECTION
 router.get(
   "/monitored-unit/:id/get-calculated-transaction",
   withDatabaseConnection(async (req, res, connection) => {
@@ -139,6 +143,40 @@ router.get(
   "/monitored-unit/:id/get-inqueue",
   withDatabaseConnection(async (req, res, connection) => {
     await handleGetServiceInQueue(req, res, connection);
+  })
+);
+
+// MANAGE SCHEDULE SECTION
+router.get(
+  "/schedules/admin-get-stores",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleViewStoreByAdmin(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/schedules/:id/user-get-schedules-stats",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetScheduleStatsByUser(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/schedules/:id/user-get-schedules",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetScheduleServiceRequest(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

@@ -27,7 +27,9 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       FROM Service_Request 
       WHERE customer_id = ? 
         AND customer_type = 'Online'
-        AND request_status != 'Canceled'`;
+        AND request_status != 'Canceled' 
+        AND request_status != 'Completed Delivery';
+    `;
 
     const [countResult] = await connection.execute(countQuery, [id]);
     const requestCount = countResult[0].request_count;

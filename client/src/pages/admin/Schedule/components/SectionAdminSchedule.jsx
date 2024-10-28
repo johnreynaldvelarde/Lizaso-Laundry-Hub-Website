@@ -15,7 +15,7 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import usePopup from "../../../../hooks/common/usePopup";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomeAddButton from "../../../../components/common/CustomAddButton";
@@ -37,68 +37,123 @@ import {
 } from "../../../../data/schedule/serviceStatus";
 import { ArrowDropDown, KeyboardArrowDown } from "@mui/icons-material";
 import CustomScheduleTable from "../../../../components/common/table/CustomScheduleTable";
+import useFetchData from "../../../../hooks/common/useFetchData";
+import {
+  viewScheduleRequestByUser,
+  viewScheduleRequestStatsByUser,
+} from "../../../../services/api/getApi";
 
-const SectionAdminSchedule = () => {
+const SectionAdminSchedule = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [selectedStatus, setSelectedStatus] = React.useState("");
   const [selectedDate, setSelectedDate] = React.useState("");
+  const [filteredData, setFilteredData] = useState([]);
 
-  const handleStatusChange = (event) => {
-    setSelectedStatus(event.target.value);
-  };
+  const { data: statsArray = [], fetchData: fetchScheduleStats } =
+    useFetchData();
 
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-  };
+  const { data: scheduleData, fetchData: fetchSchedule } = useFetchData();
+
+  const fetchScheduleStatsData = useCallback(() => {
+    fetchScheduleStats(
+      viewScheduleRequestStatsByUser.getScheduleRequestStatsByUser,
+      storeId
+    );
+  }, [fetchScheduleStats, storeId]);
+
+  const fetchScheduleData = useCallback(() => {
+    fetchSchedule(viewScheduleRequestByUser.getScheduleRequestByUser, storeId);
+  }, [fetchScheduleStats, storeId]);
+
+  useEffect(() => {
+    fetchScheduleStatsData();
+    fetchScheduleData();
+  }, [fetchScheduleStatsData, fetchScheduleData]);
+
+  useEffect(() => {
+    if (scheduleData) {
+      setFilteredData(scheduleData);
+    }
+  }, [scheduleData]);
+
+  const {
+    total_requests = 0,
+    pending_requests = 0,
+    complete_delivery_requests = 0,
+    canceled_requests = 0,
+    total_percentage = 0,
+    pending_percentage = 0,
+    complete_delivery_percentage = 0,
+    canceled_percentage = 0,
+  } = statsArray[0]
+    ? {
+        total_requests: Number(statsArray[0].total_requests) || 0,
+        pending_requests: Number(statsArray[0].pending_requests) || 0,
+        complete_delivery_requests:
+          Number(statsArray[0].complete_delivery_requests) || 0,
+        canceled_requests: Number(statsArray[0].canceled_requests) || 0,
+        total_percentage: Number(statsArray[0].total_percentage) || 0,
+        pending_percentage: Number(statsArray[0].pending_percentage) || 0,
+        complete_delivery_percentage:
+          Number(statsArray[0].complete_delivery_percentage) || 0,
+        canceled_percentage: Number(statsArray[0].canceled_percentage) || 0,
+      }
+    : {};
 
   const data = [
     {
       title: "Total Service Request",
-      value: 150,
-      percentageChange: "+20%",
+      value: total_requests,
+      percentageChange: `${total_percentage}%`,
       icon: <AddressBookTabs size={35} color={COLORS.white} weight="duotone" />,
-      backgroundColor: COLORS.secondary, // Custom background color
+      backgroundColor: COLORS.secondary,
     },
     {
       title: "Pending Request",
-      value: 120,
-      percentageChange: "+20%",
+      value: pending_requests,
+      percentageChange: `${pending_percentage}%`,
       icon: <Hourglass size={35} color={COLORS.white} weight="duotone" />,
-      backgroundColor: COLORS.accent, // Custom background color
+      backgroundColor: COLORS.accent,
     },
     {
       title: "Complete Delivery",
-      value: 30,
-      percentageChange: "+20%",
+      value: complete_delivery_requests,
+      percentageChange: `${complete_delivery_percentage}%`,
       icon: <Truck size={35} color={COLORS.white} weight="duotone" />,
       backgroundColor: COLORS.success,
     },
     {
       title: "Canceled Request",
-      value: 10,
-      percentageChange: "+20%",
+      value: canceled_requests,
+      percentageChange: `${canceled_percentage}%`,
       icon: <CalendarSlash size={35} color={COLORS.white} weight="duotone" />,
-      backgroundColor: COLORS.error, // Custom background color
+      backgroundColor: COLORS.error,
     },
   ];
 
+  const handleStatusChange = (event) => {
+    const status = event.target.value;
+    setSelectedStatus(status);
+    applyFilters(selectedDate, status);
+  };
+
+  const handleDateChange = (event) => {
+    const date = event.target.value;
+    setSelectedDate(date);
+    applyFilters(date, selectedStatus); // Apply filters on date change
+  };
+
+  const applyFilters = (date, status) => {
+    const filtered = scheduleData.filter((item) => {
+      const isDateMatch = date ? item.request_date.startsWith(date) : true;
+      const isStatusMatch = status ? item.request_status === status : true;
+      return isDateMatch && isStatusMatch;
+    });
+    setFilteredData(filtered);
+  };
+
   const handleGoToMonitoredUnits = () => {
     // Your logic here
-  };
-
-  const handleSearchChange = (event) => {
-    // Handle search input change
-    console.log(event.target.value);
-  };
-
-  const handleTypeChange = (event) => {
-    // Handle type filter change
-    console.log(event.target.value);
-  };
-
-  const handleScheduleChange = (event) => {
-    // Handle schedule filter change
-    console.log(event.target.value);
   };
 
   return (
@@ -342,7 +397,7 @@ const SectionAdminSchedule = () => {
         </Box>
 
         <Box>
-          <CustomScheduleTable tableData={[]} />
+          <CustomScheduleTable tableData={filteredData} />
         </Box>
       </Box>
     </>

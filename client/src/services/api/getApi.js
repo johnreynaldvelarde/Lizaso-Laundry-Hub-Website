@@ -186,11 +186,24 @@ export const getServiceType = {
 };
 
 // MANAGE SCHEDULES SECTION
-export const viewScheduleRequestStats = {
-  getScheduleRequestStats: async () => {
+export const viewScheduleRequestStatsByAdmin = {
+  getScheduleRequestStatsByAdmin: async () => {
     try {
       const response = await axiosPrivate.get(
-        "/schedules/user-get-schedules-stats"
+        "/schedules/admin-get-schedules-stats"
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const viewScheduleRequestStatsByUser = {
+  getScheduleRequestStatsByUser: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/schedules/${storeId}/user-get-schedules-stats`
       );
       return response.data;
     } catch (error) {
@@ -200,9 +213,11 @@ export const viewScheduleRequestStats = {
 };
 
 export const viewScheduleRequestByUser = {
-  getScheduleRequestByUser: async () => {
+  getScheduleRequestByUser: async (storeId) => {
     try {
-      const response = await axiosPrivate.get("/schedules/user-get-schedules");
+      const response = await axiosPrivate.get(
+        `/schedules/${storeId}/user-get-schedules`
+      );
       return response.data;
     } catch (error) {
       throw error;
