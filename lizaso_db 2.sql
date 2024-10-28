@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 26, 2024 at 11:02 AM
+-- Generation Time: Oct 28, 2024 at 09:18 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -64,7 +64,8 @@ INSERT INTO `addresses` (`id`, `address_line`, `country`, `province`, `city`, `p
 (4, 'Perez, Bulakan, Bulacan', 'Philippines', 'Bulacan', 'Bulakan', '3017', 37.422094, -122.083922, '2024-10-26 06:21:40'),
 (5, 'Bambang Bulakan, Bulacan', 'Philippines', 'Bulacan', 'Bulakan', '3017', 14.763454, 120.897671, '2024-10-26 14:46:38'),
 (6, 'Bambang Bulakan, Bulacan', 'Philippines', 'Bulacan', 'Bulakan', '3017', 14.763454, 120.897671, '2024-10-26 14:46:47'),
-(7, 'Bambang Bulakan, Bulacan', 'Philippines', 'Bulacan', 'Bulakan', '3017', 14.763454, 120.897671, '2024-10-26 14:47:17');
+(7, 'Bambang Bulakan, Bulacan', 'Philippines', 'Bulacan', 'Bulakan', '3017', 14.763454, 120.897671, '2024-10-26 14:47:17'),
+(9, 'Malolos,Bulacan', 'Philippines', 'Bulacan', 'Malolos', '3000', 14.853711, 120.815148, '2024-10-27 18:06:32');
 
 -- --------------------------------------------------------
 
@@ -87,7 +88,7 @@ CREATE TABLE `conversations` (
 --
 
 INSERT INTO `conversations` (`id`, `user_one_id`, `user_two_id`, `last_message_id`, `last_message_date`, `created_at`, `updated_at`) VALUES
-(1, 13, 14, 22, '2024-10-26 05:42:06', '2024-10-26 01:29:49', '2024-10-26 05:42:06'),
+(1, 13, 14, 27, '2024-10-27 00:49:37', '2024-10-26 01:29:49', '2024-10-27 00:49:37'),
 (2, 15, 14, 25, '2024-10-26 06:52:03', '2024-10-26 06:49:07', '2024-10-26 06:52:03');
 
 -- --------------------------------------------------------
@@ -147,6 +148,13 @@ CREATE TABLE `inventory` (
   `isStatus` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `inventory`
+--
+
+INSERT INTO `inventory` (`id`, `store_id`, `item_id`, `price`, `quantity`, `isStatus`) VALUES
+(1, 1, 1, 1212.00, 0, 0);
+
 -- --------------------------------------------------------
 
 --
@@ -162,6 +170,13 @@ CREATE TABLE `item` (
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `item`
+--
+
+INSERT INTO `item` (`id`, `category_id`, `item_name`, `isArchive`, `updated_at`, `date_created`) VALUES
+(1, 1, '121212', 0, '2024-10-28 09:13:50', '2024-10-28 09:13:50');
+
 -- --------------------------------------------------------
 
 --
@@ -175,6 +190,13 @@ CREATE TABLE `item_category` (
   `updated_at` datetime NOT NULL,
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `item_category`
+--
+
+INSERT INTO `item_category` (`id`, `category_name`, `isArchive`, `updated_at`, `date_created`) VALUES
+(1, 'Soap', 0, '2024-10-27 05:14:42', '2024-10-27 05:14:42');
 
 -- --------------------------------------------------------
 
@@ -258,29 +280,31 @@ CREATE TABLE `messages` (
 INSERT INTO `messages` (`id`, `conversation_id`, `sender_id`, `recipient_id`, `message`, `is_read`, `date_sent`, `date_read`) VALUES
 (1, 1, 13, 14, 'U2FsdGVkX1+4J8kfTnTRhSdophTkWY2rpM9fnBUAdn0=', 1, '2024-10-26 09:29:49', '2024-10-26 17:01:30'),
 (2, 1, 13, 14, 'U2FsdGVkX18rLkHAcDi9wWP9BxeNVG6yrSvPpasC3Lg=', 1, '2024-10-26 09:32:38', '2024-10-26 17:01:30'),
-(3, 1, 14, 13, 'U2FsdGVkX1/OpAGQy/QDbqVKzEziE8HNvMgMfKdqIuc=', 1, '2024-10-26 09:33:11', '2024-10-26 16:39:33'),
-(4, 1, 14, 13, 'U2FsdGVkX1/KYoneqSiPLIMSvpxcIjD+4Xc4OhIhV/0=', 1, '2024-10-26 13:33:52', '2024-10-26 16:39:33'),
+(3, 1, 14, 13, 'U2FsdGVkX1/OpAGQy/QDbqVKzEziE8HNvMgMfKdqIuc=', 1, '2024-10-26 09:33:11', '2024-10-27 09:01:45'),
+(4, 1, 14, 13, 'U2FsdGVkX1/KYoneqSiPLIMSvpxcIjD+4Xc4OhIhV/0=', 1, '2024-10-26 13:33:52', '2024-10-27 09:01:45'),
 (5, 1, 13, 14, 'U2FsdGVkX1+rw2CLOsmR1qPrf/IwZJNvAWeiULha8sI=', 1, '2024-10-26 13:34:15', '2024-10-26 17:01:30'),
 (6, 1, 13, 14, 'U2FsdGVkX19vYZuOnXO/XjwF6q/+p02NaSzJQeXz6dU=', 1, '2024-10-26 13:34:30', '2024-10-26 17:01:30'),
 (7, 1, 13, 14, 'U2FsdGVkX19tEYewXnlbIfvYNAvZue2htPn97ebQJEk=', 1, '2024-10-26 13:34:39', '2024-10-26 17:01:30'),
-(8, 1, 14, 13, 'U2FsdGVkX1+U+8UnPlmIm3O2ma8jijgZNaAewPM8HFY=', 1, '2024-10-26 13:34:53', '2024-10-26 16:39:33'),
+(8, 1, 14, 13, 'U2FsdGVkX1+U+8UnPlmIm3O2ma8jijgZNaAewPM8HFY=', 1, '2024-10-26 13:34:53', '2024-10-27 09:01:45'),
 (9, 1, 13, 14, 'U2FsdGVkX1+zkJPctwX6Fc9q6JfHY42Q95CeKezXt2g=', 1, '2024-10-26 13:35:08', '2024-10-26 17:01:30'),
 (10, 1, 13, 14, 'U2FsdGVkX19ow9qSQM47kQuinu64Pwch9YT7/DnJBEQtyLNjPgJqPV4czmaQqOHd', 1, '2024-10-26 13:36:45', '2024-10-26 17:01:30'),
-(11, 1, 14, 13, 'U2FsdGVkX1+kWBouT88UtcmV3o47iqn6J+7e4o0Li/E=', 1, '2024-10-26 13:36:53', '2024-10-26 16:39:33'),
-(12, 1, 14, 13, 'U2FsdGVkX1+fAwI6t7LY7x5dbp12IylOoNwGBeeKShWlDRXDYXWKkZcQXLZKn6CB', 1, '2024-10-26 13:37:08', '2024-10-26 16:39:33'),
+(11, 1, 14, 13, 'U2FsdGVkX1+kWBouT88UtcmV3o47iqn6J+7e4o0Li/E=', 1, '2024-10-26 13:36:53', '2024-10-27 09:01:45'),
+(12, 1, 14, 13, 'U2FsdGVkX1+fAwI6t7LY7x5dbp12IylOoNwGBeeKShWlDRXDYXWKkZcQXLZKn6CB', 1, '2024-10-26 13:37:08', '2024-10-27 09:01:45'),
 (13, 1, 13, 14, 'U2FsdGVkX19VD4qvNEjTnSdC4s2lOh542128XCRtwFY=', 1, '2024-10-26 13:37:37', '2024-10-26 17:01:30'),
 (14, 1, 13, 14, 'U2FsdGVkX19MR7ejcCpetZ5PiFOWFt414K8olfdnqjQ=', 1, '2024-10-26 13:38:28', '2024-10-26 17:01:30'),
-(15, 1, 14, 13, 'U2FsdGVkX1/Q93vrl8yPgof6IO9bdaIRiZg6YAsZXsE=', 1, '2024-10-26 13:38:36', '2024-10-26 16:39:33'),
-(16, 1, 14, 13, 'U2FsdGVkX1+fztnknDnH8OYGosU41Cs0F1ujmDpwgFM=', 1, '2024-10-26 13:39:04', '2024-10-26 16:39:33'),
+(15, 1, 14, 13, 'U2FsdGVkX1/Q93vrl8yPgof6IO9bdaIRiZg6YAsZXsE=', 1, '2024-10-26 13:38:36', '2024-10-27 09:01:45'),
+(16, 1, 14, 13, 'U2FsdGVkX1+fztnknDnH8OYGosU41Cs0F1ujmDpwgFM=', 1, '2024-10-26 13:39:04', '2024-10-27 09:01:45'),
 (17, 1, 13, 14, 'U2FsdGVkX19D489RaIWMXH0+i62zGhVkSVOoVza5XjLUuq8FLfQPCUnBdsErrf8b', 1, '2024-10-26 13:39:44', '2024-10-26 17:01:30'),
 (18, 1, 13, 14, 'U2FsdGVkX1+6dMtRtySEOgLRrHEcS8s/phs3yR0QrLs=', 1, '2024-10-26 13:39:52', '2024-10-26 17:01:30'),
-(19, 1, 14, 13, 'U2FsdGVkX1+e724pljlpq8idUGCd8JP2JPFtr0qS9yY=', 1, '2024-10-26 13:41:00', '2024-10-26 16:39:33'),
-(20, 1, 14, 13, 'U2FsdGVkX19vmLqBmfrV6HEmCPeEu0neE2sAKqW/2Jo=', 1, '2024-10-26 13:41:12', '2024-10-26 16:39:33'),
-(21, 1, 14, 13, 'U2FsdGVkX186iRHFSW6AMB2IkTBwebMbA9K1z81WEhc=', 1, '2024-10-26 13:41:16', '2024-10-26 16:39:33'),
+(19, 1, 14, 13, 'U2FsdGVkX1+e724pljlpq8idUGCd8JP2JPFtr0qS9yY=', 1, '2024-10-26 13:41:00', '2024-10-27 09:01:45'),
+(20, 1, 14, 13, 'U2FsdGVkX19vmLqBmfrV6HEmCPeEu0neE2sAKqW/2Jo=', 1, '2024-10-26 13:41:12', '2024-10-27 09:01:45'),
+(21, 1, 14, 13, 'U2FsdGVkX186iRHFSW6AMB2IkTBwebMbA9K1z81WEhc=', 1, '2024-10-26 13:41:16', '2024-10-27 09:01:45'),
 (22, 1, 13, 14, 'U2FsdGVkX1+8qPXkyiwKhNAmPOGkoWPezc7igfAMA6w=', 1, '2024-10-26 13:42:06', '2024-10-26 17:01:30'),
 (23, 2, 15, 14, 'U2FsdGVkX19mUxNvvrAC/9IqFgV8bP87Hvalwq6xBWU=', 1, '2024-10-26 14:49:07', '2024-10-26 17:01:27'),
 (24, 2, 14, 15, 'U2FsdGVkX1+fb8+UK0CNFBEpZVFNM4OQCq25q8uAba4=', 1, '2024-10-26 14:49:20', '2024-10-26 14:58:55'),
-(25, 2, 15, 14, 'U2FsdGVkX18tiTyJmNyXGT8C0dxXUJSaHtEP3cIY5W8=', 1, '2024-10-26 14:52:03', '2024-10-26 17:01:27');
+(25, 2, 15, 14, 'U2FsdGVkX18tiTyJmNyXGT8C0dxXUJSaHtEP3cIY5W8=', 1, '2024-10-26 14:52:03', '2024-10-26 17:01:27'),
+(26, 1, 13, 14, 'U2FsdGVkX1+lCagDM0GizJwsBcKxYqmB69bl+XLXwmo=', 0, '2024-10-27 08:49:32', '0000-00-00 00:00:00'),
+(27, 1, 13, 14, 'U2FsdGVkX1+UotlnoysUjtsbr3l5yyONCKvsozjU6EI=', 0, '2024-10-27 08:49:37', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -529,7 +553,17 @@ INSERT INTO `service_progress` (`id`, `service_request_id`, `stage`, `descriptio
 (167, 17, 'Laundry Completed', 'Washing/drying finished.', '2024-10-26 14:50:43', 1, 'Laundry processing has not been completed.'),
 (168, 17, 'Ready for Delivery', 'Ready to be delivered.', '2024-10-26 14:50:43', 1, 'Laundry is not yet ready for delivery.'),
 (169, 17, 'Out for Delivery', 'On the way to you.', '2024-10-26 16:51:15', 1, 'Laundry has not been dispatched yet.'),
-(170, 17, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
+(170, 17, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.'),
+(171, 18, 'Pending Pickup', 'Pickup requested; staff on the way.', '2024-10-28 15:26:41', 1, 'Pickup request received; waiting for staff assignment.'),
+(172, 18, 'Ongoing Pickup', 'Pickup in progress.', NULL, 0, 'Pickup has not yet started.'),
+(173, 18, 'Completed Pickup', 'Pickup completed successfully.', NULL, 0, 'Pickup has not been completed.'),
+(174, 18, 'At Store', 'Dropped off at the laundry store.', NULL, 0, 'The clothes have not yet arrived at the store.'),
+(175, 18, 'In Queue', 'Waiting for processing.', NULL, 0, 'Not yet in queue for processing.'),
+(176, 18, 'In Laundry', 'Currently being washed/dried.', NULL, 0, 'Laundry has not started processing yet.'),
+(177, 18, 'Laundry Completed', 'Washing/drying finished.', NULL, 0, 'Laundry processing has not been completed.'),
+(178, 18, 'Ready for Delivery', 'Ready to be delivered.', NULL, 0, 'Laundry is not yet ready for delivery.'),
+(179, 18, 'Out for Delivery', 'On the way to you.', NULL, 0, 'Laundry has not been dispatched yet.'),
+(180, 18, 'Completed Delivery', 'Delivered and payment confirmed.', NULL, 0, 'Delivery has not been completed.');
 
 -- --------------------------------------------------------
 
@@ -598,7 +632,8 @@ INSERT INTO `service_request` (`id`, `store_id`, `user_id`, `customer_id`, `serv
 (14, 1, 14, 13, 1, '#17983EE975184107A00B', 'Alexia  Midgar', 'Online', NULL, '2024-10-26 05:29:47', NULL, NULL, 'Canceled', 'SR-14-#17983EE975184107A00B', 1, 0, 0, 'Cash on Delivery'),
 (15, 1, 14, 13, 1, '#662BED872DEF43AE9162', 'Alexia  Midgar', 'Online', NULL, '2024-10-26 05:32:13', NULL, NULL, 'Canceled', 'SR-15-#662BED872DEF43AE9162', 1, 0, 0, 'Cash on Delivery'),
 (16, 1, 14, 13, 5, '#6D37041E80E64A25BDED', 'Alexia  Midgar', 'Online', NULL, '2024-10-26 05:33:32', '2024-10-26 06:44:33', NULL, 'Ready for Delivery', 'SR-16-#6D37041E80E64A25BDED', 1, 1, 0, 'Cash on Delivery'),
-(17, 1, 14, 15, 5, '#DD6D217350CA480B9561', 'Rose  Oriana', 'Online', NULL, '2024-10-26 06:48:20', '2024-10-26 06:49:47', NULL, 'Out for Delivery', 'SR-17-#DD6D217350CA480B9561', 1, 1, 0, 'Cash on Delivery');
+(17, 1, 14, 15, 5, '#DD6D217350CA480B9561', 'Rose  Oriana', 'Online', NULL, '2024-10-26 06:48:20', '2024-10-26 06:49:47', NULL, 'Out for Delivery', 'SR-17-#DD6D217350CA480B9561', 1, 1, 0, 'Cash on Delivery'),
+(18, 1, NULL, 13, 1, '#4C7331A97C364C35ABD3', 'Alexia Midgar', 'Online', '', '2024-10-28 07:26:41', NULL, NULL, 'Pending Pickup', 'SR-18-#4C7331A97C364C35ABD3', 1, 0, 0, 'Cash on Delivery');
 
 -- --------------------------------------------------------
 
@@ -652,8 +687,8 @@ CREATE TABLE `stores` (
 --
 
 INSERT INTO `stores` (`id`, `address_id`, `store_no`, `store_name`, `store_contact`, `store_email`, `is_main_store`, `updated_at`, `date_created`, `isStatus`, `isArchive`) VALUES
-(1, 1, 'LIZASO-1729893225730', 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', 1, '2024-10-26 05:53:45', '2024-10-26 05:53:45', 0, 0),
-(3, 1, 'LIZASO001', 'Lizaso Hub Malolos', '123-456-7890', 'lizasomalolos@lizasolaundry.com', 1, '2024-10-26 06:27:19', '2024-10-26 06:27:19', 1, 0);
+(1, 1, 'LIZASO-1729893225730', 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', 1, '2024-10-26 05:53:45', '2024-10-26 05:53:45', 1, 0),
+(5, 9, 'LIZASO-20241027-1172', 'Lizaso Laundry Hub Malolos', '0947272061', 'lizasomalolos@gmail.com', 0, '2024-10-27 18:06:32', '2024-10-27 18:06:32', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -692,7 +727,7 @@ CREATE TABLE `user_account` (
   `store_id` bigint(20) DEFAULT NULL,
   `address_id` bigint(20) DEFAULT NULL,
   `role_permissions_id` bigint(20) DEFAULT NULL,
-  `username` varchar(255) NOT NULL,
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `email` varchar(100) DEFAULT NULL,
   `mobile_number` varchar(20) NOT NULL,
   `first_name` varchar(255) NOT NULL,
@@ -713,7 +748,7 @@ CREATE TABLE `user_account` (
 INSERT INTO `user_account` (`id`, `store_id`, `address_id`, `role_permissions_id`, `username`, `email`, `mobile_number`, `first_name`, `middle_name`, `last_name`, `user_type`, `isOnline`, `isAgreement`, `isStatus`, `isArchive`, `date_created`) VALUES
 (1, 1, 2, 1, 'admin', 'admin@example.com', '09310064466', 'Admin', NULL, 'User', 'Administrator', 1, 1, 1, 0, '2024-10-26 05:53:45'),
 (13, 1, 4, NULL, 'alexia16', 'alexia16@gmail.com', '09123434651', 'Alexia', '', 'Midgar', 'Customer', 1, 1, 1, 0, '2024-10-26 06:20:51'),
-(14, 1, NULL, 2, 'juan12', 'juan16@gmail.com', '092785858061', 'Juan', '', 'Tamad', 'Delivery Staff', 1, 1, 0, 0, '2024-10-26 09:19:52'),
+(14, 1, NULL, 4, 'juan12', 'juan16@gmail.com', '092785858061', 'Juan', '', 'Tamad', 'Delivery Staff', 1, 1, 0, 0, '2024-10-26 09:19:52'),
 (15, 1, 7, NULL, 'rose16', 'roseoriana16@gmail.com', '09472727061', 'Rose', '', 'Oriana', 'Customer', 1, 1, 1, 0, '2024-10-26 14:45:51');
 
 -- --------------------------------------------------------
@@ -743,7 +778,7 @@ CREATE TABLE `user_security` (
 
 INSERT INTO `user_security` (`id`, `user_id`, `password`, `password_salt`, `mfa_enabled`, `mfa_secret`, `failed_login_attempts`, `account_locked`, `lockout_time`, `last_login`, `last_logout`, `last_password_change`) VALUES
 (1, 1, '$2b$10$aLZjsXyttu7kaF3cFyoLQuX7tchDRsqEVpv.bVBqAObQN5ZTxSl.K', '$2b$10$IV/uBrvaUVsm7HCllpj0Wu', 0, NULL, 0, 0, NULL, NULL, NULL, NULL),
-(13, 13, '$2b$12$3JjpxGUlQ0Kha.xCJ.Fj9uG7xkanydaYfBkPODzaQG7bOsob1GMmK', '$2b$12$0ksEHF4mYQfa2bQa5DObcu', 0, NULL, 0, 0, NULL, '2024-10-26 16:37:28', NULL, NULL),
+(13, 13, '$2b$12$3JjpxGUlQ0Kha.xCJ.Fj9uG7xkanydaYfBkPODzaQG7bOsob1GMmK', '$2b$12$0ksEHF4mYQfa2bQa5DObcu', 0, NULL, 0, 0, NULL, '2024-10-27 08:49:20', NULL, NULL),
 (14, 14, '$2b$12$0m/xAtRzXyrf1EtUA7nzxeBdF/KVBsfzXBAnMGBSKB7LiNbx7HqVu', '$2b$12$bdDTMLqwLCMWCRj2pv0KZO', 0, NULL, 0, 0, NULL, '2024-10-26 16:40:03', NULL, '2024-10-26 09:19:52'),
 (15, 15, '$2b$12$j5oN6GH5FQ9KnPQ3lzsL3.IJ1o4VwDA/itYU.MJ1Gd8E2Beh7hfyO', '$2b$12$YFiXhGVySxP9vqL5tKpodO', 0, NULL, 0, 0, NULL, '2024-10-26 14:48:04', NULL, NULL);
 
@@ -933,7 +968,7 @@ ALTER TABLE `activity_log`
 -- AUTO_INCREMENT for table `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `conversations`
@@ -957,19 +992,19 @@ ALTER TABLE `feedback_review`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `item_category`
 --
 ALTER TABLE `item_category`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `laundry_assignment`
@@ -987,7 +1022,7 @@ ALTER TABLE `laundry_unit`
 -- AUTO_INCREMENT for table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -1011,7 +1046,7 @@ ALTER TABLE `roles_permissions`
 -- AUTO_INCREMENT for table `service_progress`
 --
 ALTER TABLE `service_progress`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=171;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
 
 --
 -- AUTO_INCREMENT for table `service_promo`
@@ -1023,7 +1058,7 @@ ALTER TABLE `service_promo`
 -- AUTO_INCREMENT for table `service_request`
 --
 ALTER TABLE `service_request`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `service_type`
@@ -1035,7 +1070,7 @@ ALTER TABLE `service_type`
 -- AUTO_INCREMENT for table `stores`
 --
 ALTER TABLE `stores`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `transactions`
