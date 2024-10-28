@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { COLORS } from "../../../constants/color";
 import no_data from "../../../assets/images/no_data_table.jpg";
+import DateCell from "../../table/DateCell";
 
 const CustomScheduleTable = ({ tableData }) => {
   const [page, setPage] = useState(0);
@@ -44,7 +45,7 @@ const CustomScheduleTable = ({ tableData }) => {
               <TableCell sx={cellHeadStyles}>ID</TableCell>
               <TableCell sx={cellHeadStyles}>Date Created</TableCell>
               <TableCell sx={cellHeadStyles}>Name</TableCell>
-              <TableCell sx={cellHeadStyles}>Customer Type</TableCell>
+              <TableCell sx={cellHeadStyles}>Service Type</TableCell>
               <TableCell sx={cellHeadStyles}>Payment Method</TableCell>
               <TableCell sx={cellHeadStyles}>Status</TableCell>
               <TableCell sx={cellHeadStyles}>Actions</TableCell>
@@ -87,12 +88,35 @@ const CustomScheduleTable = ({ tableData }) => {
                     role="checkbox"
                     tabIndex={-1}
                   >
-                    <TableCell>{data.id}</TableCell>
-                    <TableCell>{data.dateCreated}</TableCell>
-                    <TableCell>{data.name}</TableCell>
-                    <TableCell>{data.customerType}</TableCell>
-                    <TableCell>{data.paymentMethod}</TableCell>
-                    <TableCell>{data.status}</TableCell>
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "600", color: COLORS.secondary }}
+                      >
+                        #{data.id}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      <DateCell dateCreated={data.request_date} />
+                    </TableCell>
+
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "600", color: COLORS.text }}
+                      >
+                        {data.customer_fullname}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      {data.service_name}
+                    </TableCell>
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      {data.payment_method}
+                    </TableCell>
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      {data.request_status}
+                    </TableCell>
                     <TableCell>{/* Add your action buttons here */}</TableCell>
                   </TableRow>
                 ))
