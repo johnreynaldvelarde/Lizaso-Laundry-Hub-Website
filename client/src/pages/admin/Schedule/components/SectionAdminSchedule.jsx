@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
   TextField,
+  Button,
 } from "@mui/material";
 import React from "react";
 import usePopup from "../../../../hooks/common/usePopup";
@@ -29,9 +30,25 @@ import {
 } from "@phosphor-icons/react";
 import { COLORS } from "../../../../constants/color";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
+import CustomFilter from "../../../../components/common/CustomFilter";
+import {
+  dateOptions,
+  statusOptions,
+} from "../../../../data/schedule/serviceStatus";
+import { ArrowDropDown, KeyboardArrowDown } from "@mui/icons-material";
 
 const SectionAdminSchedule = () => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
+  const [selectedStatus, setSelectedStatus] = React.useState("");
+  const [selectedDate, setSelectedDate] = React.useState("");
+
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
 
   const data = [
     {
@@ -70,11 +87,6 @@ const SectionAdminSchedule = () => {
 
   const handleSearchChange = (event) => {
     // Handle search input change
-    console.log(event.target.value);
-  };
-
-  const handleDateChange = (event) => {
-    // Handle date filter change
     console.log(event.target.value);
   };
 
@@ -207,9 +219,10 @@ const SectionAdminSchedule = () => {
         ))}
       </Box>
 
-      <Box sx={{ mt: 5 }}>
+      <Box mt={5}>
         <Box
-          className="flex items-center justify-between mb-"
+          mb={2}
+          className="flex items-center"
           sx={{
             flexDirection: {
               xs: "column",
@@ -217,41 +230,109 @@ const SectionAdminSchedule = () => {
             },
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
-          >
-            All Service Request
-          </Typography>
+          <Box sx={{ display: "flex" }}>
+            {/* Title */}
+            <Typography variant="h6" sx={{ marginRight: 2 }}>
+              All Service Request
+            </Typography>
+          </Box>
 
+          {/* Filter by created date */}
           <Box
-            className="flex items-center"
+            sx={{
+              width: {
+                xs: "100%", // Full width on small screens
+                sm: "auto", // Auto width on larger screens
+              },
+              mt: {
+                xs: 2, // Margin top on small screens
+                sm: 0, // No margin top on larger screens
+              },
+            }}
+          >
+            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
+              <Select
+                value={selectedDate}
+                onChange={handleDateChange}
+                displayEmpty
+                IconComponent={KeyboardArrowDown}
+                renderValue={(selected) => {
+                  if (!selected) {
+                    return (
+                      <span style={{ color: COLORS.primary }}>
+                        Select creation date
+                      </span>
+                    );
+                  }
+                  return selected;
+                }}
+                sx={{
+                  borderRadius: 2,
+                  color: COLORS.primary,
+                  "& .MuiSvgIcon-root": {
+                    color: COLORS.primary,
+                  },
+                }}
+              >
+                {/* Creation date options */}
+                {dateOptions.map((date) => (
+                  <MenuItem key={date} value={date}>
+                    {date}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Filter Status */}
+          <Box
             sx={{
               width: {
                 xs: "100%",
                 sm: "auto",
               },
-              flexDirection: {
-                xs: "column",
-                sm: "row",
+              mt: {
+                xs: 2,
+                sm: 0,
               },
-              "& button": {
-                width: {
-                  xs: "100%",
-                  sm: "auto",
-                },
-                marginBottom: {
-                  xs: 2,
-                  sm: 0,
-                },
+              mx: {
+                xs: 0,
+                sm: 2,
               },
             }}
           >
-            <CustomAddButton
-              onClick={() => openPopup("addItem")}
-              label={"Add new item"}
-              icon={<PlusCircle size={24} color="#fcfcfc" weight="duotone" />}
-            />
+            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
+              <Select
+                value={selectedStatus}
+                onChange={handleStatusChange}
+                displayEmpty
+                IconComponent={KeyboardArrowDown}
+                renderValue={(selected) => {
+                  if (!selected) {
+                    return (
+                      <span style={{ color: COLORS.primary }}>
+                        Select status
+                      </span>
+                    );
+                  }
+                  return selected;
+                }}
+                sx={{
+                  borderRadius: 2,
+                  color: COLORS.primary,
+                  "& .MuiSvgIcon-root": {
+                    color: COLORS.primary,
+                  },
+                }}
+              >
+                {/* Status options */}
+                {statusOptions.map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         </Box>
       </Box>

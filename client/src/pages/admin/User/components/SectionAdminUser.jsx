@@ -740,10 +740,12 @@ const SectionAdminUser = () => {
             },
           }}
         >
-          {/* Title */}
-          <Typography variant="h6" sx={{ marginRight: 2 }}>
-            All Users
-          </Typography>
+          <Box sx={{ display: "flex" }}>
+            {/* Title */}
+            <Typography variant="h6" sx={{ marginRight: 2 }}>
+              All Users
+            </Typography>
+          </Box>
 
           <Box
             className="flex items-center"
