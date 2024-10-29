@@ -247,6 +247,8 @@ export const getUserDetails = async (req, res, db) => {
       [userId]
     );
 
+    console.log(userAccountResults);
+
     // Check if the user was found
     if (userAccountResults.length > 0) {
       const user = userAccountResults[0];
@@ -264,13 +266,13 @@ export const getUserDetails = async (req, res, db) => {
           phone: user.mobile_number,
           fullName: `${user.first_name} ${user.last_name}`,
           username: user.username,
-          userType: user.user_type, // Include user type in response
+          userType: user.user_type,
         },
       };
 
       // If user type is not 'Customer', add role permissions
       if (user.user_type !== "Customer") {
-        response.user.roleName = user.role_name || null; // Handle potential null value
+        response.user.roleName = user.role_name || null;
         response.user.permissions = {
           canRead: user.can_read || false,
           canWrite: user.can_write || false,

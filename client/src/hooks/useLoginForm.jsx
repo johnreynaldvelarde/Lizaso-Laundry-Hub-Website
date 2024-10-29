@@ -6,7 +6,7 @@ import useAuth from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
-  const { userDetails } = useAuth();
+  const { userDetails, fetchUserDetails } = useAuth();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -41,9 +41,8 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
       if (success) {
         if (accessToken) {
           setAccessToken(accessToken);
+          await fetchUserDetails(accessToken);
         }
-
-        toast.success("Login successful!");
 
         setLoginUsername("");
         setLoginPassword("");

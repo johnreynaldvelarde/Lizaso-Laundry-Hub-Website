@@ -2,7 +2,10 @@ import express from "express";
 import { getPool } from "../db/dbConfig.js";
 import { handleLogin, getUserDetails } from "../services/authService.js";
 import jwt from "jsonwebtoken";
-import { handleRegisterCustomer } from "../services/authentication.js";
+import {
+  handleCheckCustomerDetailsWeb,
+  handleRegisterCustomer,
+} from "../services/authentication.js";
 
 const router = express.Router();
 
@@ -111,5 +114,16 @@ router.post("/logout", (req, res) => {
 
   res.status(200).json({ success: true, message: "Logged out successfully" });
 });
+
+router.get(
+  "/customers/:id/check-customer-details-web",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleCheckCustomerDetailsWeb(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 export default router;

@@ -1,16 +1,11 @@
 import { axiosPrivate } from "./axios";
 
-const handleError = (error) => {
-  const message =
-    error.response?.data?.message || "An unexpected error occurred.";
-  return new Error(message);
-};
-
 export const checkCustomerDetails = {
   getCheckCustomerDetails: async (id) => {
+    console.log(id);
     try {
-      const response = await axiosPrivate.post(
-        `customers/${id}/check-customer-details`
+      const response = await axiosPrivate.get(
+        `customers/${id}/check-customer-details-web`
       );
 
       if (response.data.success) {
@@ -20,7 +15,6 @@ export const checkCustomerDetails = {
         return { success: false, message: response.data.message };
       }
     } catch (error) {
-      console.error("Error checking customer details:", error);
       return { success: false, message: "Failed to check customer details" };
     }
   },

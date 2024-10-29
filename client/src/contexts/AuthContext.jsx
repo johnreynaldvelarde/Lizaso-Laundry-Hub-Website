@@ -67,8 +67,10 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         const user = response.data.user;
-        if (user.userType === "Customer") {
-          setUserDetails({
+        console.log(user);
+        if (user) {
+          // Initialize user details with common properties
+          const userDetails = {
             userId: user.userId,
             storeId: user.storeId,
             firstname: user.firstname,
@@ -78,27 +80,54 @@ export const AuthProvider = ({ children }) => {
             phone: user.phone,
             fullName: user.fullName,
             username: user.username,
-          });
-        } else {
-          setUserDetails({
-            userId: user.userId,
-            storeId: user.storeId,
-            firstname: user.firstname,
-            middlename: user.middlename,
-            lastname: user.lastname,
-            email: user.email,
-            phone: user.phone,
-            fullName: user.fullName,
-            username: user.username,
-            roleName: user.roleName,
-            permissions: {
-              canRead: user.permissions.canRead,
-              canWrite: user.permissions.canWrite,
-              canEdit: user.permissions.canEdit,
-              canDelete: user.permissions.canDelete,
-            },
-          });
+          };
+
+          // Add roleName and permissions only if the user is not a customer
+          if (user.userType !== "Customer") {
+            userDetails.roleName = user.roleName || null; // Ensure roleName is null if not defined
+            userDetails.permissions = {
+              canRead: user.permissions?.canRead || false,
+              canWrite: user.permissions?.canWrite || false,
+              canEdit: user.permissions?.canEdit || false,
+              canDelete: user.permissions?.canDelete || false,
+            };
+          }
+
+          setUserDetails(userDetails);
         }
+
+        // if (user.userType === "Customer") {
+        //   setUserDetails({
+        //     userId: user.userId,
+        //     storeId: user.storeId,
+        //     firstname: user.firstname,
+        //     middlename: user.middlename,
+        //     lastname: user.lastname,
+        //     email: user.email,
+        //     phone: user.phone,
+        //     fullName: user.fullName,
+        //     username: user.username,
+        //   });
+        // } else {
+        //   setUserDetails({
+        //     userId: user.userId,
+        //     storeId: user.storeId,
+        //     firstname: user.firstname,
+        //     middlename: user.middlename,
+        //     lastname: user.lastname,
+        //     email: user.email,
+        //     phone: user.phone,
+        //     fullName: user.fullName,
+        //     username: user.username,
+        //     roleName: user.roleName,
+        //     permissions: {
+        //       canRead: user.permissions.canRead,
+        //       canWrite: user.permissions.canWrite,
+        //       canEdit: user.permissions.canEdit,
+        //       canDelete: user.permissions.canDelete,
+        //     },
+        //   });
+        // }
       } else {
         console.error("Error fetching user details:", response.data.message);
       }
@@ -134,6 +163,7 @@ export const AuthProvider = ({ children }) => {
     setUser: setUserDetails,
     isLoading,
     setIsLoading,
+    fetchUserDetails,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

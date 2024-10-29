@@ -301,6 +301,50 @@ export const getUserMobileDetails = async (req, res, db) => {
 export const handleCheckCustomerDetailsMobile = async (req, res, db) => {
   const { id } = req.params;
 
+  console.log(id);
+
+  try {
+    await db.beginTransaction();
+
+    const [user] = await db.query(
+      "SELECT store_id, address_id FROM User_Account WHERE id = ?",
+      [id]
+    );
+
+    if (user.length > 0) {
+      const customer = user[0];
+
+      const storeIdIsNull = customer.store_id === null;
+      const addressIdIsNull = customer.address_id === null;
+
+      await db.commit();
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          storeIdIsNull,
+          addressIdIsNull,
+        },
+      });
+    } else {
+      await db.rollback();
+      return res
+        .status(404)
+        .json({ success: false, message: "Customer not found" });
+    }
+  } catch (error) {
+    await db.rollback();
+    return res.status(500).json({ success: false, message: "Server error" });
+  } finally {
+    if (db) db.release();
+  }
+};
+
+export const handleCheckCustomerDetailsWeb = async (req, res, db) => {
+  const { id } = req.params;
+
+  console.log(id);
+
   try {
     await db.beginTransaction();
 
