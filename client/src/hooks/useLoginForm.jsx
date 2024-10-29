@@ -6,7 +6,7 @@ import useAuth from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
-  const { userDetails, fetchUserDetails } = useAuth();
+  const { userDetails, fetchUserDetails, setAccessToken } = useAuth();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -14,7 +14,6 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
-  const { setAccessToken } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +31,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     setLoading(true);
 
     try {
-      const { success, userType, roleName, permissions, accessToken } =
+      const { success, userId, userType, roleName, permissions, accessToken } =
         await loginService.login({
           username: loginUsername,
           password: loginPassword,
@@ -48,14 +47,10 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
         setLoginPassword("");
 
         if (userType === "Customer") {
-          console.log(userDetails.userId);
           const customerDetails =
-            await checkCustomerDetails.getCheckCustomerDetails(
-              userDetails.userId
-            );
+            await checkCustomerDetails.getCheckCustomerDetails(userId);
 
           if (customerDetails.success !== false) {
-            // Navigate based on customer details
             if (
               customerDetails.storeIdIsNull ||
               customerDetails.addressIsNull

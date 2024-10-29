@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         const user = response.data.user;
-        console.log(user);
         if (user) {
           // Initialize user details with common properties
           const userDetails = {

@@ -13,11 +13,25 @@ export const loginService = {
   login: async (data) => {
     try {
       const response = await axiosPrivate.post("/login", data);
-      const { success, userType, roleName, permissions, accessToken, message } =
-        response.data;
+      const {
+        success,
+        userId,
+        userType,
+        roleName,
+        permissions,
+        accessToken,
+        message,
+      } = response.data;
 
       if (success) {
-        return { success, userType, roleName, permissions, accessToken };
+        return {
+          success,
+          userId,
+          userType,
+          roleName,
+          permissions,
+          accessToken,
+        };
       } else {
         throw new Error(message || "Login failed.");
       }

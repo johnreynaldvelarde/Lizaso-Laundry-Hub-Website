@@ -103,6 +103,7 @@ export const handleLogin = async (req, res, db) => {
 
     return res.status(200).json({
       success: true,
+      userId: user.id,
       userType,
       roleName,
       permissions,
