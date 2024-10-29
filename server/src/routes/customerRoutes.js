@@ -7,7 +7,7 @@ import {
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
   handleSetMessagesSenderIsCustomer,
-  handleUpdateCustomerBasicInformation,
+  handleUpdateCustomerBasicInformationWeb,
 } from "../services/user/customer.js";
 import { handleCheckCustomerDetails } from "../services/useCheck.js";
 
@@ -110,7 +110,7 @@ router.put(
   "/customers/:id/start",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleUpdateCustomerBasicInformation(req, res, connection);
+      await handleUpdateCustomerBasicInformationWeb(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

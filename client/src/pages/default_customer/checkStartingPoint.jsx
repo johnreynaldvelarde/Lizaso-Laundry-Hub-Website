@@ -8,6 +8,7 @@ import {
 } from "../../data/countrySelection";
 import useCheckStartingPoint from "../../hooks/customers/useCheckStartingPoint";
 import background from "../../assets/images/background_2.jpg";
+import { COLORS } from "../../constants/color";
 
 const CheckStartingPoint = () => {
   const {
@@ -21,7 +22,6 @@ const CheckStartingPoint = () => {
 
     // Step 1
     addressLine1,
-    addressLine2,
     country,
     region,
     province,
@@ -29,7 +29,6 @@ const CheckStartingPoint = () => {
     postalCode,
     setPostalCode,
     setAddressLine1,
-    setAddressLine2,
     handleCountryChange,
     handleRegionChange,
     handleProvinceChange,
@@ -72,15 +71,18 @@ const CheckStartingPoint = () => {
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md md:max-w-lg lg:max-w-xl my-8">
           {step === 1 && (
             <form onSubmit={handleAddressSubmit}>
-              <h1 className="text-xl font-semibold text-gray-800 mb-4">
+              <h1
+                className="text-xl font-semibold mb-4"
+                style={{ color: COLORS.text }}
+              >
                 Enter Your Address and Location
               </h1>
-              <div className="mb-4">
+              <div className="mb-4 mt-5">
                 <label
                   className="block text-gray-700 mb-2"
                   htmlFor="addressLine1"
                 >
-                  Address Line 1
+                  Address Line
                 </label>
                 <input
                   type="text"
@@ -91,22 +93,8 @@ const CheckStartingPoint = () => {
                   required
                 />
               </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 mb-2"
-                  htmlFor="addressLine2"
-                >
-                  Address Line 2
-                </label>
-                <input
-                  type="text"
-                  id="addressLine2"
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5787C8] transition duration-200"
-                  value={addressLine2}
-                  onChange={(e) => setAddressLine2(e.target.value)}
-                />
-              </div>
-              <div className="mb-4">
+
+              <div className="mb-4 mt-5">
                 <label className="block text-gray-700 mb-2" htmlFor="country">
                   Country
                 </label>
@@ -126,7 +114,7 @@ const CheckStartingPoint = () => {
               </div>
               {country && (
                 <>
-                  <div className="mb-4">
+                  <div className="mb-4 mt-5">
                     <label
                       className="block text-gray-700 mb-2"
                       htmlFor="region"
@@ -286,7 +274,7 @@ const CheckStartingPoint = () => {
                 </ul>
               </div>
               <form onSubmit={handleFinalSubmit}>
-                <div className="mb-4 mt-5">
+                {/* <div className="mb-4 mt-5">
                   <label className="block text-gray-700 mb-2" htmlFor="email">
                     Email
                   </label>
@@ -320,7 +308,7 @@ const CheckStartingPoint = () => {
                     required
                     pattern="\d*"
                   />
-                </div>
+                </div> */}
                 <button
                   type="submit"
                   className={`w-full h-10 py-5 px-4 rounded-md transition duration-200 hover:opacity-90 flex justify-center items-center mt-10 ${

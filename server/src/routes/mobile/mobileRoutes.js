@@ -21,7 +21,6 @@ import {
 } from "../../services/authentication.js";
 import {
   handleGetStoreList,
-  handleUpdateCustomerBasicInformation,
   handleUpdateCustomerBasicInformationMobile,
 } from "../../services/user/customer.js";
 import {

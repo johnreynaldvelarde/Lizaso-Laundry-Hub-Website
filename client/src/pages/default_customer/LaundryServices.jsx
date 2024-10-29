@@ -16,19 +16,18 @@ const LaundryServices = () => {
     useFetchData();
 
   const fetchServiceAndPromotionsData = useCallback(() => {
-    if (userDetails?.storeId) {
+    if (userDetails.storeId) {
       fetchServiceTypeAndPromotions(
         getCustomerServiceAndPromotions.getServiceWithPromotions,
         userDetails.storeId
       );
     }
-  }, [fetchServiceTypeAndPromotions, userDetails?.storeId]);
+  }, [fetchServiceTypeAndPromotions, userDetails.storeId]);
 
   useEffect(() => {
     fetchServiceAndPromotionsData();
   }, [fetchServiceAndPromotionsData]);
 
-  // Example of promotional services
   const specialPromos = [
     { id: 1, label: "Wash & Fold", price: 18, promo: "20% Off Today!" },
     { id: 2, label: "Dry Cleaning", price: 22, promo: "15% Off Today!" },

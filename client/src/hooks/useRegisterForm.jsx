@@ -10,11 +10,11 @@ import {
 import toast from "react-hot-toast";
 
 const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
+  const { fetchUserDetails, setAccessToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(showCreateAccountPopup);
-  const { setAccessToken } = useAuth();
   const navigate = useNavigate();
 
   // Hold Inputs
@@ -42,6 +42,18 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
     setIsVisible(showCreateAccountPopup);
   }, [showCreateAccountPopup]);
 
+  const Clear = () => {
+    setFirstName("");
+    setMiddleName("");
+    setLastName("");
+    setUserName("");
+    setEmail("");
+    setNumber("");
+    setPassword("");
+    setConfirmPassword("");
+    setIsAgreement(false);
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -51,8 +63,6 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
     }
 
     try {
-      setLoading(true);
-
       const checkResponse = await checkUsername.getCheckUsername({
         username: userName,
       });
@@ -65,6 +75,8 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
         toast.error("Username already exists ");
         return;
       }
+
+      setLoading(true);
 
       const response = await registerService.register({
         firstname: firstName,
@@ -79,44 +91,77 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
 
       if (response.success) {
         toast.success("Registration successful!");
-        const loginResponse = await loginService.login({
-          username: userName,
-          password: password,
-        });
-        setAccessToken(loginResponse.accessToken);
-        const userType = loginResponse.userType;
-        setTimeout(async () => {
+
+        const { success, userId, userType, roleName, accessToken } =
+          await loginService.login({
+            username: userName,
+            password: password,
+          });
+
+        if (success) {
+          if (accessToken) {
+            setAccessToken(accessToken);
+            await fetchUserDetails(accessToken);
+          }
+
+          Clear();
+
           if (userType === "Customer") {
             const customerDetails =
-              await checkCustomerDetails.getCheckCustomerDetails(userName);
+              await checkCustomerDetails.getCheckCustomerDetails(userId);
+
             if (customerDetails.success !== false) {
               if (
                 customerDetails.storeIdIsNull ||
-                customerDetails.cNumberIsNull ||
-                customerDetails.cEmailIsNull
+                customerDetails.addressIsNull
               ) {
                 navigate("/complete-details");
               } else {
                 navigate("/customer-page");
               }
             } else {
-              // Handle the case where checking customer details fails
               toast.error("Failed to check customer details.");
             }
           } else {
-            // Redirect to main page for non-customer users
-            navigate("/main");
+            if (roleName === "Administrator") {
+              navigate("/main");
+            } else if (roleName === "Manager") {
+              navigate("/main");
+            } else {
+            }
           }
-        }, 1000);
-        setFirstName("");
-        setMiddleName("");
-        setLastName("");
-        setUserName("");
-        setEmail("");
-        setNumber("");
-        setPassword("");
-        setConfirmPassword("");
-        setIsAgreement("");
+
+          // if (userType === "Customer") {
+          //   const customerDetails =
+          //     await checkCustomerDetails.getCheckCustomerDetails(userName);
+          //   if (customerDetails.success !== false) {
+          //     if (
+          //       customerDetails.storeIdIsNull ||
+          //       customerDetails.cNumberIsNull ||
+          //       customerDetails.cEmailIsNull
+          //     ) {
+          //       navigate("/complete-details");
+          //     } else {
+          //       navigate("/customer-page");
+          //     }
+          //   } else {
+          //     // Handle the case where checking customer details fails
+          //     toast.error("Failed to check customer details.");
+          //   }
+          // } else {
+          //   // Redirect to main page for non-customer users
+          //   navigate("/main");
+          // }
+        }
+
+        // const loginResponse = await loginService.login({
+        //   username: userName,
+        //   password: password,
+        // });
+
+        // setTimeout(async () => {
+
+        // }, 1000);
       } else {
         toast.error(
           response.message || "Registration failed. Please try again."
@@ -158,7 +203,6 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
     handleRegister,
     setData,
     loading,
-    handleRegister,
   };
 };
 

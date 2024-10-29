@@ -151,16 +151,13 @@ const useCheckStartingPoint = () => {
       const storeId = selectedStore.id;
       const customerData = {
         store_id: storeId,
-        c_email: email,
-        c_number: phoneNumber,
-        a_address_line1: addressLine1,
-        a_address_line2: addressLine2,
-        a_country: country,
-        a_province: province,
-        a_city: city,
-        a_postal_code: postalCode,
-        a_latitude: latitude,
-        a_longitude: longitude,
+        address_line: addressLine1,
+        country: country,
+        province: province,
+        city: city,
+        postal_code: postalCode,
+        latitude: latitude,
+        longitude: longitude,
       };
 
       const response =
