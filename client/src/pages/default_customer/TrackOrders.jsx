@@ -19,6 +19,7 @@ import { getCustomerTrackOrderAndProgress } from "../../services/api/customerApi
 import { QRCodeCanvas } from "qrcode.react";
 import background_1 from "../../assets/images/background_2.jpg";
 import PopReceipt from "./components/PopReceipt";
+import PopFeedbackAndReview from "./components/PopFeedbackAndReview";
 
 const TrackOrders = () => {
   const navigate = useNavigate();
@@ -160,6 +161,9 @@ const TrackOrders = () => {
                             : orders[currentIndex].service_request
                                 .request_status === "Ready for Delivery"
                             ? "bg-[#800080] text-white"
+                            : orders[currentIndex].service_request
+                                .request_status === "Completed Delivery"
+                            ? "bg-[#5787C8] text-white"
                             : "bg-gray-200 text-gray-800"
                         }`}
                       >
@@ -198,27 +202,47 @@ const TrackOrders = () => {
                         {orders[currentIndex].service_request.user_name}
                       </span>
                     </p>
-
                     <div className="relative inline-block">
-                      <button
-                        className={`bg-[#5787C8] text-white px-4 py-2 rounded mt-2 ${
-                          orders[currentIndex].service_request.user_id
-                            ? "hover:bg-[#3E5B8C]"
-                            : "opacity-50 cursor-not-allowed"
-                        }`}
-                        onClick={() => {
-                          openPopup(
-                            "messageStaff",
+                      {orders[currentIndex].service_request.request_status ===
+                      "Completed Delivery" ? (
+                        // "Add Feedback and Review" button when status is "Completed Delivery"
+                        <button
+                          className="bg-[#4CAF50] text-white px-4 py-2 rounded mt-2 hover:bg-[#388E3C]"
+                          onClick={() => {
+                            openPopup(
+                              "addFeedback",
+                              orders[currentIndex].service_request.user_id
+                            );
+                          }}
+                        >
+                          Share Your Feedback and Review
+                        </button>
+                      ) : (
+                        // "Message the Delivery Staff" button for other statuses
+                        <button
+                          className={`bg-[#5787C8] text-white px-4 py-2 rounded mt-2 ${
                             orders[currentIndex].service_request.user_id
-                          );
-                        }}
-                        disabled={!orders[currentIndex].service_request.user_id}
-                      >
-                        Message the Delivery Staff
-                      </button>
+                              ? "hover:bg-[#3E5B8C]"
+                              : "opacity-50 cursor-not-allowed"
+                          }`}
+                          onClick={() => {
+                            openPopup(
+                              "messageStaff",
+                              orders[currentIndex].service_request.user_id
+                            );
+                          }}
+                          disabled={
+                            !orders[currentIndex].service_request.user_id
+                          }
+                        >
+                          Message the Delivery Staff
+                        </button>
+                      )}
 
-                      {/* Badge element */}
-                      {orders[currentIndex].service_request.user_id > 0 &&
+                      {/* Badge element - only shows if status is not "Completed Delivery" */}
+                      {orders[currentIndex].service_request.request_status !==
+                        "Completed Delivery" &&
+                        orders[currentIndex].service_request.user_id > 0 &&
                         orders[currentIndex].service_request.unread_messages >
                           0 && (
                           <span className="absolute top-3 right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full transform translate-x-1/2 -translate-y-1/2">
@@ -229,23 +253,6 @@ const TrackOrders = () => {
                           </span>
                         )}
                     </div>
-
-                    {/* <button
-                      className={`bg-[#5787C8] text-white px-4 py-2 rounded mt-2 ${
-                        orders[currentIndex].service_request.user_id
-                          ? "hover:bg-[#3E5B8C]"
-                          : "opacity-50 cursor-not-allowed"
-                      }`}
-                      onClick={() => {
-                        openPopup(
-                          "messageStaff",
-                          orders[currentIndex].service_request.user_id
-                        );
-                      }}
-                      disabled={!orders[currentIndex].service_request.user_id}
-                    >
-                      Message the Delivery Staff
-                    </button> */}
                   </div>
                   <div>
                     <p className="mb-2 flex" style={{ color: styles.primary }}>
@@ -479,6 +486,16 @@ const TrackOrders = () => {
           onClose={closePopup}
           assignmentId={orders[currentIndex].service_request.assignment_id}
           customerData={orders[currentIndex]}
+        />
+      )}
+
+      {isOpen && popupType === "addFeedback" && (
+        <PopFeedbackAndReview
+          open={isOpen}
+          onClose={closePopup}
+          userId={userDetails.userId}
+          storeId={userDetails.storeId}
+          serviewRequestId={orders[currentIndex].service_request.id}
         />
       )}
     </div>

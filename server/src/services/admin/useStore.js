@@ -56,6 +56,19 @@ export const handleCreateStore = async (req, res, connection) => {
       [address_id, store_no, store_name, store_contact, store_email]
     );
 
+    const newStoreId = result.insertId;
+
+    // Insert the store into the Stores table with the address_id
+    await connection.execute(
+      `INSERT INTO Service_Type (store_id, service_name, default_price, date_created, isArchive)
+       VALUES (?, 'Wash', 65, NOW(), FALSE),
+              (?, 'Dry', 60, NOW(), FALSE),
+              (?, 'Fold', 30, NOW(), FALSE),
+              (?, 'Wash/Dry', 125, NOW(), FALSE),
+              (?, 'Wash/Dry/Fold', 155, NOW(), FALSE)`,
+      [newStoreId, newStoreId, newStoreId, newStoreId, newStoreId]
+    );
+
     // Commit the transaction
     await connection.commit();
 

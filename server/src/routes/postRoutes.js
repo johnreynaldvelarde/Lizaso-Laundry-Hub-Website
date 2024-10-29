@@ -87,7 +87,7 @@ router.post(
   withDatabaseConnection(async (req, res, connection) => {})
 );
 
-// Store Section
+// #Store Section
 router.post(
   "/stores/set-new-stores",
   withDatabaseConnection(async (req, res, connection) => {

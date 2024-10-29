@@ -12,6 +12,8 @@ import {
   TextField,
   useMediaQuery,
   useTheme,
+  FormControl,
+  Select,
 } from "@mui/material";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
 import {
@@ -37,6 +39,8 @@ import {
 import { getUnitImage } from "./components/unit_helpers";
 import CustomHeaderTitle from "../../../components/common/CustomHeaderTitle";
 import CustomAddButton from "../../../components/common/CustomAddButton";
+import { KeyboardArrowDown } from "@mui/icons-material";
+import { statusUnit } from "../../../data/unit/unitStatus";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -200,7 +204,39 @@ const UnitMonitor = () => {
               justifyContent: { xs: "center", sm: "center", md: "flex-end" }, // Center buttons on small screens
             }}
           >
-            <Button
+            <FormControl sx={{ minWidth: 200 }} size="small">
+              <Select
+                // value={selectedStatus}
+                // onChange={handleStatusChange}
+                displayEmpty
+                IconComponent={KeyboardArrowDown}
+                renderValue={(selected) => {
+                  if (!selected) {
+                    return (
+                      <span style={{ color: COLORS.primary }}>
+                        Select status
+                      </span>
+                    );
+                  }
+                  return selected;
+                }}
+                sx={{
+                  borderRadius: 2,
+                  color: COLORS.primary,
+                  "& .MuiSvgIcon-root": {
+                    color: COLORS.primary,
+                  },
+                }}
+              >
+                {/* Status options */}
+                {statusUnit.map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {/* <Button
               variant="outlined"
               endIcon={open ? <CaretUp size={20} /> : <CaretDown size={20} />}
               sx={{
@@ -230,7 +266,7 @@ const UnitMonitor = () => {
               onClick={handleClick}
             >
               Filter by Status
-            </Button>
+            </Button> */}
 
             <Menu
               anchorEl={anchorEl}
