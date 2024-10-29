@@ -1,13 +1,14 @@
 import React from "react";
+import access_denied from "../../assets/images/access_denied.jpg";
 
 const AccessDenied = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       {/* Image in the center */}
       <img
-        src="https://via.placeholder.com/150"
+        src={access_denied}
         alt="Access Denied"
-        className="mb-6 w-32 h-32 object-cover mx-auto"
+        className="mb-6 w-100 h-96 object-cover mx-auto"
       />
 
       {/* Access Denied message */}

@@ -1,10 +1,6 @@
 import express from "express";
 import { getPool } from "../db/dbConfig.js";
-import {
-  handleRegister,
-  handleLogin,
-  getUserDetails,
-} from "../services/authService.js";
+import { handleLogin, getUserDetails } from "../services/authService.js";
 import jwt from "jsonwebtoken";
 import { handleRegisterCustomer } from "../services/authentication.js";
 
@@ -36,23 +32,15 @@ router.post(
   })
 );
 
-// router.post(
-//   "/login-mobile",
-//   withDatabaseConnection(async (req, res, connection) => {
-//     try {
-//       await handleLoginMobile(req, res, connection);
-//     } catch (error) {
-//       res.status(500).json({ error: "Internal Server Error" });
-//     }
-//   })
-// );
-
 // Register route
 router.post(
   "/register",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleRegister(req, res, connection);
-    // await handleRegisterCustomer(req, res, connection);
+    try {
+      await handleRegisterCustomer(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 
@@ -60,7 +48,11 @@ router.post(
 router.get(
   "/user/me",
   withDatabaseConnection(async (req, res, connection) => {
-    await getUserDetails(req, res, connection);
+    try {
+      await getUserDetails(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 
@@ -95,21 +87,6 @@ function handleRefreshToken(req, res) {
     res.json({ success: true, accessToken });
   });
 }
-
-// Refresh token route
-// router.post('/refresh-token', async (req, res) => {
-//   try {
-//     const { refreshToken } = req.body;
-//     if (!refreshToken) {
-//       return res.status(400).json({ message: 'Refresh token is required' });
-//     }
-
-//     await handleRefreshToken(req, res, refreshToken);
-//   } catch (error) {
-//     console.error('Error refreshing token:', error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// });
 
 const tokenBlacklist = new Set();
 

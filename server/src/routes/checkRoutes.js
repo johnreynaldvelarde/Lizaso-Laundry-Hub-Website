@@ -20,7 +20,11 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 router.post(
   "/check-username",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleCheckUsername(req, res, connection);
+    try {
+      await handleCheckUsername(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 

@@ -45,20 +45,14 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Password length validation
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters long!");
       return;
     }
 
-    // Password match validation
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match!");
-      return;
-    }
-
     try {
-      // Check if the username already exists
+      setLoading(true);
+
       const checkResponse = await checkUsername.getCheckUsername({
         username: userName,
       });
@@ -72,36 +66,29 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
         return;
       }
 
-      // Proceed with registration if the username is available
       const response = await registerService.register({
-        c_firstname: firstName,
-        c_middlename: middleName,
-        c_lastname: lastName,
-        c_username: userName,
-        c_password: password,
-        c_email: "",
-        c_number: "",
+        firstname: firstName,
+        middlename: middleName,
+        lastname: lastName,
+        username: userName,
+        password: password,
+        email: email,
+        mobile_number: number,
         isAgreement: isAgreement,
       });
 
       if (response.success) {
         toast.success("Registration successful!");
-
-        // Automatically login the user after successful registration
         const loginResponse = await loginService.login({
           username: userName,
           password: password,
         });
-
         setAccessToken(loginResponse.accessToken);
-
         const userType = loginResponse.userType;
-
         setTimeout(async () => {
           if (userType === "Customer") {
             const customerDetails =
               await checkCustomerDetails.getCheckCustomerDetails(userName);
-
             if (customerDetails.success !== false) {
               if (
                 customerDetails.storeIdIsNull ||
@@ -121,22 +108,6 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
             navigate("/main");
           }
         }, 1000);
-
-        // if (loginResponse.success) {
-        //   setAccessToken(loginResponse.accessToken); // Store the access token
-        //   toast.success("Login successful!");
-
-        //   // Navigate the user to the appropriate page
-        //   if (loginResponse.userType === "Customer") {
-        //     navigate("/customer-page");
-        //   } else {
-        //     navigate("/main");
-        //   }
-        // } else {
-        //   toast.error("Auto-login failed. Please login manually.");
-        // }
-
-        // Clear form inputs
         setFirstName("");
         setMiddleName("");
         setLastName("");
@@ -152,8 +123,10 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
         );
       }
     } catch (error) {
-      console.error("There was an error registering:", error);
+      setLoading(false);
       toast.error("There was an error registering. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -185,7 +158,14 @@ const useRegisterForm = (showCreateAccountPopup, setShowCreateAccountPopup) => {
     handleRegister,
     setData,
     loading,
+    handleRegister,
   };
 };
 
 export default useRegisterForm;
+
+// Password match validation
+// if (password !== confirmPassword) {
+//   toast.error("Passwords do not match!");
+//   return;
+// }

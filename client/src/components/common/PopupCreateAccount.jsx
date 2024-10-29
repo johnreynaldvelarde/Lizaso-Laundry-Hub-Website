@@ -38,6 +38,10 @@ const PopupCreateAccount = ({
     setLastName,
     userName,
     setUserName,
+    email,
+    setEmail,
+    number,
+    setNumber,
     password,
     setPassword,
     confirmPassword,
@@ -171,14 +175,14 @@ const PopupCreateAccount = ({
               type="email"
               id="email"
               placeholder="Enter your email address"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               style={{ outlineColor: styles.inputBorderColor1 }}
             />
           </div>
 
-          {/*Mobile*/}
+          {/* Mobile */}
           <div className="mb-6">
             <label
               htmlFor="number"
@@ -191,8 +195,11 @@ const PopupCreateAccount = ({
               type="tel"
               id="number"
               placeholder="Enter your mobile number"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              value={number}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, "");
+                setNumber(value);
+              }}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
               style={{ outlineColor: styles.inputBorderColor1 }}
@@ -225,42 +232,6 @@ const PopupCreateAccount = ({
                 onClick={() => setPasswordVisible(!passwordVisible)}
               >
                 {passwordVisible ? <VisibilityIcon /> : <VisibilityOffIcon />}
-              </button>
-            </div>
-          </div>
-
-          {/* Confirm Password */}
-          <div className="mb-6">
-            <label
-              htmlFor="confirm-password"
-              className="block mb-2 text-base font-medium text-gray-900 ms-1"
-              style={{ color: styles.textColor2 }}
-            >
-              Confirm Password
-            </label>
-            <div className="relative">
-              <input
-                type={confirmPasswordVisible ? "text" : "password"}
-                id="confirm-password"
-                placeholder="Re-enter your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                required
-                style={{ outlineColor: styles.inputBorderColor1 }}
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
-                onClick={() =>
-                  setConfirmPasswordVisible(!confirmPasswordVisible)
-                }
-              >
-                {confirmPasswordVisible ? (
-                  <VisibilityIcon />
-                ) : (
-                  <VisibilityOffIcon />
-                )}
               </button>
             </div>
           </div>
@@ -299,11 +270,7 @@ const PopupCreateAccount = ({
               className="w-full text-white p-2 rounded-md font-semibold"
               style={{ background: styles.buttonColor1 }}
             >
-              {loading ? (
-                <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
-              ) : (
-                "Create Account"
-              )}
+              Create Account
             </button>
           </div>
         </form>
@@ -530,6 +497,46 @@ const PopupCreateAccount = ({
 };
 
 export default PopupCreateAccount;
+
+{
+  /* Confirm Password */
+}
+{
+  /* <div className="mb-6">
+            <label
+              htmlFor="confirm-password"
+              className="block mb-2 text-base font-medium text-gray-900 ms-1"
+              style={{ color: styles.textColor2 }}
+            >
+              Confirm Password
+            </label>
+            <div className="relative">
+              <input
+                type={confirmPasswordVisible ? "text" : "password"}
+                id="confirm-password"
+                placeholder="Re-enter your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                required
+                style={{ outlineColor: styles.inputBorderColor1 }}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+                onClick={() =>
+                  setConfirmPasswordVisible(!confirmPasswordVisible)
+                }
+              >
+                {confirmPasswordVisible ? (
+                  <VisibilityIcon />
+                ) : (
+                  <VisibilityOffIcon />
+                )}
+              </button>
+            </div>
+          </div> */
+}
 
 {
   /* <CustomPopFooterButton

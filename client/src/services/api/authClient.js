@@ -1,4 +1,4 @@
-import { axiosPrivate } from "../api/axios";
+import { axiosPrivate, axiosPublic } from "../api/axios";
 
 const handleError = (error) => {
   console.error("API Error:", error);
@@ -48,7 +48,7 @@ export const registerService = {
 export const checkUsername = {
   getCheckUsername: async (data) => {
     try {
-      const response = await axiosPrivate.post("/check-username", data);
+      const response = await axiosPublic.post("/check-username", data);
       return response.data;
     } catch (error) {
       console.error("Error checking username:", error);
