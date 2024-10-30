@@ -44,8 +44,8 @@ import { checkDateMatch } from "../../../../utils/method";
 
 const SectionAdminSchedule = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
-  const [selectedStatus, setSelectedStatus] = React.useState("");
-  const [selectedDate, setSelectedDate] = React.useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
 
