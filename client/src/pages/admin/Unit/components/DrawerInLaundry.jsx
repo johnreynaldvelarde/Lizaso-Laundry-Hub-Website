@@ -9,7 +9,7 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import nodata from "../../../../assets/images/no_data.png";
+import nodata from "../../../../assets/images/no_data_all.jpg";
 import styles from "../../../../styles/style";
 import { MinusSquare } from "@phosphor-icons/react";
 import CloseIcon from "@mui/icons-material/Close";

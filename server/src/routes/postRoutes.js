@@ -58,7 +58,7 @@ router.post(
 );
 
 router.post(
-  "/create-unit",
+  "/monitored-unit/create-unit",
   withDatabaseConnection(async (req, res, connection) => {
     await handleCreateUnits(req, res, connection);
   })

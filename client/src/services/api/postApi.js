@@ -10,15 +10,13 @@ const handleError = (error) => {
 export const createUnit = {
   setUnit: async (data) => {
     try {
-      const response = await axiosPrivate.post("/create-unit", data);
-      const { success, message } = response.data;
-      if (success) {
-        return { success, message };
-      } else {
-        throw new Error(message || "Create Unit is failed.");
-      }
+      const response = await axiosPrivate.post(
+        "/monitored-unit/create-unit",
+        data
+      );
+      return response.data;
     } catch (error) {
-      throw handleError(error);
+      throw error;
     }
   },
 };

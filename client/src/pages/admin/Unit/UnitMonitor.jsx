@@ -16,15 +16,10 @@ import {
   Select,
 } from "@mui/material";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
-import {
-  HourglassLow,
-  CaretDown,
-  CaretUp,
-  PlusCircle,
-} from "@phosphor-icons/react";
+import { HourglassLow, PlusCircle } from "@phosphor-icons/react";
 import PopupSelectUnit from "./components/PopupSelectUnit";
 import PopupInQueue from "./components/PopupInQueue";
-import nodata from "../../../assets/images/no_data.png";
+import nodata from "../../../assets/images/no_data_all.jpg";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopCompleteInLaundry from "./components/PopCompleteInLaundry";
@@ -41,6 +36,7 @@ import CustomHeaderTitle from "../../../components/common/CustomHeaderTitle";
 import CustomAddButton from "../../../components/common/CustomAddButton";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { statusUnit } from "../../../data/unit/unitStatus";
+import PopAddNewUnits from "./components/PopAddNewUnits";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -58,16 +54,13 @@ const UnitMonitor = () => {
   } = useUnitMonitor();
   const [filteredUnits, setFilteredUnits] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const { isOpen, popupType, openPopup, closePopup } = usePopup();
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -120,6 +113,18 @@ const UnitMonitor = () => {
     // };
   }, [fetchUnitsData, fetchCountInQueueData, fetchCountAssignmentData]);
 
+  // useEffect(() => {
+  //   setFilteredUnits(
+  //     unitsData
+  //       .filter((unit) =>
+  //         unit.unit_name.toLowerCase().includes(searchTerm.toLowerCase())
+  //       )
+  //       .filter(
+  //         (unit) => filterStatus === "" || unit.isUnitStatus === filterStatus
+  //       )
+  //   );
+  // }, [searchTerm, unitsData, filterStatus]);
+
   useEffect(() => {
     setFilteredUnits(
       unitsData
@@ -127,10 +132,20 @@ const UnitMonitor = () => {
           unit.unit_name.toLowerCase().includes(searchTerm.toLowerCase())
         )
         .filter(
-          (unit) => filterStatus === "" || unit.isUnitStatus === filterStatus
+          (unit) => filterStatus === 0 || unit.isUnitStatus === filterStatus
         )
     );
   }, [searchTerm, unitsData, filterStatus]);
+
+  const handleRefreshData = () => {
+    fetchUnitsData();
+  };
+
+  const handleStatusChange = (event) => {
+    const status = event.target.value;
+    setSelectedStatus(status); // This stores the selected status
+    setFilterStatus(status); // This applies the filter
+  };
 
   return (
     <Box sx={{ pt: "100px", pb: "20px", px: { xs: 1, md: 2 } }}>
@@ -149,7 +164,9 @@ const UnitMonitor = () => {
         />
         <CustomAddButton
           label={"Add new units"}
-          // onClick={handleOpenPopupAddRole}
+          onClick={() => {
+            openPopup("addUnits");
+          }}
           icon={
             <PlusCircle
               size={24}
@@ -206,19 +223,19 @@ const UnitMonitor = () => {
           >
             <FormControl sx={{ minWidth: 200 }} size="small">
               <Select
-                // value={selectedStatus}
-                // onChange={handleStatusChange}
+                value={selectedStatus}
+                onChange={handleStatusChange}
                 displayEmpty
                 IconComponent={KeyboardArrowDown}
                 renderValue={(selected) => {
                   if (!selected) {
-                    return (
-                      <span style={{ color: COLORS.primary }}>
-                        Select status
-                      </span>
-                    );
+                    return <span style={{ color: COLORS.primary }}>All</span>;
                   }
-                  return selected;
+                  // Find the selected option label
+                  const selectedOption = statusUnit.find(
+                    (option) => option.value === selected
+                  );
+                  return selectedOption ? selectedOption.label : "";
                 }}
                 sx={{
                   borderRadius: 2,
@@ -229,57 +246,13 @@ const UnitMonitor = () => {
                 }}
               >
                 {/* Status options */}
-                {statusUnit.map((status) => (
-                  <MenuItem key={status} value={status}>
-                    {status}
+                {statusUnit.map(({ value, label }) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            {/* <Button
-              variant="outlined"
-              endIcon={open ? <CaretUp size={20} /> : <CaretDown size={20} />}
-              sx={{
-                borderRadius: "5px",
-                fontWeight: 600,
-                textTransform: "none",
-                padding: {
-                  xs: "8px 15px",
-                  sm: "10px 20px",
-                  md: "10px 20px",
-                  lg: "10px 20px",
-                  xl: "10px auto",
-                },
-                fontSize: { xs: "14px", sm: "15px", md: "16px" },
-                color: "#5787C8",
-                borderColor: "#5787C8",
-                height: "40px", // Fixed height for all screens
-                width: { xs: "100%", sm: "100%", md: "auto" }, // Full width on small screens
-                overflow: "hidden", // Hide overflow content
-                textOverflow: "ellipsis", // Handle overflowed text
-                whiteSpace: "nowrap", // Prevent text wrapping
-                "&:hover": {
-                  borderColor: "#5787C8",
-                  backgroundColor: "rgba(87, 135, 200, 0.1)",
-                },
-              }}
-              onClick={handleClick}
-            >
-              Filter by Status
-            </Button> */}
-
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              transformOrigin={{ vertical: "top", horizontal: "left" }}
-            >
-              <MenuItem onClick={handleClose}>Available</MenuItem>
-              <MenuItem onClick={handleClose}>Occupied</MenuItem>
-              <MenuItem onClick={handleClose}>Reserved</MenuItem>
-            </Menu>
-
             <Badge
               badgeContent={countInQueueData > 0 ? countInQueueData : null}
               color="error"
@@ -370,19 +343,18 @@ const UnitMonitor = () => {
                 width: "100%",
                 maxWidth: "500px",
                 height: "auto",
-                marginBottom: "20px",
               }}
             />
             <Typography
               variant="h6"
               sx={{
                 fontWeight: 600,
-                color: "text.secondary",
+                color: COLORS.primary,
                 fontSize: "1.5rem",
                 textAlign: "center",
               }}
             >
-              No units available
+              No laundry units available
             </Typography>
           </Box>
         ) : (
@@ -507,9 +479,30 @@ const UnitMonitor = () => {
       {isOpen && popupType === "completeInLaundry" && (
         <PopCompleteInLaundry open={isOpen} onClose={closePopup} />
       )}
+      {isOpen && popupType === "addUnits" && (
+        <PopAddNewUnits
+          open={isOpen}
+          onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
+      )}
       <DrawerInLaundry open={drawerOpen} onClose={() => toggleDrawer(false)} />
     </Box>
   );
 };
 
 export default UnitMonitor;
+
+{
+  /* <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
+            >
+              <MenuItem onClick={handleClose}>Available</MenuItem>
+              <MenuItem onClick={handleClose}>Occupied</MenuItem>
+              <MenuItem onClick={handleClose}>Reserved</MenuItem>
+            </Menu> */
+}

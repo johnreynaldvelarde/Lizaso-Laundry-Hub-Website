@@ -97,6 +97,8 @@ npm install --save react-to-print
 
 npm install socket.io
 npm install socket.io-client
+npm install lottie-react
+
 
 
 

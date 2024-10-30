@@ -7,54 +7,47 @@ const newPickupDate = new Date();
 
 //#POST
 export const handleCreateUnits = async (req, res, db) => {
+  const { store_id, unit_name, isUnitStatus } = req.body;
+
   try {
-    const { store_id, unit_name, isUnitStatus } = req.body;
+    await db.beginTransaction();
 
-    if (!store_id || !unit_name || isUnitStatus === undefined) {
-      return res
-        .status(400)
-        .json({ success: false, message: "All fields are required" });
-    }
-
-    // Check if the store_id exists
-    const [store] = await db.query(
+    const [store] = await db.execute(
       "SELECT id FROM Stores WHERE id = ? LIMIT 1",
       [store_id]
     );
 
-    if (!store) {
+    if (store.length === 0) {
       return res
         .status(400)
         .json({ success: false, message: "Store not found" });
     }
 
-    // Validate isUnitStatus
-    const validStatuses = [0, 1, 2, 3]; // Valid statuses
+    const validStatuses = [0, 1, 2, 3];
     if (!validStatuses.includes(isUnitStatus)) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid unit status" });
     }
 
-    // Check if the unit_name already exists for the given store_id
-    const [unitExists] = await db.query(
+    const [unitExists] = await db.execute(
       "SELECT * FROM Laundry_Unit WHERE store_id = ? AND unit_name = ? LIMIT 1",
-      [store_id, unit_name] // Use store_id from the request body
+      [store_id, unit_name]
     );
 
     if (unitExists.length > 0) {
-      // Ensure to check length to verify existence
       return res.status(400).json({
         success: false,
         message: "Unit name already exists in this store",
       });
     }
 
-    // Insert the new laundry unit
-    await db.query(
+    await db.execute(
       "INSERT INTO Laundry_Unit (store_id, unit_name, isUnitStatus, date_created, isArchive) VALUES (?, ?, ?, NOW(), ?)",
-      [store_id, unit_name, isUnitStatus, false] // Or true, depending on your requirement
+      [store_id, unit_name, isUnitStatus, false]
     );
+
+    await db.commit();
 
     res.status(201).json({
       success: true,
@@ -62,9 +55,61 @@ export const handleCreateUnits = async (req, res, db) => {
     });
   } catch (error) {
     console.error("Error creating laundry units:", error);
+    await db.rollback();
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// export const handleCreateUnits = async (req, res, db) => {
+//   const { store_id, unit_name, isUnitStatus } = req.body;
+
+//   try {
+//     const [store] = await db.query(
+//       "SELECT id FROM Stores WHERE id = ? LIMIT 1",
+//       [store_id]
+//     );
+
+//     if (!store) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Store not found" });
+//     }
+
+//     const validStatuses = [0, 1, 2, 3];
+//     if (!validStatuses.includes(isUnitStatus)) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Invalid unit status" });
+//     }
+
+//     const [unitExists] = await db.query(
+//       "SELECT * FROM Laundry_Unit WHERE store_id = ? AND unit_name = ? LIMIT 1",
+//       [store_id, unit_name]
+//     );
+
+//     if (unitExists.length > 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Unit name already exists in this store",
+//       });
+//     }
+
+//     await db.query(
+//       "INSERT INTO Laundry_Unit (store_id, unit_name, isUnitStatus, date_created, isArchive) VALUES (?, ?, ?, NOW(), ?)",
+//       [store_id, unit_name, isUnitStatus, false] // Or true, depending on your requirement
+//     );
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Laundry unit created successfully",
+//     });
+//   } catch (error) {
+//     console.error("Error creating laundry units:", error);
+//     res.status(500).json({ success: false, message: "Server error" });
+//   } finally {
+//     db.release();
+//   }
+// };
 
 //# CREATE NEW TRANSACTION
 export const handleTypeOnlineTransaction = async (req, res, connection) => {
