@@ -20,8 +20,9 @@ import CustomPopFooterButton from "../../../../components/common/CustomPopFooter
 import useAuth from "../../../../contexts/AuthContext";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { getSelectedStaff } from "../../../../services/api/getApi";
+import { updatePendingToAssign } from "../../../../services/api/putApi";
 
-const PopPendingAssignTo = ({ open, onClose, id }) => {
+const PopPendingAssignTo = ({ open, onClose, id, refreshData }) => {
   const { userDetails } = useAuth();
   const [categoryName, setCategoryName] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
@@ -72,12 +73,19 @@ const PopPendingAssignTo = ({ open, onClose, id }) => {
 
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
+
+      const data = {
+        user_id: selectedUser.id,
+      };
+
       try {
-        const response = await createItemCategory.setCategoryItem({
-          category_name: categoryName,
-        });
+        const response = await updatePendingToAssign.putPendingUpdateToAssign(
+          id,
+          data
+        );
         if (response.success) {
           toast.success(response.message);
+          refreshData();
           onClose();
         } else {
           setErrors((prevErrors) => ({

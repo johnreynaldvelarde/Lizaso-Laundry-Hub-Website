@@ -165,8 +165,7 @@ export const handleGetSelectedStaff = async (req, res, connection) => {
       FROM User_Account
       WHERE store_id = ? 
         AND isArchive = 0 
-        AND user_type != 'Customer'
-        AND user_type != 'Administrator'   
+        AND user_type = 'Delivery Staff' 
       ORDER BY date_created DESC
     `;
 

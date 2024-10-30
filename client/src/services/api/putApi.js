@@ -64,6 +64,21 @@ export const updateRemoveAssignment = {
   },
 };
 
+//#VIEW SCHEDULES
+export const updatePendingToAssign = {
+  putPendingUpdateToAssign: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/schedules/${id}/update-pending-assign`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 //#INVENTORY SECTION
 export const updateCategoryName = {
   putCategoryName: async (id, data) => {

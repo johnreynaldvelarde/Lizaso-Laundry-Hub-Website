@@ -21,6 +21,7 @@ import {
   handleUpdateCategoryName,
   handleUpdateRemoveCategory,
 } from "../services/admin/useInventory.js";
+import { handleUpdateServiceRequestOngoing } from "../services/user/staff.js";
 
 const router = express.Router();
 
@@ -64,6 +65,19 @@ router.put(
     try {
       await handleUpdateProgressInqueueAndAtStore(req, res, connection);
     } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//#VIEW SCHEDULES SECTION
+router.put(
+  "/schedules/:id/update-pending-assign",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestOngoing(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
   })

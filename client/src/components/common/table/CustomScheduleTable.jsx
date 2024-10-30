@@ -20,7 +20,7 @@ import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
 
-const CustomScheduleTable = ({ tableData, loading }) => {
+const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -205,7 +205,12 @@ const CustomScheduleTable = ({ tableData, loading }) => {
 
       {/* Popup */}
       {isOpen && popupType === "assignTo" && (
-        <PopPendingAssignTo open={isOpen} onClose={closePopup} id={popupData} />
+        <PopPendingAssignTo
+          open={isOpen}
+          onClose={closePopup}
+          id={popupData}
+          refreshData={refreshData}
+        />
       )}
     </>
   );

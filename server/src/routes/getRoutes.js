@@ -147,7 +147,7 @@ router.get(
   })
 );
 
-// MANAGE SCHEDULE SECTION
+// VIEW SCHEDULE SECTION
 router.get(
   "/schedules/admin-get-stores",
   withDatabaseConnection(async (req, res, connection) => {
@@ -192,7 +192,7 @@ router.get(
   })
 );
 
-// STORE MANAGEMENT SECTION
+// #STORE MANAGEMENT SECTION
 router.get(
   "/stores/admin-get-stores",
   withDatabaseConnection(async (req, res, connection) => {
@@ -204,7 +204,7 @@ router.get(
   })
 );
 
-// INVENTORY SECTION
+// #INVENTORY SECTION
 router.get(
   "/get-category",
   withDatabaseConnection(async (req, res, connection) => {
@@ -230,7 +230,7 @@ router.get(
   })
 );
 
-// USER MANAGEMENT SECTION
+// #USER MANAGEMENT SECTION
 router.get(
   "/user/:id/admin-get-user",
   withDatabaseConnection(async (req, res, connection) => {

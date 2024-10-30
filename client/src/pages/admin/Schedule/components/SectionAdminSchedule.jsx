@@ -166,6 +166,11 @@ const SectionAdminSchedule = ({ storeId }) => {
     // Your logic here
   };
 
+  const handleRefreshData = () => {
+    fetchScheduleStatsData();
+    fetchScheduleData();
+  };
+
   return (
     <>
       {/* Header */}
@@ -431,7 +436,11 @@ const SectionAdminSchedule = ({ storeId }) => {
         </Box>
 
         <Box>
-          <CustomScheduleTable tableData={filteredData} loading={loading} />
+          <CustomScheduleTable
+            tableData={filteredData}
+            loading={loading}
+            refreshData={handleRefreshData}
+          />
         </Box>
       </Box>
     </>
