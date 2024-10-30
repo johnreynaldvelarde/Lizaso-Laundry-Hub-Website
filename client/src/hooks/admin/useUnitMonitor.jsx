@@ -16,7 +16,7 @@ import {
   updateRemoveInQueue,
 } from "../../services/api/putApi";
 
-const useUnitMonitor = () => {
+const useUnitMonitor = (refreshData, handleRefreshData) => {
   const { userDetails } = useAuth();
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -112,6 +112,7 @@ const useUnitMonitor = () => {
         const response = await updateRemoveAssignment.putAssignment(id);
         if (!response.success) {
           toast.success(response.message);
+          refreshData();
           if (onSuccessCallback) {
             onSuccessCallback();
           }

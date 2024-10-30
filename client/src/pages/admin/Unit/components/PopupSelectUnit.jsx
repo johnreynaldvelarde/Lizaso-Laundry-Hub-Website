@@ -30,7 +30,7 @@ import CustomPopFooterButton from "../../../../components/common/CustomPopFooter
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { COLORS } from "../../../../constants/color";
 
-const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
+const PopupSelectUnit = ({ open, onClose, unitName, unitId, refreshData }) => {
   const { userDetails } = useAuth();
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [weight, setWeight] = useState("");
@@ -183,6 +183,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
 
         if (response.success) {
           toast.success(response.message);
+          refreshData();
           onClose();
 
           setSelectedCustomer(null);

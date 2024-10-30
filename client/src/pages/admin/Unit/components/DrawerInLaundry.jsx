@@ -24,7 +24,7 @@ import { COLORS } from "../../../../constants/color";
 import PopOnlineTransaction from "./PopOnlineTransaction";
 import PopWalkInTransaction from "./PopWalkInTransaction";
 
-const DrawerInLaundry = ({ open, onClose }) => {
+const DrawerInLaundry = ({ open, onClose, refreshData }) => {
   const { userDetails } = useAuth();
   const [loading, setLoading] = useState(false);
   const { isOpen, popupType, popupData, openPopup, closePopup } = usePopup();
@@ -34,7 +34,7 @@ const DrawerInLaundry = ({ open, onClose }) => {
     setDialogProgressOpen,
     handleDialogRemoveInProgress,
     handleConfirmRemoveInProgress,
-  } = useUnitMonitor();
+  } = useUnitMonitor(refreshData);
 
   const { data: inProgressData, fetchData: fetchInprogress } = useFetchData();
 
@@ -48,13 +48,17 @@ const DrawerInLaundry = ({ open, onClose }) => {
 
       const intervalId = setInterval(() => {
         fetchInprogressData();
-      }, 20000);
+      }, 2000);
 
       return () => {
         clearInterval(intervalId);
       };
     }
   }, [fetchInprogressData, open]);
+
+  const handleRefreshData = () => {
+    fetchInprogressData;
+  };
 
   return (
     <>

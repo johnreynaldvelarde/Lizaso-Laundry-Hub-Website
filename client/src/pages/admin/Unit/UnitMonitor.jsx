@@ -38,6 +38,8 @@ import CustomAddButton from "../../../components/common/CustomAddButton";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import { statusUnit } from "../../../data/unit/unitStatus";
 import PopAddNewUnits from "./components/PopAddNewUnits";
+import occupiedAnimation from "../../../assets/animated/logo_move.json";
+import Lottie from "react-lottie";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -141,6 +143,15 @@ const UnitMonitor = () => {
     const status = event.target.value;
     setSelectedStatus(status);
     setFilterStatus(status);
+  };
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: occupiedAnimation,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
   };
 
   return (
@@ -416,7 +427,25 @@ const UnitMonitor = () => {
               >
                 {unit.unit_name}
               </Typography>
-              <img
+
+              {unit.isUnitStatus === 1 ? (
+                <Lottie options={defaultOptions} height={200} width={200} />
+              ) : (
+                <img
+                  src={getUnitImage(unit.isUnitStatus)}
+                  alt={unit.unit_name}
+                  style={{
+                    width: "100%",
+                    maxWidth: "170px",
+                    height: "auto",
+                    maxHeight: "calc(341px - 80px)",
+                    objectFit: "contain",
+                    marginTop: "10px",
+                    marginBottom: "30px",
+                  }}
+                />
+              )}
+              {/* <img
                 src={getUnitImage(unit.isUnitStatus)}
                 alt={unit.unit_name}
                 style={{
@@ -428,7 +457,7 @@ const UnitMonitor = () => {
                   marginTop: "10px",
                   marginBottom: "30px",
                 }}
-              />
+              /> */}
               <Button
                 variant="contained"
                 sx={{
@@ -491,6 +520,7 @@ const UnitMonitor = () => {
           onClose={handleCloseDialog}
           unitName={selectedUnit.unit_name}
           unitId={selectedUnit.id}
+          refreshData={handleRefreshData}
         />
       )}
 
@@ -509,7 +539,11 @@ const UnitMonitor = () => {
           refreshData={handleRefreshData}
         />
       )}
-      <DrawerInLaundry open={drawerOpen} onClose={() => toggleDrawer(false)} />
+      <DrawerInLaundry
+        open={drawerOpen}
+        onClose={() => toggleDrawer(false)}
+        refreshData={handleRefreshData}
+      />
     </Box>
   );
 };
