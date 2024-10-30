@@ -135,7 +135,7 @@ const CustomScheduleTable = ({ tableData }) => {
                           backgroundColor: getStatusColor(data.request_status),
                           fontWeight: "600",
                           color: COLORS.white,
-                          borderRadius: 1,
+                          borderRadius: 8,
                           display: "inline-block",
                         }}
                       >

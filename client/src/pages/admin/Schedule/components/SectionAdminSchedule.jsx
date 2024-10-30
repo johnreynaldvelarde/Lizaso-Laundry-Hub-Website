@@ -168,14 +168,14 @@ const SectionAdminSchedule = ({ storeId }) => {
         }}
       >
         <CustomHeaderTitle
-          title={"Manage Schedules"}
+          title={"View Schedules"}
           subtitle={"Organize and Oversee Service Requests"}
         />
-        <CustomeAddButton
+        {/* <CustomeAddButton
           onClick={handleGoToMonitoredUnits}
           label={"Create new request"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
-        />
+        /> */}
       </Box>
 
       {/* Sub Header */}
@@ -393,6 +393,25 @@ const SectionAdminSchedule = ({ storeId }) => {
                 ))}
               </Select>
             </FormControl>
+          </Box>
+
+          {/* Clear Filters Button */}
+          <Box sx={{ mt: { xs: 2, sm: 0 }, ml: { sm: "1px" } }}>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setSelectedDate(""); // Clear selected date
+                setSelectedStatus(""); // Clear selected status
+                setFilteredData(scheduleData); // Reset filtered data to original
+              }}
+              sx={{
+                textTransform: "none",
+                borderColor: COLORS.border,
+                color: COLORS.primary,
+              }}
+            >
+              Clear Filters
+            </Button>
           </Box>
         </Box>
 
