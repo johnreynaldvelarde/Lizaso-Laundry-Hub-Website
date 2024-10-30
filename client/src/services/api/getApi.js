@@ -258,17 +258,8 @@ export const getCategoryItem = {
 
 export const viewInventory = {
   getViewInventoryList: async (storeId) => {
-    // try {
-    //   const response = await axiosPrivate.get(
-    //     `/usermanage/${userId}/admin-get-store`
-    //   );
-    //   return response.data;
-    // } catch (error) {
-    //   console.error("Error fetching:", error);
-    //   throw error;
-    // }
     try {
-      const response = await axiosPrivate.get("inventory/view-inventory", {
+      const response = await axiosPrivate.get("/inventory/view-inventory", {
         params: { store_id: storeId },
       });
       return response.data;

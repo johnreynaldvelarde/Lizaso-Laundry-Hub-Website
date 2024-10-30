@@ -116,7 +116,7 @@ const SectionAdminCustomers = ({ storeId }) => {
               variant="h6"
               sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
             >
-              All Service Request
+              All Customers
             </Typography>
           </Box>
 

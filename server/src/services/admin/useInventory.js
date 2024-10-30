@@ -60,6 +60,7 @@ export const handleViewInventory = async (req, res, db) => {
         Inventory.quantity,
         Inventory.isStatus,
         Item.item_name,
+        Item.date_created,
         Item_Category.category_name
       FROM Inventory
       JOIN Item ON Inventory.item_id = Item.id

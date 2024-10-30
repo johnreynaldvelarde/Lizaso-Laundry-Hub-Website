@@ -2,11 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { COLORS } from "../../../../constants/color";
 import useAuth from "../../../../contexts/AuthContext";
 import {
-  Box,
-  Typography,
-  Button,
-  Breadcrumbs,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -14,21 +9,14 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Checkbox,
-  TablePagination,
-  Snackbar,
-  Alert,
-  Divider,
+  Box,
+  Typography,
+  FormControl,
   Select,
   MenuItem,
-  FormControl,
-  InputLabel,
-  Menu,
-  CircularProgress,
-  Tooltip,
-  useThemeProps,
+  Button,
 } from "@mui/material";
-import nodata from "../../../../assets/images/nodata.jpg";
+import { parseISO } from "date-fns";
 import { PlusCircle, PencilLine, Basket, Trash } from "@phosphor-icons/react";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
@@ -37,13 +25,14 @@ import { viewCategory, viewInventory } from "../../../../services/api/getApi";
 import usePopup from "../../../../hooks/common/usePopup";
 import PopAddCategory from "./PopAddCategory";
 import PopAddNewItem from "./PopAddNewItem";
-import { inventoryColumns } from "../../../../data/columns/inventory";
-import InventoryCustomTable from "../../../../components/common/InventoryCustomTable";
-import CustomNoDataMessage from "../../../../components/common/CustomNoDataMessage";
 import PopEditCategory from "./PopEditCategory";
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import { updateRemoveCategory } from "../../../../services/api/putApi";
 import toast from "react-hot-toast";
+import { KeyboardArrowDown } from "@mui/icons-material";
+import CustomInventoryTable from "../../../../components/common/table/CustomInventoryTable";
+import { dateOptions } from "../../../../data/schedule/serviceStatus";
+import { checkDateMatch } from "../../../../utils/method";
 
 const SectionAdminInventory = () => {
   const { userDetails } = useAuth();
@@ -52,28 +41,64 @@ const SectionAdminInventory = () => {
   const { data: inventoryData, fetchData: fetchInventory } = useFetchData();
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const statusOptions = ["Available", "Not Available"];
 
   const fetchCategoryData = useCallback(() => {
     fetchCategory(viewCategory.getViewCategoryList, userDetails.storeId);
   }, [fetchCategory, userDetails?.storeId]);
 
-  const fetchInventoryData = useCallback(() => {
-    fetchInventory(viewInventory.getViewInventoryList, userDetails.storeId);
+  const fetchInventoryData = useCallback(async () => {
+    setLoading(true);
+    await fetchInventory(
+      viewInventory.getViewInventoryList,
+      userDetails.storeId
+    );
+    setLoading(false);
   }, [fetchInventory, userDetails?.storeId]);
 
   useEffect(() => {
     fetchCategoryData();
     fetchInventoryData();
-    const intervalId = setInterval(() => {
-      fetchCategoryData();
-      fetchInventoryData();
-    }, 10000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
   }, [fetchCategoryData, fetchInventoryData]);
+
+  useEffect(() => {
+    if (inventoryData) {
+      setFilteredData(inventoryData);
+    }
+  }, [inventoryData]);
+
+  const handleStatusChange = (event) => {
+    const status = event.target.value;
+    setSelectedStatus(status);
+    applyFilters(selectedDate, status);
+  };
+
+  const handleDateChange = (event) => {
+    const date = event.target.value;
+    setSelectedDate(date);
+    applyFilters(date, selectedStatus);
+  };
+
+  const applyFilters = (dateOption, status) => {
+    const filtered = inventoryData.filter((item) => {
+      const createdDate = parseISO(item.date_created); // Parse the created date
+      const isDateMatch = dateOption
+        ? checkDateMatch(dateOption, createdDate)
+        : true;
+      const isStatusMatch =
+        status !== ""
+          ? (status === "Available" && item.isStatus === 1) ||
+            (status === "Not Available" && item.isStatus === 0)
+          : true;
+      return isDateMatch && isStatusMatch;
+    });
+    setFilteredData(filtered);
+  };
 
   const handleDialogDelete = (id, options) => {
     if (options === "categoryRemove") {
@@ -276,8 +301,221 @@ const SectionAdminInventory = () => {
         ))}
       </Box>
 
-      {/*Table Section */}
+      {/* Content */}
       <Box mt={5}>
+        <Box
+          mb={2}
+          className="flex items-center"
+          sx={{
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+            justifyContent: {
+              xs: "flex-start",
+              sm: "space-between",
+            },
+          }}
+        >
+          <Box sx={{ display: "flex" }}>
+            {/* Title */}
+            <Typography
+              variant="h6"
+              sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
+            >
+              All Inventory Item
+            </Typography>
+          </Box>
+
+          {/* Filter by created date */}
+          <Box
+            sx={{
+              width: {
+                xs: "100%", // Full width on small screens
+                sm: "auto", // Auto width on larger screens
+              },
+              mt: {
+                xs: 2, // Margin top on small screens
+                sm: 0, // No margin top on larger screens
+              },
+            }}
+          >
+            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
+              <Select
+                value={selectedDate}
+                onChange={handleDateChange}
+                displayEmpty
+                IconComponent={KeyboardArrowDown}
+                renderValue={(selected) => {
+                  if (!selected) {
+                    return (
+                      <span style={{ color: COLORS.primary }}>
+                        Select creation date
+                      </span>
+                    );
+                  }
+                  return selected;
+                }}
+                sx={{
+                  borderRadius: 2,
+                  color: COLORS.primary,
+                  "& .MuiSvgIcon-root": {
+                    color: COLORS.primary,
+                  },
+                }}
+              >
+                {/* Creation date options */}
+                {dateOptions.map((date) => (
+                  <MenuItem key={date} value={date}>
+                    {date}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Filter Status */}
+          <Box
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              mt: {
+                xs: 2,
+                sm: 0,
+              },
+              mx: {
+                xs: 0,
+                sm: 2,
+              },
+            }}
+          >
+            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
+              <Select
+                value={selectedStatus}
+                onChange={handleStatusChange}
+                displayEmpty
+                IconComponent={KeyboardArrowDown}
+                renderValue={(selected) => {
+                  if (!selected) {
+                    return (
+                      <span style={{ color: COLORS.primary }}>
+                        Select status
+                      </span>
+                    );
+                  }
+                  return selected;
+                }}
+                sx={{
+                  borderRadius: 2,
+                  color: COLORS.primary,
+                  "& .MuiSvgIcon-root": {
+                    color: COLORS.primary,
+                  },
+                }}
+              >
+                {/* Status options */}
+                {statusOptions.map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Clear Filters Button */}
+          <Box
+            sx={{
+              width: {
+                xs: "100%", // Full width on small screens
+                sm: "auto", // Auto width on larger screens
+              },
+              mt: { xs: 2, sm: 0 },
+              ml: { sm: "1px" },
+            }}
+          >
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setSelectedDate("");
+                setSelectedStatus("");
+                setFilteredData(inventoryData);
+              }}
+              sx={{
+                width: {
+                  xs: "100%", // Full width on small screens
+                  sm: "auto", // Auto width on larger screens
+                },
+                textTransform: "none",
+                borderColor: COLORS.border,
+                color: COLORS.primary,
+                "&:hover": {
+                  borderColor: COLORS.secondary,
+                  backgroundColor: COLORS.secondaryLight,
+                  color: COLORS.secondary,
+                },
+              }}
+            >
+              Clear Filters
+            </Button>
+          </Box>
+
+          {/* Add item button */}
+          <Box
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              marginLeft: "auto",
+            }}
+          >
+            <CustomAddButton
+              onClick={() => openPopup("addItem")}
+              label={"Add new item"}
+              icon={
+                <PlusCircle size={24} color={COLORS.white} weight="duotone" />
+              }
+            />
+          </Box>
+        </Box>
+
+        <Box>
+          <CustomInventoryTable
+            tableData={filteredData}
+            loading={loading}
+            // refreshData={handleRefreshData}
+          />
+        </Box>
+      </Box>
+
+      <ConfirmationDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onConfirm={handleCategoryDelete}
+        itemId={selectedCategoryId}
+      />
+
+      {/* Popup */}
+      {isOpen && popupType === "addCategory" && (
+        <PopAddCategory open={isOpen} onClose={closePopup} />
+      )}
+      {isOpen && popupType === "editCategory" && (
+        <PopEditCategory open={isOpen} onClose={closePopup} data={popupData} />
+      )}
+      {isOpen && popupType === "addItem" && (
+        <PopAddNewItem open={isOpen} onClose={closePopup} data={categoryData} />
+      )}
+    </>
+  );
+};
+
+export default SectionAdminInventory;
+
+{
+  /* <Box mt={5}>
         <Box
           className="flex items-center justify-between mb-"
           sx={{
@@ -325,7 +563,6 @@ const SectionAdminInventory = () => {
           </Box>
         </Box>
 
-        {/* Table */}
         <Box mt={2}>
           {inventoryData && inventoryData.length > 0 ? (
             <InventoryCustomTable
@@ -350,27 +587,5 @@ const SectionAdminInventory = () => {
             />
           )}
         </Box>
-      </Box>
-
-      <ConfirmationDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onConfirm={handleCategoryDelete}
-        itemId={selectedCategoryId}
-      />
-
-      {/* Popup */}
-      {isOpen && popupType === "addCategory" && (
-        <PopAddCategory open={isOpen} onClose={closePopup} />
-      )}
-      {isOpen && popupType === "editCategory" && (
-        <PopEditCategory open={isOpen} onClose={closePopup} data={popupData} />
-      )}
-      {isOpen && popupType === "addItem" && (
-        <PopAddNewItem open={isOpen} onClose={closePopup} data={categoryData} />
-      )}
-    </>
-  );
-};
-
-export default SectionAdminInventory;
+      </Box> */
+}
