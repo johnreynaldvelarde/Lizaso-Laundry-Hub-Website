@@ -77,7 +77,10 @@ const DrawerInLaundry = ({ open, onClose }) => {
               backgroundColor: "#fff",
             }}
           >
-            <span className="text-xl font-bold" style={{ color: COLORS.text }}>
+            <span
+              className="text-xl font-bold"
+              style={{ color: COLORS.secondary }}
+            >
               In Progress Laundry
             </span>
             <IconButton

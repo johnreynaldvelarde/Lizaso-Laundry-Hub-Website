@@ -515,3 +515,143 @@ const UnitMonitor = () => {
 };
 
 export default UnitMonitor;
+
+{
+  /* {filteredUnits.length === 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              minHeight: "calc(100vh - 400px)",
+              width: "100%",
+              gridColumn: "1 / -1",
+              textAlign: "center",
+            }}
+          >
+            <img
+              src={nodata}
+              alt="No data"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                height: "auto",
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                color: COLORS.primary,
+                fontSize: "1.5rem",
+                textAlign: "center",
+              }}
+            >
+              No laundry units available
+            </Typography>
+          </Box>
+        ) : (
+          filteredUnits.map((unit) => (
+            <Box
+              key={unit.id}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "white",
+                border: "1px solid #ccc",
+                borderRadius: "20px",
+                p: 2,
+                textAlign: "center",
+                width: "100%",
+                height: "341px",
+                position: "relative",
+                boxSizing: "border-box",
+                overflow: "hidden",
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  position: "absolute",
+                  top: 15,
+                  left: 20,
+                  fontWeight: 600,
+                  color: "text.secondary",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {unit.unit_name}
+              </Typography>
+              <img
+                src={getUnitImage(unit.isUnitStatus)}
+                alt={unit.unit_name}
+                style={{
+                  width: "100%",
+                  maxWidth: "170px",
+                  height: "auto",
+                  maxHeight: "calc(341px - 80px)",
+                  objectFit: "contain",
+                  marginTop: "10px",
+                  marginBottom: "30px",
+                }}
+              />
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: "20px",
+                  position: "absolute",
+                  bottom: 25,
+                  width: "80%",
+                  backgroundColor:
+                    unit.isUnitStatus === 0
+                      ? "#4690FF"
+                      : unit.isUnitStatus === 1
+                      ? "#B4162C"
+                      : unit.isUnitStatus === 2
+                      ? "#FFA500"
+                      : unit.isUnitStatus === 3
+                      ? "gray"
+                      : "gray",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor:
+                      unit.isUnitStatus === 0
+                        ? "#3576CC"
+                        : unit.isUnitStatus === 1
+                        ? "#8B1A2C"
+                        : unit.isUnitStatus === 2
+                        ? "#FF8C00"
+                        : unit.isUnitStatus === 3
+                        ? "darkgray"
+                        : "darkgray",
+                  },
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                }}
+                onClick={() => {
+                  if (unit.isUnitStatus === 0) {
+                    handleOpenDialog(unit);
+                  } else if (unit.isUnitStatus === 1) {
+                    toast.error("This laundry unit is occupied");
+                  }
+                }}
+              >
+                {unit.isUnitStatus === 0
+                  ? "Select"
+                  : unit.isUnitStatus === 1
+                  ? "Occupied"
+                  : unit.isUnitStatus === 2
+                  ? "Reserved"
+                  : unit.isUnitStatus === 3
+                  ? "In Maintenance"
+                  : "Unknown"}
+              </Button>
+            </Box>
+          ))
+        )} */
+}
