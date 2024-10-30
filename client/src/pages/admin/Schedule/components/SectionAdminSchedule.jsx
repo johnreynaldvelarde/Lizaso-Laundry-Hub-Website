@@ -400,14 +400,19 @@ const SectionAdminSchedule = ({ storeId }) => {
             <Button
               variant="outlined"
               onClick={() => {
-                setSelectedDate(""); // Clear selected date
-                setSelectedStatus(""); // Clear selected status
-                setFilteredData(scheduleData); // Reset filtered data to original
+                setSelectedDate("");
+                setSelectedStatus("");
+                setFilteredData(scheduleData);
               }}
               sx={{
                 textTransform: "none",
                 borderColor: COLORS.border,
                 color: COLORS.primary,
+                "&:hover": {
+                  borderColor: COLORS.secondary,
+                  backgroundColor: COLORS.secondaryLight,
+                  color: COLORS.secondary,
+                },
               }}
             >
               Clear Filters
