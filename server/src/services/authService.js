@@ -248,8 +248,6 @@ export const getUserDetails = async (req, res, db) => {
       [userId]
     );
 
-    console.log(userAccountResults);
-
     // Check if the user was found
     if (userAccountResults.length > 0) {
       const user = userAccountResults[0];
