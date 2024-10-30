@@ -12,6 +12,8 @@ export const getStatusColor = (status) => {
       return COLORS.success;
     case "Canceled":
       return COLORS.error;
+    case "Laundry Completed":
+      return COLORS.info;
     default:
       return COLORS.secondary; // default color if none match
   }

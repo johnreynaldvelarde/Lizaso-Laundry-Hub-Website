@@ -11,6 +11,7 @@ import {
   Box,
   Typography,
   Button,
+  Skeleton,
 } from "@mui/material";
 import no_data from "../../../assets/images/no_data_table.jpg";
 import DateCell from "../../table/DateCell";
@@ -19,7 +20,7 @@ import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
 
-const CustomScheduleTable = ({ tableData }) => {
+const CustomScheduleTable = ({ tableData, loading }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -39,8 +40,8 @@ const CustomScheduleTable = ({ tableData }) => {
         component={Paper}
         sx={{
           overflowX: "auto",
-          borderRadius: 2, // No rounded corners
-          boxShadow: "none", // No shadow
+          borderRadius: 2,
+          boxShadow: "none",
           border: `1px solid ${COLORS.border}`,
         }}
       >
@@ -57,10 +58,21 @@ const CustomScheduleTable = ({ tableData }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tableData.length === 0 ? (
+            {loading ? (
+              // Skeleton loading state
+              Array.from(new Array(rowsPerPage)).map((_, index) => (
+                <TableRow key={index}>
+                  {Array.from(new Array(7)).map((_, colIndex) => (
+                    <TableCell key={colIndex}>
+                      <Skeleton variant="rectangular" height={30} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : tableData.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7} // Adjust based on the number of columns
+                  colSpan={7}
                   align="center"
                   sx={{ paddingY: 5, paddingX: 1 }}
                 >
@@ -104,7 +116,6 @@ const CustomScheduleTable = ({ tableData }) => {
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <DateCell dateCreated={data.request_date} />
                     </TableCell>
-
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
@@ -166,9 +177,9 @@ const CustomScheduleTable = ({ tableData }) => {
                             color: COLORS.secondary,
                             textTransform: "none",
                           }}
-                          // onClick={() => {
-                          //   openPopup("assignTo", data.id);
-                          // }}
+                          onClick={() => {
+                            openPopup("assignTo", data.id);
+                          }}
                         >
                           Assign To
                         </Button>
@@ -208,6 +219,6 @@ const cellHeadStyles = {
   textAlign: "left",
   color: "#595959",
   fontSize: "1",
-  fontWeight: 600, // Changed to semi-bold
+  fontWeight: 600,
   textTransform: "uppercase",
 };

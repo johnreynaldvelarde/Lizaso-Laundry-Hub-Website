@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Autocomplete,
+  Chip,
   createFilterOptions,
   Dialog,
   DialogContent,
@@ -41,57 +42,58 @@ const PopPendingAssignTo = ({ open, onClose, id }) => {
 
   const filterOptions = createFilterOptions({
     matchFrom: "any", // This will match from any part of the string (name or username)
-    stringify: (option) => `${option.fullname} ${option.username}`,
+    stringify: (option) => `${option.fullname} ${option.user_type}`,
   });
 
-  //   const validateFields = () => {
-  //     const newErrors = {};
-  //     if (!categoryName) {
-  //       newErrors.categoryName = "Category name is required";
-  //     }
+  const validateFields = () => {
+    const newErrors = {};
+    if (!selectedUser) {
+      newErrors.selectedUser = "Assigned staff is required";
+    }
 
-  //     return newErrors;
-  //   };
+    return newErrors;
+  };
 
-  //   const handleInputChange = (field) => (e) => {
-  //     const value = e.target.value;
+  const handleInputChange = (field) => (e) => {
+    const value = e.target.value;
 
-  //     if (field === "categoryName") {
-  //       setCategoryName(value);
-  //     }
-  //     setErrors((prevErrors) => ({
-  //       ...prevErrors,
-  //       [field]: "",
-  //     }));
-  //   };
+    if (field === "selectedUser") {
+      setSelectedUser(value);
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: "",
+    }));
+  };
 
-  //   const handleCreateCategory = async () => {
-  //     const newErrors = validateFields();
-  //     setErrors(newErrors);
-  //     if (Object.keys(newErrors).length === 0) {
-  //       setLoading(true);
-  //       try {
-  //         const response = await createItemCategory.setCategoryItem({
-  //           category_name: categoryName,
-  //         });
-  //         if (response.success) {
-  //           toast.success(response.message);
-  //           onClose();
-  //         } else {
-  //           setErrors((prevErrors) => ({
-  //             ...prevErrors,
-  //             categoryName: response.message,
-  //           }));
-  //         }
-  //       } catch (error) {
-  //         toast.error(`Error with service request: ${error.message || error}`);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     } else {
-  //       setLoading(false);
-  //     }
-  //   };
+  const handleAssignNow = async () => {
+    const newErrors = validateFields();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+      try {
+        const response = await createItemCategory.setCategoryItem({
+          category_name: categoryName,
+        });
+        if (response.success) {
+          toast.success(response.message);
+          onClose();
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            categoryName: response.message,
+          }));
+        }
+      } catch (error) {
+        toast.error(`Error with service request: ${error.message || error}`);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog
@@ -113,13 +115,13 @@ const PopPendingAssignTo = ({ open, onClose, id }) => {
       />
 
       <DialogContent>
-        {/* Customer Selection Autocomplete */}
+        {/* Staff Selection Autocomplete */}
         <FormControl fullWidth margin="normal" error={!!errors.selectedUser}>
           <Autocomplete
             options={userData}
             getOptionLabel={(option) => option.fullname}
             value={selectedUser}
-            onChange={(event, newValue) => setselectedUser(newValue)}
+            onChange={(event, newValue) => setSelectedUser(newValue)}
             isOptionEqualToValue={(option, value) => option.id === value?.id}
             filterOptions={filterOptions} // Use the custom filterOptions to search by name and username
             renderOption={(props, option) => {
@@ -180,7 +182,7 @@ const PopPendingAssignTo = ({ open, onClose, id }) => {
                       fontSize: "smaller",
                     }}
                   >
-                    {option.username}
+                    {option.user_type}
                   </span>
                 </li>
               );
@@ -210,7 +212,7 @@ const PopPendingAssignTo = ({ open, onClose, id }) => {
       <CustomPopFooterButton
         label={"Assign now"}
         onClose={onClose}
-        // onSubmit={handleCreateCategory}
+        onSubmit={handleAssignNow}
         loading={loading}
       />
     </Dialog>

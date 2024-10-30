@@ -35,6 +35,7 @@ import {
 import {
   handleGetScheduleServiceRequest,
   handleGetScheduleStatsByUser,
+  handleGetSelectedStaff,
 } from "../services/admin/useSchedule.js";
 
 const router = express.Router();
@@ -174,6 +175,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetScheduleServiceRequest(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/schedules/:id/get-assign-staff",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetSelectedStaff(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

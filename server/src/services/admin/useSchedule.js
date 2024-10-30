@@ -151,6 +151,38 @@ export const handleGetScheduleServiceRequest = async (req, res, connection) => {
   }
 };
 
+export const handleGetSelectedStaff = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+    const query = `
+      SELECT 
+        id,
+        CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) AS fullname,
+        user_type,
+        date_created
+      FROM User_Account
+      WHERE store_id = ? 
+        AND isArchive = 0 
+        AND user_type != 'Customer'
+        AND user_type != 'Administrator'   
+      ORDER BY date_created DESC
+    `;
+
+    const [results] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({ data: results });
+  } catch (error) {
+    await connection.rollback();
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching the staff list." });
+  }
+};
+
 // export const handleGetScheduleServiceRequest = async (req, res, connection) => {
 //   const { id } = req.params; // store id
 //   store_id;

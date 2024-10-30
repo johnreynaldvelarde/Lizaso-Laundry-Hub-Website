@@ -47,22 +47,30 @@ const SectionAdminSchedule = ({ storeId }) => {
   const [selectedStatus, setSelectedStatus] = React.useState("");
   const [selectedDate, setSelectedDate] = React.useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { data: statsArray = [], fetchData: fetchScheduleStats } =
     useFetchData();
 
   const { data: scheduleData, fetchData: fetchSchedule } = useFetchData();
 
-  const fetchScheduleStatsData = useCallback(() => {
-    fetchScheduleStats(
+  const fetchScheduleStatsData = useCallback(async () => {
+    setLoading(true);
+    await fetchScheduleStats(
       viewScheduleRequestStatsByUser.getScheduleRequestStatsByUser,
       storeId
     );
+    setLoading(false);
   }, [fetchScheduleStats, storeId]);
 
-  const fetchScheduleData = useCallback(() => {
-    fetchSchedule(viewScheduleRequestByUser.getScheduleRequestByUser, storeId);
-  }, [fetchScheduleStats, storeId]);
+  const fetchScheduleData = useCallback(async () => {
+    setLoading(true);
+    await fetchSchedule(
+      viewScheduleRequestByUser.getScheduleRequestByUser,
+      storeId
+    );
+    setLoading(false);
+  }, [fetchSchedule, storeId]);
 
   useEffect(() => {
     fetchScheduleStatsData();
@@ -423,7 +431,7 @@ const SectionAdminSchedule = ({ storeId }) => {
         </Box>
 
         <Box>
-          <CustomScheduleTable tableData={filteredData} />
+          <CustomScheduleTable tableData={filteredData} loading={loading} />
         </Box>
       </Box>
     </>
