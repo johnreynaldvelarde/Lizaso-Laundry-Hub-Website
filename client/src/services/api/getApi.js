@@ -6,7 +6,7 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// UNIT MONITORED SECTION
+// #UNIT MONITORED SECTION
 
 export const getCalculatedTransaction = {
   getTransaction: async (assignmentId) => {
@@ -185,7 +185,7 @@ export const getServiceType = {
   },
 };
 
-// MANAGE SCHEDULES SECTION
+// #MANAGE SCHEDULES SECTION
 export const viewScheduleRequestStatsByAdmin = {
   getScheduleRequestStatsByAdmin: async () => {
     try {

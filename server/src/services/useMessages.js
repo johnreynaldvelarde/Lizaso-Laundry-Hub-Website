@@ -289,7 +289,6 @@ export const handleGetInboxOnlyAdmin = async (req, res, connection) => {
       [id, id]
     );
 
-    // If no conversations exist, fetch the list of users
     if (conversations.length === 0) {
       // Query to get all users except the current user
       const [users] = await connection.query(
@@ -302,21 +301,31 @@ export const handleGetInboxOnlyAdmin = async (req, res, connection) => {
         [id]
       );
 
-      // Commit the transaction
       await connection.commit();
 
       // Return user list with "Start a conversation" option
       return res.status(200).json({
         success: true,
-        message: "No conversations found. Here is a list of users.",
+        message: "no_convo",
         data: users.map((user) => ({
-          user_id: user.id,
-          full_name: user.full_name.trim(), // Trim to handle potential null middle names
-          user_type: user.user_type,
-          start_conversation: "Start a conversation",
+          conversation_id: 0,
+          user_one: {
+            id: user.id,
+            full_name: user.full_name ? user.full_name.trim() : "", // Check if full_name exists
+            user_type_one: user.user_type,
+          },
+          user_two: null,
+          last_message: {
+            message: "Start a conversation",
+          },
         })),
       });
     }
+
+    // user_id: user.id,
+    // full_name: user.full_name.trim(),
+    // user_type: user.user_type,
+    // start_conversation: "Start a conversation",
 
     // Commit the transaction
     await connection.commit();

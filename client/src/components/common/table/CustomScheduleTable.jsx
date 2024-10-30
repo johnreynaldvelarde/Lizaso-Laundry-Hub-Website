@@ -10,10 +10,12 @@ import {
   TablePagination,
   Box,
   Typography,
+  Button,
 } from "@mui/material";
-import { COLORS } from "../../../constants/color";
 import no_data from "../../../assets/images/no_data_table.jpg";
 import DateCell from "../../table/DateCell";
+import { getStatusColor } from "./custom/method";
+import { COLORS } from "../../../constants/color";
 
 const CustomScheduleTable = ({ tableData }) => {
   const [page, setPage] = useState(0);
@@ -109,15 +111,51 @@ const CustomScheduleTable = ({ tableData }) => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      {data.service_name}
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "600", color: COLORS.primary }}
+                      >
+                        {data.service_name}
+                      </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      {data.payment_method}
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "600", color: COLORS.secondary }}
+                      >
+                        {data.payment_method}
+                      </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      {data.request_status}
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          paddingX: 2,
+                          paddingY: 0.5,
+                          backgroundColor: getStatusColor(data.request_status),
+                          fontWeight: "600",
+                          color: COLORS.white,
+                          borderRadius: 1,
+                          display: "inline-block",
+                        }}
+                      >
+                        {data.request_status}
+                      </Typography>
                     </TableCell>
-                    <TableCell>{/* Add your action buttons here */}</TableCell>
+                    <TableCell>
+                      {data.request_status === "Pending Pickup" && (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: COLORS.secondary,
+                            textTransform: "none",
+                          }}
+                          onClick={() => handleAssign(data.id)}
+                        >
+                          Assign To
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))
             )}

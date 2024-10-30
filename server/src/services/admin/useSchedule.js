@@ -122,7 +122,15 @@ export const handleGetScheduleServiceRequest = async (req, res, connection) => {
       LEFT JOIN 
         Service_Type AS st ON sr.service_type_id = st.id
       WHERE 
-        sr.store_id = ?;
+        sr.store_id = ?
+      ORDER BY
+        CASE 
+          WHEN sr.request_status = 'Pending Pickup' THEN 1
+          WHEN sr.request_status = 'Ready for Delivery' THEN 2
+          WHEN sr.request_status = 'Ongoing Pickup' THEN 3
+          WHEN sr.request_status = 'Out for Delivery' THEN 4
+          ELSE 5
+        END;
     `;
 
     const [rows] = await connection.execute(query, [store_id]);

@@ -12,7 +12,9 @@ const useMessages = (userId) => {
     setLoading(true);
     try {
       const response = await axiosPrivate.get(`/inbox/${userId}/get-inbox`);
+
       setInbox(response.data.data);
+
       setError(null);
     } catch (err) {
       console.error("Failed to fetch inbox:", err);
