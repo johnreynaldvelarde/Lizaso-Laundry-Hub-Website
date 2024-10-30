@@ -118,7 +118,7 @@ const PopPendingAssignTo = ({ open, onClose, id, refreshData }) => {
       {/* Header */}
       <CustomPopHeaderTitle
         title={"Assign Staff for Pickup"}
-        subtitle={"Choose a staff member for laundry pickup."}
+        subtitle={"Choose a staff member for laundry pickup"}
         onClose={onClose}
       />
 

@@ -281,7 +281,7 @@ const SectionAdminSchedule = ({ storeId }) => {
                     className="ml-1 font-medium text-sm"
                     style={{ color: COLORS.primary }}
                   >
-                    Increased last month
+                    Increased of activity
                   </span>
                 </Typography>
               </Box>

@@ -181,31 +181,3 @@ export const handleGetSelectedStaff = async (req, res, connection) => {
       .json({ error: "An error occurred while fetching the staff list." });
   }
 };
-
-// export const handleGetScheduleServiceRequest = async (req, res, connection) => {
-//   const { id } = req.params; // store id
-//   store_id;
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-
-//       `;
-
-//     const [rows] = await connection.execute(query);
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       success: true,
-//       data: rows,
-//     });
-//   } catch (error) {
-//     console.error(":", error);
-//     await connection.rollback();
-//     res.status(500).json({
-//       success: false,
-//       message: ".",
-//     });
-//   }
-// };

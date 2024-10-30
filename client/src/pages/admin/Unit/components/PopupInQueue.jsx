@@ -17,13 +17,16 @@ import {
   MinusSquare,
 } from "@phosphor-icons/react";
 import CloseIcon from "@mui/icons-material/Close";
-import nodata from "../../../../assets/images/no_data.png";
+import nodata from "../../../../assets/images/no_data_all.jpg";
 import useUnitMonitor from "../../../../hooks/admin/useUnitMonitor";
 import PopupAssignUnit from "./PopupAssignUnit";
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { viewRequestInQueue, viewUnits } from "../../../../services/api/getApi";
 import useAuth from "../../../../contexts/AuthContext";
+import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
+import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
+import { COLORS } from "../../../../constants/color";
 
 const PopupInQueue = ({ open, onClose }) => {
   const { userDetails } = useAuth();
@@ -69,25 +72,22 @@ const PopupInQueue = ({ open, onClose }) => {
     <Dialog
       open={open}
       onClose={onClose}
-      fullWidth
       maxWidth="sm"
-      classes={{
-        paper: "rounded-lg shadow-lg",
+      fullWidth
+      PaperProps={{
+        style: {
+          borderRadius: 16,
+        },
       }}
     >
-      <DialogTitle className="flex flex-col">
-        <div className="flex justify-between items-center mt-2">
-          <span className="text-lg font-semibold">Queued Laundry</span>
-          <IconButton
-            onClick={onClose}
-            className="text-[#5787C8] hover:text-[#5787C8]"
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <p className="mt-2 text-sm text-gray-600">
-          Track laundry in queue and assign available units.
-        </p>
+      {/* Header */}
+      <CustomPopHeaderTitle
+        title={"Queued Laundry"}
+        subtitle={" Track laundry in queue and assign available units."}
+        onClose={onClose}
+      />
+
+      <DialogContent>
         <div className="mt-4 flex gap-2 justify-between">
           <Link to="/main/schedule" style={{ textDecoration: "none" }}>
             <Button
@@ -114,7 +114,7 @@ const PopupInQueue = ({ open, onClose }) => {
             </Button>
           </Link>
 
-          <Button
+          {/* <Button
             variant="outlined"
             startIcon={
               <SlidersHorizontal size={24} color="#5787C8" weight="duotone" />
@@ -135,11 +135,13 @@ const PopupInQueue = ({ open, onClose }) => {
             }}
           >
             Mark
-          </Button>
+          </Button> */}
         </div>
         <div className="flex items-center mt-6 ">
           <span className="text-base font-semibold flex items-center">
-            Laundry Units
+            <span className="font-bold" style={{ color: COLORS.primary }}>
+              Laundry Units
+            </span>
             <span className="ml-4 flex items-center">
               <span className="text-sm px-3 py-1 rounded-full border-2 border-[#0ba360]  text-[#0ba360] bg-[#3cba92] bg-opacity-10 font-normal mr-2">
                 Available
@@ -168,15 +170,15 @@ const PopupInQueue = ({ open, onClose }) => {
             ))}
           </div>
         </div>
-      </DialogTitle>
+      </DialogContent>
 
       <DialogContent className="bg-white px-4 py-6 mb-2">
         {inQueueData.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-6 border border-gray-300 rounded-lg shadow-sm">
-            <img src={nodata} alt="No Data" className="w-32 h-32 mb-4" />
+            <img src={nodata} alt="No Data" className="w-32 h-32 mb-1" />
             <p
-              className="text-base font-semibold"
-              style={{ color: styles.textColor2 }}
+              className="text-base font-normal"
+              style={{ color: COLORS.primary }}
             >
               No data available at the moment
             </p>
