@@ -231,6 +231,46 @@ export const handleSetMessagesSenderIsCustomer = async (
   }
 };
 
+// FEEDBACK AND REVIEW
+export const handleSetFeedbackAndReview = async (req, res, connection) => {
+  const { store_id, user_id, service_request_id, rating, comment } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      INSERT INTO Feedback_Review 
+      (store_id, customer_id, service_request_id, rating, comment, created_at, updated_at, is_approved) 
+      VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)`;
+
+    const [result] = await connection.execute(query, [
+      store_id,
+      user_id,
+      service_request_id,
+      rating,
+      comment,
+      0,
+    ]);
+
+    await connection.commit();
+
+    res.status(201).json({
+      success: true,
+      message: "Feedback and review submitted successfully.",
+      data: { id: result.insertId }, // Optionally return the new feedback ID
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error while submitting feedback and review:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to submit feedback and review. Please try again later.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
 // GET
 export const handleGetStoreList = async (req, res, db) => {
   try {
@@ -364,7 +404,7 @@ export const handleGetCustomerConvo = async (req, res, connection) => {
   }
 };
 
-//# TRACKING ORDER
+//#TRACKING ORDER
 export const handleGetCustomerTrackOrderAndProgress = async (
   req,
   res,
@@ -427,10 +467,13 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         Laundry_Unit lu ON la.unit_id = lu.id
       LEFT JOIN 
         Transactions t ON la.id = t.assignment_id
+      LEFT JOIN 
+        Feedback_Review fr ON sr.id = fr.service_request_id
       WHERE 
         sr.customer_id = ? 
         AND sr.request_status != 'Canceled'
         AND sr.customer_type = 'Online'
+        AND fr.id IS NULL
       ORDER BY 
         sr.request_date DESC;
     `;
@@ -762,72 +805,6 @@ export const handleGetCalculatedTransactionForCustomer = async (
 };
 
 //#PUT
-// export const handleUpdateCustomerBasicInformation = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params;
-//   const {
-//     store_id,
-//     c_email,
-//     c_number,
-//     a_address_line,
-//     a_country,
-//     a_province,
-//     a_city,
-//     a_postal_code,
-//     a_latitude,
-//     a_longitude,
-//   } = req.body;
-
-//   try {
-//     // Start a transaction
-//     await connection.beginTransaction();
-
-//     // Insert the new address into the Addresses table
-//     const [addressResult] = await connection.execute(
-//       `INSERT INTO Addresses (address_line, country, province, city, postal_code, latitude, longitude, updated_at)
-//          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-//       [
-//         a_address_line,
-//         a_country,
-//         a_province,
-//         a_city,
-//         a_postal_code,
-//         a_latitude,
-//         a_longitude,
-//       ]
-//     );
-
-//     const addressId = addressResult.insertId;
-
-//     // Update the Customer table with the new address_id and store_id
-//     await connection.execute(
-//       `UPDATE Customer
-//          SET store_id = ?, address_id = ?, c_email = ?, c_number = ?
-//          WHERE id = ?`,
-//       [store_id, addressId, c_email, c_number, id]
-//     );
-
-//     // Commit the transaction
-//     await connection.commit();
-
-//     // Return success response
-//     res
-//       .status(200)
-//       .json({ success: true, message: "Your info is now up-to-date!" });
-//   } catch (error) {
-//     // Rollback transaction on error
-//     await connection.rollback();
-//     console.error("Database operation error:", error);
-//     res.status(500).json({ message: "Error updating customer information" });
-//   } finally {
-//     // Release the database connection
-//     connection.release();
-//   }
-// };
-
 export const handleUpdateCustomerBasicInformationWeb = async (
   req,
   res,
@@ -925,252 +902,3 @@ export const handleUpdateCustomerBasicInformationMobile = async (
     connection.release();
   }
 };
-
-// export const handleGetCustomerTrackOrderAndProgress = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-//       SELECT
-//         sr.id AS service_request_id,
-//         sr.store_id,
-//         IF(sr.user_id IS NULL, false, sr.user_id) AS user_id,
-//         sr.customer_id,
-//         sr.tracking_code,
-//         sr.customer_fullname,
-//         sr.customer_type,
-//         sr.notes,
-//         COALESCE(CONCAT(ua.first_name, ' ', ua.middle_name, ' ', ua.last_name), 'Waiting...') AS username,
-//         sr.request_date,
-//         COALESCE(sr.pickup_date, 'Waiting...') AS pickup_date,
-//         COALESCE(sr.delivery_date, 'Waiting...') AS delivery_date,
-//         sr.request_status,
-//         sr.qr_code,
-//         sr.qr_code_generated,
-//         sr.isPickup,
-//         sr.isDelivery,
-//         sp.id AS progress_id,
-//         sp.stage,
-//         sp.description,
-//         sp.completed,
-//         sp.false_description,
-//         sp.status_date,
-//         st.service_name,
-//         st.default_price,
-//         COALESCE(lu.unit_name, 'Waiting...') AS unit_name,
-//         COALESCE(la.id, 'Waiting for total amount...') AS assignment_id
-//       FROM
-//         Service_Request sr
-//       LEFT JOIN
-//         Service_Progress sp ON sr.id = sp.service_request_id
-//       LEFT JOIN
-//         User_Account ua ON sr.user_id = ua.id
-//       LEFT JOIN
-//         Service_Type st ON sr.service_type_id = st.id
-//       LEFT JOIN
-//         Laundry_Assignment la ON sr.id = la.service_request_id
-//       LEFT JOIN
-//         Laundry_Unit lu ON la.unit_id = lu.id
-//       WHERE
-//         sr.customer_id = ?
-//         AND sr.request_status != 'Canceled'
-//       ORDER BY
-//         sr.request_date DESC;
-//     `;
-
-//     const [rows] = await connection.execute(query, [id]);
-
-//     // Structure the response data
-//     const result = rows.reduce((acc, row) => {
-//       // Check if the service request already exists in the accumulator
-//       let serviceRequest = acc.find(
-//         (req) => req.service_request.id === row.service_request_id
-//       );
-
-//       // If it doesn't exist, create a new entry
-//       if (!serviceRequest) {
-//         serviceRequest = {
-//           service_request: {
-//             id: row.service_request_id,
-//             store_id: row.store_id,
-//             user_id: row.user_id,
-//             user_name: row.username,
-//             customer_id: row.customer_id,
-//             service_type_id: row.service_type_id,
-//             service_name: row.service_name,
-//             service_default_price: row.default_price,
-//             tracking_code: row.tracking_code,
-//             customer_fullname: row.customer_fullname,
-//             customer_type: row.customer_type,
-//             notes: row.notes,
-//             request_date: row.request_date,
-//             pickup_date: row.pickup_date,
-//             delivery_date: row.delivery_date,
-//             request_status: row.request_status,
-//             qr_code: row.qr_code,
-//             qr_code_generated: row.qr_code_generated,
-//             isPickup: row.isPickup,
-//             isDelivery: row.isDelivery,
-//             unit_name: row.unit_name,
-//             assignment_id: row.assignment_id,
-//           },
-//           progress: [],
-//         };
-//         acc.push(serviceRequest);
-//       }
-
-//       // Add the progress information for this service request
-//       serviceRequest.progress.push({
-//         id: row.progress_id,
-//         stage: row.stage,
-//         description: row.description,
-//         completed: row.completed,
-//         status_date: row.status_date,
-//         false_description: row.false_description,
-//       });
-
-//       return acc;
-//     }, []);
-
-//     result.forEach((serviceRequest) => {
-//       serviceRequest.progress.sort((a, b) => a.id - b.id);
-//     });
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       success: true,
-//       data: result,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error customer track order and progress:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching data.",
-//     });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// };
-
-// export const handleGetCalculatedForCustomerClient = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params;
-
-//   console.log(id);
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-//       SELECT
-//         la.id AS laundry_assignment_id,
-//         sr.id AS service_request_id,
-//         st.default_price,
-//         la.weight,
-//         (st.default_price * la.weight) AS base_total_amount,
-//         sp.discount_percentage,
-//         sp.discount_price,
-//         sp.valid_days,
-//         sp.start_date,
-//         sp.end_date,
-//         sp.isActive,
-//         GROUP_CONCAT(inv.item_id SEPARATOR ', ') AS item_ids,
-//         GROUP_CONCAT(inv.price SEPARATOR ', ') AS item_prices,
-//         GROUP_CONCAT(it.item_name SEPARATOR ', ') AS item_names,
-//         GROUP_CONCAT(ri.quantity SEPARATOR ', ') AS quantities,
-//         GROUP_CONCAT(ri.amount SEPARATOR ', ') AS related_item_totals,
-//         SUM(ri.amount) AS total_related_items
-//       FROM
-//         Laundry_Assignment la
-//       INNER JOIN
-//         Service_Request sr ON la.service_request_id = sr.id
-//       INNER JOIN
-//         Service_Type st ON sr.service_type_id = st.id
-//       LEFT JOIN
-//         Service_Promo sp ON st.id = sp.service_id
-//       LEFT JOIN
-//         Related_Item ri ON la.id = ri.assignment_id
-//       LEFT JOIN
-//         Inventory inv ON ri.inventory_id = inv.id
-//       LEFT JOIN
-//         Item it ON inv.item_id = it.id
-//       WHERE
-//         la.id = ?
-//         AND (sp.isActive = 1 OR sp.id IS NULL)
-//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date)
-//       GROUP BY la.id;
-//     `;
-
-//     const [rows] = await connection.execute(query, [assignment_id]);
-
-//     if (rows.length > 0) {
-//       const {
-//         base_total_amount,
-//         discount_percentage,
-//         discount_price,
-//         valid_days,
-//         isActive,
-//         total_related_items,
-//       } = rows[0];
-
-//       let final_total = parseFloat(base_total_amount);
-//       let discount_applied = null;
-
-//       if (
-//         isActive &&
-//         valid_days &&
-//         valid_days.includes(
-//           new Date().toLocaleString("en-US", { weekday: "long" })
-//         )
-//       ) {
-//         if (discount_percentage > 0) {
-//           const discount_amount = final_total * (discount_percentage / 100);
-//           final_total -= discount_amount;
-//           discount_applied = {
-//             type: "percentage",
-//             value: discount_percentage,
-//             amount: discount_amount,
-//           };
-//         } else if (discount_price > 0) {
-//           final_total -= parseFloat(discount_price);
-//           discount_applied = {
-//             type: "price",
-//             value: discount_price,
-//             amount: discount_price,
-//           };
-//         }
-//       }
-
-//       final_total += parseFloat(total_related_items || 0);
-
-//       res.status(200).json({
-//         success: true,
-//         data: {
-//           final_total: final_total.toFixed(2),
-//         },
-//       });
-//     }
-
-//     await connection.commit();
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching assignment:", error);
-//     res.status(500).json({
-//       success: false,
-//       error: "An error occurred while fetching the assignment.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };

@@ -6,6 +6,7 @@ import {
   handleGetCustomerTrackOrderAndProgress,
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
+  handleSetFeedbackAndReview,
   handleSetMessagesSenderIsCustomer,
   handleUpdateCustomerBasicInformationWeb,
 } from "../services/user/customer.js";
@@ -51,6 +52,18 @@ router.post(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleSetMessagesSenderIsCustomer(req, res, connection);
+    } catch (error) {
+      console.error("Error creating service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.post(
+  "/customers/set-feedback-review",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetFeedbackAndReview(req, res, connection);
     } catch (error) {
       console.error("Error creating service request:", error);
       res.status(500).json({ error: "Internal Server Error" });

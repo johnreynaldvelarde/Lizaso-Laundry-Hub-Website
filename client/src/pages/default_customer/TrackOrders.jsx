@@ -56,6 +56,11 @@ const TrackOrders = () => {
     );
   };
 
+  const handleFeedbackSubmit = () => {
+    setCurrentIndex(0); // Reset to the first order
+    fetchCustomerTrackOrderData(); // Fetch new order data
+  };
+
   return (
     <div
       className="flex flex-col flex-grow bg-gray-100 px-4 pt-2 pb-6 md:px-5 lg:px-10 lg:pb-8 3xl:px-8 3xl:pt-4 4xl:px-20 4xl:pb-9"
@@ -495,7 +500,8 @@ const TrackOrders = () => {
           onClose={closePopup}
           userId={userDetails.userId}
           storeId={userDetails.storeId}
-          serviewRequestId={orders[currentIndex].service_request.id}
+          serviceRequest={orders[currentIndex].service_request.id}
+          onFeedbackSubmit={handleFeedbackSubmit}
         />
       )}
     </div>

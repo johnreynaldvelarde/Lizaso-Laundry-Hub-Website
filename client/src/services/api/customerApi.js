@@ -29,6 +29,20 @@ export const createMessageSenderCustomer = {
   },
 };
 
+export const createFeedbackAndReview = {
+  setFeedbackReview: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/customers/set-feedback-review`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // #GET
 export const getCustomerServiceAndPromotions = {
   getServiceWithPromotions: async (storeId) => {
