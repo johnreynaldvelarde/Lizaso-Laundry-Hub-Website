@@ -156,7 +156,7 @@ const CustomInventoryTable = ({ tableData, loading, refreshData }) => {
                       >
                         <CustomStock
                           quantity={data.quantity}
-                          lowStockThreshold={20}
+                          lowStockThreshold={50}
                         />
                       </Typography>
                     </TableCell>
@@ -226,7 +226,12 @@ const CustomInventoryTable = ({ tableData, loading, refreshData }) => {
       )}
 
       {isOpen && popupType === "restockItem" && (
-        <PopRestock open={isOpen} onClose={closePopup} id={popupData} />
+        <PopRestock
+          open={isOpen}
+          onClose={closePopup}
+          id={popupData}
+          refreshData={refreshData}
+        />
       )}
     </>
   );

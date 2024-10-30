@@ -9,27 +9,31 @@ import {
 } from "../../../../services/api/postApi";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
+import { updateStock } from "../../../../services/api/putApi";
 
-const PopRestock = ({ open, onClose }) => {
+const PopRestock = ({ open, onClose, id, refreshData }) => {
   const { userDetails } = useAuth();
-  const [categoryName, setCategoryName] = useState("");
+  const [stock, setStock] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validateFields = () => {
     const newErrors = {};
-    if (!categoryName) {
-      newErrors.categoryName = "Category name is required";
+    if (!stock) {
+      newErrors.stock = "Stock is required";
+    } else if (isNaN(stock)) {
+      newErrors.stock = "Stock must be a number";
+    } else if (parseFloat(stock) < 0) {
+      newErrors.stock = "Stock cannot be negative";
     }
-
     return newErrors;
   };
 
   const handleInputChange = (field) => (e) => {
     const value = e.target.value;
 
-    if (field === "categoryName") {
-      setCategoryName(value);
+    if (field === "stock") {
+      setStock(value);
     }
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -37,23 +41,21 @@ const PopRestock = ({ open, onClose }) => {
     }));
   };
 
-  const handleCreateCategory = async () => {
+  const handleUpdateStock = async () => {
     const newErrors = validateFields();
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
       try {
-        const response = await createItemCategory.setCategoryItem({
-          category_name: categoryName,
+        const response = await updateStock.putStock(id, {
+          quantity: stock,
         });
         if (response.success) {
           toast.success(response.message);
+          refreshData();
           onClose();
         } else {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            categoryName: response.message,
-          }));
+          toast.error(response.message);
         }
       } catch (error) {
         toast.error(`Error with service request: ${error.message || error}`);
@@ -63,13 +65,6 @@ const PopRestock = ({ open, onClose }) => {
     } else {
       setLoading(false);
     }
-  };
-
-  const handleDialogClose = () => {
-    setRolename("");
-    setSelectedPermissions([]);
-    setErrors({});
-    onClose();
   };
 
   return (
@@ -91,34 +86,23 @@ const PopRestock = ({ open, onClose }) => {
         onClose={onClose}
       />
       <DialogContent>
-        {/* Category Name */}
         <TextField
           margin="dense"
-          label="Category Name"
-          type="text"
+          label="Stock"
+          type="number"
           fullWidth
           variant="outlined"
-          value={categoryName}
-          onChange={handleInputChange("categoryName")}
-          error={Boolean(errors.categoryName)}
-          helperText={errors.categoryName}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              "&.Mui-focused fieldset": {
-                borderColor: COLORS.secondary,
-              },
-            },
-            "& .MuiInputLabel-root.Mui-focused": {
-              color: COLORS.secondary,
-            },
-          }}
+          value={stock}
+          onChange={handleInputChange("stock")}
+          error={Boolean(errors.stock)}
+          helperText={errors.stock}
         />
       </DialogContent>
       {/* Footer */}
       <CustomPopFooterButton
         label={"Update Stock"}
         onClose={onClose}
-        onSubmit={handleCreateCategory}
+        onSubmit={handleUpdateStock}
         loading={loading}
       />
     </Dialog>

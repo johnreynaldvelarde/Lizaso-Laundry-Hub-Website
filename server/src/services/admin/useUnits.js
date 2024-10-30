@@ -60,57 +60,6 @@ export const handleCreateUnits = async (req, res, db) => {
   }
 };
 
-// export const handleCreateUnits = async (req, res, db) => {
-//   const { store_id, unit_name, isUnitStatus } = req.body;
-
-//   try {
-//     const [store] = await db.query(
-//       "SELECT id FROM Stores WHERE id = ? LIMIT 1",
-//       [store_id]
-//     );
-
-//     if (!store) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Store not found" });
-//     }
-
-//     const validStatuses = [0, 1, 2, 3];
-//     if (!validStatuses.includes(isUnitStatus)) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Invalid unit status" });
-//     }
-
-//     const [unitExists] = await db.query(
-//       "SELECT * FROM Laundry_Unit WHERE store_id = ? AND unit_name = ? LIMIT 1",
-//       [store_id, unit_name]
-//     );
-
-//     if (unitExists.length > 0) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Unit name already exists in this store",
-//       });
-//     }
-
-//     await db.query(
-//       "INSERT INTO Laundry_Unit (store_id, unit_name, isUnitStatus, date_created, isArchive) VALUES (?, ?, ?, NOW(), ?)",
-//       [store_id, unit_name, isUnitStatus, false] // Or true, depending on your requirement
-//     );
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Laundry unit created successfully",
-//     });
-//   } catch (error) {
-//     console.error("Error creating laundry units:", error);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   } finally {
-//     db.release();
-//   }
-// };
-
 //# CREATE NEW TRANSACTION
 export const handleTypeOnlineTransaction = async (req, res, connection) => {
   const { assignment_id, transaction_code, total_amount, payment_method } =
@@ -821,7 +770,7 @@ export const handleGetInventoryLaundryItem = async (req, res, connection) => {
       INNER JOIN Item it ON i.item_id = it.id
       WHERE i.store_id = ?
         AND i.quantity > 0
-        AND i.isStatus = 0
+        AND i.isStatus = 1
     `;
 
     const [results] = await connection.execute(query, [id]);

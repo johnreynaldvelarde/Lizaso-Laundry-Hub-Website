@@ -108,6 +108,20 @@ export const updateRemoveCategory = {
   },
 };
 
+export const updateStock = {
+  putStock: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/inventory/${id}/update-stock`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // USER MANAGEMENT SECTION
 // #For role and permission
 export const updateRemoveRole = {

@@ -128,6 +128,11 @@ const SectionAdminInventory = () => {
     }
   };
 
+  const handleRefreshData = () => {
+    fetchCategoryData();
+    fetchInventoryData();
+  };
+
   return (
     <>
       {/* Header */}
@@ -486,7 +491,7 @@ const SectionAdminInventory = () => {
           <CustomInventoryTable
             tableData={filteredData}
             loading={loading}
-            // refreshData={handleRefreshData}
+            refreshData={handleRefreshData}
           />
         </Box>
       </Box>

@@ -253,3 +253,31 @@ export const handleUpdateRemoveCategory = async (req, res, connection) => {
     if (connection) connection.release();
   }
 };
+
+export const handleUpdateStock = async (req, res, connection) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Inventory
+      SET quantity = quantity + ?, isStatus = 1
+      WHERE id = ?
+    `;
+
+    await connection.execute(updateQuery, [quantity, id]);
+
+    await connection.commit();
+    res
+      .status(200)
+      .json({ success: true, message: "Inventory restocked successfully." });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating inventory:", error);
+    res.status(500).json({ error: "Error updating inventory." });
+  } finally {
+    if (connection) connection.release();
+  }
+};
