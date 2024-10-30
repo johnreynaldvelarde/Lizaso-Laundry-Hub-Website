@@ -15,10 +15,10 @@ import {
   TextField,
   Button,
 } from "@mui/material";
+import { parseISO } from "date-fns";
 import React, { useCallback, useEffect, useState } from "react";
 import usePopup from "../../../../hooks/common/usePopup";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
-import CustomeAddButton from "../../../../components/common/CustomAddButton";
 import {
   AddressBookTabs,
   ArrowRight,
@@ -29,19 +29,18 @@ import {
   Truck,
 } from "@phosphor-icons/react";
 import { COLORS } from "../../../../constants/color";
-import CustomAddButton from "../../../../components/common/CustomAddButton";
-import CustomFilter from "../../../../components/common/CustomFilter";
 import {
   dateOptions,
   statusOptions,
 } from "../../../../data/schedule/serviceStatus";
-import { ArrowDropDown, KeyboardArrowDown } from "@mui/icons-material";
+import { KeyboardArrowDown } from "@mui/icons-material";
 import CustomScheduleTable from "../../../../components/common/table/CustomScheduleTable";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import {
   viewScheduleRequestByUser,
   viewScheduleRequestStatsByUser,
 } from "../../../../services/api/getApi";
+import { checkDateMatch } from "../../../../utils/method";
 
 const SectionAdminSchedule = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -140,12 +139,15 @@ const SectionAdminSchedule = ({ storeId }) => {
   const handleDateChange = (event) => {
     const date = event.target.value;
     setSelectedDate(date);
-    applyFilters(date, selectedStatus); // Apply filters on date change
+    applyFilters(date, selectedStatus);
   };
 
-  const applyFilters = (date, status) => {
+  const applyFilters = (dateOption, status) => {
     const filtered = scheduleData.filter((item) => {
-      const isDateMatch = date ? item.request_date.startsWith(date) : true;
+      const requestDate = parseISO(item.request_date); // Parse the request date string into a Date object
+      const isDateMatch = dateOption
+        ? checkDateMatch(dateOption, requestDate)
+        : true;
       const isStatusMatch = status ? item.request_status === status : true;
       return isDateMatch && isStatusMatch;
     });

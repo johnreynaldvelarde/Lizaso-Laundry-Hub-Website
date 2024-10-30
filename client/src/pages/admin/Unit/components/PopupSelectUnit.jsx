@@ -362,6 +362,7 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId }) => {
             </Typography>
           )}
         </FormControl>
+
         {/* Weight Input */}
         <FormControl fullWidth margin="normal" error={!!errors.weight}>
           <TextField

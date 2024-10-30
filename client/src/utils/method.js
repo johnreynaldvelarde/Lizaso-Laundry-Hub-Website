@@ -1,4 +1,12 @@
 import { jsPDF } from "jspdf";
+import {
+  isWithinInterval,
+  subDays,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+} from "date-fns";
 
 export const generatePDF = async (ref) => {
   const input = ref.current;
@@ -23,3 +31,29 @@ export const transactionTime = new Date().toLocaleTimeString("en-US", {
   minute: "numeric",
   hour12: true, // 12-hour format with AM/PM
 });
+
+export const checkDateMatch = (option, date) => {
+  const now = new Date();
+  switch (option) {
+    case "Last 24 Hours":
+      return isWithinInterval(date, { start: subDays(now, 1), end: now });
+    case "Last 7 Days":
+      return isWithinInterval(date, { start: subDays(now, 7), end: now });
+    case "Last 30 Days":
+      return isWithinInterval(date, { start: subDays(now, 30), end: now });
+    case "This Month":
+      return isWithinInterval(date, {
+        start: startOfMonth(now),
+        end: endOfMonth(now),
+      });
+    case "This Year":
+      return isWithinInterval(date, {
+        start: startOfYear(now),
+        end: endOfYear(now),
+      });
+    case "All Time":
+      return true; // All dates match
+    default:
+      return false; // Handle any unknown options
+  }
+};

@@ -16,10 +16,13 @@ import no_data from "../../../assets/images/no_data_table.jpg";
 import DateCell from "../../table/DateCell";
 import { getStatusColor } from "./custom/method";
 import { COLORS } from "../../../constants/color";
+import usePopup from "../../../hooks/common/usePopup";
+import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
 
 const CustomScheduleTable = ({ tableData }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -143,18 +146,33 @@ const CustomScheduleTable = ({ tableData }) => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      {data.request_status === "Pending Pickup" && (
+                      {data.request_status === "Pending Pickup" ? (
                         <Button
                           variant="outlined"
                           sx={{
                             color: COLORS.secondary,
                             textTransform: "none",
                           }}
-                          onClick={() => handleAssign(data.id)}
+                          onClick={() => {
+                            openPopup("assignTo", data.id);
+                          }}
                         >
                           Assign To
                         </Button>
-                      )}
+                      ) : data.request_status === "Ready for delivery" ? (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: COLORS.secondary,
+                            textTransform: "none",
+                          }}
+                          // onClick={() => {
+                          //   openPopup("assignTo", data.id);
+                          // }}
+                        >
+                          Assign To
+                        </Button>
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 ))
@@ -173,6 +191,11 @@ const CustomScheduleTable = ({ tableData }) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+
+      {/* Popup */}
+      {isOpen && popupType === "assignTo" && (
+        <PopPendingAssignTo open={isOpen} onClose={closePopup} id={popupData} />
+      )}
     </>
   );
 };

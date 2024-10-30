@@ -225,6 +225,20 @@ export const viewScheduleRequestByUser = {
   },
 };
 
+export const getSelectedStaff = {
+  getSelectStaff: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/schedules/${storeId}/get-assign-staff`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching selected customer:", error);
+      throw error;
+    }
+  },
+};
+
 // INVENTORY SECTION
 export const getCategoryItem = {
   getCategory: async () => {
@@ -283,7 +297,7 @@ export const viewCategory = {
   },
 };
 
-// STORE SECTION
+// #STORE SECTION
 export const viewStore = {
   getStoreList: async (data) => {
     try {
@@ -312,7 +326,7 @@ export const viewStoreByAdmin = {
   },
 };
 
-// USER MANAGEMENT SECTION
+// #USER MANAGEMENT SECTION
 export const viewUser = {
   getUser: async (userId) => {
     try {

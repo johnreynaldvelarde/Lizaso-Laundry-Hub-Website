@@ -39,7 +39,7 @@ export const links = [
     ],
   },
   {
-    name: "Manage Schedules",
+    name: "View Schedules",
     icon: React.createElement(AiOutlineSchedule),
     url: "/main/schedule",
   },
