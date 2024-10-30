@@ -481,7 +481,6 @@ const TrackOrders = () => {
         <PopMessageStaff
           open={isOpen}
           onClose={closePopup}
-          senderId={userDetails.userId}
           receiverId={popupData}
         />
       )}

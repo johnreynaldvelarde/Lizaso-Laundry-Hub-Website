@@ -7,10 +7,14 @@ import {
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
   handleSetFeedbackAndReview,
-  handleSetMessagesSenderIsCustomer,
   handleUpdateCustomerBasicInformationWeb,
 } from "../services/user/customer.js";
 import { handleCheckCustomerDetails } from "../services/useCheck.js";
+import {
+  handleGetMessages,
+  handleSetNewMessages,
+  handleUpdateMessageIsRead,
+} from "../services/useMessages.js";
 
 const router = express.Router();
 
@@ -48,10 +52,10 @@ router.post(
 );
 
 router.post(
-  "/customers/set-messages-sender-customer",
+  "/customers/set-new-messsages",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleSetMessagesSenderIsCustomer(req, res, connection);
+      await handleSetNewMessages(req, res, connection);
     } catch (error) {
       console.error("Error creating service request:", error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -118,7 +122,29 @@ router.get(
   })
 );
 
+router.get(
+  "/customers/:user_one_id/:user_two_id/get-messages",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetMessages(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 // PUT
+router.put(
+  "/customers/:user_one_id/:user_two_id/put-update-message",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateMessageIsRead(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.put(
   "/customers/:id/start",
   withDatabaseConnection(async (req, res, connection) => {

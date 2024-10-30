@@ -19,7 +19,7 @@ export const createMessageSenderCustomer = {
   setCustomerMessage: async (data) => {
     try {
       const response = await axiosPrivate.post(
-        `/customers/set-messages-sender-customer`,
+        `/customers/set-new-messsages`,
         data
       );
       return response.data;
@@ -88,11 +88,11 @@ export const getCalculatedTransactionForCustomer = {
 };
 
 //  <----- Get Customer Message ----->
-export const getCustomerMessageConvo = {
-  getCustomerConvo: async (customerId) => {
+export const getChatMessages = {
+  getMessages: async (user_one_id, user_two_id) => {
     try {
       const response = await axiosPrivate.get(
-        `/customers/${customerId}/get-customer-convo`
+        `/customers/${user_one_id}/${user_two_id}/get-messages`
       );
       return response.data;
     } catch (error) {
@@ -103,26 +103,30 @@ export const getCustomerMessageConvo = {
 };
 
 // #PUT
+export const updateMessageisRead = {
+  putMessageisRead: async (user_one_id, user_two_id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/customers/${user_one_id}/${user_two_id}/put-update-message`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
 
-// export const createCustomerServiceRequest = {
-//   setCustomerServiceRequest: async (customerId, data) => {
-//     try {
-//       const response = await axiosPrivate.post(
-//         `/customers/${customerId}/set-service-request`,
-//         data
-//       );
-//       if (response.status === 201) {
-//         return response.data;
-//       } else {
-//         throw new Error("Failed to create service request");
-//       }
-//     } catch (error) {
-//       console.error("Error creating customer service request:", error);
-
-//       if (error.response) {
-//         console.error("Server responded with:", error.response.data);
-//       }
-//       throw error;
-//     }
-//   },
-// };
+export const updateCustomerProfile = {
+  putUpdateProfile: async (user_one_id, user_two_id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/mobile-customer-staff/${user_one_id}/${user_two_id}/get-messages`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};

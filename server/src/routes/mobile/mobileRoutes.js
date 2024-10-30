@@ -83,7 +83,6 @@ router.put(
   "/mobile-customer-staff/:user_one_id/:user_two_id/put-update-message",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      console.log(1);
       await handleUpdateMessageIsRead(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });

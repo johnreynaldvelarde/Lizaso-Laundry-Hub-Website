@@ -4,34 +4,44 @@ import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitl
 import { COLORS } from "../../../constants/color";
 import {
   createMessageSenderCustomer,
-  getCustomerMessageConvo,
+  getChatMessages,
+  updateMessageisRead,
 } from "../../../services/api/customerApi";
 import useFetchData from "../../../hooks/common/useFetchData";
 import useAuth from "../../../contexts/AuthContext";
+import { decryptMessage, encryptMessage } from "../../../utils/messages";
 
-const PopMessageStaff = ({ open, onClose, senderId, receiverId }) => {
+const PopMessageStaff = ({ open, onClose, receiverId }) => {
   const { userDetails } = useAuth();
   const [newMessage, setNewMessage] = useState("");
   const [isAtBottom, setIsAtBottom] = useState(true); // Track if at the bottom
 
-  const { data: messages, fetchData: fetchCustomerConvo } = useFetchData();
+  const { data: messages, fetchData: fetchMessages } = useFetchData();
+  const { data: isRead, fetchData: fetchUpdateMessageRead } = useFetchData();
 
-  const fetchCustomerConvoData = useCallback(() => {
-    fetchCustomerConvo(
-      getCustomerMessageConvo.getCustomerConvo,
-      userDetails.userId
+  const fetchMessagesData = useCallback(() => {
+    fetchMessages(getChatMessages.getMessages, userDetails.userId, receiverId);
+  }, [fetchMessages, userDetails.userId, receiverId]);
+
+  const fetchUpdateMessageReadData = useCallback(async () => {
+    fetchUpdateMessageRead(
+      updateMessageisRead.putMessageisRead,
+      userDetails.userId,
+      receiverId
     );
-  }, [fetchCustomerConvo, userDetails.userId]);
+  }, [fetchUpdateMessageRead, userDetails.userId, receiverId]);
 
   useEffect(() => {
-    fetchCustomerConvoData();
+    fetchMessagesData();
+    fetchUpdateMessageReadData();
     const intervalId = setInterval(() => {
-      fetchCustomerConvoData();
-    }, 1000);
+      fetchMessagesData();
+      fetchUpdateMessageReadData();
+    }, 2000);
     return () => {
       clearInterval(intervalId);
     };
-  }, [fetchCustomerConvoData]);
+  }, [fetchMessagesData, fetchUpdateMessageReadData]);
 
   const handleScroll = (e) => {
     const { scrollTop, scrollHeight, clientHeight } = e.target;
@@ -51,13 +61,14 @@ const PopMessageStaff = ({ open, onClose, senderId, receiverId }) => {
 
   const handleSendMessage = async () => {
     if (newMessage.trim()) {
-      const messageData = {
-        sender_id: senderId,
-        receiver_id: receiverId,
-        message: newMessage,
-      };
-
       try {
+        const encryptedMessage = await encryptMessage(newMessage);
+
+        const messageData = {
+          sender_id: userDetails.userId,
+          recipient_id: receiverId,
+          message: encryptedMessage,
+        };
         const response = await createMessageSenderCustomer.setCustomerMessage(
           messageData
         );
@@ -123,44 +134,25 @@ const PopMessageStaff = ({ open, onClose, senderId, receiverId }) => {
               <span>Start a conversation</span>
             </div>
           ) : (
-            messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`my-2 p-2 rounded ${
-                  msg.sender_type === "Customer"
-                    ? "bg-[#5787C8] text-white self-end"
-                    : "bg-gray-300 text-[#393939] self-start"
-                } max-w-[75%] md:max-w-[60%] break-words`}
-              >
-                <p className="text-sm md:text-base">{msg.message}</p>
-              </div>
-            ))
+            messages.map((msg, index) => {
+              const isSentByUser = msg.sender_id === userDetails.userId; // Check if the message is sent by the user
+              const decryptedMessage = decryptMessage(msg.message); // Decrypt the message
+
+              return (
+                <div
+                  key={index}
+                  className={`my-2 p-2 rounded ${
+                    isSentByUser
+                      ? "bg-[#5787C8] text-white self-end"
+                      : "bg-gray-300 text-[#393939] self-start"
+                  } max-w-[75%] md:max-w-[60%] break-words`}
+                >
+                  <p className="text-sm md:text-base">{decryptedMessage}</p>
+                </div>
+              );
+            })
           )}
         </div>
-        {/* <div
-          id="chatArea"
-          className="flex flex-col flex-grow bg-gray-100 rounded p-2 max-h-[400px] md:max-h-[500px]"
-          style={{
-            overflowY: "auto",
-            scrollbarWidth: "none", // Firefox
-            msOverflowStyle: "none", // IE and Edge
-          }}
-          onScroll={handleScroll} // Add scroll event listener
-        >
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`my-2 p-2 rounded ${
-                msg.sender_type === "Customer"
-                  ? "bg-[#5787C8] text-white self-end"
-                  : "bg-gray-300 text-[#393939] self-start"
-              } max-w-[75%] md:max-w-[60%] break-words`}
-            >
-              <p className="text-sm md:text-base">{msg.message}</p>
-            </div>
-          ))}
-        </div> */}
-
         {/* Message Input */}
         <div className="flex mt-4">
           <TextField
