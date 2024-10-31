@@ -59,6 +59,7 @@ export const handleViewInventory = async (req, res, db) => {
         Inventory.price,
         Inventory.quantity,
         Inventory.isStatus,
+        Item.category_id,
         Item.item_name,
         Item.date_created,
         Item_Category.category_name
@@ -273,6 +274,98 @@ export const handleUpdateStock = async (req, res, connection) => {
     res
       .status(200)
       .json({ success: true, message: "Inventory restocked successfully." });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating inventory:", error);
+    res.status(500).json({ error: "Error updating inventory." });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+export const handleUpdateItem = async (req, res, connection) => {
+  const { id } = req.params; // Item ID to update
+  const { item_name, price, category_id, status } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const [existingItem] = await connection.execute(
+      `SELECT id FROM Item WHERE item_name = ? AND id != ? AND isArchive = 0`,
+      [item_name, id]
+    );
+
+    if (existingItem.length > 0) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: "Item name already exists for a different item.",
+      });
+    }
+
+    const updateItemQuery = `
+      UPDATE Item 
+      SET item_name = ?, category_id = ?, updated_at = NOW()
+      WHERE id = ? AND isArchive = 0;
+    `;
+    await connection.execute(updateItemQuery, [item_name, category_id, id]);
+
+    const updateInventoryQuery = `
+      UPDATE Inventory 
+      SET price = ?, isStatus = ?
+      WHERE item_id = ?;
+    `;
+    await connection.execute(updateInventoryQuery, [price, status, id]);
+
+    await connection.commit();
+    res.status(200).json({
+      success: true,
+      message: "Item and inventory updated successfully.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating item and inventory:", error);
+    res.status(500).json({
+      error: "An error occurred while updating the item and inventory.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+export const handleRemoveItem = async (req, res, connection) => {
+  const { id } = req.params;
+
+  console.log(id);
+
+  try {
+    await connection.beginTransaction();
+
+    const [rows] = await connection.execute(
+      `SELECT quantity FROM Inventory WHERE item_id = ?`,
+      [id]
+    );
+
+    if (rows.length > 0 && rows[0].quantity > 0) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: "Item has stock remaining and cannot be archived.",
+      });
+    }
+
+    const updateQuery = `
+      UPDATE Item
+      SET isArchive = 1, updated_at = NOW()
+      WHERE id = ?;
+    `;
+
+    await connection.execute(updateQuery, [id]);
+
+    await connection.commit();
+    res
+      .status(200)
+      .json({ success: true, message: "Item archived successfully." });
   } catch (error) {
     await connection.rollback();
     console.error("Error updating inventory:", error);

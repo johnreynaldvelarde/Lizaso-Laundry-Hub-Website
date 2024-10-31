@@ -122,6 +122,33 @@ export const updateStock = {
   },
 };
 
+export const updateInventory = {
+  putInventory: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/inventory/${id}/update-edit-item`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateRemoveItem = {
+  putRemoveItem: async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/inventory/${id}/update-remove-item`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // USER MANAGEMENT SECTION
 // #For role and permission
 export const updateRemoveRole = {

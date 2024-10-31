@@ -287,6 +287,7 @@ const SectionAdminUser = () => {
 
   // FOR DELETE ACTIONS
   const [selectedUser, setSelectedUser] = useState(null);
+  // const [selectedRole, setSelectedRoles] = useState(null);
 
   const [isDialogOpenForMultiple, setIsDialogOpenForMultiple] = useState(false);
 

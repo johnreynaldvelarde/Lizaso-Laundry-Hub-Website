@@ -18,7 +18,9 @@ import {
   handleUpdateRenameRole,
 } from "../services/admin/useUser.js";
 import {
+  handleRemoveItem,
   handleUpdateCategoryName,
+  handleUpdateItem,
   handleUpdateRemoveCategory,
   handleUpdateStock,
 } from "../services/admin/useInventory.js";
@@ -122,7 +124,7 @@ router.put(
   "/inventory/:id/update-edit-item",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleUpdateStock(req, res, connection);
+      await handleUpdateItem(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
@@ -133,7 +135,7 @@ router.put(
   "/inventory/:id/update-remove-item",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleUpdateStock(req, res, connection);
+      await handleRemoveItem(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

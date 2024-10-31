@@ -22,9 +22,9 @@ import {
 } from "../../../../services/api/postApi";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
+import { updateInventory } from "../../../../services/api/putApi";
 
-const PopEditItem = ({ open, onClose, getData, editData }) => {
-  console.log(editData);
+const PopEditItem = ({ open, onClose, getData, editData, refreshData }) => {
   const { userDetails } = useAuth();
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
@@ -37,7 +37,7 @@ const PopEditItem = ({ open, onClose, getData, editData }) => {
     if (getData) {
       setItemName(getData.item_name || "");
       setItemPrice(getData.price || "");
-      setSelectedCategory(getData.category_name);
+      setSelectedCategory(getData.category_id);
       setSelectedStatus(getData.isStatus);
     } else {
       setItemName("");
@@ -65,8 +65,8 @@ const PopEditItem = ({ open, onClose, getData, editData }) => {
     if (!selectedCategory) {
       newErrors.selectedCategory = "Category is required";
     }
-    if (!selectedStatus) {
-      newErrors.setSelectedStatus = "Status is required";
+    if (selectedStatus === "" || selectedStatus === undefined) {
+      newErrors.selectedStatus = "Status is required";
     }
 
     return newErrors;
@@ -98,17 +98,22 @@ const PopEditItem = ({ open, onClose, getData, editData }) => {
       setLoading(true);
 
       const data = {
-        store_id: userDetails.storeId,
-        category_id: selectedCategory,
         item_name: itemName,
         price: itemPrice,
+        category_id: selectedCategory,
+        status: selectedStatus,
       };
 
+      console.log(data);
       try {
-        const response = await createNewItem.setNewItem(data);
+        const response = await updateInventory.putInventory(
+          getData.inventory_id,
+          data
+        );
 
         if (response.success) {
           toast.success(response.message);
+          refreshData();
           onClose();
         } else {
           setErrors((prevErrors) => ({
@@ -204,7 +209,7 @@ const PopEditItem = ({ open, onClose, getData, editData }) => {
             Select a category
           </MenuItem>
           {editData.map((category) => (
-            <MenuItem key={category.category_id} value={category.category_name}>
+            <MenuItem key={category.category_id} value={category.category_id}>
               {category.category_name}
             </MenuItem>
           ))}

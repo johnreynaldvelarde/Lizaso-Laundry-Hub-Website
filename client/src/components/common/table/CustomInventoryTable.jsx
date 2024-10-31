@@ -16,17 +16,17 @@ import {
 } from "@mui/material";
 import no_data from "../../../assets/images/no_data_table.jpg";
 import DateCell from "../../table/DateCell";
-import { getStatusColor } from "./custom/method";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
-import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
 import OutlinedIconButton from "../../table/OutlinedIconButton";
 import { PencilLine, StackPlus, Trash } from "@phosphor-icons/react";
-import StatusCell from "../../table/StatusCell";
 import StatusCellTable from "./custom/StatusCellTable";
 import CustomStock from "./custom/CustomStock";
 import PopEditItem from "../../../pages/admin/Inventory/components/PopEditItem";
 import PopRestock from "../../../pages/admin/Inventory/components/PopRestock";
+import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
+import { updateRemoveItem } from "../../../services/api/putApi";
+import toast from "react-hot-toast";
 
 const CustomInventoryTable = ({
   tableData,
@@ -45,6 +45,24 @@ const CustomInventoryTable = ({
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handleRemoveItem = async () => {
+    if (popupData) {
+      try {
+        const response = await updateRemoveItem.putRemoveItem(popupData);
+        if (response.success) {
+          refreshData();
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
   };
 
   return (
@@ -76,7 +94,7 @@ const CustomInventoryTable = ({
               // Skeleton loading state
               Array.from(new Array(rowsPerPage)).map((_, index) => (
                 <TableRow key={index}>
-                  {Array.from(new Array(7)).map((_, colIndex) => (
+                  {Array.from(new Array(8)).map((_, colIndex) => (
                     <TableCell key={colIndex}>
                       <Skeleton variant="rectangular" height={30} />
                     </TableCell>
@@ -86,7 +104,7 @@ const CustomInventoryTable = ({
             ) : tableData.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   align="center"
                   sx={{ paddingY: 5, paddingX: 1 }}
                 >
@@ -192,7 +210,9 @@ const CustomInventoryTable = ({
                       </Tooltip>
                       <Tooltip title="Delete User" arrow>
                         <OutlinedIconButton
-                        //   onClick={() => handleDialogDelete(user.user_id, "")}
+                          onClick={() => {
+                            openPopup("removeItem", data.inventory_id);
+                          }}
                         >
                           <Trash color={COLORS.error} weight="duotone" />
                         </OutlinedIconButton>
@@ -217,21 +237,13 @@ const CustomInventoryTable = ({
       />
 
       {/* Popup */}
-      {/* {isOpen && popupType === "assignTo" && (
-        <PopPendingAssignTo
-          open={isOpen}
-          onClose={closePopup}
-          id={popupData}
-          refreshData={refreshData}
-        />
-      )} */}
-
       {isOpen && popupType === "editItem" && (
         <PopEditItem
           open={isOpen}
           onClose={closePopup}
           getData={popupData}
           editData={itemEditData}
+          refreshData={refreshData}
         />
       )}
 
@@ -241,6 +253,15 @@ const CustomInventoryTable = ({
           onClose={closePopup}
           id={popupData}
           refreshData={refreshData}
+        />
+      )}
+
+      {isOpen && popupType === "removeItem" && (
+        <DeleteConfirmationDialog
+          open={isOpen}
+          onClose={closePopup}
+          onConfirm={handleRemoveItem}
+          id={popupData}
         />
       )}
     </>
