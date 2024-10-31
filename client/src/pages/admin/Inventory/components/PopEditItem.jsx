@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAuth from "../../../../contexts/AuthContext";
 import {
   Dialog,
@@ -23,13 +23,29 @@ import {
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
-const PopEditItem = ({ open, onClose, data }) => {
+const PopEditItem = ({ open, onClose, getData, editData }) => {
+  console.log(editData);
   const { userDetails } = useAuth();
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (getData) {
+      setItemName(getData.item_name || "");
+      setItemPrice(getData.price || "");
+      setSelectedCategory(getData.category_name);
+      setSelectedStatus(getData.isStatus);
+    } else {
+      setItemName("");
+      setItemPrice("");
+      setSelectedCategory("");
+      setSelectedStatus("");
+    }
+  }, [getData]);
 
   const validateFields = () => {
     const newErrors = {};
@@ -49,6 +65,9 @@ const PopEditItem = ({ open, onClose, data }) => {
     if (!selectedCategory) {
       newErrors.selectedCategory = "Category is required";
     }
+    if (!selectedStatus) {
+      newErrors.setSelectedStatus = "Status is required";
+    }
 
     return newErrors;
   };
@@ -62,6 +81,8 @@ const PopEditItem = ({ open, onClose, data }) => {
       setItemPrice(value);
     } else if (field === "selectedCategory") {
       setSelectedCategory(value);
+    } else if (field === "selectedStatus") {
+      setSelectedStatus(value);
     }
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -69,7 +90,7 @@ const PopEditItem = ({ open, onClose, data }) => {
     }));
   };
 
-  const handleCreateNewItem = async () => {
+  const handleUpdateItem = async () => {
     const newErrors = validateFields();
     setErrors(newErrors);
 
@@ -117,8 +138,8 @@ const PopEditItem = ({ open, onClose, data }) => {
       }}
     >
       <CustomPopHeaderTitle
-        title={"Add New Item"}
-        subtitle={"Provide the details for the new item"}
+        title={"Edit Item Details"}
+        subtitle={"Provide the details to update the item"}
         onClose={onClose}
       />
       <DialogContent>
@@ -158,7 +179,7 @@ const PopEditItem = ({ open, onClose, data }) => {
           helperText={errors.itemPrice}
         />
         {/* Select Category */}
-        {/* <TextField
+        <TextField
           select
           margin="dense"
           label="Category"
@@ -182,18 +203,47 @@ const PopEditItem = ({ open, onClose, data }) => {
           <MenuItem value="" disabled>
             Select a category
           </MenuItem>
-          {data.map((category) => (
-            <MenuItem key={category.category_id} value={category.category_id}>
+          {editData.map((category) => (
+            <MenuItem key={category.category_id} value={category.category_name}>
               {category.category_name}
             </MenuItem>
           ))}
-        </TextField> */}
+        </TextField>
+
+        {/* Select a status */}
+        <TextField
+          select
+          margin="dense"
+          label="Status"
+          fullWidth
+          variant="outlined"
+          value={selectedStatus}
+          onChange={handleInputChange("selectedStatus")}
+          error={Boolean(errors.selectedStatus)}
+          helperText={errors.selectedStatus}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        >
+          <MenuItem value="" disabled>
+            Select a status
+          </MenuItem>
+          <MenuItem value={0}>Not Available</MenuItem>
+          <MenuItem value={1}>Available</MenuItem>
+        </TextField>
       </DialogContent>
       {/* Footer */}
       <CustomPopFooterButton
         label={"Update Item"}
         onClose={onClose}
-        onSubmit={handleCreateNewItem}
+        onSubmit={handleUpdateItem}
         loading={loading}
       />
     </Dialog>

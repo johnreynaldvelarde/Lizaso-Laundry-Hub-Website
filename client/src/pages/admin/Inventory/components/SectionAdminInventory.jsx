@@ -492,6 +492,7 @@ const SectionAdminInventory = () => {
             tableData={filteredData}
             loading={loading}
             refreshData={handleRefreshData}
+            itemEditData={categoryData}
           />
         </Box>
       </Box>

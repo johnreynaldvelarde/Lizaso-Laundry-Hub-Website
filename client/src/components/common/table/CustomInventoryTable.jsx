@@ -28,7 +28,12 @@ import CustomStock from "./custom/CustomStock";
 import PopEditItem from "../../../pages/admin/Inventory/components/PopEditItem";
 import PopRestock from "../../../pages/admin/Inventory/components/PopRestock";
 
-const CustomInventoryTable = ({ tableData, loading, refreshData }) => {
+const CustomInventoryTable = ({
+  tableData,
+  loading,
+  refreshData,
+  itemEditData,
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -176,7 +181,7 @@ const CustomInventoryTable = ({ tableData, loading, refreshData }) => {
                       <Tooltip title="Edit Item" arrow>
                         <OutlinedIconButton
                           onClick={() => {
-                            openPopup("editItem", data.inventory_id);
+                            openPopup("editItem", data);
                           }}
                         >
                           <PencilLine
@@ -222,7 +227,12 @@ const CustomInventoryTable = ({ tableData, loading, refreshData }) => {
       )} */}
 
       {isOpen && popupType === "editItem" && (
-        <PopEditItem open={isOpen} onClose={closePopup} id={popupData} />
+        <PopEditItem
+          open={isOpen}
+          onClose={closePopup}
+          getData={popupData}
+          editData={itemEditData}
+        />
       )}
 
       {isOpen && popupType === "restockItem" && (
