@@ -146,7 +146,7 @@ const CustomInventoryTable = ({ tableData, loading, refreshData }) => {
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.primary }}
                       >
-                        {data.price}
+                        ₱{parseFloat(data.price).toFixed(2)}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>

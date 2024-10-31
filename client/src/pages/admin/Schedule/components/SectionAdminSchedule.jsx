@@ -411,7 +411,16 @@ const SectionAdminSchedule = ({ storeId }) => {
           </Box>
 
           {/* Clear Filters Button */}
-          <Box sx={{ mt: { xs: 2, sm: 0 }, ml: { sm: "1px" } }}>
+          <Box
+            sx={{
+              width: {
+                xs: "100%", // Full width on small screens
+                sm: "auto", // Auto width on larger screens
+              },
+              mt: { xs: 2, sm: 0 },
+              ml: { sm: "1px" },
+            }}
+          >
             <Button
               variant="outlined"
               onClick={() => {
@@ -423,6 +432,7 @@ const SectionAdminSchedule = ({ storeId }) => {
                 textTransform: "none",
                 borderColor: COLORS.border,
                 color: COLORS.primary,
+                width: "100%", // Make the button full width on small screens
                 "&:hover": {
                   borderColor: COLORS.secondary,
                   backgroundColor: COLORS.secondaryLight,
