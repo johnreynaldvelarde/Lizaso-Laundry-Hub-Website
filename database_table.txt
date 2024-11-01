@@ -121,6 +121,7 @@ item_id (Foregin Key)
 price
 quantity
 isStatus
+isArchive
 
 --> Laundry_Unit <--
 id  (Primary Key)

@@ -10,6 +10,7 @@ import {
 import {
   handleCreateItemCategory,
   handleCreateNewItem,
+  handleCreateReuseItem,
 } from "../services/admin/useInventory.js";
 import { handleCustomerServiceRequest } from "../services/admin/useCustomer.js";
 import { getPool } from "../db/dbConfig.js";
@@ -99,7 +100,7 @@ router.post(
   })
 );
 
-// For Inventory Section
+//#INVENTORY SECTION
 router.post(
   "/inventory/create-new-item",
   withDatabaseConnection(async (req, res, connection) => {
@@ -116,6 +117,17 @@ router.post(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleCreateItemCategory(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.post(
+  "/inventory/create-reuse-item",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleCreateReuseItem(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

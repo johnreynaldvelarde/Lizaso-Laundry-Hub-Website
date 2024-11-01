@@ -25,6 +25,7 @@ import {
   handleUpdateStock,
 } from "../services/admin/useInventory.js";
 import { handleUpdateServiceRequestOngoing } from "../services/user/staff.js";
+import { handleUpdateReview } from "../services/admin/useReviews.js";
 
 const router = express.Router();
 
@@ -142,7 +143,7 @@ router.put(
   })
 );
 
-// USER MANAGEMENT SECTION
+//#USER MANAGEMENT SECTION
 // #For role and permisson
 router.put(
   "/usermanage/:id/update-permissions",
@@ -211,9 +212,20 @@ router.put(
   })
 );
 
+//#FEEDBACK AND REVIEWS SECTION
+router.put(
+  "/reviews/:id/update-reviews",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateReview(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 // SETTINGS SECTION
 // #For tab dashboard config
-
 // #For tab services type
 router.put(
   "/settings/:id/update-service-types",

@@ -269,6 +269,19 @@ export const viewInventory = {
   },
 };
 
+export const viewGetItemToReuse = {
+  getItemToReuse: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/inventory/${id}/view-item-reuse`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export const viewCategory = {
   getViewCategoryList: async (storeId) => {
     try {
@@ -388,13 +401,11 @@ export const getInbox = {
   },
 };
 
-// REVIEWS SECTION
+//#FEEDBACK AND REVIEWS SECTION
 export const getReviews = {
-  viewReviews: async (storeId) => {
+  viewReviews: async (id) => {
     try {
-      const response = await axiosPrivate.get(
-        `/reviews/${storeId}/get-reviews`
-      );
+      const response = await axiosPrivate.get(`/reviews/${id}/get-reviews`);
       return response.data;
     } catch (error) {
       console.error("Error fetching:", error);
@@ -403,7 +414,7 @@ export const getReviews = {
   },
 };
 
-// SETTINGS SECTION
+// #SETTINGS SECTION
 //  <----- Service Type Section ----->
 export const getServiceTypeAndStore = {
   getServiceType: async (userId) => {

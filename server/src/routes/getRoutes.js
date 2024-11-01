@@ -18,6 +18,7 @@ import {
 import { handleGenerateUnitName } from "../services/checkService.js";
 import {
   handleGetCategory,
+  handleGetItemListToReuse,
   handleViewInventory,
   handleViewListCategory,
 } from "../services/admin/useInventory.js";
@@ -37,6 +38,7 @@ import {
   handleGetScheduleStatsByUser,
   handleGetSelectedStaff,
 } from "../services/admin/useSchedule.js";
+import { handleGetReviewsList } from "../services/admin/useReviews.js";
 
 const router = express.Router();
 
@@ -224,9 +226,24 @@ router.get(
 );
 
 router.get(
+  "/inventory/:id/view-item-reuse/",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetItemListToReuse(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
   "/view-category",
   withDatabaseConnection(async (req, res, connection) => {
-    await handleViewListCategory(req, res, connection);
+    try {
+      await handleViewListCategory(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   })
 );
 
@@ -301,7 +318,7 @@ router.get(
   "/reviews/:id/get-reviews",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleGetBasedUser(req, res, connection);
+      await handleGetReviewsList(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

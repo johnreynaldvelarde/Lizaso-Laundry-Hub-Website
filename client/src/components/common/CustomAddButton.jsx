@@ -23,7 +23,7 @@ const CustomAddButton = ({
         textTransform: "none",
         paddingX: { xs: 1, sm: 2, md: 3 },
         fontSize: { xs: "14px", sm: "14px", md: "16px" },
-        height: "48px", // Set a fixed height
+        height: "45px", // Set a fixed height
         lineHeight: "1.5", // Ensure consistent line height
         whiteSpace: "nowrap", // Prevent text from wrapping
         display: "flex", // Ensure flex display

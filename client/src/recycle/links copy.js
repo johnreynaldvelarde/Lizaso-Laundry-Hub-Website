@@ -1,113 +1,143 @@
 import React from "react";
+import { BsCurrencyDollar } from "react-icons/bs";
+import { FaHandshake, FaShare } from "react-icons/fa";
+import { LuLayoutDashboard } from "react-icons/lu";
+import { MdLocalLaundryService, MdOutlineWarehouse } from "react-icons/md";
+import { AiOutlineSchedule } from "react-icons/ai";
+import { IoStorefrontOutline } from "react-icons/io5";
+import { FaUsers } from "react-icons/fa6";
 import {
-  House,
-  CurrencyDollar,
-  Handshake,
-  Share,
-  Layout,
-  WashingMachine,
-  Calendar,
-  Storefront,
-  Users,
-  User,
-  ChatsCircle,
-  Gear,
-  ShoppingCart,
-  Stack,
-  ArchiveBox,
-  EnvelopeSimple,
-  Rss,
-  Archive,
-} from "@phosphor-icons/react";
-
-const iconSize = 20; // Set your desired icon size here
+  FiHome,
+  FiLayers,
+  FiMail,
+  FiMessageCircle,
+  FiSettings,
+  FiShoppingBag,
+  FiShoppingCart,
+  FiUsers,
+  FiUser,
+} from "react-icons/fi";
 
 export const links = [
   {
     name: "Dashboard",
-    icon: React.createElement(Layout, { weight: "duotone", size: iconSize }),
+    icon: React.createElement(LuLayoutDashboard),
     url: "/main/dashboard",
   },
   {
     name: "Monitored Units",
-    icon: React.createElement(WashingMachine, {
-      weight: "duotone",
-      size: iconSize,
-    }),
+    icon: React.createElement(MdLocalLaundryService),
     url: "/main/unit-monitor",
   },
   {
     name: "View Schedules",
-    icon: React.createElement(Calendar, { weight: "duotone", size: iconSize }),
+    icon: React.createElement(AiOutlineSchedule),
     url: "/main/schedule",
   },
   {
     name: "Store Management",
-    icon: React.createElement(Storefront, {
-      weight: "duotone",
-      size: iconSize,
-    }),
+    icon: React.createElement(IoStorefrontOutline),
     url: "/main/store",
   },
   {
     name: "Inventory",
-    icon: React.createElement(ArchiveBox, {
-      weight: "duotone",
-      size: iconSize,
-    }),
+    icon: React.createElement(MdOutlineWarehouse),
     url: "/main/inventory",
   },
   {
     name: "User Management",
-    icon: React.createElement(Users, { weight: "duotone", size: iconSize }),
+    icon: React.createElement(FaUsers),
     url: "/main/all-user",
   },
+
   {
     name: "Customers",
-    icon: React.createElement(User, { weight: "duotone", size: iconSize }),
+    icon: React.createElement(FiUsers),
     url: "/main/customers",
   },
   {
     name: "Inbox",
-    icon: React.createElement(ChatsCircle, {
-      weight: "duotone",
-      size: iconSize,
-    }),
+    icon: React.createElement(FiMail),
     url: "/main/inbox",
   },
   {
     name: "Reviews",
-    icon: React.createElement(Rss, {
-      weight: "duotone",
-      size: iconSize,
-    }),
+    icon: React.createElement(FiMessageCircle),
     url: "/main/reviews",
   },
-  {
-    name: "Transactions History",
-    icon: React.createElement(Handshake, { weight: "duotone", size: iconSize }),
-    url: "/main/transactions",
-  },
+
   {
     name: "Activity Log",
-    icon: React.createElement(Handshake, { weight: "duotone", size: iconSize }),
-    url: "/main/activity-log",
+    icon: React.createElement(FaHandshake),
+    url: "",
   },
+
   {
     name: "Settings",
-    icon: React.createElement(Gear, { weight: "duotone", size: iconSize }),
+    icon: React.createElement(FiSettings),
     url: "/main/settings",
   },
   {
-    name: "Configuration",
-    icon: React.createElement(Stack, { weight: "duotone", size: iconSize }),
-    url: "/main/configuration",
+    name: "Sales",
+    icon: React.createElement(BsCurrencyDollar),
+    subLinks: [
+      {
+        name: "Sales Analytics",
+        url: "",
+      },
+      {
+        name: "Product Sales",
+        url: "",
+      },
+    ],
   },
   {
-    name: "Archived",
-    icon: React.createElement(Archive, { weight: "duotone", size: iconSize }),
-    url: "/main/configuration",
+    name: "Orders",
+    icon: React.createElement(FiShoppingCart),
+    subLinks: [
+      {
+        name: "All Orders",
+        url: "",
+      },
+      {
+        name: "Order Template",
+        url: "",
+      },
+    ],
   },
+
+  {
+    name: "Transactions",
+    icon: React.createElement(FaHandshake),
+    url: "",
+  },
+
+  {
+    name: "Configuration",
+    icon: React.createElement(FiLayers),
+    url: "",
+  },
+
+  // {
+  //   name: "Suppliers",
+  //   icon: React.createElement(FaShare),
+  //   url: "",
+  // },
+
+  // {
+  //   name: "User Manage",
+  //   icon: React.createElement(FiUser ),
+  //   subLinks: [
+  //     {
+  //       name: "All Users",
+  //       url: "/main/all-user",
+  //     },
+  //     {
+  //       name: "Add Users",
+  //       url: "/main/add-user",
+  //     },
+  //   ],
+  // },
 ];
 
 // import React from "react";
@@ -140,6 +170,16 @@ export const links = [
 //     name: "Monitored Units",
 //     icon: React.createElement(MdLocalLaundryService),
 //     url: "/main/unit-monitor",
+//     subLinks: [
+//       {
+//         name: "All Laundry Units",
+//         url: "/main/unit-monitor",
+//       },
+//       {
+//         name: "Add new laundry units",
+//         url: "/main/add-unit",
+//       },
+//     ],
 //   },
 //   {
 //     name: "View Schedules",
@@ -177,13 +217,6 @@ export const links = [
 //     icon: React.createElement(FiMessageCircle),
 //     url: "/main/reviews",
 //   },
-
-//   {
-//     name: "Activity Log",
-//     icon: React.createElement(FaHandshake),
-//     url: "",
-//   },
-
 //   {
 //     name: "Settings",
 //     icon: React.createElement(FiSettings),
@@ -229,4 +262,3 @@ export const links = [
 //     icon: React.createElement(FiLayers),
 //     url: "",
 //   },
-// ];

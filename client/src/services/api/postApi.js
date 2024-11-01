@@ -144,6 +144,20 @@ export const createItemCategory = {
   },
 };
 
+export const createReuseItem = {
+  setReuseItem: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        "/inventory/create-reuse-item",
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // USER MANAGEMENT SECTION
 export const createNewRoleAndPermissions = {
   setRoleAndPermissons: async (userId, data) => {

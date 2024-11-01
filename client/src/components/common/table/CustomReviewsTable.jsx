@@ -12,6 +12,7 @@ import {
   Typography,
   Button,
   Skeleton,
+  Tooltip,
 } from "@mui/material";
 import no_data from "../../../assets/images/no_data_table.jpg";
 import DateCell from "../../table/DateCell";
@@ -19,6 +20,11 @@ import { getStatusColor } from "./custom/method";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
+import CustomStarRating from "../CustomStartRating";
+import StatusApprovedRejectCellTable from "./custom/StatusApprovedRejectCellTable";
+import OutlinedIconButton from "../../table/OutlinedIconButton";
+import { PencilLine } from "@phosphor-icons/react";
+import PopEditReview from "../../../pages/admin/Review/components/PopEditReview";
 
 const CustomReviewsTable = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
@@ -49,10 +55,10 @@ const CustomReviewsTable = ({ tableData, loading, refreshData }) => {
           <TableHead className="bg-[#F1F1F1] border-b">
             <TableRow>
               <TableCell sx={cellHeadStyles}>ID</TableCell>
+              <TableCell sx={cellHeadStyles}>Customer Review</TableCell>
+              <TableCell sx={cellHeadStyles}>Rating</TableCell>
               <TableCell sx={cellHeadStyles}>Date Created</TableCell>
-              <TableCell sx={cellHeadStyles}>Name</TableCell>
               <TableCell sx={cellHeadStyles}>Service Type</TableCell>
-              <TableCell sx={cellHeadStyles}>Payment Method</TableCell>
               <TableCell sx={cellHeadStyles}>Status</TableCell>
               <TableCell sx={cellHeadStyles}>Actions</TableCell>
             </TableRow>
@@ -100,7 +106,7 @@ const CustomReviewsTable = ({ tableData, loading, refreshData }) => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((data) => (
                   <TableRow
-                    key={data.id}
+                    key={data.review_id}
                     className="border-b"
                     role="checkbox"
                     tabIndex={-1}
@@ -110,80 +116,78 @@ const CustomReviewsTable = ({ tableData, loading, refreshData }) => {
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.secondary }}
                       >
-                        #{data.id}
+                        #{data.review_id}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <DateCell dateCreated={data.request_date} />
-                    </TableCell>
-                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                    <TableCell sx={{ paddingY: 2, paddingX: 4, maxWidth: 400 }}>
                       <Typography
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.text }}
                       >
-                        {data.customer_fullname}
+                        <span
+                          className="mr-1 font-normal"
+                          style={{ color: COLORS.primary }}
+                        >
+                          By
+                        </span>
+                        {data.customer_full_name}
                       </Typography>
-                    </TableCell>
-                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.primary }}
+                        sx={{
+                          fontWeight: "400",
+                          color: COLORS.primary,
+                          marginTop: 1,
+                          whiteSpace: "normal", // Allows text to wrap
+                          wordWrap: "break-word", // Breaks long words if necessary
+                          overflowWrap: "break-word", // Ensures long words break if needed
+                        }}
                       >
-                        {data.service_name}
+                        {data.comment || "No comment"}
                       </Typography>
+                    </TableCell>
+
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      <CustomStarRating rating={data.rating.toFixed(1)} />
+                    </TableCell>
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      <DateCell dateCreated={data.created_at} />
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.secondary }}
                       >
-                        {data.payment_method}
+                        {data.service_name}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <Typography
-                        variant="body2"
+                      <StatusApprovedRejectCellTable
+                        status={data.is_approved}
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box
                         sx={{
-                          paddingX: 2,
-                          paddingY: 0.5,
-                          backgroundColor: getStatusColor(data.request_status),
-                          fontWeight: "600",
-                          color: COLORS.white,
-                          borderRadius: 8,
-                          display: "inline-block",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
                       >
-                        {data.request_status}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {data.request_status === "Pending Pickup" ? (
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: COLORS.secondary,
-                            textTransform: "none",
-                          }}
-                          onClick={() => {
-                            openPopup("assignTo", data.id);
-                          }}
-                        >
-                          Assign To
-                        </Button>
-                      ) : data.request_status === "Ready for delivery" ? (
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: COLORS.secondary,
-                            textTransform: "none",
-                          }}
-                          onClick={() => {
-                            openPopup("assignTo", data.id);
-                          }}
-                        >
-                          Assign To
-                        </Button>
-                      ) : null}
+                        <Tooltip title="Edit Review" arrow>
+                          <OutlinedIconButton
+                            onClick={() => {
+                              openPopup("editReview", data);
+                            }}
+                          >
+                            <PencilLine
+                              color={COLORS.secondary}
+                              weight="duotone"
+                            />
+                          </OutlinedIconButton>
+                        </Tooltip>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))
@@ -204,11 +208,11 @@ const CustomReviewsTable = ({ tableData, loading, refreshData }) => {
       />
 
       {/* Popup */}
-      {isOpen && popupType === "assignTo" && (
-        <PopPendingAssignTo
+      {isOpen && popupType === "editReview" && (
+        <PopEditReview
           open={isOpen}
           onClose={closePopup}
-          id={popupData}
+          getData={popupData}
           refreshData={refreshData}
         />
       )}

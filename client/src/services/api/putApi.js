@@ -95,11 +95,10 @@ export const updateCategoryName = {
 };
 
 export const updateRemoveCategory = {
-  putRemoveCategory: async (id, data) => {
+  putRemoveCategory: async (id) => {
     try {
       const response = await axiosPrivate.put(
-        `/inventory/${id}/update-remove-category`,
-        data
+        `/inventory/${id}/update-remove-category`
       );
       return response.data;
     } catch (error) {
@@ -149,7 +148,7 @@ export const updateRemoveItem = {
   },
 };
 
-// USER MANAGEMENT SECTION
+//#USER MANAGEMENT SECTION
 // #For role and permission
 export const updateRemoveRole = {
   putRemoveRole: async (roleId, data) => {
@@ -228,6 +227,21 @@ export const updateManagerBasedUser = {
     try {
       const response = await axiosPrivate.put(
         `/usermanage/${userId}/update-manager-based-user`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+//#FEEDBACK AND REVIEWS SECTION
+export const updateReviews = {
+  putReviews: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/reviews/${id}/update-reviews`,
         data
       );
       return response.data;

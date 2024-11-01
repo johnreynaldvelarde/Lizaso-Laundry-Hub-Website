@@ -27,6 +27,7 @@ import PopRestock from "../../../pages/admin/Inventory/components/PopRestock";
 import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
 import { updateRemoveItem } from "../../../services/api/putApi";
 import toast from "react-hot-toast";
+import useAuth from "../../../contexts/AuthContext";
 
 const CustomInventoryTable = ({
   tableData,
@@ -34,6 +35,7 @@ const CustomInventoryTable = ({
   refreshData,
   itemEditData,
 }) => {
+  const { userDetails } = useAuth();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -209,6 +211,7 @@ const CustomInventoryTable = ({
                         </OutlinedIconButton>
                       </Tooltip>
                       <Tooltip title="Delete User" arrow>
+                        {/* if(userDetails.roleName == Manager) */}
                         <OutlinedIconButton
                           onClick={() => {
                             openPopup("removeItem", data.inventory_id);

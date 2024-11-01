@@ -64,15 +64,15 @@ a.active > .linkBtn {
   position: relative;
 }
 
-a.active > .linkBtn::before {
+/* a.active > .linkBtn::before {
   position: absolute;
   content: "";
   height: 100%;
-  width: 5px;
+  width: 6px;
   left: 0;
   top: 0;
   background-color: #5787c8;
-}
+} */
 
 .rounded-circle {
   min-width: 45px !important;

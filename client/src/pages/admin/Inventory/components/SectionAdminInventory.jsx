@@ -17,7 +17,13 @@ import {
   Button,
 } from "@mui/material";
 import { parseISO } from "date-fns";
-import { PlusCircle, PencilLine, Basket, Trash } from "@phosphor-icons/react";
+import {
+  PlusCircle,
+  PencilLine,
+  Basket,
+  Trash,
+  Repeat,
+} from "@phosphor-icons/react";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import useFetchData from "../../../../hooks/common/useFetchData";
@@ -33,14 +39,15 @@ import { KeyboardArrowDown } from "@mui/icons-material";
 import CustomInventoryTable from "../../../../components/common/table/CustomInventoryTable";
 import { dateOptions } from "../../../../data/schedule/serviceStatus";
 import { checkDateMatch } from "../../../../utils/method";
+import CustomOutlinedAddButton from "../../../../components/common/CustomOutlinedAddButton";
+import PopReuseItem from "./PopReuseItem";
+import DeleteConfirmationDialog from "../../../../components/common/DeleteConfirmationDialog";
 
 const SectionAdminInventory = () => {
   const { userDetails } = useAuth();
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const { data: categoryData, fetchData: fetchCategory } = useFetchData();
   const { data: inventoryData, fetchData: fetchInventory } = useFetchData();
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
@@ -72,6 +79,11 @@ const SectionAdminInventory = () => {
     }
   }, [inventoryData]);
 
+  const handleRefreshData = () => {
+    fetchCategoryData();
+    fetchInventoryData();
+  };
+
   const handleStatusChange = (event) => {
     const status = event.target.value;
     setSelectedStatus(status);
@@ -100,22 +112,14 @@ const SectionAdminInventory = () => {
     setFilteredData(filtered);
   };
 
-  const handleDialogDelete = (id, options) => {
-    if (options === "categoryRemove") {
-      console.log(id);
-      setSelectedCategoryId(id);
-    } else {
-      // setSelectedUser(id);
-    }
-    setDialogOpen(true);
-  };
-
-  const handleCategoryDelete = async (id) => {
-    console.log(id);
-    if (id) {
+  const handleRemoveCategory = async () => {
+    if (popupData) {
       try {
-        const response = await updateRemoveCategory.putRemoveCategory(id);
+        const response = await updateRemoveCategory.putRemoveCategory(
+          popupData
+        );
         if (response.success) {
+          handleRefreshData();
           toast.success(response.message);
         } else {
           toast.error(response.message);
@@ -126,11 +130,6 @@ const SectionAdminInventory = () => {
     } else {
       toast.error("Error Action!!!");
     }
-  };
-
-  const handleRefreshData = () => {
-    fetchCategoryData();
-    fetchInventoryData();
   };
 
   return (
@@ -295,9 +294,9 @@ const SectionAdminInventory = () => {
                     borderColor: COLORS.error,
                   },
                 }}
-                onClick={() =>
-                  handleDialogDelete(category.category_id, "categoryDelete")
-                }
+                onClick={() => {
+                  openPopup("removeCategory", category.category_id);
+                }}
               >
                 <Trash size={24} weight="duotone" color={COLORS.error} />
               </Button>
@@ -467,9 +466,19 @@ const SectionAdminInventory = () => {
             </Button>
           </Box>
 
-          {/* Add item button */}
+          {/* Add item and reuse button */}
           <Box
             sx={{
+              display: "flex",
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+              },
+              justifyContent: "flex-end",
+              gap: {
+                xs: 0,
+                sm: 1,
+              },
               width: {
                 xs: "100%",
                 sm: "auto",
@@ -477,6 +486,16 @@ const SectionAdminInventory = () => {
               marginLeft: "auto",
             }}
           >
+            {/* Reuse item button */}
+            <CustomOutlinedAddButton
+              onClick={() => openPopup("reuseItem")}
+              label={"Reuse item"}
+              icon={
+                <Repeat size={24} color={COLORS.secondary} weight="duotone" />
+              }
+            />
+
+            {/* Add new item button */}
             <CustomAddButton
               onClick={() => openPopup("addItem")}
               label={"Add new item"}
@@ -486,7 +505,6 @@ const SectionAdminInventory = () => {
             />
           </Box>
         </Box>
-
         <Box>
           <CustomInventoryTable
             tableData={filteredData}
@@ -496,13 +514,6 @@ const SectionAdminInventory = () => {
           />
         </Box>
       </Box>
-
-      <ConfirmationDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onConfirm={handleCategoryDelete}
-        itemId={selectedCategoryId}
-      />
 
       {/* Popup */}
       {isOpen && popupType === "addCategory" && (
@@ -514,84 +525,23 @@ const SectionAdminInventory = () => {
       {isOpen && popupType === "addItem" && (
         <PopAddNewItem open={isOpen} onClose={closePopup} data={categoryData} />
       )}
+      {isOpen && popupType === "reuseItem" && (
+        <PopReuseItem
+          open={isOpen}
+          onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
+      )}
+      {isOpen && popupType === "removeCategory" && (
+        <DeleteConfirmationDialog
+          open={isOpen}
+          onClose={closePopup}
+          onConfirm={handleRemoveCategory}
+          id={popupData}
+        />
+      )}
     </>
   );
 };
 
 export default SectionAdminInventory;
-
-{
-  /* <Box mt={5}>
-        <Box
-          className="flex items-center justify-between mb-"
-          sx={{
-            flexDirection: {
-              xs: "column",
-              sm: "row",
-            },
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
-          >
-            All Inventory Items
-          </Typography>
-
-          <Box
-            className="flex items-center"
-            sx={{
-              width: {
-                xs: "100%",
-                sm: "auto",
-              },
-              flexDirection: {
-                xs: "column",
-                sm: "row",
-              },
-              "& button": {
-                width: {
-                  xs: "100%",
-                  sm: "auto",
-                },
-                marginBottom: {
-                  xs: 2,
-                  sm: 0,
-                },
-              },
-            }}
-          >
-            <CustomAddButton
-              onClick={() => openPopup("addItem")}
-              label={"Add new item"}
-              icon={<PlusCircle size={24} color="#fcfcfc" weight="duotone" />}
-            />
-          </Box>
-        </Box>
-
-        <Box mt={2}>
-          {inventoryData && inventoryData.length > 0 ? (
-            <InventoryCustomTable
-              isLoading={isLoading}
-              data={inventoryData}
-              fields={inventoryColumns}
-              numberOfRows={inventoryData.length}
-              enableTopToolBar={true}
-              enableBottomToolBar={true}
-              enablePagination={true}
-              enableRowSelection={true}
-              enableColumnFilters={true}
-              enableEditing={true}
-              enableColumnDragging={true}
-              showPreview={true}
-              routeLink="products"
-            />
-          ) : (
-            <CustomNoDataMessage
-              imageSrc={nodata}
-              message={"No inventory items available"}
-            />
-          )}
-        </Box>
-      </Box> */
-}
