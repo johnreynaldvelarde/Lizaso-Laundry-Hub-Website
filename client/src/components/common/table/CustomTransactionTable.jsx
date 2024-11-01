@@ -62,6 +62,7 @@ const CustomTransactionTable = ({ tableData, loading }) => {
               <TableCell sx={cellHeadStyles}>ID</TableCell>
               <TableCell sx={cellHeadStyles}>Customer Name</TableCell>
               <TableCell sx={cellHeadStyles}>Payment Method</TableCell>
+              <TableCell sx={cellHeadStyles}>Service Type</TableCell>
               <TableCell sx={cellHeadStyles}>Date Created</TableCell>
               <TableCell sx={cellHeadStyles}>Total Amount</TableCell>
               <TableCell sx={cellHeadStyles}>Status</TableCell>
@@ -153,6 +154,42 @@ const CustomTransactionTable = ({ tableData, loading }) => {
                           paymentMethod={data.payment_method}
                         />
                       </TableCell>
+                      <TableCell
+                        sx={{ paddingY: 2, paddingX: 4, maxWidth: 400 }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "600", color: COLORS.text }}
+                        >
+                          {data.service_name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: "500",
+                            color: COLORS.secondary,
+                            marginTop: 1,
+                          }}
+                        >
+                          <span className="mr-2" style={{ color: COLORS.text }}>
+                            Price:
+                          </span>
+                          ₱{data.default_price}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: "500",
+                            color: COLORS.secondary,
+                            marginTop: 1,
+                          }}
+                        >
+                          <span className="mr-2" style={{ color: COLORS.text }}>
+                            Weight:
+                          </span>
+                          {data.weight}kg
+                        </Typography>
+                      </TableCell>
                       <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                         <DateCell dateCreated={data.created_at} />
                       </TableCell>
@@ -170,12 +207,6 @@ const CustomTransactionTable = ({ tableData, loading }) => {
                         />
                       </TableCell>
                       <TableCell>
-                        <Tooltip title="View Transaction" arrow>
-                          <OutlinedIconButton>
-                            <Eye color={COLORS.primary} weight="duotone" />
-                          </OutlinedIconButton>
-                        </Tooltip>
-
                         {data.related_items.length > 0 && (
                           <Tooltip title="Collapse" arrow>
                             <OutlinedIconButton
@@ -197,7 +228,7 @@ const CustomTransactionTable = ({ tableData, loading }) => {
                     {expandedRows[data.transaction_id] &&
                       data.related_items.length > 0 && (
                         <TableRow>
-                          <TableCell colSpan={7}>
+                          <TableCell colSpan={8}>
                             <motion.div
                               initial={{ height: 0, opacity: 0 }}
                               animate={{

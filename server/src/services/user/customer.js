@@ -479,7 +479,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
     `;
 
     const [rows] = await connection.execute(query, [id, id]);
-
+    //AND sr.customer_type IN ('Online', 'Walk-in')
     // Structure the response data
     const result = rows.reduce((acc, row) => {
       let serviceRequest = acc.find(

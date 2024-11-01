@@ -42,6 +42,7 @@ import { checkDateMatch } from "../../../../utils/method";
 import CustomOutlinedAddButton from "../../../../components/common/CustomOutlinedAddButton";
 import PopReuseItem from "./PopReuseItem";
 import DeleteConfirmationDialog from "../../../../components/common/DeleteConfirmationDialog";
+import CustomHeaderTitleTable from "../../../../components/common/CustomHeaderTitleTable";
 
 const SectionAdminInventory = () => {
   const { userDetails } = useAuth();
@@ -323,12 +324,7 @@ const SectionAdminInventory = () => {
         >
           <Box sx={{ display: "flex" }}>
             {/* Title */}
-            <Typography
-              variant="h6"
-              sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
-            >
-              All Inventory Item
-            </Typography>
+            <CustomHeaderTitleTable title={"All Inventory Item"} />
           </Box>
 
           {/* Filter by created date */}

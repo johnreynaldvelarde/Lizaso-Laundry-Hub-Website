@@ -49,8 +49,8 @@ export const ensureMainStoreExists = async (db) => {
       // Step 2: Insert the store into the Stores table using the address_id
       const insertStoreQuery = `
         INSERT INTO Stores 
-        (address_id, store_no, store_name, store_contact, store_email, is_main_store, updated_at, date_created) 
-        VALUES (?, ?, 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', TRUE, NOW(), NOW())`;
+        (address_id, store_no, store_name, store_contact, store_email, is_main_store, updated_at, date_created, isStatus) 
+        VALUES (?, ?, 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', TRUE, NOW(), NOW(), TRUE)`;
 
       const storeValues = [addressId, storeNo];
       const [storeResult] = await db.execute(insertStoreQuery, storeValues);

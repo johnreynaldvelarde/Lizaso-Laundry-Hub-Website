@@ -60,11 +60,18 @@ export const handleGetTransactionHistory = async (req, res, db) => {
               sr.customer_type,
               ri.quantity AS related_item_quantity,
               ri.amount AS related_item_amount,
-              i.item_name AS related_item_name
+              i.item_name AS related_item_name,
+              la.weight,
+              st.service_name,
+              st.default_price
           FROM 
               Transactions t
           LEFT JOIN 
               Service_Request sr ON t.assignment_id = sr.id
+          LEFT JOIN 
+              Laundry_Assignment la ON la.service_request_id = sr.id
+          LEFT JOIN 
+              Service_Type st ON st.id = sr.service_type_id 
           LEFT JOIN 
               Related_Item ri ON ri.assignment_id = t.assignment_id
           LEFT JOIN 
@@ -100,6 +107,9 @@ export const handleGetTransactionHistory = async (req, res, db) => {
           updated_at: row.updated_at,
           customer_fullname: row.customer_fullname,
           customer_type: row.customer_type,
+          service_name: row.service_name,
+          weight: row.weight,
+          default_price: row.default_price,
           related_items: [], // Initialize related items array
         };
         acc.push(transaction);

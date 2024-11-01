@@ -38,6 +38,7 @@ import CustomSearch from "../../../../components/common/table/filter/CustomSearc
 import CustomHeaderTitleTable from "../../../../components/common/CustomHeaderTitleTable";
 import CustomCreatedDate from "../../../../components/common/table/filter/CustomCreatedDate";
 import CustomTransactionTable from "../../../../components/common/table/CustomTransactionTable";
+import CustomPaymentStatus from "../../../../components/common/table/filter/CustomPaymentStatus";
 
 const SectionAdminTransaction = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -47,6 +48,7 @@ const SectionAdminTransaction = ({ storeId }) => {
   const [filteredData, setFilteredData] = useState([]);
   const { data: transactionData, fetchData: fetchTransaction } = useFetchData();
   const [loading, setLoading] = useState(true);
+  const statusOptions = ["Completed", "Pending"];
 
   const fetchTransactionData = useCallback(async () => {
     setLoading(true);
@@ -205,7 +207,8 @@ const SectionAdminTransaction = ({ storeId }) => {
               },
             }}
           >
-            <CustomRatingFilter
+            <CustomPaymentStatus
+              statusOptions={statusOptions}
               selectedStatus={selectedStatus}
               handleStatusChange={handleStatusChange}
             />
