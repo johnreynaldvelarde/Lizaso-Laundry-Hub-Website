@@ -2,12 +2,12 @@ import React from "react";
 import { TextField } from "@mui/material";
 import { COLORS } from "../../../../constants/color";
 
-const CustomSearch = ({ searchTerm, handleSearchChange }) => {
+const CustomSearch = ({ searchTerm, handleSearchChange, placeholder }) => {
   return (
     <TextField
       size="small"
       variant="outlined"
-      placeholder="Search by customer name or comment"
+      placeholder={placeholder}
       value={searchTerm}
       onChange={handleSearchChange}
       sx={{

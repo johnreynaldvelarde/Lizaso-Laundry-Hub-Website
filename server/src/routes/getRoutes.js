@@ -39,6 +39,8 @@ import {
   handleGetSelectedStaff,
 } from "../services/admin/useSchedule.js";
 import { handleGetReviewsList } from "../services/admin/useReviews.js";
+import { handleGetActivityLog } from "../services/admin/useActivityLog.js";
+import { handleGetTransactionHistory } from "../services/admin/useTransaction.js";
 
 const router = express.Router();
 
@@ -313,12 +315,36 @@ router.get(
   })
 );
 
-// REVIEWS SECTION
+// #REVIEWS SECTION
 router.get(
   "/reviews/:id/get-reviews",
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetReviewsList(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #TRANSCTION HISTORY SECTION
+router.get(
+  "/transaction-history/:id/get-transaction-history",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetTransactionHistory(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #ACTIVITY LOG SECTION
+router.get(
+  "/activity-log/get-activity-log",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetActivityLog(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

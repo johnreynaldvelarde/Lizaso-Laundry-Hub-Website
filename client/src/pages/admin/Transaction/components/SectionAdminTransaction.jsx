@@ -28,38 +28,47 @@ import {
 } from "../../../../data/schedule/serviceStatus";
 import CustomCustomerTable from "../../../../components/common/table/CustomCustomerTable";
 import CustomReviewsTable from "../../../../components/common/table/CustomReviewsTable";
-import { getReviews } from "../../../../services/api/getApi";
+import {
+  getReviews,
+  getTransactionHistory,
+} from "../../../../services/api/getApi";
 import { checkDateMatch } from "../../../../utils/method";
 import CustomRatingFilter from "../../../../components/common/table/filter/CustomRatingFilter";
 import CustomSearch from "../../../../components/common/table/filter/CustomSearch";
+import CustomHeaderTitleTable from "../../../../components/common/CustomHeaderTitleTable";
+import CustomCreatedDate from "../../../../components/common/table/filter/CustomCreatedDate";
+import CustomTransactionTable from "../../../../components/common/table/CustomTransactionTable";
 
-const SectionAdminReview = ({ storeId }) => {
+const SectionAdminTransaction = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  const { data: reviewData, fetchData: fetchReview } = useFetchData();
+  const { data: transactionData, fetchData: fetchTransaction } = useFetchData();
   const [loading, setLoading] = useState(true);
 
-  const fetchReviewData = useCallback(async () => {
+  const fetchTransactionData = useCallback(async () => {
     setLoading(true);
-    await fetchReview(getReviews.viewReviews, storeId);
+    await fetchTransaction(
+      getTransactionHistory.viewTransctionHistory,
+      storeId
+    );
     setLoading(false);
-  }, [fetchReview, storeId]);
+  }, [fetchTransaction, storeId]);
 
   useEffect(() => {
-    fetchReviewData();
-  }, [fetchReviewData]);
+    fetchTransactionData();
+  }, [fetchTransactionData]);
 
   useEffect(() => {
-    if (reviewData) {
-      setFilteredData(reviewData);
+    if (transactionData) {
+      setFilteredData(transactionData);
     }
-  }, [reviewData]);
+  }, [transactionData]);
 
   const handleRefreshData = () => {
-    fetchReviewData();
+    fetchTransactionData();
   };
 
   const handleSearchChange = (event) => {
@@ -80,20 +89,19 @@ const SectionAdminReview = ({ storeId }) => {
   };
 
   const applyFilters = (dateOption, status, search) => {
-    const filtered = reviewData.filter((item) => {
+    const filtered = transactionData.filter((item) => {
       const requestDate = parseISO(item.created_at);
       const isDateMatch = dateOption
         ? checkDateMatch(dateOption, requestDate)
         : true;
 
-      // Filter by rating status if selected
-      const isStatusMatch =
-        status === "" ? true : item.rating === Number(status);
+      // Filter by transaction status if selected
+      const isStatusMatch = status ? item.transaction_status === status : true;
 
-      // Filter by search term in customer name or comment
-      const isSearchMatch =
-        item.customer_full_name.toLowerCase().includes(search.toLowerCase()) ||
-        item.comment.toLowerCase().includes(search.toLowerCase());
+      // Filter by search term in customer fullname
+      const isSearchMatch = item.customer_fullname
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
       return isDateMatch && isStatusMatch && isSearchMatch;
     });
@@ -103,7 +111,11 @@ const SectionAdminReview = ({ storeId }) => {
 
   useEffect(() => {
     applyFilters(selectedDate, selectedStatus, searchTerm);
-  }, [selectedDate, selectedStatus, searchTerm, reviewData]);
+  }, [selectedDate, selectedStatus, searchTerm, transactionData]);
+
+  useEffect(() => {
+    applyFilters(selectedDate, selectedStatus, searchTerm);
+  }, [selectedDate, selectedStatus, searchTerm, transactionData]);
 
   return (
     <>
@@ -117,8 +129,8 @@ const SectionAdminReview = ({ storeId }) => {
         }}
       >
         <CustomHeaderTitle
-          title={"Reviews Overview"}
-          subtitle={"Overview of Customer Reviews and Feedback"}
+          title={"Transaction History"}
+          subtitle={"Complete Overview of Transaction Activities"}
         />
       </Box>
 
@@ -137,12 +149,7 @@ const SectionAdminReview = ({ storeId }) => {
         >
           <Box sx={{ display: "flex" }}>
             {/* Title */}
-            <Typography
-              variant="h6"
-              sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
-            >
-              All Feedback and Reviews
-            </Typography>
+            <CustomHeaderTitleTable title={"All Transaction History"} />
           </Box>
 
           {/* Filter by search*/}
@@ -161,7 +168,7 @@ const SectionAdminReview = ({ storeId }) => {
             <CustomSearch
               searchTerm={searchTerm}
               handleSearchChange={handleSearchChange}
-              placeholder={"Search name or comment..."}
+              placeholder={"Search name..."}
             />
           </Box>
 
@@ -178,38 +185,11 @@ const SectionAdminReview = ({ storeId }) => {
               },
             }}
           >
-            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
-              <Select
-                value={selectedDate}
-                onChange={handleDateChange}
-                displayEmpty
-                IconComponent={KeyboardArrowDown}
-                renderValue={(selected) => {
-                  if (!selected) {
-                    return (
-                      <span style={{ color: COLORS.primary }}>
-                        Select a date
-                      </span>
-                    );
-                  }
-                  return selected;
-                }}
-                sx={{
-                  borderRadius: 2,
-                  color: COLORS.primary,
-                  "& .MuiSvgIcon-root": {
-                    color: COLORS.primary,
-                  },
-                }}
-              >
-                {/* Creation date options */}
-                {dateOptions.map((date) => (
-                  <MenuItem key={date} value={date}>
-                    {date}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <CustomCreatedDate
+              selectedDate={selectedDate}
+              handleDateChange={handleDateChange}
+              dateOptions={dateOptions}
+            />
           </Box>
 
           {/* Filter Rating */}
@@ -248,7 +228,7 @@ const SectionAdminReview = ({ storeId }) => {
                 setSearchTerm("");
                 setSelectedDate("");
                 setSelectedStatus("");
-                setFilteredData(reviewData);
+                setFilteredData(transactionData);
               }}
               sx={{
                 width: {
@@ -271,7 +251,7 @@ const SectionAdminReview = ({ storeId }) => {
         </Box>
 
         <Box>
-          <CustomReviewsTable
+          <CustomTransactionTable
             tableData={filteredData}
             loading={loading}
             refreshData={handleRefreshData}
@@ -284,41 +264,4 @@ const SectionAdminReview = ({ storeId }) => {
   );
 };
 
-export default SectionAdminReview;
-
-{
-  /* <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
-              <Select
-                value={selectedStatus}
-                onChange={handleStatusChange}
-                displayEmpty
-                IconComponent={KeyboardArrowDown}
-                renderValue={(selected) => {
-                  if (!selected) {
-                    return (
-                      <span style={{ color: COLORS.primary }}>
-                        Select rating
-                      </span>
-                    );
-                  }
-                  return selected;
-                }}
-                sx={{
-                  borderRadius: 2,
-                  color: COLORS.primary,
-                  "& .MuiSvgIcon-root": {
-                    color: COLORS.primary,
-                  },
-                }}
-              >
-                <MenuItem value="">
-                  <em>All Ratings</em>
-                </MenuItem>
-                <MenuItem value={1}>1 Star</MenuItem>
-                <MenuItem value={2}>2 Stars</MenuItem>
-                <MenuItem value={3}>3 Stars</MenuItem>
-                <MenuItem value={4}>4 Stars</MenuItem>
-                <MenuItem value={5}>5 Stars</MenuItem>
-              </Select>
-            </FormControl> */
-}
+export default SectionAdminTransaction;

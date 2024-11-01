@@ -414,6 +414,34 @@ export const getReviews = {
   },
 };
 
+//#TRANSACTON HISTORY SECTION
+export const getTransactionHistory = {
+  viewTransctionHistory: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/transaction-history/${id}/get-transaction-history`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+//#ACTIVITY LOG SECTION
+export const getActivityLog = {
+  viewActivityLog: async () => {
+    try {
+      const response = await axiosPrivate.get(`/activity-log/get-activity-log`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 // #SETTINGS SECTION
 //  <----- Service Type Section ----->
 export const getServiceTypeAndStore = {

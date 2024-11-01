@@ -32,14 +32,17 @@ export { default as ItemCategory } from "./admin/Inventory/ItemCategory";
 export { default as User } from "./admin/User/User";
 export { default as AddUser } from "./admin/User/AddUser";
 
-// Section Settings
-export { default as Settings } from "./admin/Settings/Settings";
-
 // Section Inbox
 export { default as Inbox } from "./admin/Inbox/Inbox";
 
 // Section Reviews
 export { default as Reviews } from "./admin/Review/Reviews";
+
+// Section Transaction History
+export { default as TransactionHistory } from "./admin/Transaction/TransactionHistory";
+
+// Section Settings
+export { default as Settings } from "./admin/Settings/Settings";
 
 // Section Delivery Man
 
