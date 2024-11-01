@@ -1,47 +1,3 @@
-// export const handleGetTransactionHistory = async (req, res, db) => {
-//   const { id } = req.params; // store id
-
-//   try {
-//     const query = `
-//         SELECT
-//             t.id AS transaction_id,
-//             t.assignment_id,
-//             t.transaction_code,
-//             t.total_amount,
-//             t.payment_method,
-//             t.status AS transaction_status,
-//             t.created_at,
-//             t.updated_at,
-//             sr.customer_fullname,
-//             sr.customer_type
-//         FROM
-//         Transactions t
-//         LEFT JOIN
-//             Service_Request sr ON t.assignment_id = sr.id
-//         WHERE
-//             sr.store_id = ?
-//         ORDER BY
-//         CASE
-//             WHEN t.status = 'Pending' THEN 0
-//             WHEN t.status = 'Completed' THEN 1
-//             ELSE 2
-//         END;
-//     `;
-
-//     const [rows] = await db.query(query, [id]);
-//     res.status(200).json({
-//       success: true,
-//       data: rows,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching transaction history:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error",
-//     });
-//   }
-// };
-
 export const handleGetTransactionHistory = async (req, res, db) => {
   const { id } = req.params; // store id
 
@@ -133,6 +89,60 @@ export const handleGetTransactionHistory = async (req, res, db) => {
     });
   } catch (error) {
     console.error("Error fetching transaction history:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+export const handleGetTotalSalesByMonth = async (req, res, db) => {
+  const { id } = req.params; // Store's id
+
+  try {
+    // Start a transaction
+    await db.beginTransaction();
+
+    // SQL query to get total sales by month, including months with zero sales
+    const query = `
+      SELECT 
+        months.month,
+        IFNULL(SUM(t.total_amount), 0) AS sales
+      FROM 
+        (SELECT 'Jan' AS month UNION SELECT 'Feb' UNION SELECT 'Mar' UNION 
+         SELECT 'Apr' UNION SELECT 'May' UNION SELECT 'Jun' UNION 
+         SELECT 'Jul' UNION SELECT 'Aug' UNION SELECT 'Sep' UNION 
+         SELECT 'Oct' UNION SELECT 'Nov' UNION SELECT 'Dec') AS months
+      LEFT JOIN 
+        Transactions t ON DATE_FORMAT(t.created_at, '%b') = months.month 
+        AND t.store_id = ?  -- Using store_id instead of assignment_id
+      GROUP BY 
+        months.month
+      ORDER BY 
+        FIELD(months.month, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');  -- Corrected closing parenthesis
+    `;
+
+    // Execute the query using the existing connection
+    const [rows] = await db.execute(query, [id]);
+
+    // Commit the transaction if successful
+    await db.commit();
+
+    // Format the result to match your desired structure
+    const formattedData = rows.map((row) => ({
+      month: row.month,
+      sales: row.sales,
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formattedData, // Returning the formatted data
+    });
+  } catch (error) {
+    // Rollback the transaction in case of an error
+    await db.rollback();
+    console.error("Error fetching total sales by month:", error);
     res.status(500).json({
       success: false,
       message: "Server error",

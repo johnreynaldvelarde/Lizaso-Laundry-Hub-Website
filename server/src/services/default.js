@@ -101,14 +101,58 @@ export const createDefaultAdmin = async (db) => {
       const storeId = await getMainStoreId(db);
 
       if (storeId) {
-        const [roleResult] = await db.execute(
-          `INSERT INTO Roles_Permissions 
-          (role_name, can_read, can_write, can_edit, can_delete, date_created, isArchive) 
-          VALUES (?, 1, 1, 1, 1, NOW(), FALSE)`,
-          ["Administrator"]
-        );
+        const roles = [
+          {
+            role_name: "Administrator",
+            can_read: 1,
+            can_write: 1,
+            can_edit: 1,
+            can_delete: 1,
+          },
+          {
+            role_name: "Manager",
+            can_read: 1,
+            can_write: 1,
+            can_edit: 1,
+            can_delete: 1,
+          },
+          {
+            role_name: "Store Staff",
+            can_read: 1,
+            can_write: 1,
+            can_edit: 0,
+            can_delete: 0,
+          },
+          {
+            role_name: "Delivery Staff",
+            can_read: 1,
+            can_write: 0,
+            can_edit: 0,
+            can_delete: 0,
+          },
+        ];
 
-        const rolePermissionsId = roleResult.insertId;
+        let rolePermissionsId;
+
+        for (const role of roles) {
+          const [roleResult] = await db.execute(
+            `INSERT INTO Roles_Permissions 
+            (role_name, can_read, can_write, can_edit, can_delete, date_created, isArchive) 
+            VALUES (?, ?, ?, ?, ?, NOW(), FALSE)`,
+            [
+              role.role_name,
+              role.can_read,
+              role.can_write,
+              role.can_edit,
+              role.can_delete,
+            ]
+          );
+
+          // Set rolePermissionsId for the Administrator role
+          if (role.role_name === "Administrator") {
+            rolePermissionsId = roleResult.insertId;
+          }
+        }
 
         const insertAddressQuery = `
           INSERT INTO Addresses (address_line,  country, province, city, postal_code, latitude, longitude, updated_at) 

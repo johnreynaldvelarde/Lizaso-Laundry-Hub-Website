@@ -32,8 +32,10 @@ import {
   createNewTransactionWalkIn,
 } from "../../../../services/api/postApi";
 import toast from "react-hot-toast";
+import useAuth from "../../../../contexts/AuthContext";
 
 const PopWalkInTransaction = ({ open, onClose, data }) => {
+  const { userDetails } = useAuth();
   const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [serviceType, setServiceType] = useState("");
@@ -77,6 +79,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
   const handleSubmitTransactionWalkIn = async () => {
     setLoading(true);
     const data = {
+      store_id: userDetails.storeId,
       transaction_code: transactionData.transaction_id,
       assignment_id: selectedId,
       total_amount: transactionData.final_total,

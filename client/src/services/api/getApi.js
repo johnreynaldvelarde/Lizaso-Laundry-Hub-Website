@@ -429,6 +429,20 @@ export const getTransactionHistory = {
   },
 };
 
+export const getTransactionSalesByMonth = {
+  viewSalesByMonth: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/transaction-history/${id}/get-transaction-sales-by-month`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 //#ACTIVITY LOG SECTION
 export const getActivityLog = {
   viewActivityLog: async () => {

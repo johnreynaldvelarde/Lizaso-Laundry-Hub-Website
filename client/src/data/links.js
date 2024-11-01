@@ -18,6 +18,8 @@ import {
   EnvelopeSimple,
   Rss,
   Archive,
+  ReadCvLogo,
+  Pulse,
 } from "@phosphor-icons/react";
 
 const iconSize = 20; // Set your desired icon size here
@@ -85,12 +87,15 @@ export const links = [
   },
   {
     name: "Transactions History",
-    icon: React.createElement(Handshake, { weight: "duotone", size: iconSize }),
-    url: "/main/transactions",
+    icon: React.createElement(ReadCvLogo, {
+      weight: "duotone",
+      size: iconSize,
+    }),
+    url: "/main/transactions-history",
   },
   {
     name: "Activity Log",
-    icon: React.createElement(Handshake, { weight: "duotone", size: iconSize }),
+    icon: React.createElement(Pulse, { weight: "duotone", size: iconSize }),
     url: "/main/activity-log",
   },
   {

@@ -26,8 +26,10 @@ import logo from "../../../../assets/images/logo.png";
 import { transactionDate, transactionTime } from "./unit_helpers";
 import { createNewTransactionOnline } from "../../../../services/api/postApi";
 import toast from "react-hot-toast";
+import useAuth from "../../../../contexts/AuthContext";
 
 const PopOnlineTransaction = ({ open, onClose, data }) => {
+  const { userDetails } = useAuth();
   const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [serviceType, setServiceType] = useState("");
@@ -70,6 +72,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
   const handleSubmitTransactionOnline = async () => {
     setLoading(true);
     const data = {
+      store_id: userDetails.storeId,
       transaction_code: transactionData.transaction_id,
       assignment_id: selectedId,
       total_amount: transactionData.final_total,

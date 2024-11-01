@@ -41,6 +41,8 @@ export { default as Reviews } from "./admin/Review/Reviews";
 // Section Transaction History
 export { default as TransactionHistory } from "./admin/Transaction/TransactionHistory";
 
+export { default as ActivityLog } from "./admin/Activity/ActivityLog";
+
 // Section Settings
 export { default as Settings } from "./admin/Settings/Settings";
 

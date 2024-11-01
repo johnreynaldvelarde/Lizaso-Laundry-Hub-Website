@@ -40,7 +40,10 @@ import {
 } from "../services/admin/useSchedule.js";
 import { handleGetReviewsList } from "../services/admin/useReviews.js";
 import { handleGetActivityLog } from "../services/admin/useActivityLog.js";
-import { handleGetTransactionHistory } from "../services/admin/useTransaction.js";
+import {
+  handleGetTotalSalesByMonth,
+  handleGetTransactionHistory,
+} from "../services/admin/useTransaction.js";
 
 const router = express.Router();
 
@@ -333,6 +336,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetTransactionHistory(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/transaction-history/:id/get-transaction-sales-by-month",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetTotalSalesByMonth(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

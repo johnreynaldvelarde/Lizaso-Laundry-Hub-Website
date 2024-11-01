@@ -62,18 +62,24 @@ export const handleCreateUnits = async (req, res, db) => {
 
 //# CREATE NEW TRANSACTION
 export const handleTypeOnlineTransaction = async (req, res, connection) => {
-  const { assignment_id, transaction_code, total_amount, payment_method } =
-    req.body;
+  const {
+    store_id,
+    assignment_id,
+    transaction_code,
+    total_amount,
+    payment_method,
+  } = req.body;
 
   try {
     await connection.beginTransaction();
 
     const insertQuery = `
-      INSERT INTO Transactions (assignment_id, transaction_code, total_amount, payment_method, status, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+      INSERT INTO Transactions (store_id, assignment_id, transaction_code, total_amount, payment_method, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
     `;
 
     await connection.execute(insertQuery, [
+      store_id,
       assignment_id,
       transaction_code,
       total_amount,
@@ -136,18 +142,24 @@ export const handleTypeOnlineTransaction = async (req, res, connection) => {
 };
 
 export const handleTypeWalkInTransaction = async (req, res, connection) => {
-  const { assignment_id, transaction_code, total_amount, payment_method } =
-    req.body;
+  const {
+    store_id,
+    assignment_id,
+    transaction_code,
+    total_amount,
+    payment_method,
+  } = req.body;
 
   try {
     await connection.beginTransaction();
 
     const insertQuery = `
-      INSERT INTO Transactions (assignment_id, transaction_code, total_amount, payment_method, status, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, NOW(), NOW())
+      INSERT INTO Transactions (store_id, assignment_id, transaction_code, total_amount, payment_method, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
     `;
 
     await connection.execute(insertQuery, [
+      store_id,
       assignment_id,
       transaction_code,
       total_amount,

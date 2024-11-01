@@ -30,7 +30,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import SalesTrendChart from "../../../../components/common/chart/SalesTrendChart";
 
 const SectionAdminTransaction = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -66,6 +65,8 @@ const SectionAdminTransaction = ({ storeId }) => {
     fetchTransactionData();
     fetchSalesByMonthData();
   }, [fetchTransactionData, fetchSalesByMonthData]);
+
+  console.log(salesByMonthData);
 
   useEffect(() => {
     if (transactionData) {
@@ -123,7 +124,14 @@ const SectionAdminTransaction = ({ storeId }) => {
     applyFilters(selectedDate, selectedStatus, searchTerm);
   }, [selectedDate, selectedStatus, searchTerm, transactionData]);
 
-  const totalSales = 5000;
+  const totalSales = 5000; // Define your total sales here
+  const salesData = [
+    { month: "Jan", sales: 1000 },
+    { month: "Feb", sales: 1200 },
+    { month: "Mar", sales: 800 },
+    { month: "Apr", sales: 1500 },
+    { month: "May", sales: 2000 },
+  ];
 
   return (
     <>
@@ -192,7 +200,47 @@ const SectionAdminTransaction = ({ storeId }) => {
             overflow: "hidden",
           }}
         >
-          <SalesTrendChart salesByMonthData={salesByMonthData} />
+          <Paper
+            sx={{
+              borderRadius: "14px",
+              boxShadow: "none",
+              borderWidth: 1,
+              borderColor: COLORS.border,
+              height: "100%",
+            }}
+          >
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ color: COLORS.text, fontWeight: 600, px: 3, pt: 3 }}
+            >
+              Sales Trend
+            </Typography>
+            <Box sx={{ height: "300px", p: 1 }}>
+              <ResponsiveContainer>
+                <LineChart data={salesByMonthData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={COLORS.border} />
+                  {/* Customize grid color */}
+                  <XAxis dataKey="month" stroke={COLORS.primary} />
+                  {/* Customize X axis tick color */}
+                  <YAxis stroke={COLORS.primary} />
+                  {/* Customize Y axis tick color */}
+                  <Tooltip
+                    contentStyle={{ backgroundColor: COLORS.background }} // Customize tooltip background
+                    labelStyle={{ color: COLORS.secondary }} // Customize tooltip label color
+                  />
+                  <Legend wrapperStyle={{ color: COLORS.text }} />{" "}
+                  {/* Customize legend text color */}
+                  <Line
+                    type="monotone"
+                    dataKey="sales"
+                    stroke={COLORS.secondary}
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </Box>
+          </Paper>
         </Box>
       </Box>
 
@@ -328,43 +376,3 @@ const SectionAdminTransaction = ({ storeId }) => {
 };
 
 export default SectionAdminTransaction;
-
-{
-  /* <Paper
-            sx={{
-              borderRadius: "14px",
-              boxShadow: "none",
-              borderWidth: 1,
-              borderColor: COLORS.border,
-              height: "100%",
-            }}
-          >
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ color: COLORS.text, fontWeight: 600, px: 3, pt: 3 }}
-            >
-              Sales Trend
-            </Typography>
-            <Box sx={{ height: "300px", p: 1 }}>
-              <ResponsiveContainer>
-                <LineChart data={salesByMonthData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={COLORS.border} />
-                  <XAxis dataKey="month" stroke={COLORS.primary} />
-                  <YAxis stroke={COLORS.primary} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: COLORS.background }} // Customize tooltip background
-                    labelStyle={{ color: COLORS.secondary }} // Customize tooltip label color
-                  />
-                  <Legend wrapperStyle={{ color: COLORS.text }} />{" "}
-                  <Line
-                    type="monotone"
-                    dataKey="sales"
-                    stroke={COLORS.secondary}
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </Box>
-          </Paper> */
-}
