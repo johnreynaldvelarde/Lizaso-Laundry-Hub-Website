@@ -20,6 +20,7 @@ import {
   Archive,
   ReadCvLogo,
   Pulse,
+  CellSignalHigh,
 } from "@phosphor-icons/react";
 
 const iconSize = 20; // Set your desired icon size here
@@ -65,7 +66,7 @@ export const links = [
     url: "/main/all-user",
   },
   {
-    name: "Customers",
+    name: "View Customers",
     icon: React.createElement(User, { weight: "duotone", size: iconSize }),
     url: "/main/customers",
   },
@@ -96,6 +97,14 @@ export const links = [
   {
     name: "Activity Log",
     icon: React.createElement(Pulse, { weight: "duotone", size: iconSize }),
+    url: "/main/activity-log",
+  },
+  {
+    name: "Services Management",
+    icon: React.createElement(CellSignalHigh, {
+      weight: "duotone",
+      size: iconSize,
+    }),
     url: "/main/activity-log",
   },
   {

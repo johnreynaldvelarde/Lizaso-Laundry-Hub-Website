@@ -62,6 +62,7 @@ import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 
 const SectionAdminUser = () => {
   const { userDetails } = useAuth();
+  // const [users, setUsers] = useState([]);
   const [selectedStore, setSelectedStore] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -85,6 +86,32 @@ const SectionAdminUser = () => {
   const fetchUsersData = useCallback(() => {
     fetchUsers(viewAdminBasedUser.getAdminBasedUser, userDetails.storeId);
   }, [fetchUsers, userDetails?.storeId]);
+
+  // For fetching data of users
+  // const fetchAdminBasedUser = async () => {
+  //   if (!userDetails?.userId) return;
+
+  //   try {
+  //     const response = await viewAdminBasedUser.getAdminBasedUser(
+  //       userDetails.storeId
+  //     );
+
+  //     if (response) {
+  //       const userData =
+  //         response.data && typeof response.data === "object"
+  //           ? Array.isArray(response.data)
+  //             ? response.data
+  //             : [response.data]
+  //           : [];
+
+  //       setUsers(userData);
+  //     } else {
+  //       console.error("Unexpected response format:", response);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
   useEffect(() => {
     fetchRolesData();
@@ -231,6 +258,10 @@ const SectionAdminUser = () => {
       ? users.filter((user) => user.store_id === selectedStore)
       : []; // Default to an empty array if no selected store
 
+  // const filteredUsers = selectedStore
+  //   ? users.filter((user) => user.store_id === selectedStore)
+  //   : [];
+
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = filteredUsers.map((user) => user.user_id);
@@ -251,7 +282,9 @@ const SectionAdminUser = () => {
     setPage(0);
   };
 
+  // FOR DELETE ACTIONS
   const [selectedUser, setSelectedUser] = useState(null);
+  // const [selectedRole, setSelectedRoles] = useState(null);
 
   const [isDialogOpenForMultiple, setIsDialogOpenForMultiple] = useState(false);
 
@@ -273,6 +306,7 @@ const SectionAdminUser = () => {
     }
   };
 
+  // Close confirmation dialog
   const closeDialogForMultiple = () => {
     setIsDialogOpenForMultiple(false);
   };
@@ -318,6 +352,26 @@ const SectionAdminUser = () => {
     closeDialogForMultiple();
   };
 
+  // const handleRemoveRole = async (id) => {
+  //   if (id) {
+  //     console.log(id);
+  //     try {
+  //       const response = await updateRemoveRole.putRemoveRole(id);
+  //       if (response.success) {
+  //         handleCloseMenu();
+  //         toast.success(response.message);
+  //       } else {
+  //         handleCloseMenu();
+  //         toast.error(response.message);
+  //       }
+  //     } catch (error) {
+  //       toast.error(`Error: ${error.message || "Something went wrong"}`);
+  //     }
+  //   } else {
+  //     toast.error("Error Action!!!");
+  //   }
+  // };
+
   const handleDeleteUser = async (id) => {
     if (id) {
       try {
@@ -358,8 +412,19 @@ const SectionAdminUser = () => {
           title={"User Management"}
           subtitle={" Role Management & Permission"}
         />
+        <CustomAddButton
+          label={"Add new role"}
+          onClick={handleOpenPopupAddRole}
+          icon={
+            <PlusCircle
+              size={24}
+              color={COLORS.white}
+              weight="duotone"
+              sx={{ display: { xs: "none", sm: "inline" } }}
+            />
+          }
+        />
       </Box>
-
       {/* List of roles */}
       <Box
         sx={{
@@ -469,6 +534,13 @@ const SectionAdminUser = () => {
               <ManageAccountsIcon sx={{ marginRight: "5px" }} />
               Edit Role
             </Button>
+
+            {/* <IconButton
+              onClick={(event) => handleMenuClick(event, role)}
+              sx={{ position: "absolute", top: "16px", right: "16px" }}
+            >
+              <MoreVert />
+            </IconButton> */}
           </Box>
         ))}
       </Box>
@@ -1016,6 +1088,27 @@ const SectionAdminUser = () => {
         onConfirm={handleConfirmMultipleDelete}
       />
 
+      {/* Menu Section */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        {/* <MenuItem
+          onClick={() => handleOpenPopupRenameRole(selectedRole)}
+          sx={{ fontSize: "14px" }}
+        >
+          Rename
+        </MenuItem> */}
+        {/* <MenuItem
+          onClick={() => handleRemoveRole(selectedRole.id)}
+          sx={{ fontSize: "14px", color: COLORS.error }}
+        >
+          Remove Role
+        </MenuItem> */}
+      </Menu>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={2000}

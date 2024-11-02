@@ -108,22 +108,6 @@ const A_PopupRenameRole = ({ open, onClose, roleData }) => {
         subtitle={"Please provide the role details below"}
         onClose={onClose}
       />
-      <DialogTitle className="flex flex-col">
-        <div className="flex justify-between items-center mt-2">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg font-semibold">Rename Role Name</span>
-          </div>
-          <IconButton
-            onClick={onClose}
-            className="text-[#5787C8] hover:text-[#5787C8]"
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Typography variant="body2" color="textSecondary" className="mt-1">
-          Please provide the role details below.
-        </Typography>
-      </DialogTitle>
       <DialogContent>
         {/* Role Name */}
         <TextField

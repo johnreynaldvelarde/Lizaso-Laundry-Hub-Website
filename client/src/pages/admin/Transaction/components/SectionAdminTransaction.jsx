@@ -5,12 +5,9 @@ import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import { COLORS } from "../../../../constants/color";
 import usePopup from "../../../../hooks/common/usePopup";
 import useFetchData from "../../../../hooks/common/useFetchData";
+import { dateOptions } from "../../../../data/schedule/serviceStatus";
 import {
-  dateOptions,
-  statusOptions,
-} from "../../../../data/schedule/serviceStatus";
-import {
-  getReviews,
+  getCustomerTypeStats,
   getTransactionHistory,
   getTransactionSalesByMonth,
 } from "../../../../services/api/getApi";
@@ -20,17 +17,8 @@ import CustomHeaderTitleTable from "../../../../components/common/CustomHeaderTi
 import CustomCreatedDate from "../../../../components/common/table/filter/CustomCreatedDate";
 import CustomTransactionTable from "../../../../components/common/table/CustomTransactionTable";
 import CustomPaymentStatus from "../../../../components/common/table/filter/CustomPaymentStatus";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import SalesTrendChart from "../../../../components/common/chart/SalesTrendChart";
+import CustomPieChart from "../../../../components/common/chart/CustomPieChart";
 
 const SectionAdminTransaction = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -40,6 +28,8 @@ const SectionAdminTransaction = ({ storeId }) => {
   const [filteredData, setFilteredData] = useState([]);
   const { data: transactionData, fetchData: fetchTransaction } = useFetchData();
   const { data: salesByMonthData, fetchData: fetchSalesByMonth } =
+    useFetchData();
+  const { data: customerTypeData, fetchData: fetchCustomerType } =
     useFetchData();
   const [loading, setLoading] = useState(true);
   const statusOptions = ["Completed", "Pending"];
@@ -62,10 +52,17 @@ const SectionAdminTransaction = ({ storeId }) => {
     setLoading(false);
   }, [fetchSalesByMonth, storeId]);
 
+  const fetchCustomerTypeData = useCallback(async () => {
+    setLoading(true);
+    await fetchCustomerType(getCustomerTypeStats.viewCustomerStats, storeId);
+    setLoading(false);
+  }, [fetchCustomerType, storeId]);
+
   useEffect(() => {
     fetchTransactionData();
     fetchSalesByMonthData();
-  }, [fetchTransactionData, fetchSalesByMonthData]);
+    fetchCustomerTypeData();
+  }, [fetchTransactionData, fetchSalesByMonthData, fetchCustomerTypeData]);
 
   useEffect(() => {
     if (transactionData) {
@@ -119,12 +116,6 @@ const SectionAdminTransaction = ({ storeId }) => {
     applyFilters(selectedDate, selectedStatus, searchTerm);
   }, [selectedDate, selectedStatus, searchTerm, transactionData]);
 
-  useEffect(() => {
-    applyFilters(selectedDate, selectedStatus, searchTerm);
-  }, [selectedDate, selectedStatus, searchTerm, transactionData]);
-
-  const totalSales = 5000;
-
   return (
     <>
       {/* Header */}
@@ -143,50 +134,33 @@ const SectionAdminTransaction = ({ storeId }) => {
       </Box>
 
       {/* Sub Header */}
-      <Box display="flex" sx={{ width: "100%", gap: 2 }}>
-        {/* Total Sales Paper */}
-        <Paper
+      <Box
+        display="flex"
+        sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
+      >
+        <Box
           sx={{
-            borderRadius: "14px",
-            boxShadow: "none",
-            borderWidth: 1,
-            borderColor: COLORS.border,
             width: {
               xs: "100%",
-              sm: "calc(50% - 16px)",
-              md: "calc(40% - 16px)",
-              lg: "calc(35% - 16px)",
+              sm: "calc(50% - 8px)",
+              md: "calc(60% - 8px)",
+              lg: "calc(35% - 8px)",
             },
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            px: 3,
-            py: 3,
+            borderRadius: "14px",
+            overflow: "hidden",
           }}
         >
-          <Typography
-            variant="h5"
-            gutterBottom
-            sx={{ color: COLORS.text, fontWeight: 600 }}
-          >
-            Total Sales
-          </Typography>
-          <Typography
-            variant="h4"
-            sx={{ color: COLORS.success, fontWeight: 600 }}
-          >
-            ${totalSales}
-          </Typography>
-        </Paper>
+          <CustomPieChart data={customerTypeData} />
+        </Box>
 
         {/* Sales Graph */}
         <Box
           sx={{
             width: {
               xs: "100%",
-              sm: "calc(50% - 16px)",
-              md: "calc(60% - 16px)",
-              lg: "calc(65% - 16px)",
+              sm: "calc(50% - 8px)",
+              md: "calc(40% - 8px)",
+              lg: "calc(65% - 8px)",
             },
             borderRadius: "14px",
             overflow: "hidden",
@@ -254,7 +228,7 @@ const SectionAdminTransaction = ({ storeId }) => {
             />
           </Box>
 
-          {/* Filter Rating */}
+          {/* Filter Status */}
           <Box
             sx={{
               width: {
@@ -321,50 +295,8 @@ const SectionAdminTransaction = ({ storeId }) => {
           />
         </Box>
       </Box>
-
-      {/* Popup */}
     </>
   );
 };
 
 export default SectionAdminTransaction;
-
-{
-  /* <Paper
-            sx={{
-              borderRadius: "14px",
-              boxShadow: "none",
-              borderWidth: 1,
-              borderColor: COLORS.border,
-              height: "100%",
-            }}
-          >
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ color: COLORS.text, fontWeight: 600, px: 3, pt: 3 }}
-            >
-              Sales Trend
-            </Typography>
-            <Box sx={{ height: "300px", p: 1 }}>
-              <ResponsiveContainer>
-                <LineChart data={salesByMonthData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={COLORS.border} />
-                  <XAxis dataKey="month" stroke={COLORS.primary} />
-                  <YAxis stroke={COLORS.primary} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: COLORS.background }} // Customize tooltip background
-                    labelStyle={{ color: COLORS.secondary }} // Customize tooltip label color
-                  />
-                  <Legend wrapperStyle={{ color: COLORS.text }} />{" "}
-                  <Line
-                    type="monotone"
-                    dataKey="sales"
-                    stroke={COLORS.secondary}
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </Box>
-          </Paper> */
-}

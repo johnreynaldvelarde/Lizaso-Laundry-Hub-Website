@@ -188,7 +188,7 @@ const CustomInventoryTable = ({
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <StatusCellTable status={data.isStatus} />
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}>
                       <Tooltip title="Restock Item" arrow>
                         <OutlinedIconButton
                           onClick={() => {

@@ -12,7 +12,7 @@ const CustomSearch = ({ searchTerm, handleSearchChange, placeholder }) => {
       onChange={handleSearchChange}
       sx={{
         width: "100%",
-        maxWidth: { xs: "100%", sm: "100%", md: "200px", lg: "400px" },
+        maxWidth: { xs: "100%", sm: "100%", md: "200px", lg: "500px" },
         mb: { xs: 0, sm: 0, md: 0 },
         "& .MuiInputBase-root": {
           fontSize: { xs: "0.875rem", sm: "1rem", md: "1rem" },

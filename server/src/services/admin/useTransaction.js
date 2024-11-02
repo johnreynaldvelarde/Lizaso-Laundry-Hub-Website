@@ -149,3 +149,55 @@ export const handleGetTotalSalesByMonth = async (req, res, db) => {
     });
   }
 };
+
+export const handleGetCustomerTypeStats = async (req, res, db) => {
+  const { id } = req.params;
+
+  try {
+    await db.beginTransaction();
+
+    const query = `
+      SELECT 
+        sr.customer_type,
+        COUNT(t.id) AS count
+      FROM 
+        Service_Request sr
+      LEFT JOIN 
+        Transactions t ON sr.id = t.assignment_id
+      WHERE 
+        sr.store_id = ?
+        AND sr.customer_type IN ('Online', 'Walk-in') 
+      GROUP BY 
+        sr.customer_type
+    `;
+
+    const [rows] = await db.execute(query, [id]);
+
+    await db.commit();
+
+    const customData = [
+      { name: "Online", value: 0 },
+      { name: "Walk-in", value: 0 },
+    ];
+
+    rows.forEach((row) => {
+      if (row.customer_type === "Online") {
+        customData[0].value = row.count;
+      } else if (row.customer_type === "Walk-In") {
+        customData[1].value = row.count;
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      data: customData,
+    });
+  } catch (error) {
+    await db.rollback();
+    console.error("Err:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

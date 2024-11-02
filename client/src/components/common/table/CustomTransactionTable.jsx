@@ -74,7 +74,7 @@ const CustomTransactionTable = ({ tableData, loading }) => {
               // Skeleton loading state
               Array.from(new Array(rowsPerPage)).map((_, index) => (
                 <TableRow key={index}>
-                  {Array.from(new Array(7)).map((_, colIndex) => (
+                  {Array.from(new Array(8)).map((_, colIndex) => (
                     <TableCell key={colIndex}>
                       <Skeleton variant="rectangular" height={30} />
                     </TableCell>
@@ -84,7 +84,7 @@ const CustomTransactionTable = ({ tableData, loading }) => {
             ) : tableData.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   align="center"
                   sx={{ paddingY: 5, paddingX: 1 }}
                 >

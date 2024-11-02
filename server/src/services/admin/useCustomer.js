@@ -37,19 +37,92 @@ export const handleCustomerServiceRequest = async (req, res, connection) => {
   }
 };
 
-// export const handleGetCustomerRequest = async (req, res, connection) => {
-//   const { id } = req.params;
+export const handleGetCustomerList = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        ua.id AS customer_id,
+        ua.username,
+        ua.email,
+        ua.mobile_number,
+        ua.first_name,
+        ua.middle_name,
+        ua.last_name,
+        ua.date_created,
+        a.address_line,
+        a.country,
+        a.province,
+        a.city,
+        a.postal_code
+      FROM 
+        User_Account ua
+      LEFT JOIN 
+        Addresses a ON ua.address_id = a.id
+      WHERE 
+        ua.store_id = ? AND ua.user_type = 'Customer' AND ua.isArchive = 0
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No customers found." });
+    }
+
+    const customers = rows.map((row) => {
+      const fullName = [row.first_name, row.middle_name, row.last_name]
+        .filter(Boolean)
+        .join(" ");
+      return {
+        customer_id: row.customer_id,
+        username: row.username,
+        email: row.email,
+        mobile_number: row.mobile_number,
+        full_name: fullName,
+        date_created: row.date_created,
+        address: {
+          address_line: row.address_line,
+          country: row.country,
+          province: row.province,
+          city: row.city,
+          postal_code: row.postal_code,
+        },
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      data: customers,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+// export const handleGetCustomerList = async (req, res, connection) => {
+//   const { id } = req.params; // store id
+
+//   console.log(id);
 
 //   try {
 //     await connection.beginTransaction();
-
+//   } catch (error) {
+//     console.error("", error);
+//     res.status(500).json({ error: "" });
 //   }
-//   catch (error) {
-//     console.error('', error);
-//     res.status(500).json({ error: '' });
-//   }
-
-// }
+// };
 
 // export const handleCustomerServiceRequest = async (req, res, connection) => {
 //   const { id } = req.params;

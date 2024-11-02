@@ -25,56 +25,71 @@ import PopAddNewCustomer from "./PopAddNewCustomer";
 import usePopup from "../../../../hooks/common/usePopup";
 import CustomScheduleTable from "../../../../components/common/table/CustomScheduleTable";
 import useFetchData from "../../../../hooks/common/useFetchData";
-import {
-  dateOptions,
-  statusOptions,
-} from "../../../../data/schedule/serviceStatus";
+import { dateOptions } from "../../../../data/schedule/serviceStatus";
 import CustomCustomerTable from "../../../../components/common/table/CustomCustomerTable";
+import CustomHeaderTitleTable from "../../../../components/common/CustomHeaderTitleTable";
+import CustomSearch from "../../../../components/common/table/filter/CustomSearch";
+import CustomCreatedDate from "../../../../components/common/table/filter/CustomCreatedDate";
+import { getCustomerList } from "../../../../services/api/getApi";
+import { parseISO } from "date-fns";
+import { checkDateMatch } from "../../../../utils/method";
 
 const SectionAdminCustomers = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  const { data: scheduleData, fetchData: fetchSchedule } = useFetchData();
+  const { data: customerListData, fetchData: fetchCustomerList } =
+    useFetchData();
   const [loading, setLoading] = useState(true);
 
-  const fetchScheduleData = useCallback(async () => {
+  const fetchCustomerListData = useCallback(async () => {
     setLoading(true);
-    await fetchSchedule(
-      viewScheduleRequestByUser.getScheduleRequestByUser,
-      storeId
-    );
+    await fetchCustomerList(getCustomerList.viewCustomerList, storeId);
     setLoading(false);
-  }, [fetchSchedule, storeId]);
+  }, [fetchCustomerList, storeId]);
 
   useEffect(() => {
-    fetchScheduleData();
-  }, [fetchScheduleData]);
+    fetchCustomerListData();
+  }, [fetchCustomerListData]);
 
-  const handleStatusChange = (event) => {
-    const status = event.target.value;
-    setSelectedStatus(status);
-    applyFilters(selectedDate, status);
+  useEffect(() => {
+    if (customerListData) {
+      setFilteredData(customerListData);
+    }
+  }, [customerListData]);
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    applyFilters(selectedDate, event.target.value);
   };
 
   const handleDateChange = (event) => {
     const date = event.target.value;
     setSelectedDate(date);
-    applyFilters(date, selectedStatus);
+    applyFilters(date, searchTerm);
   };
 
-  const applyFilters = (dateOption, status) => {
-    const filtered = scheduleData.filter((item) => {
-      const requestDate = parseISO(item.request_date); // Parse the request date string into a Date object
+  const applyFilters = (dateOption, search) => {
+    const filtered = customerListData.filter((item) => {
+      const requestDate = parseISO(item.date_created);
       const isDateMatch = dateOption
         ? checkDateMatch(dateOption, requestDate)
         : true;
-      const isStatusMatch = status ? item.request_status === status : true;
-      return isDateMatch && isStatusMatch;
+
+      // Filter by search term in customer fullname
+      const isSearchMatch =
+        item.full_name.toLowerCase().includes(search.toLowerCase()) ||
+        item.username.toLowerCase().includes(search.toLowerCase());
+
+      return isDateMatch && isSearchMatch;
     });
     setFilteredData(filtered);
   };
+
+  useEffect(() => {
+    applyFilters(selectedDate, searchTerm);
+  }, [selectedDate, searchTerm, customerListData]);
 
   return (
     <>
@@ -88,7 +103,7 @@ const SectionAdminCustomers = ({ storeId }) => {
         }}
       >
         <CustomHeaderTitle
-          title={"Customer Management"}
+          title={"View Customer List"}
           subtitle={"Overview of All Customer Accounts and Activities"}
         />
         <CustomAddButton
@@ -96,6 +111,80 @@ const SectionAdminCustomers = ({ storeId }) => {
           label={"Add new customer"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
         />
+      </Box>
+
+      {/* Sub Header */}
+      <Box
+        display="flex"
+        sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
+      >
+        <Box
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "calc(50% - 8px)",
+              md: "calc(60% - 8px)",
+              lg: "calc(35% - 8px)",
+            },
+            borderRadius: "14px",
+            overflow: "hidden",
+          }}
+        >
+          <Paper
+            sx={{
+              borderRadius: "14px",
+              boxShadow: "none",
+              borderWidth: 1,
+              borderColor: COLORS.border,
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              p: 2,
+            }}
+          >
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{
+                color: COLORS.primary,
+                fontWeight: 600,
+                textAlign: "center",
+                mt: 2,
+              }}
+            >
+              Top Customers
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                maxWidth: "300px",
+                height: "300px",
+                mt: 2,
+              }}
+            ></Box>
+          </Paper>
+          {/* <CustomPieChart data={customerTypeData} /> */}
+        </Box>
+
+        {/* Sales Graph */}
+        <Box
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "calc(50% - 8px)",
+              md: "calc(40% - 8px)",
+              lg: "calc(65% - 8px)",
+            },
+            borderRadius: "14px",
+            overflow: "hidden",
+          }}
+        >
+          {/* <SalesTrendChart salesByMonthData={salesByMonthData} /> */}
+        </Box>
       </Box>
 
       {/* Content */}
@@ -111,63 +200,28 @@ const SectionAdminCustomers = ({ storeId }) => {
           }}
         >
           <Box sx={{ display: "flex" }}>
-            {/* Title */}
-            <Typography
-              variant="h6"
-              sx={{ marginRight: 2, color: COLORS.text, fontWeight: 600 }}
-            >
-              All Customers
-            </Typography>
+            <CustomHeaderTitleTable title={"All Customers"} />
           </Box>
 
-          {/* Filter by created date */}
           <Box
             sx={{
               width: {
-                xs: "100%", // Full width on small screens
-                sm: "auto", // Auto width on larger screens
+                xs: "100%",
+                sm: "auto",
               },
               mt: {
-                xs: 2, // Margin top on small screens
-                sm: 0, // No margin top on larger screens
+                xs: 2,
+                sm: 0,
               },
             }}
           >
-            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
-              <Select
-                value={selectedDate}
-                onChange={handleDateChange}
-                displayEmpty
-                IconComponent={KeyboardArrowDown}
-                renderValue={(selected) => {
-                  if (!selected) {
-                    return (
-                      <span style={{ color: COLORS.primary }}>
-                        Select creation date
-                      </span>
-                    );
-                  }
-                  return selected;
-                }}
-                sx={{
-                  borderRadius: 2,
-                  color: COLORS.primary,
-                  "& .MuiSvgIcon-root": {
-                    color: COLORS.primary,
-                  },
-                }}
-              >
-                {/* Creation date options */}
-                {dateOptions.map((date) => (
-                  <MenuItem key={date} value={date}>
-                    {date}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <CustomSearch
+              searchTerm={searchTerm}
+              handleSearchChange={handleSearchChange}
+              placeholder={"Search name or username..."}
+            />
           </Box>
 
-          {/* Filter Status */}
           <Box
             sx={{
               width: {
@@ -184,50 +238,36 @@ const SectionAdminCustomers = ({ storeId }) => {
               },
             }}
           >
-            <FormControl sx={{ minWidth: 200 }} size="small" fullWidth>
-              <Select
-                value={selectedStatus}
-                onChange={handleStatusChange}
-                displayEmpty
-                IconComponent={KeyboardArrowDown}
-                renderValue={(selected) => {
-                  if (!selected) {
-                    return (
-                      <span style={{ color: COLORS.primary }}>
-                        Select status
-                      </span>
-                    );
-                  }
-                  return selected;
-                }}
-                sx={{
-                  borderRadius: 2,
-                  color: COLORS.primary,
-                  "& .MuiSvgIcon-root": {
-                    color: COLORS.primary,
-                  },
-                }}
-              >
-                {/* Status options */}
-                {statusOptions.map((status) => (
-                  <MenuItem key={status} value={status}>
-                    {status}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <CustomCreatedDate
+              selectedDate={selectedDate}
+              handleDateChange={handleDateChange}
+              dateOptions={dateOptions}
+            />
           </Box>
 
           {/* Clear Filters Button */}
-          <Box sx={{ mt: { xs: 2, sm: 0 }, ml: { sm: "1px" } }}>
+          <Box
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              mt: { xs: 2, sm: 0 },
+              ml: { sm: "1px" },
+            }}
+          >
             <Button
               variant="outlined"
               onClick={() => {
+                setSearchTerm("");
                 setSelectedDate("");
-                setSelectedStatus("");
-                setFilteredData(scheduleData);
+                setFilteredData(customerListData);
               }}
               sx={{
+                width: {
+                  xs: "100%",
+                  sm: "auto",
+                },
                 textTransform: "none",
                 borderColor: COLORS.border,
                 color: COLORS.primary,

@@ -388,7 +388,22 @@ export const viewAdminBasedUser = {
   },
 };
 
-// INBOX SECTION
+//#CUSTOMER MANAGEMENT SECTION
+export const getCustomerList = {
+  viewCustomerList: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/customer-management/${id}/get-customer-list`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+//#INBOX SECTION
 export const getInbox = {
   viewInbox: async (userId) => {
     try {
@@ -434,6 +449,20 @@ export const getTransactionSalesByMonth = {
     try {
       const response = await axiosPrivate.get(
         `/transaction-history/${id}/get-transaction-sales-by-month`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+export const getCustomerTypeStats = {
+  viewCustomerStats: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/transaction-history/${id}/get-customer-types-stats`
       );
       return response.data;
     } catch (error) {

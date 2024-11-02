@@ -12,6 +12,7 @@ import {
   Typography,
   Button,
   Skeleton,
+  Tooltip,
 } from "@mui/material";
 import no_data from "../../../assets/images/no_data_table.jpg";
 import DateCell from "../../table/DateCell";
@@ -19,6 +20,14 @@ import { getStatusColor } from "./custom/method";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
+import { OutboundOutlined } from "@mui/icons-material";
+import {
+  Archive,
+  ChatCircleDots,
+  PencilLine,
+  Trash,
+} from "@phosphor-icons/react";
+import OutlinedIconButton from "../../table/OutlinedIconButton";
 
 const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
@@ -50,10 +59,10 @@ const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
             <TableRow>
               <TableCell sx={cellHeadStyles}>ID</TableCell>
               <TableCell sx={cellHeadStyles}>Name</TableCell>
+              <TableCell sx={cellHeadStyles}>Address</TableCell>
+              <TableCell sx={cellHeadStyles}>Email</TableCell>
+              <TableCell sx={cellHeadStyles}>Mobile Number</TableCell>
               <TableCell sx={cellHeadStyles}>Date Created</TableCell>
-              <TableCell sx={cellHeadStyles}>Service Type</TableCell>
-              <TableCell sx={cellHeadStyles}>Payment Method</TableCell>
-              <TableCell sx={cellHeadStyles}>Status</TableCell>
               <TableCell sx={cellHeadStyles}>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -100,7 +109,7 @@ const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((data) => (
                   <TableRow
-                    key={data.id}
+                    key={data.customer_id}
                     className="border-b"
                     role="checkbox"
                     tabIndex={-1}
@@ -110,26 +119,53 @@ const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.secondary }}
                       >
-                        #{data.id}
+                        #{data.customer_id}
                       </Typography>
                     </TableCell>
+
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <DateCell dateCreated={data.request_date} />
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "600", color: COLORS.text }}
+                      >
+                        {data.full_name}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "500", color: COLORS.subtitle }}
+                      >
+                        {data.username}
+                      </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.text }}
                       >
-                        {data.customer_fullname}
+                        {data.address.address_line}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "500", color: COLORS.subtitle }}
+                      >
+                        <span className="mr-1">{data.address.country}</span>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "400", color: COLORS.subtitle }}
+                      >
+                        <span>{data.address.province}</span>
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.primary }}
+                        sx={{
+                          fontWeight: data.email ? "600" : "400",
+                          color: data.email ? COLORS.primary : COLORS.subtitle,
+                        }}
                       >
-                        {data.service_name}
+                        {data.email || "No email available"}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
@@ -137,53 +173,47 @@ const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.secondary }}
                       >
-                        {data.payment_method}
+                        {data.mobile_number}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          paddingX: 2,
-                          paddingY: 0.5,
-                          backgroundColor: getStatusColor(data.request_status),
-                          fontWeight: "600",
-                          color: COLORS.white,
-                          borderRadius: 8,
-                          display: "inline-block",
-                        }}
-                      >
-                        {data.request_status}
-                      </Typography>
+                      <DateCell dateCreated={data.date_created} />
                     </TableCell>
-                    <TableCell>
-                      {data.request_status === "Pending Pickup" ? (
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: COLORS.secondary,
-                            textTransform: "none",
-                          }}
-                          onClick={() => {
-                            openPopup("assignTo", data.id);
-                          }}
+                    <TableCell sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}>
+                      <Tooltip title="Message Customer" arrow>
+                        <OutlinedIconButton
+                        // onClick={() => {
+                        //   openPopup("restockItem", data.inventory_id);
+                        // }}
                         >
-                          Assign To
-                        </Button>
-                      ) : data.request_status === "Ready for delivery" ? (
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: COLORS.secondary,
-                            textTransform: "none",
-                          }}
-                          onClick={() => {
-                            openPopup("assignTo", data.id);
-                          }}
+                          <ChatCircleDots
+                            color={COLORS.success}
+                            weight="duotone"
+                          />
+                        </OutlinedIconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit Customer" arrow>
+                        <OutlinedIconButton
+                        // onClick={() => {
+                        //   openPopup("editItem", data);
+                        // }}
                         >
-                          Assign To
-                        </Button>
-                      ) : null}
+                          <PencilLine
+                            color={COLORS.secondary}
+                            weight="duotone"
+                          />
+                        </OutlinedIconButton>
+                      </Tooltip>
+                      <Tooltip title="ArchiveCustomer" arrow>
+                        {/* if(userDetails.roleName == Manager) */}
+                        <OutlinedIconButton
+                        // onClick={() => {
+                        //   openPopup("removeItem", data.inventory_id);
+                        // }}
+                        >
+                          <Archive color={COLORS.error} weight="duotone" />
+                        </OutlinedIconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))

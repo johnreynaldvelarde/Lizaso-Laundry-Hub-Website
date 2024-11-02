@@ -41,9 +41,11 @@ import {
 import { handleGetReviewsList } from "../services/admin/useReviews.js";
 import { handleGetActivityLog } from "../services/admin/useActivityLog.js";
 import {
+  handleGetCustomerTypeStats,
   handleGetTotalSalesByMonth,
   handleGetTransactionHistory,
 } from "../services/admin/useTransaction.js";
+import { handleGetCustomerList } from "../services/admin/useCustomer.js";
 
 const router = express.Router();
 
@@ -295,7 +297,19 @@ router.get(
   })
 );
 
-// INBOX SECTION ADMIN AND MANAGER
+// #CUSTOMER MANAGEMENT SECTION
+router.get(
+  "/customer-management/:id/get-customer-list",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetCustomerList(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #INBOX SECTION ADMIN AND MANAGER
 router.get(
   "/inbox/:id/get-inbox",
   withDatabaseConnection(async (req, res, connection) => {
@@ -347,6 +361,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetTotalSalesByMonth(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/transaction-history/:id/get-customer-types-stats",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetCustomerTypeStats(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
