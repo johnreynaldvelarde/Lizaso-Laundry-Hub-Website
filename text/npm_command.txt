@@ -101,8 +101,9 @@ npm install lottie-react
 npm install recharts
 npm install @mui/x-date-pickers @date-io/date-fns
 
-
-
+Remove-Item -Recurse -Force node_modules
+Remove-Item package-lock.json
+Remove-Item -Recurse -Force node_modules\.vite
 
 
 
