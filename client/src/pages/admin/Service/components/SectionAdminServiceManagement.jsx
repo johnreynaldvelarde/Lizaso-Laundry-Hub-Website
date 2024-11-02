@@ -14,6 +14,7 @@ import CustomCreatedDate from "../../../../components/common/table/filter/Custom
 import {
   getCustomerGrowthOverTime,
   getCustomerList,
+  getPromoList,
   getServicesTypeList,
 } from "../../../../services/api/getApi";
 import { parseISO } from "date-fns";
@@ -22,6 +23,7 @@ import CustomerGrowthChart from "../../../../components/common/chart/CustomerGro
 import CustomServicesManagement from "../../../../components/common/table/CustomServicesManagementTable";
 import CustomServicesManagementTable from "../../../../components/common/table/CustomServicesManagementTable";
 import PopAddNewServices from "./PopAddNewServices";
+import CustomServicesPromoList from "./CustomServicesPromoList";
 
 const SectionAdminServiceManagement = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -30,6 +32,7 @@ const SectionAdminServiceManagement = ({ storeId }) => {
   const [filteredData, setFilteredData] = useState([]);
   const { data: servicesListData, fetchData: fetchServicesList } =
     useFetchData();
+  const { data: promoListData, fetchData: fetchPromoList } = useFetchData();
   const [loading, setLoading] = useState(true);
 
   const fetchServicesListData = useCallback(async () => {
@@ -38,9 +41,16 @@ const SectionAdminServiceManagement = ({ storeId }) => {
     setLoading(false);
   }, [fetchServicesList, storeId]);
 
+  const fetchPromoListData = useCallback(async () => {
+    setLoading(true);
+    await fetchPromoList(getPromoList.viewPromo, storeId);
+    setLoading(false);
+  }, [fetchPromoList, storeId]);
+
   useEffect(() => {
     fetchServicesListData();
-  }, [fetchServicesListData]);
+    fetchPromoListData();
+  }, [fetchServicesListData, fetchPromoListData]);
 
   useEffect(() => {
     if (servicesListData) {
@@ -82,7 +92,56 @@ const SectionAdminServiceManagement = ({ storeId }) => {
 
   const handleRefreshData = () => {
     fetchServicesListData();
+    fetchPromoListData();
   };
+
+  const servicesPromoData = [
+    {
+      id: 1,
+      title: "Laundry Service",
+      description: "Get your laundry done with our express service.",
+      validDays: ["Monday", "Wednesday", "Friday"],
+      startDate: "2024-11-01",
+      endTime: "2024-11-10",
+      buttonText: "Learn More",
+    },
+    {
+      id: 2,
+      title: "Dry Cleaning",
+      description: "Professional dry cleaning for delicate fabrics.",
+      validDays: ["Tuesday", "Thursday"],
+      startDate: "2024-11-05",
+      endTime: "2024-11-15",
+      buttonText: "Learn More",
+    },
+    {
+      id: 3,
+      title: "Ironing Service",
+      description: "Say goodbye to wrinkles with our ironing service.",
+      validDays: ["Monday", "Thursday"],
+      startDate: "2024-11-07",
+      endTime: "2024-11-20",
+      buttonText: "Learn More",
+    },
+    {
+      id: 4,
+      title: "Specialty Cleaning",
+      description: "Unique cleaning solutions for specialty items.",
+      validDays: ["Wednesday", "Saturday"],
+      startDate: "2024-11-10",
+      endTime: "2024-11-30",
+      buttonText: "Learn More",
+    },
+    {
+      id: 5,
+      title: "Bedding Service",
+      description: "Get your bedding cleaned and refreshed.",
+      validDays: ["Friday", "Sunday"],
+      startDate: "2024-11-12",
+      endTime: "2024-11-25",
+      buttonText: "Learn More",
+    },
+  ];
 
   return (
     <>
@@ -109,6 +168,8 @@ const SectionAdminServiceManagement = ({ storeId }) => {
       </Box>
 
       {/* Sub Header */}
+      <CustomServicesPromoList servicesPromoData={promoListData} />
+
       {/* <Box
         display="flex"
         sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
@@ -257,14 +318,6 @@ const SectionAdminServiceManagement = ({ storeId }) => {
           refreshData={handleRefreshData}
         />
       )}
-
-      {/* {isOpen && popupType === "addCustomer" && (
-        <PopAddNewCustomer
-          open={isOpen}
-          onClose={closePopup}
-          refreshData={handleRefreshData}
-        />
-      )} */}
     </>
   );
 };

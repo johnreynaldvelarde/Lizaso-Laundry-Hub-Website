@@ -49,7 +49,10 @@ import {
   handleGetCustomerGrowthOverTime,
   handleGetCustomerList,
 } from "../services/admin/useCustomer.js";
-import { handleGetServiceTypeList } from "../services/admin/useServices.js";
+import {
+  handleGetServicePromoList,
+  handleGetServiceTypeList,
+} from "../services/admin/useServices.js";
 
 const router = express.Router();
 
@@ -365,6 +368,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetServiceTypeList(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/services-management/:id/get-services-promo-list",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetServicePromoList(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

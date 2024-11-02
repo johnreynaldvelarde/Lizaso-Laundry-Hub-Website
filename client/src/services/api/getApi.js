@@ -458,6 +458,20 @@ export const getServicesTypeList = {
   },
 };
 
+export const getPromoList = {
+  viewPromo: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/services-management/${id}/get-services-promo-list`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 //#TRANSACTON HISTORY SECTION
 export const getTransactionHistory = {
   viewTransctionHistory: async (id) => {

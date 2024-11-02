@@ -86,3 +86,46 @@ export const handleGetServiceTypeList = async (req, res, connection) => {
     });
   }
 };
+
+export const handleGetServicePromoList = async (req, res, connection) => {
+  const { id } = req.params; // store id
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+        sp.id AS promo_id,
+        sp.service_id,
+        sp.discount_price,
+        sp.valid_days,
+        sp.start_date,
+        sp.end_date,
+        CASE 
+            WHEN sp.isActive = 1 THEN 'active'
+            ELSE 'inactive' 
+        END AS promo_status,
+        st.service_name,
+        st.default_price
+      FROM Service_Promo AS sp
+      INNER JOIN Service_Type AS st ON sp.service_id = st.id
+      WHERE st.store_id = ? AND sp.isArchive = 0;
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows, // Return the retrieved service promo data
+    });
+  } catch (error) {
+    await connection.rollback(); // Rollback in case of an error
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
