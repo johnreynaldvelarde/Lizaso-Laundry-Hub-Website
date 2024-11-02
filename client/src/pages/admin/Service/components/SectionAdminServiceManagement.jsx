@@ -21,6 +21,7 @@ import { checkDateMatch } from "../../../../utils/method";
 import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
 import CustomServicesManagement from "../../../../components/common/table/CustomServicesManagementTable";
 import CustomServicesManagementTable from "../../../../components/common/table/CustomServicesManagementTable";
+import PopAddNewServices from "./PopAddNewServices";
 
 const SectionAdminServiceManagement = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -46,8 +47,6 @@ const SectionAdminServiceManagement = ({ storeId }) => {
       setFilteredData(servicesListData);
     }
   }, [servicesListData]);
-
-  console.log(servicesListData);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -102,11 +101,11 @@ const SectionAdminServiceManagement = ({ storeId }) => {
             "Overview of Laundry Services with Custom Promotional Offers"
           }
         />
-        <CustomAddButton
+        {/* <CustomAddButton
           onClick={() => openPopup("addCustomer")}
           label={"Add new customer"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
-        />
+        /> */}
       </Box>
 
       {/* Sub Header */}
@@ -232,7 +231,7 @@ const SectionAdminServiceManagement = ({ storeId }) => {
             }}
           >
             <CustomAddButton
-              onClick={() => openPopup("addItem")}
+              onClick={() => openPopup("addServices")}
               label={"Add new services"}
               icon={
                 <PlusCircle size={24} color={COLORS.white} weight="duotone" />
@@ -251,6 +250,14 @@ const SectionAdminServiceManagement = ({ storeId }) => {
       </Box>
 
       {/* Popup */}
+      {isOpen && popupType === "addServices" && (
+        <PopAddNewServices
+          open={isOpen}
+          onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
+      )}
+
       {/* {isOpen && popupType === "addCustomer" && (
         <PopAddNewCustomer
           open={isOpen}

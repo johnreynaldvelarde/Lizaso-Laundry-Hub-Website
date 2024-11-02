@@ -10,27 +10,23 @@ import {
   TablePagination,
   Box,
   Typography,
-  Button,
   Skeleton,
   Tooltip,
 } from "@mui/material";
 import no_data from "../../../assets/images/no_data_table.jpg";
 import DateCell from "../../table/DateCell";
-import { getStatusColor } from "./custom/method";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
-import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
-import { OutboundOutlined } from "@mui/icons-material";
-import { Archive, ChatCircleDots, PencilLine } from "@phosphor-icons/react";
+import { Trash, PencilLine, StackPlus, Tag } from "@phosphor-icons/react";
 import OutlinedIconButton from "../../table/OutlinedIconButton";
 import useAuth from "../../../contexts/AuthContext";
-import PopMessageCustomer from "../../../pages/admin/Customers/components/PopMessageCustomer";
+import PopEditServices from "../../../pages/admin/Service/components/PopEditServices";
+import PopAddPromo from "../../../pages/admin/Service/components/PopAddPromo";
 
 const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
   const { userDetails } = useAuth;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selectedName, setSelectName] = useState("");
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
 
   const handleChangePage = (event, newPage) => {
@@ -133,7 +129,7 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: "500", color: COLORS.subtitle }}
+                        sx={{ fontWeight: "400", color: COLORS.subtitle }}
                       >
                         {data.description || "No description yet"}
                       </Typography>
@@ -141,7 +137,7 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.secondary }}
+                        sx={{ fontWeight: "600", color: COLORS.error }}
                       >
                         ₱ {data.default_price}
                       </Typography>
@@ -158,21 +154,35 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                       </Typography>
                     </TableCell>
 
-                    <TableCell
-                      align="center"
-                      sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}
-                    >
-                      <Tooltip title="Message Customer" arrow>
+                    <TableCell sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}>
+                      <Tooltip title="Add Promo" arrow>
                         <OutlinedIconButton
                           onClick={() => {
-                            openPopup("messageCustomer", data.id);
-                            setSelectName(data.full_name);
+                            openPopup("addPromo", data.id);
                           }}
                         >
-                          <ChatCircleDots
-                            color={COLORS.success}
+                          <Tag color={COLORS.success} weight="duotone" />
+                        </OutlinedIconButton>
+                      </Tooltip>
+                      <Tooltip title="Edit Services" arrow>
+                        <OutlinedIconButton
+                          onClick={() => {
+                            openPopup("editService", data);
+                          }}
+                        >
+                          <PencilLine
+                            color={COLORS.secondary}
                             weight="duotone"
                           />
+                        </OutlinedIconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Services" arrow>
+                        <OutlinedIconButton
+                          onClick={() => {
+                            openPopup("removeService", data.id);
+                          }}
+                        >
+                          <Trash color={COLORS.error} weight="duotone" />
                         </OutlinedIconButton>
                       </Tooltip>
                     </TableCell>
@@ -195,12 +205,20 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
       />
 
       {/* Popup */}
-      {isOpen && popupType === "messageCustomer" && (
-        <PopMessageCustomer
+      {isOpen && popupType === "addPromo" && (
+        <PopAddPromo
           open={isOpen}
           onClose={closePopup}
-          id={popupData}
-          name={selectedName}
+          addData={popupData}
+          refreshData={refreshData}
+        />
+      )}
+
+      {isOpen && popupType === "editService" && (
+        <PopEditServices
+          open={isOpen}
+          onClose={closePopup}
+          editData={popupData}
           refreshData={refreshData}
         />
       )}
