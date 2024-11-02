@@ -12,7 +12,10 @@ import {
   handleCreateNewItem,
   handleCreateReuseItem,
 } from "../services/admin/useInventory.js";
-import { handleCustomerServiceRequest } from "../services/admin/useCustomer.js";
+import {
+  handleCustomerServiceRequest,
+  handleRegisterCustomerModule,
+} from "../services/admin/useCustomer.js";
 import { getPool } from "../db/dbConfig.js";
 import { handleSetNewServiceType } from "../services/admin/useSettings.js";
 import {
@@ -134,7 +137,7 @@ router.post(
   })
 );
 
-// USER MANAGEMENT SECTION
+// #USER MANAGEMENT SECTION
 // #For role and permissions
 router.post(
   "/usermanage/:id/set-role-permisions",
@@ -153,6 +156,18 @@ router.post(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleAdminBasedSetNewUser(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//#VIEW CUSTOMER SECTION
+router.post(
+  "/customer-management/set-new-customer-account",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleRegisterCustomerModule(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

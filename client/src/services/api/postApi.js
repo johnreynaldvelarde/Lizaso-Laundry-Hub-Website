@@ -6,7 +6,7 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// UNIT MONITORED SECTION
+// #UNIT MONITORED SECTION
 export const createUnit = {
   setUnit: async (data) => {
     try {
@@ -81,7 +81,7 @@ export const createNewTransactionWalkIn = {
   },
 };
 
-// STORE SECTION
+// #STORE SECTION
 export const createNewStore = {
   setNewStore: async (data) => {
     try {
@@ -115,7 +115,7 @@ export const createStore = {
   },
 };
 
-// INVENTORY SECTION
+// #INVENTORY SECTION
 export const createNewItem = {
   setNewItem: async (data) => {
     try {
@@ -158,7 +158,7 @@ export const createReuseItem = {
   },
 };
 
-// USER MANAGEMENT SECTION
+// #USER MANAGEMENT SECTION
 export const createNewRoleAndPermissions = {
   setRoleAndPermissons: async (userId, data) => {
     try {
@@ -178,6 +178,21 @@ export const createAdminBasedNewUser = {
     try {
       const response = await axiosPrivate.post(
         `/usermanage/set-new-user`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+// #VIEW CUSTOMER SECTION
+export const createNewCustomerAccount = {
+  setCustomerAccount: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/customer-management/set-new-customer-account`,
         data
       );
       return response.data;

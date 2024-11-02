@@ -46,15 +46,9 @@ export const registerService = {
   register: async (data) => {
     try {
       const response = await axiosPrivate.post("/register", data);
-      const { success, message, redirectUrl } = response.data;
-
-      if (success) {
-        return { success, message, redirectUrl };
-      } else {
-        throw new Error(message || "Registration failed.");
-      }
+      return response.data;
     } catch (error) {
-      throw handleError(error);
+      throw error;
     }
   },
 };
@@ -70,3 +64,21 @@ export const checkUsername = {
     }
   },
 };
+
+// export const registerService = {
+//   register: async (data) => {
+//     try {
+//       const response = await axiosPrivate.post("/register", data);
+//       return response.data;
+//       // const { success, message, redirectUrl } = response.data;
+
+//       // if (success) {
+//       //   return { success, message, redirectUrl };
+//       // } else {
+//       //   throw new Error(message || "Registration failed.");
+//       // }
+//     } catch (error) {
+//       throw error;
+//     }
+//   },
+// };

@@ -91,6 +91,10 @@ const SectionAdminCustomers = ({ storeId }) => {
     applyFilters(selectedDate, searchTerm);
   }, [selectedDate, searchTerm, customerListData]);
 
+  const handleRefreshData = () => {
+    fetchCustomerListData();
+  };
+
   return (
     <>
       {/* Header */}
@@ -287,14 +291,18 @@ const SectionAdminCustomers = ({ storeId }) => {
           <CustomCustomerTable
             tableData={filteredData}
             loading={loading}
-            // refreshData={handleRefreshData}
+            refreshData={handleRefreshData}
           />
         </Box>
       </Box>
 
       {/* Popup */}
       {isOpen && popupType === "addCustomer" && (
-        <PopAddNewCustomer open={isOpen} onClose={closePopup} />
+        <PopAddNewCustomer
+          open={isOpen}
+          onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
       )}
     </>
   );

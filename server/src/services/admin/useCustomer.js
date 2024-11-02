@@ -1,3 +1,123 @@
+import { generatePasswordSalt, hashPassword } from "../../helpers/auth.js";
+
+export const handleRegisterCustomerModule = async (req, res, db) => {
+  const {
+    store_id,
+    firstname,
+    middlename,
+    lastname,
+    username,
+    password,
+    isAgreement,
+    email,
+    mobile_number,
+
+    address_line,
+    country,
+    province,
+    city,
+    postal_code,
+    latitude,
+    longitude,
+  } = req.body;
+
+  try {
+    // Check for existing username
+    const [existingUser] = await db.execute(
+      `
+      SELECT * FROM User_Account 
+      WHERE username = ? 
+      LIMIT 1
+      `,
+      [username]
+    );
+
+    if (existingUser.length > 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Username already exists" });
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const passwordSalt = await generatePasswordSalt();
+
+    await db.beginTransaction();
+
+    const [addressResult] = await db.execute(
+      `
+      INSERT INTO Addresses 
+      (address_line, country, province, city, postal_code, latitude, longitude, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+      `,
+      [address_line, country, province, city, postal_code, latitude, longitude]
+    );
+
+    const addressId = addressResult.insertId;
+
+    const [customerResult] = await db.execute(
+      `
+      INSERT INTO User_Account 
+      (store_id, address_id, username, email, mobile_number, first_name, middle_name, last_name, user_type, isAgreement, isOnline, isStatus, isArchive, date_created)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+      `,
+      [
+        store_id,
+        addressId,
+        username,
+        email,
+        mobile_number,
+        firstname,
+        middlename,
+        lastname,
+        "Customer",
+        isAgreement,
+        false,
+        0,
+        false,
+      ]
+    );
+
+    const userId = customerResult.insertId;
+
+    const [securityResult] = await db.execute(
+      `
+      INSERT INTO User_Security
+      (user_id, password, password_salt, mfa_enabled, mfa_secret, failed_login_attempts, account_locked, lockout_time, last_login, last_logout, last_password_change)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        userId,
+        hashedPassword,
+        passwordSalt,
+        false,
+        null,
+        0,
+        false,
+        null,
+        null,
+        null,
+        null,
+      ]
+    );
+
+    await db.commit();
+
+    res.status(201).json({
+      success: true,
+      message: "Customer registered successfully",
+    });
+  } catch (error) {
+    await db.rollback();
+    console.error("Error registering customer:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  } finally {
+    if (db) db.release();
+  }
+};
+
 export const handleCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params;
   const { store_id, customer_name, notes, service_type } = req.body;
@@ -110,27 +230,3 @@ export const handleGetCustomerList = async (req, res, connection) => {
     });
   }
 };
-
-// export const handleGetCustomerList = async (req, res, connection) => {
-//   const { id } = req.params; // store id
-
-//   console.log(id);
-
-//   try {
-//     await connection.beginTransaction();
-//   } catch (error) {
-//     console.error("", error);
-//     res.status(500).json({ error: "" });
-//   }
-// };
-
-// export const handleCustomerServiceRequest = async (req, res, connection) => {
-//   const { id } = req.params;
-//   const {
-//     store_id,
-//     service_type
-
-//   } = req.body;
-
-//   await connection.execute();
-// };

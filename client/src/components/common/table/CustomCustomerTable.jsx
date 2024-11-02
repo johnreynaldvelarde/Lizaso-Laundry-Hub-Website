@@ -21,17 +21,16 @@ import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
 import { OutboundOutlined } from "@mui/icons-material";
-import {
-  Archive,
-  ChatCircleDots,
-  PencilLine,
-  Trash,
-} from "@phosphor-icons/react";
+import { Archive, ChatCircleDots, PencilLine } from "@phosphor-icons/react";
 import OutlinedIconButton from "../../table/OutlinedIconButton";
+import useAuth from "../../../contexts/AuthContext";
+import PopMessageCustomer from "../../../pages/admin/Customers/components/PopMessageCustomer";
 
 const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
+  const { userDetails } = useAuth;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [selectedName, setSelectName] = useState("");
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
 
   const handleChangePage = (event, newPage) => {
@@ -138,25 +137,45 @@ const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.text }}
-                      >
-                        {data.address.address_line}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "500", color: COLORS.subtitle }}
-                      >
-                        <span className="mr-1">{data.address.country}</span>
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "400", color: COLORS.subtitle }}
-                      >
-                        <span>{data.address.province}</span>
-                      </Typography>
+                      {data.address?.address_line ||
+                      data.address?.country ||
+                      data.address?.province ? (
+                        <>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "600", color: COLORS.text }}
+                          >
+                            {data.address.address_line ||
+                              "Address line not available"}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "500", color: COLORS.subtitle }}
+                          >
+                            <span className="mr-1">
+                              {data.address.country || "Country not available"}
+                            </span>
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: "400", color: COLORS.subtitle }}
+                          >
+                            <span>
+                              {data.address.province ||
+                                "Province not available"}
+                            </span>
+                          </Typography>
+                        </>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          sx={{ fontWeight: "600", color: COLORS.text }}
+                        >
+                          The address is not completed yet
+                        </Typography>
+                      )}
                     </TableCell>
+
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
@@ -179,39 +198,22 @@ const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <DateCell dateCreated={data.date_created} />
                     </TableCell>
-                    <TableCell sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}>
+
+                    <TableCell
+                      align="center"
+                      sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}
+                    >
                       <Tooltip title="Message Customer" arrow>
                         <OutlinedIconButton
-                        // onClick={() => {
-                        //   openPopup("restockItem", data.inventory_id);
-                        // }}
+                          onClick={() => {
+                            openPopup("messageCustomer", data.customer_id);
+                            setSelectName(data.full_name);
+                          }}
                         >
                           <ChatCircleDots
                             color={COLORS.success}
                             weight="duotone"
                           />
-                        </OutlinedIconButton>
-                      </Tooltip>
-                      <Tooltip title="Edit Customer" arrow>
-                        <OutlinedIconButton
-                        // onClick={() => {
-                        //   openPopup("editItem", data);
-                        // }}
-                        >
-                          <PencilLine
-                            color={COLORS.secondary}
-                            weight="duotone"
-                          />
-                        </OutlinedIconButton>
-                      </Tooltip>
-                      <Tooltip title="ArchiveCustomer" arrow>
-                        {/* if(userDetails.roleName == Manager) */}
-                        <OutlinedIconButton
-                        // onClick={() => {
-                        //   openPopup("removeItem", data.inventory_id);
-                        // }}
-                        >
-                          <Archive color={COLORS.error} weight="duotone" />
                         </OutlinedIconButton>
                       </Tooltip>
                     </TableCell>
@@ -234,11 +236,12 @@ const CustomCustomerTable = ({ tableData, loading, refreshData }) => {
       />
 
       {/* Popup */}
-      {isOpen && popupType === "assignTo" && (
-        <PopPendingAssignTo
+      {isOpen && popupType === "messageCustomer" && (
+        <PopMessageCustomer
           open={isOpen}
           onClose={closePopup}
           id={popupData}
+          name={selectedName}
           refreshData={refreshData}
         />
       )}
