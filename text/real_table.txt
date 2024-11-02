@@ -79,7 +79,6 @@ last_password_change
 --> Service_Promo <--
 id (Primary Key)
 service_id (Foregin Key)
-discount_percentage
 discount_price
 valid_days (IF valid on Monday, Tuesday, Wednesday, Thursday, Friday , Saturday, Sunday)
 start_date

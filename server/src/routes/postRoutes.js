@@ -22,6 +22,7 @@ import {
   handleAdminBasedSetNewUser,
   handleSetRolesPermissions,
 } from "../services/admin/useUser.js";
+import { handleSetServicesPromo } from "../services/admin/useServices.js";
 
 const router = express.Router();
 
@@ -168,6 +169,18 @@ router.post(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleRegisterCustomerModule(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//#SERVICES MANAGEMENT SECTION
+router.post(
+  "/services-management/set-new-promo-service",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetServicesPromo(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

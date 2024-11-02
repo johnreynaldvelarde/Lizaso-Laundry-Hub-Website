@@ -187,12 +187,27 @@ export const createAdminBasedNewUser = {
   },
 };
 
-// #VIEW CUSTOMER SECTION
+// #CUSTOMER CUSTOMER SECTION
 export const createNewCustomerAccount = {
   setCustomerAccount: async (data) => {
     try {
       const response = await axiosPrivate.post(
         `/customer-management/set-new-customer-account`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+//#SERVICES MANAGEMENT SECTION
+export const createNewServicesPromo = {
+  setServicesPromo: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/services-management/set-new-promo-service`,
         data
       );
       return response.data;

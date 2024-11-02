@@ -137,10 +137,29 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.error }}
+                        sx={{
+                          fontWeight: "600",
+                          color: COLORS.secondary,
+                          textDecoration:
+                            data.promo_status && data.discount_price
+                              ? "line-through"
+                              : "none",
+                        }}
                       >
                         ₱ {data.default_price}
                       </Typography>
+                      {data.promo_status && data.discount_price && (
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: "600",
+                            color: COLORS.error,
+                            marginLeft: 1,
+                          }}
+                        >
+                          ₱ {data.discount_price}
+                        </Typography>
+                      )}
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <DateCell dateCreated={data.date_created} />
@@ -148,22 +167,36 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.secondary }}
+                        sx={{
+                          fontWeight: "600",
+                          color: data.promo_status
+                            ? COLORS.white
+                            : COLORS.primary,
+                          backgroundColor: data.promo_status
+                            ? COLORS.error
+                            : COLORS.border,
+                          padding: "4px 8px",
+                          borderRadius: 8,
+                          display: "inline-block",
+                        }}
                       >
-                        {data.default_price}
+                        {data.promo_status ? "Active" : "Not Active"}
                       </Typography>
                     </TableCell>
 
                     <TableCell sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}>
-                      <Tooltip title="Add Promo" arrow>
-                        <OutlinedIconButton
-                          onClick={() => {
-                            openPopup("addPromo", data.id);
-                          }}
-                        >
-                          <Tag color={COLORS.success} weight="duotone" />
-                        </OutlinedIconButton>
-                      </Tooltip>
+                      {!data.promo_status && (
+                        <Tooltip title="Add Promo" arrow>
+                          <OutlinedIconButton
+                            onClick={() => {
+                              openPopup("addPromo", data);
+                            }}
+                          >
+                            <Tag color={COLORS.success} weight="duotone" />
+                          </OutlinedIconButton>
+                        </Tooltip>
+                      )}
+
                       <Tooltip title="Edit Services" arrow>
                         <OutlinedIconButton
                           onClick={() => {
