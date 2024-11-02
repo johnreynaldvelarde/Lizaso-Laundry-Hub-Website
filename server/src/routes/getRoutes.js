@@ -49,6 +49,7 @@ import {
   handleGetCustomerGrowthOverTime,
   handleGetCustomerList,
 } from "../services/admin/useCustomer.js";
+import { handleGetServiceTypeList } from "../services/admin/useServices.js";
 
 const router = express.Router();
 
@@ -358,7 +359,19 @@ router.get(
   })
 );
 
-// #TRANSCTION HISTORY SECTION
+// #SERVICES MANAGEMENT SECTION
+router.get(
+  "/services-management/:id/get-services-type-list",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetServiceTypeList(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #TRANSACTION HISTORY SECTION
 router.get(
   "/transaction-history/:id/get-transaction-history",
   withDatabaseConnection(async (req, res, connection) => {

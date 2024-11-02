@@ -54,6 +54,12 @@ const ActivityLog = lazy(() =>
   }))
 );
 
+const ServiceManage = lazy(() =>
+  import("../../pages").then((module) => ({
+    default: module.ServiceManage,
+  }))
+);
+
 // Add Section
 // --> Laundry Units <--
 
@@ -123,6 +129,7 @@ const Main = () => {
             <Route path="reviews" element={<Reviews />} />
             <Route path="transactions-history" element={<Transaction />} />
             <Route path="activity-log" element={<ActivityLog />} />
+            <Route path="services-management" element={<ServiceManage />} />
             {/* Catch all undefined routes and redirect to dashboard */}
             <Route path="*" element={<Navigate to="dashboard" replace />} />
           </Routes>

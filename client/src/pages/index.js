@@ -43,6 +43,8 @@ export { default as TransactionHistory } from "./admin/Transaction/TransactionHi
 
 export { default as ActivityLog } from "./admin/Activity/ActivityLog";
 
+export { default as ServiceManage } from "./admin/Service/Service";
+
 // Section Settings
 export { default as Settings } from "./admin/Settings/Settings";
 

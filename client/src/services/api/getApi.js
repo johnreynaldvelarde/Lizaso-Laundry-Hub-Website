@@ -443,6 +443,21 @@ export const getReviews = {
   },
 };
 
+//#SERVICES MANAGEMENT SECTION
+export const getServicesTypeList = {
+  viewServicesType: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/services-management/${id}/get-services-type-list`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 //#TRANSACTON HISTORY SECTION
 export const getTransactionHistory = {
   viewTransctionHistory: async (id) => {

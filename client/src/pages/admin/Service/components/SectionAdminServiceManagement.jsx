@@ -14,48 +14,40 @@ import CustomCreatedDate from "../../../../components/common/table/filter/Custom
 import {
   getCustomerGrowthOverTime,
   getCustomerList,
+  getServicesTypeList,
 } from "../../../../services/api/getApi";
 import { parseISO } from "date-fns";
 import { checkDateMatch } from "../../../../utils/method";
 import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
-import PopAddNewCustomer from "../../Customers/components/PopAddNewCustomer";
+import CustomServicesManagement from "../../../../components/common/table/CustomServicesManagementTable";
+import CustomServicesManagementTable from "../../../../components/common/table/CustomServicesManagementTable";
 
-const SectionManagerUser = ({ storeId }) => {
+const SectionAdminServiceManagement = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  const { data: customerListData, fetchData: fetchCustomerList } =
-    useFetchData();
-  const { data: customerStatsData, fetchData: fetchCustomerStats } =
+  const { data: servicesListData, fetchData: fetchServicesList } =
     useFetchData();
   const [loading, setLoading] = useState(true);
 
-  const fetchCustomerListData = useCallback(async () => {
+  const fetchServicesListData = useCallback(async () => {
     setLoading(true);
-    await fetchCustomerList(getCustomerList.viewCustomerList, storeId);
+    await fetchServicesList(getServicesTypeList.viewServicesType, storeId);
     setLoading(false);
-  }, [fetchCustomerList, storeId]);
-
-  const fetchCustomerStatsData = useCallback(async () => {
-    setLoading(true);
-    await fetchCustomerStats(
-      getCustomerGrowthOverTime.viewCustomerGrow,
-      storeId
-    );
-    setLoading(false);
-  }, [fetchCustomerStats, storeId]);
+  }, [fetchServicesList, storeId]);
 
   useEffect(() => {
-    fetchCustomerListData();
-    fetchCustomerStatsData();
-  }, [fetchCustomerListData]);
+    fetchServicesListData();
+  }, [fetchServicesListData]);
 
   useEffect(() => {
-    if (customerListData) {
-      setFilteredData(customerListData);
+    if (servicesListData) {
+      setFilteredData(servicesListData);
     }
-  }, [customerListData]);
+  }, [servicesListData]);
+
+  console.log(servicesListData);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -69,16 +61,16 @@ const SectionManagerUser = ({ storeId }) => {
   };
 
   const applyFilters = (dateOption, search) => {
-    const filtered = customerListData.filter((item) => {
+    const filtered = servicesListData.filter((item) => {
       const requestDate = parseISO(item.date_created);
       const isDateMatch = dateOption
         ? checkDateMatch(dateOption, requestDate)
         : true;
 
       // Filter by search term in customer fullname
-      const isSearchMatch =
-        item.full_name.toLowerCase().includes(search.toLowerCase()) ||
-        item.username.toLowerCase().includes(search.toLowerCase());
+      const isSearchMatch = item.service_name
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
       return isDateMatch && isSearchMatch;
     });
@@ -87,10 +79,10 @@ const SectionManagerUser = ({ storeId }) => {
 
   useEffect(() => {
     applyFilters(selectedDate, searchTerm);
-  }, [selectedDate, searchTerm, customerListData]);
+  }, [selectedDate, searchTerm, servicesListData]);
 
   const handleRefreshData = () => {
-    fetchCustomerListData();
+    fetchServicesListData();
   };
 
   return (
@@ -105,8 +97,10 @@ const SectionManagerUser = ({ storeId }) => {
         }}
       >
         <CustomHeaderTitle
-          title={"User Management"}
-          subtitle={"Overview of All User Accounts and Activities"}
+          title={"Services Management"}
+          subtitle={
+            "Overview of Laundry Services with Custom Promotional Offers"
+          }
         />
         <CustomAddButton
           onClick={() => openPopup("addCustomer")}
@@ -116,12 +110,12 @@ const SectionManagerUser = ({ storeId }) => {
       </Box>
 
       {/* Sub Header */}
-      <Box
+      {/* <Box
         display="flex"
         sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
       >
         <CustomerGrowthChart customerGrowthData={customerStatsData} />
-      </Box>
+      </Box> */}
 
       {/* Content */}
       <Box mt={5}>
@@ -136,7 +130,7 @@ const SectionManagerUser = ({ storeId }) => {
           }}
         >
           <Box sx={{ display: "flex" }}>
-            <CustomHeaderTitleTable title={"All Customers"} />
+            <CustomHeaderTitleTable title={"All Services Type"} />
           </Box>
 
           <Box
@@ -154,7 +148,7 @@ const SectionManagerUser = ({ storeId }) => {
             <CustomSearch
               searchTerm={searchTerm}
               handleSearchChange={handleSearchChange}
-              placeholder={"Search name or username..."}
+              placeholder={"Search service name..."}
             />
           </Box>
 
@@ -197,7 +191,7 @@ const SectionManagerUser = ({ storeId }) => {
               onClick={() => {
                 setSearchTerm("");
                 setSelectedDate("");
-                setFilteredData(customerListData);
+                setFilteredData(servicesListData);
               }}
               sx={{
                 width: {
@@ -217,10 +211,38 @@ const SectionManagerUser = ({ storeId }) => {
               Clear Filters
             </Button>
           </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+              },
+              justifyContent: "flex-end",
+              gap: {
+                xs: 0,
+                sm: 1,
+              },
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              marginLeft: "auto",
+            }}
+          >
+            <CustomAddButton
+              onClick={() => openPopup("addItem")}
+              label={"Add new services"}
+              icon={
+                <PlusCircle size={24} color={COLORS.white} weight="duotone" />
+              }
+            />
+          </Box>
         </Box>
 
         <Box>
-          <CustomCustomerTable
+          <CustomServicesManagementTable
             tableData={filteredData}
             loading={loading}
             refreshData={handleRefreshData}
@@ -229,15 +251,15 @@ const SectionManagerUser = ({ storeId }) => {
       </Box>
 
       {/* Popup */}
-      {isOpen && popupType === "addCustomer" && (
+      {/* {isOpen && popupType === "addCustomer" && (
         <PopAddNewCustomer
           open={isOpen}
           onClose={closePopup}
           refreshData={handleRefreshData}
         />
-      )}
+      )} */}
     </>
   );
 };
 
-export default SectionManagerUser;
+export default SectionAdminServiceManagement;

@@ -18,9 +18,8 @@ import {
 import { parseISO } from "date-fns";
 import { checkDateMatch } from "../../../../utils/method";
 import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
-import PopAddNewCustomer from "../../Customers/components/PopAddNewCustomer";
 
-const SectionManagerUser = ({ storeId }) => {
+const SectionAdminActivityLog = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -105,13 +104,8 @@ const SectionManagerUser = ({ storeId }) => {
         }}
       >
         <CustomHeaderTitle
-          title={"User Management"}
-          subtitle={"Overview of All User Accounts and Activities"}
-        />
-        <CustomAddButton
-          onClick={() => openPopup("addCustomer")}
-          label={"Add new customer"}
-          icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
+          title={"Activity Log"}
+          subtitle={"Overview of All User Activities and Logs"}
         />
       </Box>
 
@@ -240,4 +234,4 @@ const SectionManagerUser = ({ storeId }) => {
   );
 };
 
-export default SectionManagerUser;
+export default SectionAdminActivityLog;

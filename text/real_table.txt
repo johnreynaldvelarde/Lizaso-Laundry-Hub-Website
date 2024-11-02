@@ -92,6 +92,7 @@ isArchive
 id (Primary Key)
 store_id (Foregin Key)
 service_name
+description
 default_price
 date_created
 isArchive

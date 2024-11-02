@@ -2,16 +2,16 @@ import React from "react";
 import { Box } from "@mui/material";
 import useAuth from "../../../contexts/AuthContext";
 import AccessDenied from "../../../components/pages/AccessDenied";
-import SectionAdminActivityLog from "./components/SectionAdminActivityLog";
+import SectionAdminServiceManagement from "./components/SectionAdminServiceManagement";
 
-const ActivityLog = () => {
+const Service = () => {
   const { userDetails } = useAuth();
   return (
     <Box sx={{ pt: "100px", pb: "20px", px: "20px" }}>
       {userDetails?.roleName === "Administrator" ? (
-        <SectionAdminActivityLog storeId={userDetails.storeId} />
+        <SectionAdminServiceManagement storeId={userDetails.storeId} />
       ) : userDetails?.roleName === "Manager" ? (
-        <SectionAdminActivityLog storeId={userDetails.storeId} />
+        <SectionAdminServiceManagement storeId={userDetails.storeId} />
       ) : (
         <AccessDenied />
       )}
@@ -19,4 +19,4 @@ const ActivityLog = () => {
   );
 };
 
-export default ActivityLog;
+export default Service;

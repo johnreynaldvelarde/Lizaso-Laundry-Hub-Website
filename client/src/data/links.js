@@ -87,6 +87,14 @@ export const links = [
     url: "/main/reviews",
   },
   {
+    name: "Services Management",
+    icon: React.createElement(CellSignalHigh, {
+      weight: "duotone",
+      size: iconSize,
+    }),
+    url: "/main/services-management",
+  },
+  {
     name: "Transactions History",
     icon: React.createElement(ReadCvLogo, {
       weight: "duotone",
@@ -97,14 +105,6 @@ export const links = [
   {
     name: "Activity Log",
     icon: React.createElement(Pulse, { weight: "duotone", size: iconSize }),
-    url: "/main/activity-log",
-  },
-  {
-    name: "Services Management",
-    icon: React.createElement(CellSignalHigh, {
-      weight: "duotone",
-      size: iconSize,
-    }),
     url: "/main/activity-log",
   },
   {
