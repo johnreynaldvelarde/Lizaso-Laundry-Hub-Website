@@ -10,16 +10,24 @@ const SalesTrendChart = ({ salesByMonthData }) => {
 
   const options = {
     chart: {
-      type: "area", // Use "area" for the spline area chart
+      type: "bar", // Change to "bar" for a bar chart
       height: 300,
       background: "transparent",
       toolbar: {
         show: false, // Hide the toolbar
       },
     },
+    plotOptions: {
+      bar: {
+        horizontal: false, // Set to true for horizontal bars
+        columnWidth: "55%", // Adjust width of bars
+        endingShape: "rounded", // Make bar edges rounded
+      },
+    },
     stroke: {
-      curve: "smooth", // Set curve to smooth for a spline effect
+      show: true,
       width: 2,
+      colors: [COLORS.secondary], // Color for bar stroke
     },
     xaxis: {
       categories: months,
@@ -48,11 +56,10 @@ const SalesTrendChart = ({ salesByMonthData }) => {
       },
     },
     fill: {
-      colors: [COLORS.secondary], // Set the fill color for the area
-      opacity: 0.3, // Adjust opacity for the fill
+      colors: [COLORS.secondary], // Set the fill color for the bars
     },
     dataLabels: {
-      enabled: false, // Disable data labels
+      enabled: true, // Enable data labels for bar chart
     },
   };
 
@@ -81,7 +88,7 @@ const SalesTrendChart = ({ salesByMonthData }) => {
         Laundry Revenue Growth by Month
       </Typography>
       <Box sx={{ height: "300px", p: 1 }}>
-        <Chart options={options} series={series} type="area" height="100%" />
+        <Chart options={options} series={series} type="bar" height="100%" />
       </Box>
     </Paper>
   );
