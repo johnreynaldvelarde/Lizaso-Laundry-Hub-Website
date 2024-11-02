@@ -403,6 +403,20 @@ export const getCustomerList = {
   },
 };
 
+export const getCustomerGrowthOverTime = {
+  viewCustomerGrow: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/customer-management/${id}/get-customer-growth-overtime`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 //#INBOX SECTION
 export const getInbox = {
   viewInbox: async (userId) => {

@@ -230,3 +230,45 @@ export const handleGetCustomerList = async (req, res, connection) => {
     });
   }
 };
+
+export const handleGetCustomerGrowthOverTime = async (req, res, connection) => {
+  const { id } = req.params; // store id
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+      SELECT 
+          DATE_FORMAT(date_created, '%Y-%m') AS date, 
+          COUNT(*) AS count
+      FROM 
+          User_Account
+      WHERE 
+          store_id = ? AND 
+          address_id IS NOT NULL AND 
+          user_type = 'Customer' AND 
+          isArchive = 0
+      GROUP BY 
+          date
+      ORDER BY 
+          date;
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    // Respond with the aggregated customer growth data
+    res.status(200).json({
+      success: true,
+      data: rows, // Send the aggregated data as part of the response
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

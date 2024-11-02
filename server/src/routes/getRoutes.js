@@ -45,7 +45,10 @@ import {
   handleGetTotalSalesByMonth,
   handleGetTransactionHistory,
 } from "../services/admin/useTransaction.js";
-import { handleGetCustomerList } from "../services/admin/useCustomer.js";
+import {
+  handleGetCustomerGrowthOverTime,
+  handleGetCustomerList,
+} from "../services/admin/useCustomer.js";
 
 const router = express.Router();
 
@@ -303,6 +306,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetCustomerList(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/customer-management/:id/get-customer-growth-overtime",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetCustomerGrowthOverTime(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

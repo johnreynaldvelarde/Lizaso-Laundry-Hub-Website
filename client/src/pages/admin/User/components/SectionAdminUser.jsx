@@ -59,6 +59,7 @@ import A_PopupRenameRole from "./A_PopupRenameRole";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
+import usePopup from "../../../../hooks/common/usePopup";
 
 const SectionAdminUser = () => {
   const { userDetails } = useAuth();
@@ -70,6 +71,8 @@ const SectionAdminUser = () => {
   const { data: roles, fetchData: fetchRoles } = useFetchData();
   const { data: stores, fetchData: fetchStores } = useFetchData();
   const { data: users, fetchData: fetchUsers } = useFetchData();
+
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
 
   const fetchRolesData = useCallback(() => {
     fetchRoles(
@@ -919,7 +922,7 @@ const SectionAdminUser = () => {
                         <TableCell sx={{ paddingY: 3, paddingX: 4 }}>
                           <Tooltip title="View User" arrow>
                             <OutlinedIconButton
-                              onClick={() => handleOpenPopupViewUser(user)}
+                              onClick={() => openPopup("viewUser", user)}
                             >
                               <Eye color={COLORS.primary} weight="duotone" />
                             </OutlinedIconButton>
@@ -965,11 +968,14 @@ const SectionAdminUser = () => {
       </Box>
 
       {/* PopupSection */}
-      <A_PopupViewUser
-        open={openPopupViewUser}
-        onClose={handleClosePopupViewtUser}
-        userData={selectedViewData}
-      />
+
+      {isOpen && popupType === "viewUser" && (
+        <A_PopupViewUser
+          open={isOpen}
+          onClose={closePopup}
+          userData={popupData}
+        />
+      )}
 
       <A_PopupAddUser
         open={openPopupAddUser}

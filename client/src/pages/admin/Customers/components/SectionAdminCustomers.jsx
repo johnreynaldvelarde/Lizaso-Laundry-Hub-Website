@@ -1,38 +1,24 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Box,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  TextField,
-  Button,
-} from "@mui/material";
-import { KeyboardArrowDown } from "@mui/icons-material";
+import { Paper, Box, Typography, Button } from "@mui/material";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import { COLORS } from "../../../../constants/color";
 import { PlusCircle } from "@phosphor-icons/react";
 import PopAddNewCustomer from "./PopAddNewCustomer";
 import usePopup from "../../../../hooks/common/usePopup";
-import CustomScheduleTable from "../../../../components/common/table/CustomScheduleTable";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { dateOptions } from "../../../../data/schedule/serviceStatus";
 import CustomCustomerTable from "../../../../components/common/table/CustomCustomerTable";
 import CustomHeaderTitleTable from "../../../../components/common/CustomHeaderTitleTable";
 import CustomSearch from "../../../../components/common/table/filter/CustomSearch";
 import CustomCreatedDate from "../../../../components/common/table/filter/CustomCreatedDate";
-import { getCustomerList } from "../../../../services/api/getApi";
+import {
+  getCustomerGrowthOverTime,
+  getCustomerList,
+} from "../../../../services/api/getApi";
 import { parseISO } from "date-fns";
 import { checkDateMatch } from "../../../../utils/method";
+import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
 
 const SectionAdminCustomers = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -40,6 +26,8 @@ const SectionAdminCustomers = ({ storeId }) => {
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const { data: customerListData, fetchData: fetchCustomerList } =
+    useFetchData();
+  const { data: customerStatsData, fetchData: fetchCustomerStats } =
     useFetchData();
   const [loading, setLoading] = useState(true);
 
@@ -49,8 +37,18 @@ const SectionAdminCustomers = ({ storeId }) => {
     setLoading(false);
   }, [fetchCustomerList, storeId]);
 
+  const fetchCustomerStatsData = useCallback(async () => {
+    setLoading(true);
+    await fetchCustomerStats(
+      getCustomerGrowthOverTime.viewCustomerGrow,
+      storeId
+    );
+    setLoading(false);
+  }, [fetchCustomerStats, storeId]);
+
   useEffect(() => {
     fetchCustomerListData();
+    fetchCustomerStatsData();
   }, [fetchCustomerListData]);
 
   useEffect(() => {
@@ -122,73 +120,7 @@ const SectionAdminCustomers = ({ storeId }) => {
         display="flex"
         sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
       >
-        <Box
-          sx={{
-            width: {
-              xs: "100%",
-              sm: "calc(50% - 8px)",
-              md: "calc(60% - 8px)",
-              lg: "calc(35% - 8px)",
-            },
-            borderRadius: "14px",
-            overflow: "hidden",
-          }}
-        >
-          <Paper
-            sx={{
-              borderRadius: "14px",
-              boxShadow: "none",
-              borderWidth: 1,
-              borderColor: COLORS.border,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              p: 2,
-            }}
-          >
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{
-                color: COLORS.primary,
-                fontWeight: 600,
-                textAlign: "center",
-                mt: 2,
-              }}
-            >
-              Top Customers
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                maxWidth: "300px",
-                height: "300px",
-                mt: 2,
-              }}
-            ></Box>
-          </Paper>
-          {/* <CustomPieChart data={customerTypeData} /> */}
-        </Box>
-
-        {/* Sales Graph */}
-        <Box
-          sx={{
-            width: {
-              xs: "100%",
-              sm: "calc(50% - 8px)",
-              md: "calc(40% - 8px)",
-              lg: "calc(65% - 8px)",
-            },
-            borderRadius: "14px",
-            overflow: "hidden",
-          }}
-        >
-          {/* <SalesTrendChart salesByMonthData={salesByMonthData} /> */}
-        </Box>
+        <CustomerGrowthChart customerGrowthData={customerStatsData} />
       </Box>
 
       {/* Content */}
