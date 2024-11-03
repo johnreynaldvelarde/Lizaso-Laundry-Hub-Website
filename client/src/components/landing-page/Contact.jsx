@@ -29,37 +29,39 @@ const Contact = () => {
                 You can messsage or contact us on: 
               </p>
               <div className='px-0 md:px-10 pt-5 space-y-2'>
-                <a
-                  href="https://web.facebook.com/pages/Lizaso-Laundry-Hub/371159776994348/?_rdc=1&_rdr"
-                  target="_blank"
-                  id="facebook-link"
-                  className=' text-blue-700 hover:text-blue-500 text-lg flex items-center'
-                >
-                  <img 
-                  src={fb} 
-                  alt="Big Sale" 
-                  className="bg-gray-100 rounded-xl  p-2 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-100 mr-2 rounded-l-xl" // Adjust the size as needed
-                />
-                  Lizaso Laundry Hub
-                </a>
-                <div className='flex items-center'>
+                <div className='flex items-center justify-center sm:justify-start'>
+                  <a
+                    href="https://web.facebook.com/pages/Lizaso-Laundry-Hub/371159776994348/?_rdc=1&_rdr"
+                    target="_blank"
+                    id="facebook-link"
+                    className=' text-blue-700 hover:text-blue-500 text-sm xs:text-lg flex items-center'
+                  >
+                    <img 
+                    src={fb} 
+                    alt="Big Sale" 
+                    className="bg-gray-100 rounded-xl  p-2 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-100 mr-2 rounded-l-xl" // Adjust the size as needed
+                  />
+                    Lizaso Laundry Hub
+                  </a>
+                </div>
+                <div className='flex items-center justify-center sm:justify-start'>
                   <img 
                     src={comunicate} 
                     alt="Big Sale" 
                     className="bg-gray-100 rounded-xl p-2 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-100 mr-2 rounded-l-xl" // Adjust the size as needed
                   />
-                  <p className=" text-blue-700 hover:text-blue-500 text-lg ">
+                  <p className=" text-blue-700 hover:text-blue-500 text-sm xs:text-lg">
                     +63-931-006-4466 
                   </p>
                 </div>
-                <div className='flex items-center'>
+                <div className='flex items-center justify-center sm:justify-start'>
                   <img 
                     src={email} 
                     alt="Big Sale" 
-                    className="bg-gray-100 rounded-xl p-2 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-100 mr-2 rounded-l-xl" // Adjust the size as needed
+                    className="bg-gray-100 rounded-xl flex items-center justify-center p-2 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-100 mr-2 rounded-l-xl" // Adjust the size as needed
                   />
-                  <p className=" text-blue-700 hover:text-blue-500 text-lg md:text-xs px-2">
-                    lizazo-laundry-hub-@gmail.com
+                  <p className=" text-blue-700 hover:text-blue-500 text-sm xs:text-lg px-2">
+                    lizazolaundryhub@gmail.com
                   </p>
                 </div>
               </div>
