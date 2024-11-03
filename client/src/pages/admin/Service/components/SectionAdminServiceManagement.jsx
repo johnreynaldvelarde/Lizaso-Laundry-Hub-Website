@@ -95,54 +95,6 @@ const SectionAdminServiceManagement = ({ storeId }) => {
     fetchPromoListData();
   };
 
-  const servicesPromoData = [
-    {
-      id: 1,
-      title: "Laundry Service",
-      description: "Get your laundry done with our express service.",
-      validDays: ["Monday", "Wednesday", "Friday"],
-      startDate: "2024-11-01",
-      endTime: "2024-11-10",
-      buttonText: "Learn More",
-    },
-    {
-      id: 2,
-      title: "Dry Cleaning",
-      description: "Professional dry cleaning for delicate fabrics.",
-      validDays: ["Tuesday", "Thursday"],
-      startDate: "2024-11-05",
-      endTime: "2024-11-15",
-      buttonText: "Learn More",
-    },
-    {
-      id: 3,
-      title: "Ironing Service",
-      description: "Say goodbye to wrinkles with our ironing service.",
-      validDays: ["Monday", "Thursday"],
-      startDate: "2024-11-07",
-      endTime: "2024-11-20",
-      buttonText: "Learn More",
-    },
-    {
-      id: 4,
-      title: "Specialty Cleaning",
-      description: "Unique cleaning solutions for specialty items.",
-      validDays: ["Wednesday", "Saturday"],
-      startDate: "2024-11-10",
-      endTime: "2024-11-30",
-      buttonText: "Learn More",
-    },
-    {
-      id: 5,
-      title: "Bedding Service",
-      description: "Get your bedding cleaned and refreshed.",
-      validDays: ["Friday", "Sunday"],
-      startDate: "2024-11-12",
-      endTime: "2024-11-25",
-      buttonText: "Learn More",
-    },
-  ];
-
   return (
     <>
       {/* Header */}
@@ -160,15 +112,13 @@ const SectionAdminServiceManagement = ({ storeId }) => {
             "Overview of Laundry Services with Custom Promotional Offers"
           }
         />
-        {/* <CustomAddButton
-          onClick={() => openPopup("addCustomer")}
-          label={"Add new customer"}
-          icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
-        /> */}
       </Box>
 
       {/* Sub Header */}
-      <CustomServicesPromoList servicesPromoData={promoListData} />
+      <CustomServicesPromoList
+        servicesPromoData={promoListData}
+        refreshData={handleRefreshData}
+      />
 
       {/* <Box
         display="flex"

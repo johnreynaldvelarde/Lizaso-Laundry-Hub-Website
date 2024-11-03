@@ -1,15 +1,63 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { COLORS } from "../../../../constants/color";
 import usePopup from "../../../../hooks/common/usePopup";
 import PopEditPromo from "./PopEditPromo";
+import DeleteConfirmationDialog from "../../../../components/common/DeleteConfirmationDialog";
+import {
+  updateServicePromoActived,
+  updateServicePromoDeactived,
+} from "../../../../services/api/putApi";
+import DeactivedConfirmDialog from "../../../../components/common/DeactivedConfirmDialog";
+import toast from "react-hot-toast";
 
-const CustomServicesPromoList = ({
-  servicesPromoData,
-  onEdit,
-  onDeactivate,
-}) => {
+const CustomServicesPromoList = ({ servicesPromoData, refreshData }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
+  const [loading, setLoading] = useState(false);
+
+  const handleDeactivedPromo = async (id) => {
+    if (id) {
+      setLoading(true);
+      try {
+        const response = await updateServicePromoDeactived.putPromoDeactived(
+          id
+        );
+        if (response.success) {
+          refreshData();
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
+  };
+
+  const handleActivatedPromo = async (id) => {
+    if (id) {
+      setLoading(true);
+      try {
+        const response = await updateServicePromoActived.putPromoActived(id);
+        if (response.success) {
+          refreshData();
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
+  };
 
   return (
     <>
@@ -51,15 +99,49 @@ const CustomServicesPromoList = ({
             >
               {service.service_name}
             </Typography>
-            <Typography
-              variant="body2"
+
+            {/* Price container for alignment */}
+            <Box
               sx={{
+                display: "flex",
+                alignItems: "center",
                 marginBottom: "16px",
-                color: COLORS.subtitle,
               }}
             >
-              {service.description || "No description available."}
-            </Typography>
+              {/* Display default price with line-through */}
+              <Typography
+                variant="body2"
+                sx={{
+                  color: COLORS.text,
+                  textDecoration: "line-through",
+                  marginRight: "8px",
+                  fontSize: 18,
+                }}
+              >
+                <span className="mr-1">₱</span>
+                {Number(service.default_price).toFixed(2) || "0.00"}{" "}
+              </Typography>
+
+              <Box sx={{ marginRight: "8px" }}>
+                <span
+                  style={{ display: "inline-block", color: COLORS.subtitle }}
+                >
+                  ➜
+                </span>
+              </Box>
+
+              <Typography
+                variant="body2"
+                sx={{
+                  color: COLORS.error,
+                  fontWeight: 700,
+                  fontSize: 18,
+                }}
+              >
+                <span className="mr-1">₱</span>
+                {Number(service.discount_price).toFixed(2) || "0.00"}
+              </Typography>
+            </Box>
 
             {/* Display valid days */}
             <Typography
@@ -131,7 +213,7 @@ const CustomServicesPromoList = ({
             >
               <Button
                 variant="outlined"
-                onClick={() => openPopup("editPromo", service.promo_id)}
+                onClick={() => openPopup("editPromo", service)}
                 sx={{
                   textTransform: "none",
                   color: COLORS.primary,
@@ -148,20 +230,35 @@ const CustomServicesPromoList = ({
               </Button>
               <Button
                 variant="outlined"
-                onClick={() => onDeactivate(service.promo_id)}
+                onClick={() => {
+                  if (service.promo_status === "active") {
+                    handleDeactivedPromo(service.promo_id);
+                  } else {
+                    handleActivatedPromo(service.promo_id);
+                  }
+                }}
                 sx={{
                   textTransform: "none",
                   color: COLORS.primary,
                   borderColor: COLORS.border,
                   width: "100%",
                   "&:hover": {
-                    borderColor: COLORS.error,
-                    color: COLORS.error,
-                    backgroundColor: COLORS.pale_error,
+                    borderColor:
+                      service.promo_status === "active"
+                        ? COLORS.error
+                        : COLORS.success,
+                    color:
+                      service.promo_status === "active"
+                        ? COLORS.error
+                        : COLORS.success,
+                    backgroundColor:
+                      service.promo_status === "active"
+                        ? COLORS.pale_error
+                        : COLORS.pale_sucess,
                   },
                 }}
               >
-                Deactivate
+                {service.promo_status === "active" ? "Deactivate" : "Activate"}
               </Button>
             </Box>
           </Box>
@@ -173,7 +270,8 @@ const CustomServicesPromoList = ({
         <PopEditPromo
           open={isOpen}
           onClose={closePopup}
-          //   refreshData={handleRefreshData}
+          editData={popupData}
+          refreshData={refreshData}
         />
       )}
     </>
