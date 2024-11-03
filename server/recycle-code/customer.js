@@ -451,12 +451,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
           INNER JOIN Conversations conv ON conv.id = m.conversation_id
           WHERE m.is_read =   0 
           AND m.recipient_id = ?
-        ) AS unread_messages,
-        promo.discount_price,
-        promo.isActive,
-        promo.valid_days,
-        promo.start_date,
-        promo.end_date  
+        ) AS unread_messages
       FROM 
         Service_Request sr
       LEFT JOIN 
@@ -465,8 +460,6 @@ export const handleGetCustomerTrackOrderAndProgress = async (
         User_Account ua ON sr.user_id = ua.id
       LEFT JOIN 
         Service_Type st ON sr.service_type_id = st.id
-      LEFT JOIN 
-        Service_Promo promo ON st.id = promo.service_id AND promo.isActive = 1 
       LEFT JOIN 
         Laundry_Assignment la ON sr.id = la.service_request_id
       LEFT JOIN 
@@ -519,11 +512,6 @@ export const handleGetCustomerTrackOrderAndProgress = async (
             transaction_status: row.transaction_status,
             payment_method: row.payment_method,
             unread_messages: row.unread_messages,
-            promo_discount_price: row.discount_price,
-            promo_is_active: row.isActive,
-            promo_valid_days: row.valid_days,
-            promo_start_date: row.start_date,
-            promo_end_date: row.end_date,
           },
           progress: [],
           total_amount: null,
@@ -544,92 +532,6 @@ export const handleGetCustomerTrackOrderAndProgress = async (
     }, []);
 
     // Fetch total amount if assignment_id exists
-    // for (const serviceRequest of result) {
-    //   const { assignment_id } = serviceRequest.service_request;
-
-    //   if (assignment_id !== "Waiting for total amount...") {
-    //     const amountQuery = `
-    //       SELECT
-    //         la.id AS laundry_assignment_id,
-    //         sr.id AS service_request_id,
-    //         st.default_price,
-    //         la.weight,
-    //         (st.default_price * la.weight) AS base_total_amount,
-    //         sp.discount_price,
-    //         sp.valid_days,
-    //         sp.start_date,
-    //         sp.end_date,
-    //         sp.isActive,
-    //         GROUP_CONCAT(inv.item_id SEPARATOR ', ') AS item_ids,
-    //         GROUP_CONCAT(inv.price SEPARATOR ', ') AS item_prices,
-    //         GROUP_CONCAT(it.item_name SEPARATOR ', ') AS item_names,
-    //         GROUP_CONCAT(ri.quantity SEPARATOR ', ') AS quantities,
-    //         GROUP_CONCAT(ri.amount SEPARATOR ', ') AS related_item_totals,
-    //         SUM(ri.amount) AS total_related_items
-    //       FROM
-    //         Laundry_Assignment la
-    //       INNER JOIN
-    //         Service_Request sr ON la.service_request_id = sr.id
-    //       INNER JOIN
-    //         Service_Type st ON sr.service_type_id = st.id
-    //       LEFT JOIN
-    //         Service_Promo sp ON st.id = sp.service_id
-    //       LEFT JOIN
-    //         Related_Item ri ON la.id = ri.assignment_id
-    //       LEFT JOIN
-    //         Inventory inv ON ri.inventory_id = inv.id
-    //       LEFT JOIN
-    //         Item it ON inv.item_id = it.id
-    //       WHERE
-    //         la.id = ?
-    //         AND (sp.isActive = 1 OR sp.id IS NULL)
-    //         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date)
-    //       GROUP BY la.id;
-    //     `;
-
-    //     const [amountRows] = await connection.execute(amountQuery, [
-    //       assignment_id,
-    //     ]);
-
-    //     if (amountRows.length > 0) {
-    //       const {
-    //         base_total_amount,
-    //         discount_price,
-    //         valid_days,
-    //         isActive,
-    //         total_related_items,
-    //       } = amountRows[0];
-
-    //       let final_total = parseFloat(base_total_amount);
-    //       let discount_applied = null;
-
-    //       if (
-    //         isActive &&
-    //         valid_days &&
-    //         valid_days.includes(
-    //           new Date().toLocaleString("en-US", { weekday: "long" })
-    //         )
-    //       ) {
-    //         // Use discount_price if available
-    //         if (discount_price > 0) {
-    //           final_total = Math.max(
-    //             final_total - parseFloat(discount_price),
-    //             0
-    //           ); // Ensure total does not go negative
-    //           discount_applied = {
-    //             type: "price",
-    //             value: discount_price,
-    //             amount: discount_price,
-    //           };
-    //         }
-    //       }
-
-    //       final_total += parseFloat(total_related_items || 0);
-    //       serviceRequest.total_amount = final_total;
-    //     }
-    //   }
-    // }
-
     for (const serviceRequest of result) {
       const { assignment_id } = serviceRequest.service_request;
 
@@ -640,6 +542,8 @@ export const handleGetCustomerTrackOrderAndProgress = async (
             sr.id AS service_request_id,
             st.default_price,
             la.weight,
+            (st.default_price * la.weight) AS base_total_amount,
+            sp.discount_percentage,
             sp.discount_price,
             sp.valid_days,
             sp.start_date,
@@ -667,7 +571,7 @@ export const handleGetCustomerTrackOrderAndProgress = async (
             Item it ON inv.item_id = it.id
           WHERE 
             la.id = ?
-            AND (sp.isActive = 1 OR sp.isActive = 0 OR sp.id IS NULL)
+            AND (sp.isActive = 1 OR sp.id IS NULL)
             AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date)
           GROUP BY la.id;
         `;
@@ -678,39 +582,44 @@ export const handleGetCustomerTrackOrderAndProgress = async (
 
         if (amountRows.length > 0) {
           const {
-            default_price,
-            weight,
+            base_total_amount,
+            discount_percentage,
             discount_price,
             valid_days,
             isActive,
             total_related_items,
           } = amountRows[0];
 
-          console.log(amountRows);
+          let final_total = parseFloat(base_total_amount);
+          let discount_applied = null;
 
-          let final_total = 0;
-
-          // Check if the promo is active and applicable
           if (
-            isActive === 1 &&
+            isActive &&
             valid_days &&
             valid_days.includes(
               new Date().toLocaleString("en-US", { weekday: "long" })
             )
           ) {
-            if (discount_price > 0) {
-              final_total = parseFloat(discount_price) * parseFloat(weight);
+            if (discount_percentage > 0) {
+              const discount_amount = final_total * (discount_percentage / 100);
+              final_total -= discount_amount;
+              discount_applied = {
+                type: "percentage",
+                value: discount_percentage,
+                amount: discount_amount,
+              };
+            } else if (discount_price > 0) {
+              final_total -= parseFloat(discount_price);
+              discount_applied = {
+                type: "price",
+                value: discount_price,
+                amount: discount_price,
+              };
             }
           }
 
-          // If no active promo, use the default_price
-          if (final_total === 0) {
-            final_total = parseFloat(default_price) * parseFloat(weight);
-          }
-
-          // Add the total related items amount to final_total
           final_total += parseFloat(total_related_items || 0);
-          serviceRequest.total_amount = final_total;
+          serviceRequest.total_amount = final_total; // Store the final total amount
         }
       }
     }
@@ -737,164 +646,6 @@ export const handleGetCustomerTrackOrderAndProgress = async (
   }
 };
 
-// export const handleGetCalculatedTransactionForCustomer = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     // Updated query to get all data in one row
-//     const query = `
-//       SELECT
-//         la.id AS laundry_assignment_id,
-//         sr.id AS service_request_id,
-//         st.default_price,
-//         la.weight,
-//         (st.default_price * la.weight) AS base_total_amount,
-//         sp.discount_percentage,
-//         sp.discount_price,
-//         sp.valid_days,
-//         sp.start_date,
-//         sp.end_date,
-//         sp.isActive,
-//         GROUP_CONCAT(inv.item_id SEPARATOR ', ') AS item_ids,
-//         GROUP_CONCAT(inv.price SEPARATOR ', ') AS item_prices,
-//         GROUP_CONCAT(it.item_name SEPARATOR ', ') AS item_names,
-//         GROUP_CONCAT(ri.quantity SEPARATOR ', ') AS quantities,
-//         GROUP_CONCAT(ri.amount SEPARATOR ', ') AS related_item_totals,
-//         SUM(ri.amount) AS total_related_items
-//       FROM
-//         Laundry_Assignment la
-//       INNER JOIN
-//         Service_Request sr ON la.service_request_id = sr.id
-//       INNER JOIN
-//         Service_Type st ON sr.service_type_id = st.id
-//       LEFT JOIN
-//         Service_Promo sp ON st.id = sp.service_id
-//       LEFT JOIN
-//         Related_Item ri ON la.id = ri.assignment_id
-//       LEFT JOIN
-//         Inventory inv ON ri.inventory_id = inv.id
-//       LEFT JOIN
-//         Item it ON inv.item_id = it.id
-//       WHERE
-//         la.id = ?
-//         AND (sp.isActive = 1 OR sp.id IS NULL)
-//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date)
-//       GROUP BY la.id;
-//     `;
-
-//     const [rows] = await connection.execute(query, [id]);
-
-//     if (rows.length > 0) {
-//       const {
-//         weight,
-//         base_total_amount,
-//         discount_percentage,
-//         discount_price,
-//         valid_days,
-//         isActive,
-//         item_ids,
-//         item_prices,
-//         item_names,
-//         quantities,
-//         related_item_totals,
-//         total_related_items,
-//       } = rows[0];
-
-//       let final_total = parseFloat(base_total_amount);
-//       let discount_applied = null;
-
-//       console.log(
-//         `Base Total Amount (Service Price * Weight): ${base_total_amount}`
-//       );
-
-//       // Apply promo if active
-//       if (
-//         isActive &&
-//         valid_days &&
-//         valid_days.includes(
-//           new Date().toLocaleString("en-US", { weekday: "long" })
-//         )
-//       ) {
-//         if (discount_percentage > 0) {
-//           console.log(`Promo Active: ${discount_percentage}% Discount Applied`);
-//           const discount_amount = final_total * (discount_percentage / 100);
-//           final_total -= discount_amount;
-//           console.log(`Discount Amount: -${discount_amount}`);
-//           discount_applied = {
-//             type: "percentage",
-//             value: discount_percentage,
-//             amount: discount_amount,
-//           };
-//         } else if (discount_price > 0) {
-//           console.log(`Promo Active: ${discount_price} Price Discount Applied`);
-//           final_total -= parseFloat(discount_price);
-//           console.log(`Discount Amount: -${discount_price}`);
-//           discount_applied = {
-//             type: "price",
-//             value: discount_price,
-//             amount: discount_price,
-//           };
-//         }
-//       } else {
-//         console.log("No valid promo applied.");
-//       }
-
-//       final_total += parseFloat(total_related_items || 0);
-
-//       const itemIdsArray = item_ids ? item_ids.split(", ") : [];
-//       const itemNamesArray = item_ids ? item_names.split(", ") : [];
-//       const itemPricesArray = item_prices ? item_prices.split(", ") : [];
-//       const quantitiesArray = quantities ? quantities.split(", ") : [];
-//       const relatedItemTotalsArray = related_item_totals
-//         ? related_item_totals.split(", ")
-//         : [];
-
-//       res.status(200).json({
-//         success: true,
-//         data: {
-//           base_total_amount,
-//           weight: weight,
-//           discount_applied,
-//           related_items: {
-//             item_ids: itemIdsArray,
-//             item_prices: itemPricesArray,
-//             item_names: itemNamesArray,
-//             quantities: quantitiesArray,
-//             related_item_totals: relatedItemTotalsArray,
-//           },
-//           total_related_items: total_related_items || 0,
-//           final_total: final_total.toFixed(2),
-//         },
-//       });
-//     } else {
-//       console.log("No valid data found or no active promo.");
-//       res.status(404).json({
-//         success: false,
-//         message: "No valid data found or no active promo.",
-//       });
-//     }
-
-//     await connection.commit();
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching assignment:", error);
-//     res.status(500).json({
-//       success: false,
-//       error: "An error occurred while fetching the assignment.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
-
-//#PUT
-
 export const handleGetCalculatedTransactionForCustomer = async (
   req,
   res,
@@ -905,12 +656,15 @@ export const handleGetCalculatedTransactionForCustomer = async (
   try {
     await connection.beginTransaction();
 
+    // Updated query to get all data in one row
     const query = `
       SELECT 
         la.id AS laundry_assignment_id,
         sr.id AS service_request_id,
         st.default_price,
         la.weight,
+        (st.default_price * la.weight) AS base_total_amount,
+        sp.discount_percentage,
         sp.discount_price,
         sp.valid_days,
         sp.start_date,
@@ -938,7 +692,7 @@ export const handleGetCalculatedTransactionForCustomer = async (
         Item it ON inv.item_id = it.id
       WHERE 
         la.id = ?
-        AND (sp.isActive = 1 OR sp.id IS NULL OR sp.isActive = 0)
+        AND (sp.isActive = 1 OR sp.id IS NULL)
         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date)
       GROUP BY la.id;
     `;
@@ -948,7 +702,8 @@ export const handleGetCalculatedTransactionForCustomer = async (
     if (rows.length > 0) {
       const {
         weight,
-        default_price,
+        base_total_amount,
+        discount_percentage,
         discount_price,
         valid_days,
         isActive,
@@ -956,48 +711,53 @@ export const handleGetCalculatedTransactionForCustomer = async (
         item_prices,
         item_names,
         quantities,
-        start_date,
-        end_date,
         related_item_totals,
         total_related_items,
       } = rows[0];
 
-      let base_total_amount;
+      let final_total = parseFloat(base_total_amount);
       let discount_applied = null;
 
-      console.log(`Weight: ${weight}`);
+      console.log(
+        `Base Total Amount (Service Price * Weight): ${base_total_amount}`
+      );
 
-      // Determine if promo applies; if not, use default price
-      const currentDay = new Date().toLocaleString("en-US", {
-        weekday: "long",
-      });
+      // Apply promo if active
       if (
-        isActive === 1 &&
+        isActive &&
         valid_days &&
-        valid_days.includes(currentDay) &&
-        discount_price > 0
+        valid_days.includes(
+          new Date().toLocaleString("en-US", { weekday: "long" })
+        )
       ) {
-        base_total_amount = discount_price * weight;
-        discount_applied = {
-          type: "promo_price",
-          value: discount_price,
-        };
-        console.log(`Promo Active: Using discount price ${discount_price}`);
+        if (discount_percentage > 0) {
+          console.log(`Promo Active: ${discount_percentage}% Discount Applied`);
+          const discount_amount = final_total * (discount_percentage / 100);
+          final_total -= discount_amount;
+          console.log(`Discount Amount: -${discount_amount}`);
+          discount_applied = {
+            type: "percentage",
+            value: discount_percentage,
+            amount: discount_amount,
+          };
+        } else if (discount_price > 0) {
+          console.log(`Promo Active: ${discount_price} Price Discount Applied`);
+          final_total -= parseFloat(discount_price);
+          console.log(`Discount Amount: -${discount_price}`);
+          discount_applied = {
+            type: "price",
+            value: discount_price,
+            amount: discount_price,
+          };
+        }
       } else {
-        base_total_amount = default_price * weight;
-        console.log(
-          `No active promo or no promo data: Using default price ${default_price}`
-        );
+        console.log("No valid promo applied.");
       }
 
-      let final_total = base_total_amount;
-
-      // Add total related items amount to the final total
       final_total += parseFloat(total_related_items || 0);
 
-      // Parse item details into arrays
       const itemIdsArray = item_ids ? item_ids.split(", ") : [];
-      const itemNamesArray = item_names ? item_names.split(", ") : [];
+      const itemNamesArray = item_ids ? item_names.split(", ") : [];
       const itemPricesArray = item_prices ? item_prices.split(", ") : [];
       const quantitiesArray = quantities ? quantities.split(", ") : [];
       const relatedItemTotalsArray = related_item_totals
@@ -1007,14 +767,9 @@ export const handleGetCalculatedTransactionForCustomer = async (
       res.status(200).json({
         success: true,
         data: {
-          base_total_amount: base_total_amount.toFixed(2),
-          weight,
+          base_total_amount,
+          weight: weight,
           discount_applied,
-          isActive,
-          discount_price,
-          valid_days,
-          start_date,
-          end_date,
           related_items: {
             item_ids: itemIdsArray,
             item_prices: itemPricesArray,
@@ -1047,6 +802,7 @@ export const handleGetCalculatedTransactionForCustomer = async (
   }
 };
 
+//#PUT
 export const handleUpdateCustomerBasicInformationWeb = async (
   req,
   res,

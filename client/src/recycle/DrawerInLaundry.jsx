@@ -94,7 +94,25 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
               <CloseIcon />
             </IconButton>
           </Box>
+          {/* <Divider /> */}
+
+          {/* Second Row */}
+          {/* <Box
+            sx={{
+              height: "150px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#f5f5f5",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+              In Progress Laundry
+            </Typography>
+          </Box> */}
           <Divider />
+
+          {/* Third Row - Customer List */}
           <Box
             sx={{
               flex: 1,
@@ -169,32 +187,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
                       </div>
 
                       {/* Circle on the right edge with date */}
-
                       <div
-                        className="flex flex-col items-center justify-center "
-                        style={{
-                          borderColor: COLORS.secondary,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginLeft: "10px",
-                          color: COLORS.primary,
-                        }}
-                      >
-                        <span
-                          className="text-[13px] font-bold text-center flex items-center justify-center"
-                          style={{ color: COLORS.text }}
-                        >
-                          {formatDistanceToNow(new Date(customer.assigned_at))}
-                        </span>
-                        <span
-                          className="text-[12px] font-semibold mt-1"
-                          style={{ color: COLORS.secondary }}
-                        >
-                          In Progress
-                        </span>
-                      </div>
-                      {/* <div
                         className="flex flex-col items-center justify-center "
                         style={{
                           width: "155px",
@@ -221,7 +214,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
                         >
                           In Progress
                         </span>
-                      </div> */}
+                      </div>
                     </div>
 
                     <Divider sx={{ margin: 0, width: "100%" }} />
@@ -300,6 +293,20 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
               </ul>
             )}
           </Box>
+
+          {/* Bottom Row - Footer */}
+          {/* <Box
+            sx={{
+              padding: 2,
+              backgroundColor: "#f5f5f5",
+            }}
+          >
+            <Paper sx={{ padding: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                Additional Information or Footer Content
+              </Typography>
+            </Paper>
+          </Box> */}
         </Box>
       </Drawer>
 
