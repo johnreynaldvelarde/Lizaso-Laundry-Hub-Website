@@ -38,8 +38,9 @@ const StartingPage = () => {
           }
         });
       },
-      { threshold: 0.6 }
+      { threshold: 0.4 }
     ); // Adjust threshold as needed
+    
 
     sectionRefs.current.forEach((section) => {
       if (section) {
@@ -76,13 +77,13 @@ const StartingPage = () => {
         {/* <div id="services" ref={(el) => (sectionRefs.current[2] = el)}>
           <Services />
         </div> */}
-        <div id="pricing" ref={(el) => (sectionRefs.current[3] = el)}>
+        <div id="pricing" ref={(el) => (sectionRefs.current[2] = el)}>
           <Pricing />
         </div>
-        <div id="about" ref={(el) => (sectionRefs.current[4] = el)}>
+        <div id="about" ref={(el) => (sectionRefs.current[3] = el)}>
           <About/>
         </div>
-        <div id="contact" ref={(el) => (sectionRefs.current[5] = el)}>
+        <div id="contact" ref={(el) => (sectionRefs.current[4] = el)}>
           <Contact />
         </div>
 
