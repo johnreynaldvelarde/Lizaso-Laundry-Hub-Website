@@ -1,74 +1,43 @@
-// const mysql = require('mysql');
-// const dotnev = require('dotenv');
-// dotnev.config({path: './.env'})
+// import mysql from "mysql2/promise";
+// import dotenv from "dotenv";
 
+// dotenv.config({ path: "./.env" });
 
-// const connectToDatabase = () => {
-//   const db = mysql.createConnection({
-//     host: process.env.DATABASE_HOST,
-//     user: process.env.DATABASE_USER,
-//     password: process.env.DATABASE_PASSWORD,
-//     database: process.env.DATABASE
-//   });
+// let pool;
 
-//   db.connect((err) => {
-//     if (err) {
-//       console.error('Error connecting to the database:', err);
-//       process.exit(1);
-//     }
-//     console.log('Connected to the database.');
-//   });
-
-//   return db;
-// };
-
-// module.exports = { connectToDatabase };
-// import mysql from 'mysql2/promise';
-// import dotenv from 'dotenv';
-
-// dotenv.config({ path: './.env' });
-
-// const connectToDatabase = async () => {
-//   try {
-//     const connection = await mysql.createConnection({
-//       host: process.env.DATABASE_HOST,
-//       user: process.env.DATABASE_USER,
-//       password: process.env.DATABASE_PASSWORD,
-//       database: process.env.DATABASE
+// const getPool = async () => {
+//   if (!pool) {
+//     pool = mysql.createPool({
+//       host: process.env.DB_HOST,
+//       user: process.env.DB_USER,
+//       password: process.env.DB_PASSWORD,
+//       database: process.env.DB_DATABASE,
+//       waitForConnections: true,
+//       connectionLimit: 10, // Adjust based on your needs
+//       queueLimit: 0,
 //     });
-//     console.log('Connected to the database.');
-//     return connection;
-//   } catch (err) {
-//     console.error('Error connecting to the database:', err);
-//     process.exit(1);
 //   }
+//   return pool;
 // };
 
-// export { connectToDatabase };
+// export { getPool };
 
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
+import mysql from "mysql2/promise";
+import dotenv from "dotenv";
 
-dotenv.config({ path: './.env' });
+// Load environment variables from .env file
+dotenv.config({ path: "./.env" });
 
 let pool;
 
+// Construct the database URL from environment variables
+const urlDB = `mysql://${process.env.MYSQLUSER}:${process.env.MYSQL_ROOT_PASSWORD}@${process.env.MYSQLHOST}:${process.env.MYSQLPORT}/${process.env.MYSQL_DATABASE}`;
+
 const getPool = async () => {
   if (!pool) {
-    pool = mysql.createPool({
-      host: process.env.DATABASE_HOST,
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE,
-      waitForConnections: true,
-      connectionLimit: 10, // Adjust based on your needs
-      queueLimit: 0
-    });
+    pool = mysql.createPool(urlDB);
   }
   return pool;
 };
 
 export { getPool };
-
-
-
