@@ -17,7 +17,7 @@ const CustomerSatisfaction = () => {
     } else {
       // If `isOwnerAbouts` is false, start the timer and show the text
       setOwnerAbouts(true);
-      setTimeLeft(20000); // Set the countdown timer to 10 seconds
+      setTimeLeft(25000); // Set the countdown timer to 10 seconds
 
       const newIntervalId = setInterval(() => {
         setTimeLeft((prevTime) => {
