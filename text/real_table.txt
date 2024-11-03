@@ -377,16 +377,6 @@ inventory_id (Foregin Key)
 quantity,
 amount,
 
---> Message <--
-id (Primary Key)
-sender_customer_id (NULL) (Foregin Key)
-sender_user_account_id (NULL)
-recipient_customer_id (NULL)
-recipient_user_account_id (NULL)
-message
-
-isRead
-date_sent
 
 --> User_Account <--
 id
@@ -420,27 +410,6 @@ date_created
 
 sender_type
 receiver_type
-
-
-// #MESSAGE
---> Conversations <--
-id (Primary Key)
-customer_id (Foregin Key, Nullable) From Customer  
-user_id1 (Foregin Key)  From User_Account
-user_id2 (Foregin Key , Nullable)  From User_Account
-created_at
-updated_at
-last_message_at
-is_archived
-
---> Messages <--
-id (Primary Key)
-conversation_id (Foregin Key) From Conversations  
-sender_id (Foregin Key)   References either the User_Account or Customer table
-sender_type
-content
-sent_at
-is_read
 
 
 

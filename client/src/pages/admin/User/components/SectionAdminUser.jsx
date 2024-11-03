@@ -475,6 +475,7 @@ const SectionAdminUser = () => {
           </Box>
         ))}
       </Box>
+
       {/* Store and Permission Section */}
 
       {/* Store List */}

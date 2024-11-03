@@ -60,6 +60,7 @@ export const COLORS = {
   success: "#28a745", // For success messages or indicators
   pale_sucess: "#E8F5E9",
   error: "#dc3545", // For error messages or alerts
+  pale_error: "#fce4e6",
   errorHover: "#c82333",
   warning: "#ffc107", // For warning alerts
   info: "#17a2b8", // For informational messages

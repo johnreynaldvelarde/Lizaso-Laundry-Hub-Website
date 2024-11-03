@@ -22,6 +22,9 @@ import OutlinedIconButton from "../../table/OutlinedIconButton";
 import useAuth from "../../../contexts/AuthContext";
 import PopEditServices from "../../../pages/admin/Service/components/PopEditServices";
 import PopAddPromo from "../../../pages/admin/Service/components/PopAddPromo";
+import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
+import toast from "react-hot-toast";
+import { updateServiceDelete } from "../../../services/api/putApi";
 
 const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
   const { userDetails } = useAuth;
@@ -36,6 +39,24 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handlDeleteService = async (id) => {
+    if (id) {
+      try {
+        const response = await updateServiceDelete.putPromo(id);
+        if (response.success) {
+          refreshData();
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
   };
 
   return (
@@ -141,61 +162,74 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                           fontWeight: "600",
                           color: COLORS.secondary,
                           textDecoration:
-                            data.promo_status && data.discount_price
+                            data.promo_status === "active" &&
+                            data.discount_price
                               ? "line-through"
                               : "none",
                         }}
                       >
                         ₱ {data.default_price}
                       </Typography>
-                      {data.promo_status && data.discount_price && (
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: "600",
-                            color: COLORS.error,
-                            marginLeft: 1,
-                          }}
-                        >
-                          ₱ {data.discount_price}
-                        </Typography>
-                      )}
+
+                      {data.promo_status === "active" &&
+                        data.discount_price && (
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: "600",
+                              color: COLORS.error,
+                              marginLeft: 1,
+                            }}
+                          >
+                            ₱ {data.discount_price}
+                          </Typography>
+                        )}
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <DateCell dateCreated={data.date_created} />
                     </TableCell>
+
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
                         sx={{
                           fontWeight: "600",
-                          color: data.promo_status
-                            ? COLORS.white
-                            : COLORS.primary,
-                          backgroundColor: data.promo_status
-                            ? COLORS.error
-                            : COLORS.border,
+                          color:
+                            data.promo_status === null
+                              ? COLORS.primary
+                              : COLORS.white,
+                          backgroundColor:
+                            data.promo_status === null
+                              ? COLORS.background
+                              : data.promo_status === "active"
+                              ? COLORS.success
+                              : COLORS.error,
                           padding: "4px 8px",
                           borderRadius: 8,
                           display: "inline-block",
                         }}
                       >
-                        {data.promo_status ? "Active" : "Not Active"}
+                        {data.promo_status === null
+                          ? "No promo yet"
+                          : data.promo_status === "active"
+                          ? "Activated"
+                          : "Deactivated"}
                       </Typography>
                     </TableCell>
 
                     <TableCell sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}>
-                      {!data.promo_status && (
-                        <Tooltip title="Add Promo" arrow>
-                          <OutlinedIconButton
-                            onClick={() => {
-                              openPopup("addPromo", data);
-                            }}
-                          >
-                            <Tag color={COLORS.success} weight="duotone" />
-                          </OutlinedIconButton>
-                        </Tooltip>
-                      )}
+                      {data.promo_status !== "active" &&
+                        data.promo_status !== "inactive" && (
+                          <Tooltip title="Add Promo" arrow>
+                            <OutlinedIconButton
+                              onClick={() => {
+                                openPopup("addPromo", data);
+                              }}
+                            >
+                              <Tag color={COLORS.success} weight="duotone" />
+                            </OutlinedIconButton>
+                          </Tooltip>
+                        )}
 
                       <Tooltip title="Edit Services" arrow>
                         <OutlinedIconButton
@@ -212,7 +246,7 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                       <Tooltip title="Delete Services" arrow>
                         <OutlinedIconButton
                           onClick={() => {
-                            openPopup("removeService", data.id);
+                            openPopup("deleteService", data.id);
                           }}
                         >
                           <Trash color={COLORS.error} weight="duotone" />
@@ -253,6 +287,15 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
           onClose={closePopup}
           editData={popupData}
           refreshData={refreshData}
+        />
+      )}
+
+      {isOpen && popupType === "deleteService" && (
+        <DeleteConfirmationDialog
+          open={isOpen}
+          onClose={closePopup}
+          id={popupData}
+          onConfirm={handlDeleteService}
         />
       )}
     </>

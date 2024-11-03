@@ -1,6 +1,13 @@
 import React from "react";
-import Chart from "react-apexcharts";
 import { Box, Paper, Typography } from "@mui/material";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { COLORS } from "../../../constants/color";
 
 // Function to aggregate customer growth data by month
@@ -34,47 +41,27 @@ const monthNames = [
 ];
 
 const CustomerGrowthChart = ({ customerGrowthData }) => {
+  // Check if data is provided
+  if (!customerGrowthData || customerGrowthData.length === 0) {
+    return (
+      <Box sx={{ textAlign: "center", p: 2 }}>
+        <Typography>No customer growth data available.</Typography>
+      </Box>
+    );
+  }
+
   // Aggregate the data by month
   const monthlyCustomerGrowthData =
     aggregateCustomerGrowthByMonth(customerGrowthData);
 
-  // Prepare x-axis labels and data for the chart
-  const categories = Object.keys(monthlyCustomerGrowthData).map((month) => {
+  // Prepare data for the chart
+  const chartData = Object.keys(monthlyCustomerGrowthData).map((month) => {
     const [year, monthNumber] = month.split("-");
-    return `${monthNames[parseInt(monthNumber) - 1]} ${year}`; // Convert to "Month Year"
+    return {
+      name: `${monthNames[parseInt(monthNumber) - 1]} ${year}`,
+      count: monthlyCustomerGrowthData[month],
+    };
   });
-
-  const data = Object.values(monthlyCustomerGrowthData); // Use counts directly
-
-  const chartData = {
-    options: {
-      chart: {
-        type: "area", // Set chart type to area
-        zoom: { enabled: false },
-        toolbar: { show: false },
-      },
-      xaxis: {
-        categories,
-      },
-      yaxis: {
-        title: false,
-      },
-      stroke: {
-        curve: "smooth",
-      },
-      colors: [COLORS.secondary],
-      fill: {
-        colors: [COLORS.secondary],
-        opacity: 0.3,
-      },
-    },
-    series: [
-      {
-        name: "New Customers",
-        data,
-      },
-    ],
-  };
 
   return (
     <Box
@@ -107,13 +94,20 @@ const CustomerGrowthChart = ({ customerGrowthData }) => {
           Customer Growth Over Time
         </Typography>
         <Box sx={{ height: { xs: "250px", sm: "320px" }, p: 1 }}>
-          <Chart
-            options={chartData.options}
-            series={chartData.series}
-            type="area"
-            height="100%"
-            width="100%"
-          />
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="count"
+                stroke={COLORS.secondary}
+                fill={COLORS.secondary}
+                fillOpacity={0.3}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </Box>
       </Paper>
     </Box>
@@ -123,15 +117,8 @@ const CustomerGrowthChart = ({ customerGrowthData }) => {
 export default CustomerGrowthChart;
 
 // import React from "react";
+// import Chart from "react-apexcharts";
 // import { Box, Paper, Typography } from "@mui/material";
-// import {
-//   AreaChart,
-//   Area,
-//   XAxis,
-//   YAxis,
-//   Tooltip,
-//   ResponsiveContainer,
-// } from "recharts";
 // import { COLORS } from "../../../constants/color";
 
 // // Function to aggregate customer growth data by month
@@ -165,27 +152,47 @@ export default CustomerGrowthChart;
 // ];
 
 // const CustomerGrowthChart = ({ customerGrowthData }) => {
-//   // Check if data is provided
-//   if (!customerGrowthData || customerGrowthData.length === 0) {
-//     return (
-//       <Box sx={{ textAlign: "center", p: 2 }}>
-//         <Typography>No customer growth data available.</Typography>
-//       </Box>
-//     );
-//   }
-
 //   // Aggregate the data by month
 //   const monthlyCustomerGrowthData =
 //     aggregateCustomerGrowthByMonth(customerGrowthData);
 
-//   // Prepare data for the chart
-//   const chartData = Object.keys(monthlyCustomerGrowthData).map((month) => {
+//   // Prepare x-axis labels and data for the chart
+//   const categories = Object.keys(monthlyCustomerGrowthData).map((month) => {
 //     const [year, monthNumber] = month.split("-");
-//     return {
-//       name: `${monthNames[parseInt(monthNumber) - 1]} ${year}`,
-//       count: monthlyCustomerGrowthData[month],
-//     };
+//     return `${monthNames[parseInt(monthNumber) - 1]} ${year}`; // Convert to "Month Year"
 //   });
+
+//   const data = Object.values(monthlyCustomerGrowthData); // Use counts directly
+
+//   const chartData = {
+//     options: {
+//       chart: {
+//         type: "area", // Set chart type to area
+//         zoom: { enabled: false },
+//         toolbar: { show: false },
+//       },
+//       xaxis: {
+//         categories,
+//       },
+//       yaxis: {
+//         title: false,
+//       },
+//       stroke: {
+//         curve: "smooth",
+//       },
+//       colors: [COLORS.secondary],
+//       fill: {
+//         colors: [COLORS.secondary],
+//         opacity: 0.3,
+//       },
+//     },
+//     series: [
+//       {
+//         name: "New Customers",
+//         data,
+//       },
+//     ],
+//   };
 
 //   return (
 //     <Box
@@ -218,20 +225,13 @@ export default CustomerGrowthChart;
 //           Customer Growth Over Time
 //         </Typography>
 //         <Box sx={{ height: { xs: "250px", sm: "320px" }, p: 1 }}>
-//           <ResponsiveContainer width="100%" height="100%">
-//             <AreaChart data={chartData}>
-//               <XAxis dataKey="name" />
-//               <YAxis />
-//               <Tooltip />
-//               <Area
-//                 type="monotone"
-//                 dataKey="count"
-//                 stroke={COLORS.secondary}
-//                 fill={COLORS.secondary}
-//                 fillOpacity={0.3}
-//               />
-//             </AreaChart>
-//           </ResponsiveContainer>
+//           <Chart
+//             options={chartData.options}
+//             series={chartData.series}
+//             type="area"
+//             height="100%"
+//             width="100%"
+//           />
 //         </Box>
 //       </Paper>
 //     </Box>

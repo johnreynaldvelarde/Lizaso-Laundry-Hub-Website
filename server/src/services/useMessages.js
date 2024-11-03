@@ -370,6 +370,7 @@ export const handleGetInboxOnlyAdmin = async (req, res, connection) => {
 
 export const handleUpdateMessageIsRead = async (req, res, connection) => {
   const { user_one_id, user_two_id } = req.params;
+  console.log(req.params);
 
   try {
     await connection.beginTransaction();
@@ -392,6 +393,8 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
     }
 
     const conversationId = conversationResult[0].id;
+
+    console.log(conversationId);
 
     // Step 2: Update `is_read` to 1 in Messages table where recipient_id matches user_one_id
     const [updateResult] = await connection.query(

@@ -251,6 +251,61 @@ export const updateReviews = {
   },
 };
 
+//#SERVICES MANAGEMENT SECTION
+export const updateServicePromo = {
+  putPromo: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/services-management/${id}/update-service-promo`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateServicePromoDeactived = {
+  putPromoDeactived: async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/services-management/${id}/update-promo-deactivated`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateServicePromoActived = {
+  putPromoActived: async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/services-management/${id}/update-promo-activated`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateServiceDelete = {
+  putPromo: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/services-management/${id}/update-service-delete`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 // SETTINGS SECTION
 //  <----- Service Type Section ----->
 export const updateServiceType = {

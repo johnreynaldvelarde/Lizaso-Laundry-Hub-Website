@@ -57,3 +57,17 @@ export const checkDateMatch = (option, date) => {
       return false; // Handle any unknown options
   }
 };
+
+export const getCurrentDay = () => {
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const today = new Date();
+  return daysOfWeek[today.getDay()];
+};

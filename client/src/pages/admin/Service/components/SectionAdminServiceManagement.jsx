@@ -14,6 +14,7 @@ import CustomCreatedDate from "../../../../components/common/table/filter/Custom
 import {
   getCustomerGrowthOverTime,
   getCustomerList,
+  getPromoList,
   getServicesTypeList,
 } from "../../../../services/api/getApi";
 import { parseISO } from "date-fns";
@@ -22,6 +23,7 @@ import CustomerGrowthChart from "../../../../components/common/chart/CustomerGro
 import CustomServicesManagement from "../../../../components/common/table/CustomServicesManagementTable";
 import CustomServicesManagementTable from "../../../../components/common/table/CustomServicesManagementTable";
 import PopAddNewServices from "./PopAddNewServices";
+import CustomServicesPromoList from "./CustomServicesPromoList";
 
 const SectionAdminServiceManagement = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -30,6 +32,7 @@ const SectionAdminServiceManagement = ({ storeId }) => {
   const [filteredData, setFilteredData] = useState([]);
   const { data: servicesListData, fetchData: fetchServicesList } =
     useFetchData();
+  const { data: promoListData, fetchData: fetchPromoList } = useFetchData();
   const [loading, setLoading] = useState(true);
 
   const fetchServicesListData = useCallback(async () => {
@@ -38,9 +41,16 @@ const SectionAdminServiceManagement = ({ storeId }) => {
     setLoading(false);
   }, [fetchServicesList, storeId]);
 
+  const fetchPromoListData = useCallback(async () => {
+    setLoading(true);
+    await fetchPromoList(getPromoList.viewPromo, storeId);
+    setLoading(false);
+  }, [fetchPromoList, storeId]);
+
   useEffect(() => {
     fetchServicesListData();
-  }, [fetchServicesListData]);
+    fetchPromoListData();
+  }, [fetchServicesListData, fetchPromoListData]);
 
   useEffect(() => {
     if (servicesListData) {
@@ -82,6 +92,7 @@ const SectionAdminServiceManagement = ({ storeId }) => {
 
   const handleRefreshData = () => {
     fetchServicesListData();
+    fetchPromoListData();
   };
 
   return (
@@ -101,14 +112,14 @@ const SectionAdminServiceManagement = ({ storeId }) => {
             "Overview of Laundry Services with Custom Promotional Offers"
           }
         />
-        {/* <CustomAddButton
-          onClick={() => openPopup("addCustomer")}
-          label={"Add new customer"}
-          icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
-        /> */}
       </Box>
 
       {/* Sub Header */}
+      <CustomServicesPromoList
+        servicesPromoData={promoListData}
+        refreshData={handleRefreshData}
+      />
+
       {/* <Box
         display="flex"
         sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
@@ -257,14 +268,6 @@ const SectionAdminServiceManagement = ({ storeId }) => {
           refreshData={handleRefreshData}
         />
       )}
-
-      {/* {isOpen && popupType === "addCustomer" && (
-        <PopAddNewCustomer
-          open={isOpen}
-          onClose={closePopup}
-          refreshData={handleRefreshData}
-        />
-      )} */}
     </>
   );
 };

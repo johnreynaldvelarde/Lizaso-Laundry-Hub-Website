@@ -26,6 +26,12 @@ import {
 } from "../services/admin/useInventory.js";
 import { handleUpdateServiceRequestOngoing } from "../services/user/staff.js";
 import { handleUpdateReview } from "../services/admin/useReviews.js";
+import {
+  handleUpdateActivatedPromo,
+  handleUpdateDeactivatePromo,
+  handleUpdatePromo,
+  handleUpdateServiceDelete,
+} from "../services/admin/useServices.js";
 
 const router = express.Router();
 
@@ -218,6 +224,51 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateReview(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//#SERVICES MANAGEMENT SECTION
+router.put(
+  "/services-management/:id/update-service-promo",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdatePromo(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/services-management/:id/update-promo-deactivated",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateDeactivatePromo(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/services-management/:id/update-promo-activated",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateActivatedPromo(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/services-management/:id/update-service-delete",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceDelete(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

@@ -193,7 +193,7 @@ const PopEditServices = ({ open, onClose, editData, refreshData }) => {
       </DialogContent>
       {/* Footer */}
       <CustomPopFooterButton
-        label={"Create Service"}
+        label={"Update Service"}
         onClose={onClose}
         onSubmit={handleUpdateServices}
         loading={loading}
