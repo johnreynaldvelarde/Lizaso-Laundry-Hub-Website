@@ -6,7 +6,7 @@ import PopupLogin from "../../components/common/PopupLogin";
 import Home from "../../components/landing-page/Home";
 import Features from "../../components/landing-page/Features";
 import Pricing from "../../components/landing-page/Pricing";
-import Services from "../../components/landing-page/Services";
+// import Services from "../../components/landing-page/Services";
 import Footer from "../../components/landing-page/Footer";
 import About from "../../components/landing-page/about-f/About";
 import Contact from "../../components/landing-page/Contact";
@@ -73,9 +73,9 @@ const StartingPage = () => {
         <div id="features" ref={(el) => (sectionRefs.current[1] = el)}>
           <Features />
         </div>
-        <div id="services" ref={(el) => (sectionRefs.current[2] = el)}>
+        {/* <div id="services" ref={(el) => (sectionRefs.current[2] = el)}>
           <Services />
-        </div>
+        </div> */}
         <div id="pricing" ref={(el) => (sectionRefs.current[3] = el)}>
           <Pricing />
         </div>

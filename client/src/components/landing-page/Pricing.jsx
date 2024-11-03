@@ -1,6 +1,10 @@
 
 import React from "react";
-
+import bigSaleGif from "../../assets/images/big-sale.gif";
+import freeGif from "../../assets/images/free.gif";
+import priceTagGif from "../../assets/images/price-tag.gif";
+import moreGif from "../../assets/images/more.gif";
+import mustHaveGif from "../../assets/images/must-have.gif";
 const Pricing = () => {
   return (
     <div className=" ">
@@ -16,8 +20,15 @@ const Pricing = () => {
             <div className="w-full mx-auto ">
               <div className="grid grid-cols-1 md:grid-cols-2  px-2 gap-5 lg:px-40 md:px-4 w-full">
                 {/* Card 1 */}
-                <div className="bg-[#f9f9f9] p-6 rounded-lg shadow-md w-full">
-                  <h3 className="text-2xl font-bold text-black mb-4">Promo Day</h3>
+                <div className="bg-white p-6 rounded-lg shadow-md w-full">
+                  <div className="flex items-center mb-4 bg-white rounded-xl">
+                    <img 
+                      src={bigSaleGif} 
+                      alt="Big Sale" 
+                      className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-300 mr-2 rounded-l-xl" // Adjust the size as needed
+                    />
+                    <h3 className="text-2xl font-bold text-black">Promo Day</h3>
+                  </div>
                   <ul className="mt-2 text-gray-600 grid grid-cols-2  sm:flex items-center sm:justify-evenly sm:gap-5">
                     <li>Monday</li>
                     <li>Tuesday</li>
@@ -42,8 +53,15 @@ const Pricing = () => {
                   </div>
                 </div>
                 {/* Card 2 */}
-                <div className="bg-[#f9f9f9] p-6 rounded-lg shadow-md w-full">
-                  <h3 className="text-2xl font-bold text-black mb-4">Regular Day</h3>
+                <div className=" bg-white p-6 rounded-lg shadow-md w-full">
+                <div className="flex items-center mb-4 bg-white rounded-xl">
+                    <img 
+                      src={priceTagGif} 
+                      alt="Big Sale" 
+                      className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-300 mr-2 rounded-l-xl" // Adjust the size as needed
+                    />
+                    <h3 className="text-2xl font-bold text-black">Regular Day</h3>
+                  </div>
                   <ul className="mt-2 text-gray-600 grid grid-cols-2 md:flex items-center justify-evenly gap-5">
                     <li>Thursday</li>
                     <li>Friday</li>
@@ -73,8 +91,15 @@ const Pricing = () => {
               <div className="w-full">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5 py-5 px-2 md:px-4 w-full">
                   {/* Card 3 */}
-                  <div className="bg-[#f9f9f9] p-6 rounded-lg shadow-md w-full">
-                    <h3 className="text-2xl font-bold text-black mb-4">Special Promo</h3>
+                  <div className="bg-white p-6 rounded-lg shadow-md w-full">
+                    <div className="flex items-center mb-4 bg-white rounded-xl">
+                      <img 
+                        src={freeGif} 
+                        alt="Big Sale" 
+                        className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-300 mr-2 rounded-l-xl" // Adjust the size as needed
+                      />
+                      <h3 className="text-2xl font-bold text-black">Special Promo</h3>
+                    </div>
                     <p className="mt-2 text-gray-600">Loyal customers with 7 times service availed get our +1 free laundry</p>
                     <div className="flex items-center pl-10 sm:pl-0 gap-1">
                       <p className="mt-2 text-black font-semibold font-mono text-[30px]">7 + 1</p>
@@ -83,8 +108,15 @@ const Pricing = () => {
                     <p className="mt-2 text-blue-800 font-bold font-serif pl-10 sm:pl-0">Wash & Dry, Wash or Dry</p>
                   </div>
                   {/* Card 4 */}
-                  <div className="bg-[#f9f9f9] p-6 rounded-lg shadow-md w-full">
-                    <h3 className="text-2xl font-bold text-black mb-4">Other Necessities</h3>
+                  <div className=" bg-white p-6 rounded-lg shadow-md w-full">
+                    <div className="flex items-center mb-4 bg-white rounded-xl">
+                      <img 
+                        src={mustHaveGif} 
+                        alt="Big Sale" 
+                        className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-100 mr-2 rounded-l-xl" // Adjust the size as needed
+                      />
+                      <h3 className="text-2xl font-bold text-black">Other Necessities</h3>
+                    </div>
                     <p className="mt-2 text-gray-600">We also sell and offers different type of:</p>
                     <div className="flex items-center justify-evenly space-x-5">
                       <ul className="items-center mt-4 gap-5 text-xl font-semibold mb-4">
@@ -105,8 +137,15 @@ const Pricing = () => {
                     </div>
                   </div>
                   {/* Card 5 */}
-                  <div className="bg-[#f9f9f9] p-6 rounded-lg shadow-md w-full">
-                    <h3 className="text-2xl font-bold text-black mb-4">Other Services</h3>
+                  <div className=" bg-white p-6 rounded-lg shadow-md w-full">
+                    <div className="flex items-center mb-4 bg-white rounded-xl">
+                      <img 
+                        src={moreGif} 
+                        alt="Big Sale" 
+                        className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 hover:scale-110 transition-transform duration-300 mr-2 rounded-l-xl" // Adjust the size as needed
+                      />
+                      <h3 className="text-2xl font-bold text-black">Other Service</h3>
+                    </div>
                     <p className="mt-2 text-gray-600">Other services we offer are: </p>
                     <div className="flex items-center justify-evenly space-x-5">
                       <ul className="list-disc list-inside items-center mt-4 gap-5 text-xl font-semibold mb-4">

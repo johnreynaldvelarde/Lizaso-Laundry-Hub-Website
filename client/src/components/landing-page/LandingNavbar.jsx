@@ -9,11 +9,17 @@ import styles from "../../style";
 const LandingNavbar = ({
   HandleLoginPopup,
   HandleCreateAccountPopup,
-  activeIndex,
+  initialActiveIndex,
 }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(initialActiveIndex || 0);
+
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
+  };
+
+  const handleNavItemClick = (index) => {
+    setActiveIndex(index);
   };
 
   return (
@@ -40,7 +46,11 @@ const LandingNavbar = ({
             style={{ color: styles.textColor2, fontSize: styles.h3FontSize }}
           >
             {navItems.map((item, index) => (
-              <li key={index} className="relative">
+              <li
+                key={index}
+                className="relative"
+                onClick={() => handleNavItemClick(index)}
+              >
                 <a
                   href={item.href}
                   style={{
@@ -49,17 +59,17 @@ const LandingNavbar = ({
                         ? styles.buttonColor1
                         : styles.textColor2,
                   }}
+                  className="pb-2" // Padding to create space for the underline
                 >
                   {item.label}
                 </a>
-                {/* Add the blue line below the active item */}
+                {/* Blue underline below the active item */}
                 <div
-                  className={`absolute left-0 right-0 bottom-[-5px] h-[2px] bg-[#5787C8] transition-all duration-300 ${
-                    activeIndex === index ? "scale-x-100" : "scale-x-0"
+                  className={`absolute left-0 bottom-0 h-[2px] bg-[#5787C8] transition-all duration-300 ${
+                    activeIndex === index ? "w-full" : "w-0"
                   }`}
                   style={{
-                    transformOrigin: "left",
-                    transition: "transform 0.3s ease-in-out",
+                    transitionProperty: "width",
                   }}
                 ></div>
               </li>
@@ -78,7 +88,7 @@ const LandingNavbar = ({
             </button>
             <button
               onClick={HandleCreateAccountPopup}
-              className="text-white  py-2 px-5 rounded-3xl shadow-md"
+              className="text-white py-2 px-5 rounded-3xl shadow-md"
               style={{ background: styles.buttonColor1 }}
             >
               Create Account
@@ -111,7 +121,11 @@ const LandingNavbar = ({
                 }}
               >
                 {navItems.map((item, index) => (
-                  <li key={index} className="py-4">
+                  <li
+                    key={index}
+                    className="py-4"
+                    onClick={() => handleNavItemClick(index)}
+                  >
                     <a href={item.href}>{item.label}</a>
                   </li>
                 ))}
