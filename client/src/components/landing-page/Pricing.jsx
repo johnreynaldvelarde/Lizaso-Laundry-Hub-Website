@@ -10,7 +10,7 @@ const Pricing = () => {
       >
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-10 text-[#5787C8]">
-            Services and Products Prices
+            Service and Product Prices
           </h2>
             {/* Main Grid */}
             <div className="w-full mx-auto ">
