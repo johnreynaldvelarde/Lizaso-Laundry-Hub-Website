@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -16,76 +16,14 @@ import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import { COLORS } from "../../../../constants/color";
 import styled from "@emotion/styled";
 import CustomDashHorizontal from "./CustomDashHorizontal";
-import total_sales from "../../../../assets/gif/total_sales.gif";
+import total_revenue from "../../../../assets/gif/total_revenue.gif";
 import total_service_request from "../../../../assets/gif/total_service_request.gif";
 import total_customers from "../../../../assets/gif/total_customers.gif";
+import total_average_weight from "../../../../assets/gif/total_average_weight.gif";
+import useFetchData from "../../../../hooks/common/useFetchData";
+import { getAdminTotalRevenue } from "../../../../services/api/getApi";
 
 // Mock data for the example
-const keyMetrics = [
-  {
-    title: "Total Sales",
-    amount: "₱95,800",
-    change: "+32.40%",
-    progress: 32,
-    color: "#4690FF",
-    gif_icon: total_sales,
-    data: [
-      { name: "Jan", value: 4000 },
-      { name: "Feb", value: 3000 },
-      { name: "Mar", value: 5000 },
-      { name: "Apr", value: 7000 },
-      { name: "May", value: 6000 },
-      { name: "Jun", value: 8000 },
-    ],
-  },
-  {
-    title: "Total Service Request",
-    amount: "53,400",
-    change: "-18.45%",
-    progress: 48,
-    color: "#B4162C",
-    gif_icon: total_service_request,
-    data: [
-      { name: "Jan", value: 4000 },
-      { name: "Feb", value: 3000 },
-      { name: "Mar", value: 5000 },
-      { name: "Apr", value: 7000 },
-      { name: "May", value: 6000 },
-      { name: "Jun", value: 8000 },
-    ],
-  },
-  {
-    title: "Total Customers",
-    amount: "90,875",
-    change: "+20.34%",
-    progress: 89,
-    color: "#4CAF50",
-    gif_icon: total_customers,
-    data: [
-      { name: "Jan", value: 4000 },
-      { name: "Feb", value: 3000 },
-      { name: "Mar", value: 5000 },
-      { name: "Apr", value: 7000 },
-      { name: "May", value: 6000 },
-      { name: "Jun", value: 8000 },
-    ],
-  },
-  {
-    title: "Total Music",
-    amount: "63,076 GB",
-    change: "+14.45%",
-    progress: 54,
-    color: "#FFC107",
-    data: [
-      { name: "Jan", value: 4000 },
-      { name: "Feb", value: 3000 },
-      { name: "Mar", value: 5000 },
-      { name: "Apr", value: 7000 },
-      { name: "May", value: 6000 },
-      { name: "Jun", value: 8000 },
-    ],
-  },
-];
 
 const tableData1 = [
   { id: 1, name: "John Doe", role: "Manager" },
@@ -103,6 +41,75 @@ const tableData3 = [
 ];
 
 const SectionAdminDashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const { data: totalRevenue, fetchData: fetchTotalRevenue } = useFetchData();
+
+  const fetchTotalRevenueData = useCallback(async () => {
+    setLoading(true);
+    await fetchTotalRevenue(getAdminTotalRevenue.getTotalRevenue);
+    setLoading(false);
+  }, [fetchTotalRevenue]);
+
+  useEffect(() => {
+    fetchTotalRevenueData();
+  }, [fetchTotalRevenueData]);
+
+  const { title, amount, change, chart_data } = totalRevenue;
+  const keyMetrics = [
+    {
+      title,
+      amount,
+      change,
+      chart_data: chart_data,
+      gif_icon: total_revenue,
+    },
+    {
+      title: "Total Laundry Orders",
+      amount: "53,400",
+      change: "-18.45%",
+      color: "#B4162C",
+      gif_icon: total_service_request,
+      chart_data: [
+        { name: "Jan", value: 4000 },
+        { name: "Feb", value: 3000 },
+        { name: "Mar", value: 5000 },
+        { name: "Apr", value: 7000 },
+        { name: "May", value: 6000 },
+        { name: "Jun", value: 8000 },
+      ],
+    },
+    {
+      title: "Total Customers",
+      amount: "90,875",
+      change: "+20.34%",
+      color: "#4CAF50",
+      gif_icon: total_customers,
+      chart_data: [
+        { name: "Jan", value: 4000 },
+        { name: "Feb", value: 3000 },
+        { name: "Mar", value: 5000 },
+        { name: "Apr", value: 7000 },
+        { name: "May", value: 6000 },
+        { name: "Jun", value: 8000 },
+      ],
+    },
+    {
+      title: "Average Load Weight",
+      amount: "63,076 GB",
+      change: "+14.45%",
+      color: "#FFC107",
+      gif_icon: total_average_weight,
+      chart_data: [
+        { name: "Jan", value: 4000 },
+        { name: "Feb", value: 3000 },
+        { name: "Mar", value: 5000 },
+        { name: "Apr", value: 7000 },
+        { name: "May", value: 6000 },
+        { name: "Jun", value: 8000 },
+      ],
+    },
+  ];
+
   return (
     <>
       {/* Header */}

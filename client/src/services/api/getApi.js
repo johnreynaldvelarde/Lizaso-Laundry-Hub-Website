@@ -7,10 +7,10 @@ const handleError = (error) => {
 };
 
 //#DASHBOARD ADMIN SECTION
-export const getAdminDashboard = {
-  getAdmin: async () => {
+export const getAdminTotalRevenue = {
+  getTotalRevenue: async () => {
     try {
-      const response = await axiosPrivate.get(`/dashboard/get-calculated`);
+      const response = await axiosPrivate.get(`/dashboard/get-total-revenue`);
       return response.data;
     } catch (error) {
       console.error("Error fetching customer requests:", error);
