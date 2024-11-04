@@ -429,7 +429,22 @@ const UnitMonitor = () => {
               </Typography>
 
               {unit.isUnitStatus === 1 ? (
-                <Lottie options={defaultOptions} height={200} width={200} />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%", // Adjust height as needed
+                    pointerEvents: "auto",
+                  }}
+                >
+                  <Lottie
+                    options={defaultOptions}
+                    height={220}
+                    width={220}
+                    style={{ pointerEvents: "none" }}
+                  />
+                </div>
               ) : (
                 <img
                   src={getUnitImage(unit.isUnitStatus)}

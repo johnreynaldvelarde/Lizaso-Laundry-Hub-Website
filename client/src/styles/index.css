@@ -110,6 +110,7 @@ a.active > .linkBtn {
   height: 100%;
   overflow-x: auto; /* Ensure horizontal scrolling */
   overflow-y: hidden; /* Hide vertical scrollbar */
+  padding-bottom: 5px;
 }
 
 .hori-scrollable::-webkit-scrollbar {

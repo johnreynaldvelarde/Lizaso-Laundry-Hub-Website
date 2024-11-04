@@ -24,7 +24,7 @@ import {
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { createLaundryAssignment } from "../../../../services/api/postApi";
 
-function PopupAssignUnit({ open, onClose, inqueueID }) {
+function PopupAssignUnit({ open, onClose, inqueueID, refreshData }) {
   const { userDetails } = useAuth();
   const [selectedAssignUnit, setSelectedAssignUnit] = useState(null);
   const [weight, setWeight] = useState("");
