@@ -33,9 +33,11 @@ import {
 } from "../../../../services/api/postApi";
 import toast from "react-hot-toast";
 import useAuth from "../../../../contexts/AuthContext";
+import { getCurrentDay } from "../../../../utils/method";
 
 const PopWalkInTransaction = ({ open, onClose, data, refreshData }) => {
   const { userDetails } = useAuth();
+  const currentDay = getCurrentDay();
   const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [serviceType, setServiceType] = useState("");
@@ -445,12 +447,54 @@ const PopWalkInTransaction = ({ open, onClose, data, refreshData }) => {
                         <Typography
                           align="center"
                           sx={{
-                            color: COLORS.secondary,
-                            fontWeight: 600,
+                            color: COLORS.primary,
+                            fontWeight: 500,
                             fontSize: 10,
                           }}
                         >
-                          Base Price: {data.default_price}
+                          Base Price:{" "}
+                          <span
+                            style={{
+                              color:
+                                transactionData.isActive === 1 &&
+                                transactionData.valid_days.includes(currentDay)
+                                  ? "grey"
+                                  : COLORS.secondary,
+                              textDecorationLine:
+                                transactionData.isActive === 1 &&
+                                transactionData.valid_days.includes(currentDay)
+                                  ? "line-through"
+                                  : "none",
+                            }}
+                          >
+                            {`₱ ${data.default_price}`}
+                          </span>
+                        </Typography>
+                        <Typography
+                          align="center"
+                          sx={{
+                            color: COLORS.primary,
+                            fontWeight: 500,
+                            fontSize: 10,
+                          }}
+                        >
+                          Discount Promo:
+                          <span>
+                            {transactionData.isActive &&
+                              transactionData.valid_days.includes(
+                                currentDay
+                              ) && (
+                                <Typography
+                                  sx={{
+                                    color: COLORS.error,
+                                    fontWeight: 600,
+                                    fontSize: 10,
+                                  }}
+                                >
+                                  {`₱ ${transactionData.discount_price}`}
+                                </Typography>
+                              )}
+                          </span>
                         </Typography>
                       </Box>
                     </Grid>
@@ -475,26 +519,6 @@ const PopWalkInTransaction = ({ open, onClose, data, refreshData }) => {
                           fontWeight: 500,
                         }}
                       >{`₱${transactionData.base_total_amount}`}</Typography>
-
-                      {transactionData.discount_applied && (
-                        <Box
-                          sx={{
-                            borderRadius: "8px",
-                            textAlign: "center",
-                          }}
-                        >
-                          <Typography
-                            align="center"
-                            sx={{
-                              color: COLORS.secondary,
-                              fontWeight: 600,
-                              fontSize: 10,
-                            }}
-                          >
-                            {transactionData.discount_applied}
-                          </Typography>
-                        </Box>
-                      )}
                     </Grid>
                   </Grid>
                 </List>

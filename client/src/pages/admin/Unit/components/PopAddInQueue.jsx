@@ -77,31 +77,6 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
     }
   }, [open, fetchItemData, fetchSelectedCustomerData, fetchServiceTypeData]);
 
-  const handleSupplySelect = (event) => {
-    setSelectedSupplies(event.target.value);
-  };
-
-  const handleQuantityChange = (supplyId, quantity) => {
-    const supply = itemData.find((s) => s.inventory_id === supplyId);
-
-    if (quantity > supply.quantity) {
-      setQuantityErrors((prev) => ({
-        ...prev,
-        [supplyId]: `Quantity cannot exceed available amount (${supply.quantity})`,
-      }));
-    } else {
-      setQuantityErrors((prev) => ({
-        ...prev,
-        [supplyId]: "",
-      }));
-    }
-
-    setQuantities((prev) => ({
-      ...prev,
-      [supplyId]: quantity,
-    }));
-  };
-
   const handleAdditionalInfoToggle = () => {
     setShowAdditionalInfo((prev) => !prev);
   };
@@ -114,9 +89,6 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
     const newErrors = {};
     if (!selectedCustomer) {
       newErrors.selectedCustomer = "Customer is required";
-    }
-    if (weight <= 0) {
-      newErrors.weight = "Weight must be greater than 0";
     }
     return newErrors;
   };
@@ -156,18 +128,18 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
-      const data = {
-        customerId: selectedCustomer.id,
-        userId: userDetails.userId,
-        serviceId: selectedTabId,
-        fullname: selectedCustomer.fullname,
-        customerNotes: notes,
+      const customerData = {
+        customer_id: selectedCustomer.id,
+        user_id: userDetails.userId,
+        service_type_id: selectedTabId,
+        customer_name: selectedCustomer.fullname,
+        notes: notes,
       };
 
       try {
         const response = await createNewInqueue.setInQueue(
           userDetails.storeId,
-          data
+          customerData
         );
 
         if (response.success) {

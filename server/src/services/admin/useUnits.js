@@ -3,6 +3,7 @@ import {
   generateTransactionId,
 } from "../../helpers/generateCode.js";
 import { progress } from "../../helpers/_progress.js";
+import QRCode from "qrcode";
 const newPickupDate = new Date();
 
 //#POST
@@ -442,8 +443,9 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
 
 // SET CUSTOMER INQUEUE
 export const handleSetCustomerInQueue = async (req, res, connection) => {
-  const { id } = req.params; // Customer ID
-  const { store_id, service_type_id, customer_name, notes } = req.body;
+  const { id } = req.params;
+  const { user_id, customer_id, service_type_id, customer_name, notes } =
+    req.body;
 
   try {
     await connection.beginTransaction();
@@ -456,13 +458,13 @@ export const handleSetCustomerInQueue = async (req, res, connection) => {
         AND request_status NOT IN ('Canceled', 'Completed Delivery', 'Completed');
     `;
 
-    const [countResult] = await connection.execute(countQuery, [id]);
+    const [countResult] = await connection.execute(countQuery, [customer_id]);
     const requestCount = countResult[0].request_count;
 
-    if (requestCount >= 2) {
+    if (requestCount >= 10) {
       return res.status(200).json({
         success: false,
-        message: "Max of 2 active requests allowed",
+        message: "Max of 10 active requests allowed",
       });
     }
 
@@ -476,12 +478,13 @@ export const handleSetCustomerInQueue = async (req, res, connection) => {
         AND DATE(request_date) = CURDATE();
     `;
 
-    const [queueResult] = await connection.execute(queueQuery, [store_id]);
+    const [queueResult] = await connection.execute(queueQuery, [id]);
     const queueNumber = queueResult[0].next_queue_number;
 
     const query = `
       INSERT INTO Service_Request (
           store_id,
+          user_id,
           customer_id,
           service_type_id,
           customer_fullname,
@@ -493,15 +496,16 @@ export const handleSetCustomerInQueue = async (req, res, connection) => {
           queue_number,
           qr_code_generated
         ) 
-      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
     `;
 
     const [result] = await connection.execute(query, [
-      store_id,
       id,
+      user_id,
+      customer_id,
       service_type_id,
       customer_name,
-      "Online",
+      "Walk-In",
       notes,
       "In Queue",
       trackingCode,
@@ -737,7 +741,9 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
         JOIN 
           Service_Type st ON sr.service_type_id = st.id
         WHERE 
-          sr.store_id = ? AND sr.request_status = 'At Store'
+          sr.store_id = ? AND sr.request_status = 'In Queue'
+        ORDER BY 
+          sr.queue_number ASC
       `;
 
     const [rows] = await connection.execute(query, [id]);

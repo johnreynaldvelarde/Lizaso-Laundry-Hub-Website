@@ -542,7 +542,11 @@ const UnitMonitor = () => {
       )}
 
       {openInQueue && (
-        <PopupInQueue open={openInQueue} onClose={handleCloseInQueue} />
+        <PopupInQueue
+          open={openInQueue}
+          onClose={handleCloseInQueue}
+          refreshData={handleRefreshData}
+        />
       )}
 
       {/* Popup */}

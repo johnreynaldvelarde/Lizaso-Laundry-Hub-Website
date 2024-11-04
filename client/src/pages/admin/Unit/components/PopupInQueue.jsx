@@ -28,7 +28,7 @@ import CustomFilterCustomerType from "../../../../components/common/table/filter
 import CustomCustomerInQueue from "./import/CustomCustomerInQueue";
 import { updateProgressInQueueAtStore } from "../../../../services/api/putApi";
 
-const PopupInQueue = ({ open, onClose }) => {
+const PopupInQueue = ({ open, onClose, refreshData }) => {
   const { userDetails } = useAuth();
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [searchTerm, setSearchTerm] = useState("");
@@ -79,6 +79,7 @@ const PopupInQueue = ({ open, onClose }) => {
   }, [fetchUnitsData, fetchInQueueData, open]);
 
   const handleRefreshData = () => {
+    refreshData();
     fetchUnitsData();
     fetchInQueueData();
   };
@@ -286,7 +287,11 @@ const PopupInQueue = ({ open, onClose }) => {
 
       {/* Sub Header 3 */}
       <DialogContent>
-        <CustomCustomerInQueue customers={filteredData} loading={isLoading} />
+        <CustomCustomerInQueue
+          customers={filteredData}
+          loading={isLoading}
+          refreshData={handleRefreshData}
+        />
       </DialogContent>
 
       {isOpen && popupType === "addInQueue" && (

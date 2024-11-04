@@ -21,7 +21,7 @@ import usePopup from "../../../../../hooks/common/usePopup";
 import PopupAssignUnit from "../PopupAssignUnit";
 import PopNotes from "../PopNotes";
 
-const CustomCustomerInQueue = ({ customers, loading }) => {
+const CustomCustomerInQueue = ({ customers, loading, refreshData }) => {
   const scrollRef = useRef(null);
   const [showArrows, setShowArrows] = useState(false);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();

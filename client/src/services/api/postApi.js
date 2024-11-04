@@ -22,7 +22,7 @@ export const createUnit = {
 };
 
 export const createNewInqueue = {
-  setInQueue: async (data, storeId) => {
+  setInQueue: async (storeId, data) => {
     try {
       const response = await axiosPrivate.post(
         `/monitored-unit/${storeId}/set-customer-inqueue`,
