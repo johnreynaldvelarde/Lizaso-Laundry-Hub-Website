@@ -548,18 +548,14 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
           sr.id, 
           sr.store_id, 
           sr.user_id, 
-          sr.customer_id,
-          sr.tracking_code,
-          sr.queue_number, 
+          sr.customer_id, 
           sr.customer_fullname,
-          sr.customer_type,
           sr.notes, 
           sr.service_type_id, 
           sr.request_date, 
           sr.pickup_date, 
           sr.delivery_date, 
           sr.request_status,
-          sr.payment_method,
           st.service_name
         FROM 
           Service_Request sr
@@ -802,6 +798,162 @@ export const handleGetInventoryLaundryItem = async (req, res, connection) => {
     res.status(500).json({ error: "Failed to get inventory items" });
   }
 };
+
+//# ITS ABOUT GETTING THE CALCULATED TRANSACTION
+// export const handleGetCalculatedTransaction = async (req, res, connection) => {
+//   const { id } = req.params; // Laundry_Assignment ID
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const transactionId = generateTransactionId();
+
+//     // Updated query to get all data in one row
+//     const query = `
+//       SELECT
+//         la.id AS laundry_assignment_id,
+//         sr.id AS service_request_id,
+//         st.default_price,
+//         la.weight,
+//         (st.default_price * la.weight) AS base_total_amount,
+//         sp.discount_percentage,
+//         sp.discount_price,
+//         sp.valid_days,
+//         sp.start_date,
+//         sp.end_date,
+//         sp.isActive,
+//         GROUP_CONCAT(inv.item_id SEPARATOR ', ') AS item_ids,
+//         GROUP_CONCAT(inv.price SEPARATOR ', ') AS item_prices,
+//         GROUP_CONCAT(it.item_name SEPARATOR ', ') AS item_names,
+//         GROUP_CONCAT(ri.quantity SEPARATOR ', ') AS quantities,
+//         GROUP_CONCAT(ri.amount SEPARATOR ', ') AS related_item_totals,
+//         SUM(ri.amount) AS total_related_items
+//       FROM
+//         Laundry_Assignment la
+//       INNER JOIN
+//         Service_Request sr ON la.service_request_id = sr.id
+//       INNER JOIN
+//         Service_Type st ON sr.service_type_id = st.id
+//       LEFT JOIN
+//         Service_Promo sp ON st.id = sp.service_id
+//       LEFT JOIN
+//         Related_Item ri ON la.id = ri.assignment_id
+//       LEFT JOIN
+//         Inventory inv ON ri.inventory_id = inv.id
+//       LEFT JOIN
+//         Item it ON inv.item_id = it.id
+//       WHERE
+//         la.id = ?
+//         AND (sp.isActive = 1 OR sp.id IS NULL)
+//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date)
+//       GROUP BY la.id;
+//     `;
+
+//     const [rows] = await connection.execute(query, [id]);
+
+//     if (rows.length > 0) {
+//       const {
+//         weight,
+//         base_total_amount,
+//         discount_percentage,
+//         discount_price,
+//         valid_days,
+//         isActive,
+//         item_ids,
+//         item_prices,
+//         item_names,
+//         quantities,
+//         related_item_totals,
+//         total_related_items,
+//       } = rows[0];
+
+//       let final_total = parseFloat(base_total_amount);
+//       let discount_applied = null;
+
+//       console.log(
+//         `Base Total Amount (Service Price * Weight): ${base_total_amount}`
+//       );
+
+//       // Apply promo if active
+//       if (
+//         isActive &&
+//         valid_days &&
+//         valid_days.includes(
+//           new Date().toLocaleString("en-US", { weekday: "long" })
+//         )
+//       ) {
+//         if (discount_percentage > 0) {
+//           console.log(`Promo Active: ${discount_percentage}% Discount Applied`);
+//           const discount_amount = final_total * (discount_percentage / 100);
+//           final_total -= discount_amount;
+//           console.log(`Discount Amount: -${discount_amount}`);
+//           discount_applied = {
+//             type: "percentage",
+//             value: discount_percentage,
+//             amount: discount_amount,
+//           };
+//         } else if (discount_price > 0) {
+//           console.log(`Promo Active: ${discount_price} Price Discount Applied`);
+//           final_total -= parseFloat(discount_price);
+//           console.log(`Discount Amount: -${discount_price}`);
+//           discount_applied = {
+//             type: "price",
+//             value: discount_price,
+//             amount: discount_price,
+//           };
+//         }
+//       } else {
+//         console.log("No valid promo applied.");
+//       }
+
+//       final_total += parseFloat(total_related_items || 0);
+
+//       const itemIdsArray = item_ids ? item_ids.split(", ") : [];
+//       const itemNamesArray = item_ids ? item_names.split(", ") : [];
+//       const itemPricesArray = item_prices ? item_prices.split(", ") : [];
+//       const quantitiesArray = quantities ? quantities.split(", ") : [];
+//       const relatedItemTotalsArray = related_item_totals
+//         ? related_item_totals.split(", ")
+//         : [];
+
+//       res.status(200).json({
+//         success: true,
+//         data: {
+//           transaction_id: transactionId,
+//           base_total_amount,
+//           weight: weight,
+//           discount_applied,
+//           related_items: {
+//             item_ids: itemIdsArray,
+//             item_prices: itemPricesArray,
+//             item_names: itemNamesArray,
+//             quantities: quantitiesArray,
+//             related_item_totals: relatedItemTotalsArray,
+//           },
+//           total_related_items: total_related_items || 0,
+//           final_total: final_total.toFixed(2),
+//         },
+//       });
+//     } else {
+//       console.log("No valid data found or no active promo.");
+//       res.status(404).json({
+//         success: false,
+//         message: "No valid data found or no active promo.",
+//       });
+//     }
+
+//     await connection.commit();
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching assignment:", error);
+//     res.status(500).json({
+//       success: false,
+//       error: "An error occurred while fetching the assignment.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };
 
 export const handleGetCalculatedTransaction = async (req, res, connection) => {
   const { id } = req.params;

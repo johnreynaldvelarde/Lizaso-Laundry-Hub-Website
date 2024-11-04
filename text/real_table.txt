@@ -492,79 +492,32 @@ date_read,
 
 
 
-
+// #SERVICE REQUEST STATUS SAMPLE
 
 
 --> Notifications <--
 https://isomorphic-furyroad.vercel.app/logistics
 
-// Hard Part
+//  Step 1
 Pending Pickup – The customer has placed a service request, but the clothes have not been picked up yet.
 Ongoing Pickup – The delivery staff has picked up the clothes from the customer's location.
 Completed Pickup – The delivery staff has picked up the clothes from the customer's location.
 
 
+//  Step 2
 At Store – The clothes have been dropped off at the laundry store.
 In Queue – The clothes are waiting for an available laundry unit.
 In Laundry – The clothes have been assigned to a laundry unit and are currently being washed/dried.
 Laundry Completed – The clothes have finished the washing/drying process.
 
+
+//  Step 3
 Ready for Delivery – The clothes are ready to be delivered back to the customer.
 Out for Delivery – The delivery staff is on the way to deliver the clothes to the customer.
 Completed Delivery – The clothes have been delivered to the customer, and payment has been confirmed.
-	
 Canceled - its cancel the service request of the customer
 
 
 
 
 
-
-// QUERY
-CREATE TABLE Messages (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    conversation_id BIGINT NOT NULL,                     -- Reference to the Conversations table
-    user_sender_id BIGINT,                               -- ID of the User sender (if applicable)
-    customer_sender_id BIGINT,                           -- ID of the Customer sender (if applicable)
-    message TEXT NOT NULL,                               -- The content of the message
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Timestamp of when the message was sent
-
-    -- Foreign key references
-    FOREIGN KEY (conversation_id) REFERENCES Conversations(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_sender_id) REFERENCES User_Account(id) ON DELETE CASCADE, 
-    FOREIGN KEY (customer_sender_id) REFERENCES Customer(id) ON DELETE CASCADE 
-);
-
-
-CREATE TABLE Conversations (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_sender_id BIGINT,                   -- ID of the User sender (if applicable)
-    customer_sender_id BIGINT,               -- ID of the Customer sender (if applicable)
-    user_receiver_id BIGINT,                 -- ID of the User receiver (if applicable)
-    customer_receiver_id BIGINT,             -- ID of the Customer receiver (if applicable)
-    last_message TEXT,                       -- The content of the last message
-    last_message_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp of the last message
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the conversation was created
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Timestamp of the last update
-
-    -- Foreign key references
-    FOREIGN KEY (user_sender_id) REFERENCES User_Account(id) ON DELETE CASCADE,
-    FOREIGN KEY (customer_sender_id) REFERENCES Customer(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_receiver_id) REFERENCES User_Account(id) ON DELETE CASCADE,
-    FOREIGN KEY (customer_receiver_id) REFERENCES Customer(id) ON DELETE CASCADE
-);
-
-CREATE TABLE Messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    sender_customer_id INT NULL,  -- NULL if sender is from User_Account
-    sender_user_account_id INT NULL,  -- NULL if sender is a Customer
-    recipient_customer_id INT NULL,  -- NULL if recipient is from User_Account
-    recipient_user_account_id INT NULL,  -- NULL if recipient is a Customer
-    message TEXT NOT NULL,
-    isRead BOOLEAN DEFAULT FALSE,
-    date_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sender_customer_id) REFERENCES Customer(id),
-    FOREIGN KEY (sender_user_account_id) REFERENCES User_Account(id),
-    FOREIGN KEY (recipient_customer_id) REFERENCES Customer(id),
-    FOREIGN KEY (recipient_user_account_id) REFERENCES User_Account(id)
-);

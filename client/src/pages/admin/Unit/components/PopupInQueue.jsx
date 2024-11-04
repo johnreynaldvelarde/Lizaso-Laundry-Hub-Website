@@ -1,39 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  IconButton,
-  Paper,
-  Button,
-  Tooltip,
   Typography,
   Box,
   Chip,
-  Skeleton,
-  Divider,
   Stack,
 } from "@mui/material";
-import styles from "../../../../styles/style";
 import { Link } from "react-router-dom";
-import {
-  CalendarDots,
-  SlidersHorizontal,
-  MinusSquare,
-  WashingMachine,
-  PlusCircle,
-  CheckCircle,
-} from "@phosphor-icons/react";
-import CloseIcon from "@mui/icons-material/Close";
-import nodata from "../../../../assets/images/no_data_all.jpg";
-import useUnitMonitor from "../../../../hooks/admin/useUnitMonitor";
+import { CalendarDots, PlusCircle } from "@phosphor-icons/react";
+
 import PopupAssignUnit from "./PopupAssignUnit";
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { viewRequestInQueue, viewUnits } from "../../../../services/api/getApi";
 import useAuth from "../../../../contexts/AuthContext";
-import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import { COLORS } from "../../../../constants/color";
 import usePopup from "../../../../hooks/common/usePopup";
@@ -43,22 +25,13 @@ import CustomUnitsAvailable from "./import/CustomUnitsAvailable";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomOutlinedAddButton from "../../../../components/common/CustomOutlinedAddButton";
 import CustomFilterCustomerType from "../../../../components/common/table/filter/CustomFilterCustomerType";
-import Net10Grid from "./import/Net10Box";
+import { sampleData } from "../../../../services/api/sample_data";
+import CustomCustomerInQueue from "./import/CustomCustomerInQueue";
 
 const PopupInQueue = ({ open, onClose }) => {
   const { userDetails } = useAuth();
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [loading, setLoading] = useState(true);
-  // const {
-  //   dialogQueueOpen,
-  //   dialogAssignUnitOpen,
-  //   selectedQueueID,
-  //   setDialogQueueOpen,
-  //   setDialogAssignUnitOpen,
-  //   handleDialogAssignUnit,
-  //   handleDialogRemoveInQueue,
-  //   handleConfrimRemoveQueue,
-  // } = useUnitMonitor();
 
   const { data: unitsData, fetchData: fetchUnits } = useFetchData();
   const { data: inQueueData, fetchData: fetchInQueue } = useFetchData();
@@ -70,7 +43,9 @@ const PopupInQueue = ({ open, onClose }) => {
   }, [fetchUnits, userDetails?.storeId]);
 
   const fetchInQueueData = useCallback(() => {
+    setLoading(true);
     fetchInQueue(viewRequestInQueue.getRequestInQueue, userDetails.storeId);
+    setLoading(false);
   }, [fetchInQueue, userDetails?.storeId]);
 
   useEffect(() => {
@@ -81,7 +56,7 @@ const PopupInQueue = ({ open, onClose }) => {
       const intervalId = setInterval(() => {
         fetchUnitsData();
         fetchInQueueData();
-      }, 1000);
+      }, 10000);
 
       return () => {
         clearInterval(intervalId);
@@ -228,7 +203,7 @@ const PopupInQueue = ({ open, onClose }) => {
       {/* Sub Header 3 */}
       <DialogContent>
         <Box>
-          <Net10Grid />
+          <CustomCustomerInQueue customers={sampleData} loading={loading} />
           <Box>
             {/* 
           {inQueueData.length === 0 ? (
