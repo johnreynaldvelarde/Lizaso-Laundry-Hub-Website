@@ -19,7 +19,7 @@ import {
 } from "./services/default.js";
 
 // Database Connection
-import { getPool } from "./db/dbConfig.js";
+import { getPool } from "./db/dbConfigSample.js";
 import setupSocketIO from "./socket/socket.js";
 
 const app = express();
