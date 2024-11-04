@@ -1,11 +1,5 @@
 import { axiosPrivate } from "../../api/axios";
 
-// export const updateCustomerBasicInformation = {
-//     setCustomerInformation: async (data) => {
-
-//     },
-//   };
-
 export const updateCustomerBasicInformation = {
   setCustomerInformation: async (customerId, data) => {
     try {
@@ -71,6 +65,19 @@ export const updatePendingToAssign = {
       const response = await axiosPrivate.put(
         `/schedules/${id}/update-pending-assign`,
         data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
+export const updateCompletedPickupToAtStore = {
+  putCompletedAtStore: async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/schedules/${id}/update-completed-pickup-at-store`
       );
       return response.data;
     } catch (error) {

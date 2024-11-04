@@ -32,7 +32,7 @@ import { COLORS } from "../../../../constants/color";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
-const PopAddInQueue = ({ open, onClose, unitName, unitId, refreshData }) => {
+const PopAddInQueue = ({ open, onClose, refreshData }) => {
   const { userDetails } = useAuth();
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [weight, setWeight] = useState("");
@@ -169,7 +169,6 @@ const PopAddInQueue = ({ open, onClose, unitName, unitId, refreshData }) => {
       const data = {
         customerId: selectedCustomer.id,
         userId: userDetails.userId,
-        unitId: unitId,
         serviceId: selectedTabId,
         fullname: selectedCustomer.fullname,
         weight: weight,

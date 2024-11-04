@@ -35,6 +35,7 @@ const PopupInQueue = ({ open, onClose }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { data: unitsData, fetchData: fetchUnits } = useFetchData();
   const { data: inQueueData, fetchData: fetchInQueue } = useFetchData();
@@ -46,9 +47,9 @@ const PopupInQueue = ({ open, onClose }) => {
   }, [fetchUnits, userDetails?.storeId]);
 
   const fetchInQueueData = useCallback(() => {
-    setLoading(true);
+    setIsLoading(true);
     fetchInQueue(viewRequestInQueue.getRequestInQueue, userDetails.storeId);
-    setLoading(false);
+    setIsLoading(false);
   }, [fetchInQueue, userDetails?.storeId]);
 
   useEffect(() => {
@@ -73,13 +74,15 @@ const PopupInQueue = ({ open, onClose }) => {
   };
 
   const allUnitsAvailable =
-    unitsData && unitsData.every((unit) => unit.isUnitStatus === 1);
+    unitsData &&
+    unitsData.length > 0 &&
+    unitsData.every((unit) => unit.isUnitStatus === 1);
 
   useEffect(() => {
-    if (sampleData) {
-      setFilteredData(sampleData);
+    if (inQueueData) {
+      setFilteredData(inQueueData);
     }
-  }, [sampleData]);
+  }, [inQueueData]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -93,7 +96,7 @@ const PopupInQueue = ({ open, onClose }) => {
   };
 
   const applyFilters = (status, search) => {
-    const filtered = sampleData.filter((item) => {
+    const filtered = inQueueData.filter((item) => {
       const isStatusMatch = status
         ? item.customer_type === status // Ensure status is checked against customer_type
         : true;
@@ -112,7 +115,7 @@ const PopupInQueue = ({ open, onClose }) => {
 
   useEffect(() => {
     applyFilters(selectedStatus, searchTerm);
-  }, [selectedStatus, searchTerm, sampleData]);
+  }, [selectedStatus, searchTerm, inQueueData]);
 
   return (
     <Dialog
@@ -248,7 +251,7 @@ const PopupInQueue = ({ open, onClose }) => {
               onClick={() => {
                 setSearchTerm("");
                 setSelectedStatus("");
-                setFilteredData(sampleData);
+                setFilteredData(inQueueData);
               }}
               sx={{
                 width: {
@@ -273,43 +276,14 @@ const PopupInQueue = ({ open, onClose }) => {
 
       {/* Sub Header 3 */}
       <DialogContent>
-        <CustomCustomerInQueue customers={filteredData} loading={loading} />
+        <CustomCustomerInQueue customers={filteredData} loading={isLoading} />
       </DialogContent>
-
-      {/* <ConfirmationDialog
-      // open={dialogQueueOpen}
-      // onClose={() => setDialogQueueOpen(false)}
-      // onConfirm={handleConfrimRemoveQueue}
-      // itemId={selectedQueueID}
-      /> */}
-
-      {isOpen && popupType === "selectAssignUnit" && (
-        <PopupAssignUnit
-          open={isOpen}
-          onClose={closePopup}
-          inqueueID={popupData}
-          refreshData={handleRefreshData}
-          // onConfirm={handleRemoveCategory}
-          // id={popupData}
-          // inqueueID={selectedQueueID}
-        />
-      )}
 
       {isOpen && popupType === "addInQueue" && (
         <PopAddInQueue
           open={isOpen}
           onClose={closePopup}
-          // onConfirm={handleRemoveCategory}
-          // id={popupData}
-        />
-      )}
-
-      {isOpen && popupType === "removeCategory" && (
-        <ConfirmationDialog
-          open={isOpen}
-          onClose={closePopup}
-          onConfirm={handleRemoveCategory}
-          id={popupData}
+          refreshData={handleRefreshData}
         />
       )}
     </Dialog>

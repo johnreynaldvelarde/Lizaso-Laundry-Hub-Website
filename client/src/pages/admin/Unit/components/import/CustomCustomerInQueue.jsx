@@ -11,11 +11,20 @@ import {
 import { COLORS } from "../../../../../constants/color";
 import { formatDistanceToNow } from "date-fns";
 import nodata from "../../../../../assets/images/no_data_table.jpg";
-import { ArrowFatLeft, ArrowFatRight } from "@phosphor-icons/react";
+import {
+  ArrowFatLeft,
+  ArrowFatRight,
+  Note,
+  NotEquals,
+} from "@phosphor-icons/react";
+import usePopup from "../../../../../hooks/common/usePopup";
+import PopupAssignUnit from "../PopupAssignUnit";
+import PopNotes from "../PopNotes";
 
 const CustomCustomerInQueue = ({ customers, loading }) => {
   const scrollRef = useRef(null);
   const [showArrows, setShowArrows] = useState(false);
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
 
   // Function to scroll left
   const scrollLeft = () => {
@@ -213,8 +222,18 @@ const CustomCustomerInQueue = ({ customers, loading }) => {
                   addSuffix: true,
                 })}
               </Typography>
-              <Box sx={{ mt: 2, width: "100%" }}>
+
+              <Box
+                sx={{
+                  mt: 2,
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
                 <Button
+                  onClick={() => openPopup("assignUnit", customer.id)}
                   variant="contained"
                   fullWidth
                   sx={{
@@ -229,6 +248,20 @@ const CustomCustomerInQueue = ({ customers, loading }) => {
                 >
                   Assign Unit
                 </Button>
+
+                {customer.notes && customer.notes.trim() !== "" && (
+                  <IconButton
+                    onClick={() => openPopup("seeNotes", customer.notes)}
+                    sx={{
+                      border: 1,
+                      borderColor: COLORS.border,
+                      borderRadius: "5px",
+                      padding: "8px",
+                    }}
+                  >
+                    <Note color={COLORS.primary} />
+                  </IconButton>
+                )}
               </Box>
             </Paper>
           ))
@@ -284,6 +317,18 @@ const CustomCustomerInQueue = ({ customers, loading }) => {
         >
           <ArrowFatRight color={COLORS.white} weight="duotone" />
         </IconButton>
+      )}
+
+      {isOpen && popupType === "assignUnit" && (
+        <PopupAssignUnit
+          open={isOpen}
+          onClose={closePopup}
+          inqueueID={popupData}
+        />
+      )}
+
+      {isOpen && popupType === "seeNotes" && (
+        <PopNotes open={isOpen} onClose={closePopup} notes={popupData} />
       )}
     </Box>
   );

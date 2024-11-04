@@ -536,7 +536,7 @@ export const handleGetServiceType = async (req, res, connection) => {
   }
 };
 
-// Get Service In Queue
+// GET SERVICE REQUEST IN QUEUE
 export const handleGetServiceInQueue = async (req, res, connection) => {
   const { id } = req.params;
 
@@ -566,7 +566,7 @@ export const handleGetServiceInQueue = async (req, res, connection) => {
         JOIN 
           Service_Type st ON sr.service_type_id = st.id
         WHERE 
-          sr.store_id = ? AND sr.request_status = 'Completed Pickup'
+          sr.store_id = ? AND sr.request_status = 'At Store'
       `;
 
     const [rows] = await connection.execute(query, [id]);
@@ -719,7 +719,7 @@ export const handleGetCountRequestInQueue = async (req, res, connection) => {
     const query = `
       SELECT COUNT(*) AS count
       FROM Service_Request
-      WHERE store_id = ? AND request_status = 'Completed Pickup'
+      WHERE store_id = ? AND request_status = 'At Store'
     `;
 
     const [results] = await connection.execute(query, [id]);
@@ -961,6 +961,7 @@ export const handleUpdateProgressInqueueAndAtStore = async (
   connection
 ) => {
   const { id } = req.params;
+  console.log(id);
   try {
     await connection.beginTransaction();
 
@@ -1071,5 +1072,44 @@ export const handlePutRemoveInQueue = async (req, res, connection) => {
     res
       .status(500)
       .json({ success: false, message: "Error canceling the request", error });
+  }
+};
+
+export const handleUpdateGenerateQueueNumber = async (req, res, connection) => {
+  const { id } = req.params; // store id
+
+  try {
+    await connection.beginTransaction();
+
+    const [rows] = await connection.execute(
+      `SELECT completed FROM Service_Progress 
+       WHERE service_request_id = ? AND (stage = 'At Store' OR stage = 'In Queue')`,
+      [id]
+    );
+
+    if (rows.length > 0 && rows.every((row) => row.completed === true)) {
+      await connection.rollback();
+      return;
+    }
+    await connection.execute(
+      `UPDATE Service_Progress 
+       SET completed = true,
+           status_date = NOW()
+       WHERE service_request_id = ? AND completed = false AND (stage = 'At Store' OR stage = 'In Queue')`,
+      [id]
+    );
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "Error updating service progress.",
+      error,
+    });
   }
 };

@@ -19,6 +19,9 @@ import { getStatusColor } from "./custom/method";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
+import ConfirmationDialog from "../ConfirmationDialog";
+import ChangeConfirmationDialong from "../ChangeConfirmationDialong";
+import { updateCompletedPickupToAtStore } from "../../../services/api/putApi";
 
 const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
@@ -32,6 +35,26 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handeUpdateStatus = async (id) => {
+    if (id) {
+      try {
+        console.log(id);
+        const response =
+          await updateCompletedPickupToAtStore.putCompletedAtStore(id);
+        if (response.success) {
+          refreshData();
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
   };
 
   return (
@@ -144,13 +167,18 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
                       <Typography
                         variant="body2"
                         sx={{
-                          paddingX: 2,
-                          paddingY: 0.5,
+                          paddingX: { xs: 1, sm: 2, md: 2 },
+                          paddingY: { xs: 0.25, sm: 0.5, md: 0.9 },
                           backgroundColor: getStatusColor(data.request_status),
-                          fontWeight: "600",
+                          fontWeight: 600,
                           color: COLORS.white,
-                          borderRadius: 8,
+                          borderRadius: { xs: 4, sm: 6, md: 8 },
                           display: "inline-block",
+                          fontSize: {
+                            xs: "0.6rem",
+                            sm: "0.7rem",
+                            md: "0.8rem",
+                          }, // Responsive font size
                         }}
                       >
                         {data.request_status}
@@ -183,6 +211,19 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
                         >
                           Assign To
                         </Button>
+                      ) : data.request_status === "Completed Pickup" ? (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: COLORS.secondary,
+                            textTransform: "none",
+                          }}
+                          onClick={() => {
+                            openPopup("markInStore", data.id);
+                          }}
+                        >
+                          Mark as In-Store
+                        </Button>
                       ) : null}
                     </TableCell>
                   </TableRow>
@@ -210,6 +251,15 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
           onClose={closePopup}
           id={popupData}
           refreshData={refreshData}
+        />
+      )}
+
+      {isOpen && popupType === "markInStore" && (
+        <ChangeConfirmationDialong
+          open={isOpen}
+          onClose={closePopup}
+          id={popupData}
+          onConfirm={handeUpdateStatus}
         />
       )}
     </>

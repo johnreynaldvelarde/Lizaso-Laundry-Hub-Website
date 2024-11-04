@@ -181,3 +181,46 @@ export const handleGetSelectedStaff = async (req, res, connection) => {
       .json({ error: "An error occurred while fetching the staff list." });
   }
 };
+
+//#COMPLETE PICKUP TO At Store
+export const handleUpdateServiceRequestCompletedPickup = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Service_Request
+      SET request_status = 'At Store'
+      WHERE id = ?`;
+
+    await connection.execute(updateQuery, [id]);
+
+    const updateProgressQuery = `
+      UPDATE Service_Progress
+      SET completed = true,
+          status_date = NOW()
+      WHERE service_request_id = ? AND stage = 'At Store'`;
+
+    await connection.execute(updateProgressQuery, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Request status updated to At Store.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the request.",
+    });
+  } finally {
+    connection.release();
+  }
+};
