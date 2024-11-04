@@ -4,15 +4,23 @@ import PopupServiceSelect from "./PopupServiceSelect";
 import background_1 from "../../assets/images/background_2.jpg";
 import styles from "../../styles/style";
 import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { getCustomerServiceAndPromotions } from "../../services/api/customerApi";
+import {
+  getCustomerServiceAndPromotions,
+  getServicePromoHeader,
+} from "../../services/api/customerApi";
 import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 import useFetchData from "../../hooks/common/useFetchData";
+import { COLORS } from "../../constants/color";
 
 const LaundryServices = () => {
   const { userDetails } = useAuth();
   const { selectedService, setSelectedService } = useLaundryPlans();
+  const [loading, setLoading] = useState(true);
 
   const { data: services, fetchData: fetchServiceTypeAndPromotions } =
+    useFetchData();
+
+  const { data: servicesPromo, fetchData: fetchAvailablePromo } =
     useFetchData();
 
   const fetchServiceAndPromotionsData = useCallback(() => {
@@ -24,9 +32,19 @@ const LaundryServices = () => {
     }
   }, [fetchServiceTypeAndPromotions, userDetails.storeId]);
 
+  const fetchServicePromoAvailablePromoData = useCallback(() => {
+    setLoading(true);
+    fetchAvailablePromo(
+      getServicePromoHeader.getPromoHeader,
+      userDetails.storeId
+    );
+    setLoading(false);
+  }, [fetchAvailablePromo, userDetails.storeId]);
+
   useEffect(() => {
     fetchServiceAndPromotionsData();
-  }, [fetchServiceAndPromotionsData]);
+    fetchServicePromoAvailablePromoData();
+  }, [fetchServiceAndPromotionsData, fetchServicePromoAvailablePromoData]);
 
   const specialPromos = [
     { id: 1, label: "Wash & Fold", price: 18, promo: "20% Off Today!" },
@@ -36,14 +54,12 @@ const LaundryServices = () => {
     { id: 5, label: "Ironing", price: 12, promo: "5% Off Today!" },
   ];
 
-  const promoRef = useRef(null); // Reference to the promotions container
+  const promoRef = useRef(null);
 
-  // Function to scroll promotions to the left
   const scrollLeft = () => {
     promoRef.current.scrollBy({ left: -300, behavior: "smooth" });
   };
 
-  // Function to scroll promotions to the right
   const scrollRight = () => {
     promoRef.current.scrollBy({ left: 300, behavior: "smooth" });
   };
@@ -87,7 +103,7 @@ const LaundryServices = () => {
           {/* Right Side - Special Promo Services */}
           <div className="flex-1 min-w-[300px] lg:min-w-[400px] max-w-[800px] flex flex-col justify-center mt-14 lg:mt-0">
             <h3 className="text-2xl font-bold text-[#5787C8] mb-4">
-              Special Promotions
+              Services Promo
             </h3>
             <div className="relative">
               {/* Left Arrow */}
@@ -129,6 +145,7 @@ const LaundryServices = () => {
           </div>
         </div>
       </div>
+
       {/* Below Section */}
       <div
         className="py-20 min-h-[500px] flex flex-col items-center"
@@ -149,13 +166,20 @@ const LaundryServices = () => {
                 key={service.service_id}
                 className="relative flex flex-col items-center bg-white border border-gray-300 rounded-lg shadow-lg p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300 ease-in-out w-full sm:w-64"
               >
-                <div className="flex items-center justify-center mb-4 mt-6">
-                  <FaCheckCircle className="text-3xl text-[#5787C8] mr-2" />
+                <div className="flex items-center justify-center mb-2 mt-6">
                   <span
-                    className="text-lg font-semibold"
-                    style={{ color: styles.text3 }}
+                    className="text-xl font-semibold"
+                    style={{ color: COLORS.text }}
                   >
                     {service.service_name}
+                  </span>
+                </div>
+                <div className="flex items-center justify-center">
+                  <span
+                    className="text-lg font-semibold"
+                    style={{ color: COLORS.text }}
+                  >
+                    {service.description}
                   </span>
                 </div>
                 <p
@@ -171,7 +195,7 @@ const LaundryServices = () => {
                   onClick={() => handleSelectService(service)}
                   className="mt-4 px-4 py-2 bg-[#5787C8] text-white rounded-md hover:bg-[#4A6D94] transition-colors duration-300 ease-in-out"
                 >
-                  Select
+                  Choose This Service
                 </button>
               </div>
             ))}

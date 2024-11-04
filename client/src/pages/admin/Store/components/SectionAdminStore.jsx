@@ -33,6 +33,9 @@ import DateCell from "../../../../components/table/DateCell";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { viewStoreByAdmin } from "../../../../services/api/getApi";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
+import DeleteConfirmationDialog from "../../../../components/common/DeleteConfirmationDialog";
+import PopEditStore from "./PopEditStore";
+import useAuth from "../../../../contexts/AuthContext";
 
 const PerformanceMetrics = ({
   storeName,
@@ -111,6 +114,7 @@ const PerformanceMetrics = ({
 };
 
 const SectionAdminStore = () => {
+  const { userDetails } = useAuth();
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const { data: storeData, fetchData: fetchStores } = useFetchData();
 
@@ -253,18 +257,21 @@ const SectionAdminStore = () => {
                     <DateCell dateCreated={store.date_created} />
                   </TableCell>
                   <TableCell sx={{ paddingY: 3, paddingX: 2 }}>
-                    <Tooltip title="View Store" arrow>
-                      <OutlinedIconButton>
-                        <Eye color={COLORS.primary} weight="duotone" />
-                      </OutlinedIconButton>
-                    </Tooltip>
                     <Tooltip title="Edit Store" arrow>
-                      <OutlinedIconButton>
+                      <OutlinedIconButton
+                        onClick={() => {
+                          openPopup("editStore", store);
+                        }}
+                      >
                         <PencilLine color={COLORS.secondary} weight="duotone" />
                       </OutlinedIconButton>
                     </Tooltip>
                     <Tooltip title="Delete Store" arrow>
-                      <OutlinedIconButton>
+                      <OutlinedIconButton
+                        onClick={() => {
+                          openPopup("deleteStore", store.store_id);
+                        }}
+                      >
                         <Trash color={COLORS.error} weight="duotone" />
                       </OutlinedIconButton>
                     </Tooltip>
@@ -279,6 +286,14 @@ const SectionAdminStore = () => {
       {/* Popup */}
       {isOpen && popupType === "addNewStore" && (
         <PopAddNewStore open={isOpen} onClose={closePopup} />
+      )}
+
+      {isOpen && popupType === "editStore" && (
+        <PopEditStore open={isOpen} onClose={closePopup} />
+      )}
+
+      {isOpen && popupType === "deleteStore" && (
+        <DeleteConfirmationDialog open={isOpen} onClose={closePopup} />
       )}
     </>
   );
@@ -295,52 +310,3 @@ const cellHeadStyles = {
   fontWeight: 600, // Changed to semi-bold
   textTransform: "uppercase",
 };
-
-{
-  /* Search and Filter Section */
-}
-{
-  /* <Grid container spacing={2} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Search Store..."
-            sx={{ backgroundColor: COLORS.white }}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
-          <FormControl fullWidth variant="outlined">
-            <InputLabel>Filter by Manager</InputLabel>
-            <Select
-              label="Filter by Manager"
-              sx={{ backgroundColor: COLORS.white }}
-            >
-              <MenuItem value="">
-                <em>All</em>
-              </MenuItem>
-              <MenuItem value="John Doe">John Doe</MenuItem>
-              <MenuItem value="Jane Smith">Jane Smith</MenuItem>
-              <MenuItem value="Michael Johnson">Michael Johnson</MenuItem>
-              <MenuItem value="Emily Davis">Emily Davis</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-      </Grid> */
-}
-
-{
-  /* Sample list of stores */
-}
-
-{
-  /* <Snackbar
-        open={openSnackbar}
-        autoHideDuration={4000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert onClose={handleSnackbarClose} severity="success">
-          {snackbarMessage}
-        </Alert>
-      </Snackbar> */
-}

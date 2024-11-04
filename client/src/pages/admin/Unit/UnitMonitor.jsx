@@ -137,6 +137,8 @@ const UnitMonitor = () => {
 
   const handleRefreshData = () => {
     fetchUnitsData();
+    fetchCountInQueueData();
+    fetchCountAssignmentData();
   };
 
   const handleStatusChange = (event) => {

@@ -44,6 +44,21 @@ export const createFeedbackAndReview = {
 };
 
 // #GET
+
+export const getServicePromoHeader = {
+  getPromoHeader: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/customers/${storeId}/get-service-types`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 export const getCustomerServiceAndPromotions = {
   getServiceWithPromotions: async (storeId) => {
     try {

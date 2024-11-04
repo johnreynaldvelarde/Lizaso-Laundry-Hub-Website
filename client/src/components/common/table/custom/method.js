@@ -12,6 +12,10 @@ export const getStatusColor = (status) => {
       return COLORS.success;
     case "Canceled":
       return COLORS.error;
+    case "In Laundry":
+      return COLORS.in_laundry;
+    case "At Store":
+      return COLORS.at_store;
     case "Laundry Completed":
       return COLORS.info;
     default:

@@ -3,6 +3,7 @@ import { handleCreateStore } from "../services/admin/useStore.js";
 import {
   handlePutAssignment,
   handlePutRemoveInQueue,
+  handleUpdateGenerateQueueNumber,
   handleUpdateProgressInqueueAndAtStore,
 } from "../services/admin/useUnits.js";
 import { getPool } from "../db/dbConfig.js";
@@ -75,6 +76,17 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateProgressInqueueAndAtStore(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/monitored-unit/:id/update-inqueue-generate-number",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateGenerateQueueNumber(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

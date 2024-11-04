@@ -25,8 +25,8 @@ import CustomUnitsAvailable from "./import/CustomUnitsAvailable";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import CustomOutlinedAddButton from "../../../../components/common/CustomOutlinedAddButton";
 import CustomFilterCustomerType from "../../../../components/common/table/filter/CustomFilterCustomerType";
-import { sampleData } from "../../../../services/api/sample_data";
 import CustomCustomerInQueue from "./import/CustomCustomerInQueue";
+import { updateProgressInQueueAtStore } from "../../../../services/api/putApi";
 
 const PopupInQueue = ({ open, onClose }) => {
   const { userDetails } = useAuth();
@@ -39,6 +39,7 @@ const PopupInQueue = ({ open, onClose }) => {
 
   const { data: unitsData, fetchData: fetchUnits } = useFetchData();
   const { data: inQueueData, fetchData: fetchInQueue } = useFetchData();
+  const { fetchData: fetchGenerateNumber } = useFetchData();
 
   const fetchUnitsData = useCallback(() => {
     setLoading(true);
@@ -49,6 +50,15 @@ const PopupInQueue = ({ open, onClose }) => {
   const fetchInQueueData = useCallback(() => {
     setIsLoading(true);
     fetchInQueue(viewRequestInQueue.getRequestInQueue, userDetails.storeId);
+    setIsLoading(false);
+  }, [fetchInQueue, userDetails?.storeId]);
+
+  const fetchInQueueGenerateData = useCallback(() => {
+    setIsLoading(true);
+    fetchGenerateNumber(
+      updateProgressInQueueAtStore.putProgressInQueueAtStore,
+      userDetails.storeId
+    );
     setIsLoading(false);
   }, [fetchInQueue, userDetails?.storeId]);
 

@@ -57,6 +57,26 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
     }
   };
 
+  const handeUpdateStatusInQueue = async (id) => {
+    if (id) {
+      try {
+        console.log(id);
+        const response =
+          await updateCompletedPickupToAtStore.putCompletedAtStore(id);
+        if (response.success) {
+          refreshData();
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
+  };
+
   return (
     <>
       <TableContainer
@@ -224,6 +244,19 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
                         >
                           Mark as In-Store
                         </Button>
+                      ) : data.request_status === "At Store" ? (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: COLORS.secondary,
+                            textTransform: "none",
+                          }}
+                          onClick={() => {
+                            openPopup("markInQueue", data.id);
+                          }}
+                        >
+                          Mark as In-Queue
+                        </Button>
                       ) : null}
                     </TableCell>
                   </TableRow>
@@ -260,6 +293,15 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
           onClose={closePopup}
           id={popupData}
           onConfirm={handeUpdateStatus}
+        />
+      )}
+
+      {isOpen && popupType === "markInQueue" && (
+        <ChangeConfirmationDialong
+          open={isOpen}
+          onClose={closePopup}
+          id={popupData}
+          onConfirm={handeUpdateStatusInQueue}
         />
       )}
     </>

@@ -36,9 +36,9 @@ export const handleGetTransactionHistory = async (req, res, db) => {
               Item i ON i.id = inv.item_id
           WHERE 
               sr.store_id = ?
-              AND (i.isArchive = 0 OR i.isArchive IS NULL)  -- Include non-archived items or null for no related item
+              AND (i.isArchive = 0 OR i.isArchive IS NULL) 
           ORDER BY 
-              t.created_at DESC; -- Order by transaction date
+              t.created_at DESC;
       `;
 
     const [rows] = await db.query(query, [id]);
@@ -166,12 +166,14 @@ export const handleGetCustomerTypeStats = async (req, res, db) => {
         Transactions t ON sr.id = t.assignment_id
       WHERE 
         sr.store_id = ?
-        AND sr.customer_type IN ('Online', 'Walk-in') 
+        AND sr.customer_type IN ('Online', 'Walk-In') 
       GROUP BY 
         sr.customer_type
     `;
 
     const [rows] = await db.execute(query, [id]);
+
+    console.log(rows);
 
     await db.commit();
 

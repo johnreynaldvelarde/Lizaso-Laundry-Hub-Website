@@ -94,6 +94,11 @@ export const COLORS = {
 
   // Status
   active: "#11A849",
+
+  // Service Request Status
+  in_laundry: "#9932CC",
+  at_store: "#1E90FF",
+  //#008080
 };
 
 // .btn-grad {

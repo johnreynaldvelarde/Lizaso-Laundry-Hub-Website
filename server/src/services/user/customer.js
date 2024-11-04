@@ -1,23 +1,12 @@
 import QRCode from "qrcode";
 import { generateTrackingCode } from "../../helpers/generateCode.js";
 import { progress } from "../../helpers/_progress.js";
+
 // POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
   const { store_id, service_type_id, customer_name, notes, payment_method } =
     req.body;
-
-  const missingFields = [];
-  if (!store_id) missingFields.push("store_id");
-  if (!customer_name) missingFields.push("customer_name");
-  if (!service_type_id) missingFields.push("service_type_id");
-
-  if (missingFields.length > 0) {
-    return res.status(400).json({
-      error: "Missing required fields",
-      fields: missingFields,
-    });
-  }
 
   try {
     await connection.beginTransaction();
@@ -27,8 +16,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       FROM Service_Request 
       WHERE customer_id = ? 
         AND customer_type = 'Online'
-        AND request_status != 'Canceled' 
-        AND request_status != 'Completed Delivery';
+        AND request_status NOT IN ('Canceled', 'Completed Delivery', 'Completed');
     `;
 
     const [countResult] = await connection.execute(countQuery, [id]);
@@ -43,6 +31,17 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
 
     const trackingCode = generateTrackingCode();
 
+    // Get the next queue number for today's requests in the specified store
+    const queueQuery = `
+      SELECT IFNULL(MAX(queue_number), 0) + 1 AS next_queue_number
+      FROM Service_Request
+      WHERE store_id = ? 
+        AND DATE(request_date) = CURDATE();
+    `;
+
+    const [queueResult] = await connection.execute(queueQuery, [store_id]);
+    const queueNumber = queueResult[0].next_queue_number;
+
     const query = `
       INSERT INTO Service_Request (
           store_id,
@@ -53,11 +52,13 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
           notes,
           request_date,
           request_status,
-          tracking_code,  
+          tracking_code,
+          queue_number,
           qr_code_generated,
           payment_method
         ) 
-      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)`;
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?)
+    `;
 
     const [result] = await connection.execute(query, [
       store_id,
@@ -68,6 +69,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       notes,
       "Pending Pickup",
       trackingCode,
+      queueNumber,
       0,
       payment_method,
     ]);
@@ -76,7 +78,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     const newRequestId = result.insertId;
 
     // Generate a unique QR code based on the service request ID
-    const qrCodeData = `SR-${newRequestId}-${trackingCode}`; // Unique string for QR code (e.g., Service Request ID and timestamp)
+    const qrCodeData = `SR-${newRequestId}-${trackingCode}`; // Unique string for QR code
 
     const qrCodeString = await QRCode.toDataURL(qrCodeData);
 
@@ -84,7 +86,8 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     const updateQuery = `
       UPDATE Service_Request 
       SET qr_code = ?, qr_code_generated = 1
-      WHERE id = ?`;
+      WHERE id = ?
+    `;
 
     await connection.execute(updateQuery, [qrCodeData, newRequestId]);
 
@@ -98,7 +101,8 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
           completed,
           false_description
         ) 
-      VALUES (?, ?, ?, ?, ?, ?)`;
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
 
     for (const item of progress) {
       await connection.execute(progressQuery, [
@@ -118,6 +122,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       message: "Service request created!",
       service_request_id: newRequestId,
       qr_code: qrCodeData,
+      queue_number: queueNumber,
     });
   } catch (error) {
     await connection.rollback();
@@ -1142,3 +1147,116 @@ export const handleUpdateCustomerBasicInformationMobile = async (
 // };
 
 //#PUT
+
+// export const handleSetCustomerServiceRequest = async (req, res, connection) => {
+//   const { id } = req.params; // Customer ID
+//   const { store_id, service_type_id, customer_name, notes, payment_method } =
+//     req.body;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const countQuery = `
+//       SELECT COUNT(*) AS request_count
+//       FROM Service_Request
+//       WHERE customer_id = ?
+//         AND customer_type = 'Online'
+//         AND request_status NOT IN ('Canceled', 'Completed Delivery', 'Completed');
+//     `;
+
+//     const [countResult] = await connection.execute(countQuery, [id]);
+//     const requestCount = countResult[0].request_count;
+
+//     if (requestCount >= 2) {
+//       return res.status(200).json({
+//         success: false,
+//         message: "Max of 2 active requests allowed",
+//       });
+//     }
+
+//     const trackingCode = generateTrackingCode();
+
+//     const query = `
+//       INSERT INTO Service_Request (
+//           store_id,
+//           customer_id,
+//           service_type_id,
+//           customer_fullname,
+//           customer_type,
+//           notes,
+//           request_date,
+//           request_status,
+//           tracking_code,
+//           qr_code_generated,
+//           payment_method
+//         )
+//       VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)`;
+
+//     const [result] = await connection.execute(query, [
+//       store_id,
+//       id,
+//       service_type_id,
+//       customer_name,
+//       "Online",
+//       notes,
+//       "Pending Pickup",
+//       trackingCode,
+//       0,
+//       payment_method,
+//     ]);
+
+//     // Get the ID of the newly created service request
+//     const newRequestId = result.insertId;
+
+//     // Generate a unique QR code based on the service request ID
+//     const qrCodeData = `SR-${newRequestId}-${trackingCode}`; // Unique string for QR code (e.g., Service Request ID and timestamp)
+
+//     const qrCodeString = await QRCode.toDataURL(qrCodeData);
+
+//     // Update the Service_Request table with the generated QR code
+//     const updateQuery = `
+//       UPDATE Service_Request
+//       SET qr_code = ?, qr_code_generated = 1
+//       WHERE id = ?`;
+
+//     await connection.execute(updateQuery, [qrCodeData, newRequestId]);
+
+//     // Insert initial progress entry into Service_Progress table
+//     const progressQuery = `
+//       INSERT INTO Service_Progress (
+//           service_request_id,
+//           stage,
+//           description,
+//           status_date,
+//           completed,
+//           false_description
+//         )
+//       VALUES (?, ?, ?, ?, ?, ?)`;
+
+//     for (const item of progress) {
+//       await connection.execute(progressQuery, [
+//         newRequestId,
+//         item.stage,
+//         item.description,
+//         item.completed ? new Date() : null,
+//         item.completed,
+//         item.falseDescription,
+//       ]);
+//     }
+
+//     await connection.commit();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Service request created!",
+//       service_request_id: newRequestId,
+//       qr_code: qrCodeData,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error creating service request:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   } finally {
+//     if (connection) connection.release();
+//   }
+// };

@@ -221,8 +221,9 @@ export const handleTypeWalkInTransaction = async (req, res, connection) => {
   }
 };
 
+// HERE WHEN THE CUSTOMER SET WALK IN AND HAVE FREE UNIT SO ON THAT SPOT
 export const handleSetWalkInRequest = async (req, res, connection) => {
-  const { id } = req.params;
+  const { id } = req.params; // 'id' is store_id in this context
   const {
     customerId,
     userId,
@@ -239,7 +240,35 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
 
     const trackingCode = generateTrackingCode();
 
-    // Step 1: Insert into Service_Request
+    const currentDate = new Date();
+    const phTimeOffset = 8 * 60 * 60 * 1000; // Offset in milliseconds for UTC+8
+    const formattedCurrentDate = new Date(currentDate.getTime() + phTimeOffset);
+    const formattedDateTime = formattedCurrentDate
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+
+    const queueQuery = `
+      SELECT IFNULL(MAX(queue_number), 0) AS maxQueue
+      FROM Service_Request
+      WHERE store_id = ? AND DATE(request_date) = ?
+      FOR UPDATE
+    `;
+
+    const [queueResult] = await connection.execute(queueQuery, [
+      id,
+      formattedDateTime.slice(0, 10),
+    ]);
+
+    console.log(formattedDateTime);
+    console.log("Queue Result:", queueResult);
+
+    const maxQueue = queueResult[0].maxQueue;
+
+    // Set the next queue number for this request
+    const queueNumber = maxQueue + 1;
+
+    // Step 2: Insert into Service_Request with the generated queue number
     const serviceRequestQuery = `
       INSERT INTO Service_Request (
         store_id,
@@ -252,8 +281,9 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
         request_status,
         tracking_code,
         customer_type,
-        isPickup
-      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'In Laundry', ?, 'Walk-In', ?)
+        isPickup,
+        queue_number
+      ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'In Laundry', ?, 'Walk-In', ?, ?)
     `;
 
     const [serviceRequestResult] = await connection.execute(
@@ -267,11 +297,13 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
         customerNotes,
         trackingCode,
         1,
+        queueNumber,
       ]
     );
 
     const serviceRequestId = serviceRequestResult.insertId;
 
+    // Update pickup date if needed
     await connection.execute(
       `UPDATE Service_Request
         SET pickup_date = ?
@@ -279,8 +311,8 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
       [newPickupDate, serviceRequestId]
     );
 
+    // Generate and save QR code data
     const qrCodeData = `SR-${serviceRequestId}-${trackingCode}`;
-
     await connection.execute(
       `UPDATE Service_Request 
        SET qr_code = ?, qr_code_generated = 1
@@ -288,9 +320,9 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
       [qrCodeData, serviceRequestId]
     );
 
-    // Step 2: Insert the progress of new service
+    // Step 4: Insert the progress of new service
     const progressQuery = `
-    INSERT INTO Service_Progress (
+      INSERT INTO Service_Progress (
         service_request_id,
         stage,
         description,
@@ -298,7 +330,8 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
         completed,
         false_description
       ) 
-    VALUES (?, ?, ?, ?, ?, ?)`;
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
 
     for (const item of progress) {
       await connection.execute(progressQuery, [
@@ -311,7 +344,7 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
       ]);
     }
 
-    // Step 3: After step 2 update the existing progress
+    // Step 5: Update existing progress stages if needed
     await connection.execute(
       `UPDATE Service_Progress 
        SET completed = true,
@@ -320,7 +353,7 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
       [serviceRequestId]
     );
 
-    // Step 4: Insert into Laundry_Assignment
+    // Step 6: Insert into Laundry_Assignment
     const assignmentQuery = `
       INSERT INTO Laundry_Assignment (
         service_request_id,
@@ -341,7 +374,7 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
 
     const assignmentId = result.insertId;
 
-    // Step 5: Update Laundry_Unit's isUnitStatus to 1 (Occupied)
+    // Step 7: Update Laundry_Unit's isUnitStatus to 1 (Occupied)
     const updateUnitQuery = `
       UPDATE Laundry_Unit 
       SET isUnitStatus = 1 
@@ -350,7 +383,7 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
 
     await connection.execute(updateUnitQuery, [unitId]);
 
-    // Step 6: check the supplies if have item
+    // Step 8: Check if there are supplies and handle them
     if (supplies && supplies.length > 0) {
       for (const supply of supplies) {
         const { supplyId, quantity, amount } = supply;
@@ -381,7 +414,7 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
       }
     }
 
-    // Step 7: After step 6  update the existing progress
+    // Step 9: Update additional progress stages if needed
     await connection.execute(
       `UPDATE Service_Progress 
          SET completed = true,
@@ -393,15 +426,153 @@ export const handleSetWalkInRequest = async (req, res, connection) => {
     // Commit the transaction
     await connection.commit();
 
-    res
-      .status(200)
-      .json({ success: true, message: "Assignment created successfully." });
+    res.status(200).json({
+      success: true,
+      message: "Assignment created successfully.",
+      queue_number: queueNumber,
+    });
   } catch (error) {
     await connection.rollback();
     console.error(error);
     res.status(500).json({
       error: "An error occurred while setting the laundry assignment.",
     });
+  }
+};
+
+// SET CUSTOMER INQUEUE
+export const handleSetCustomerInQueue = async (req, res, connection) => {
+  const { id } = req.params; // Customer ID
+  const { store_id, service_type_id, customer_name, notes } = req.body;
+
+  try {
+    await connection.beginTransaction();
+
+    const countQuery = `
+      SELECT COUNT(*) AS request_count 
+      FROM Service_Request 
+      WHERE customer_id = ? 
+        AND customer_type = 'Walk-In'
+        AND request_status NOT IN ('Canceled', 'Completed Delivery', 'Completed');
+    `;
+
+    const [countResult] = await connection.execute(countQuery, [id]);
+    const requestCount = countResult[0].request_count;
+
+    if (requestCount >= 2) {
+      return res.status(200).json({
+        success: false,
+        message: "Max of 2 active requests allowed",
+      });
+    }
+
+    const trackingCode = generateTrackingCode();
+
+    // Get the next queue number for today's requests in the specified store
+    const queueQuery = `
+      SELECT IFNULL(MAX(queue_number), 0) + 1 AS next_queue_number
+      FROM Service_Request
+      WHERE store_id = ? 
+        AND DATE(request_date) = CURDATE();
+    `;
+
+    const [queueResult] = await connection.execute(queueQuery, [store_id]);
+    const queueNumber = queueResult[0].next_queue_number;
+
+    const query = `
+      INSERT INTO Service_Request (
+          store_id,
+          customer_id,
+          service_type_id,
+          customer_fullname,
+          customer_type,
+          notes,
+          request_date,
+          request_status,
+          tracking_code,
+          queue_number,
+          qr_code_generated
+        ) 
+      VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)
+    `;
+
+    const [result] = await connection.execute(query, [
+      store_id,
+      id,
+      service_type_id,
+      customer_name,
+      "Online",
+      notes,
+      "In Queue",
+      trackingCode,
+      queueNumber,
+      0,
+    ]);
+
+    const newRequestId = result.insertId;
+
+    const qrCodeData = `SR-${newRequestId}-${trackingCode}`;
+
+    const qrCodeString = await QRCode.toDataURL(qrCodeData);
+
+    const updateQuery = `
+      UPDATE Service_Request 
+      SET qr_code = ?, qr_code_generated = 1
+      WHERE id = ?
+    `;
+
+    await connection.execute(updateQuery, [qrCodeData, newRequestId]);
+
+    const progressQuery = `
+      INSERT INTO Service_Progress (
+          service_request_id,
+          stage,
+          description,
+          status_date,
+          completed,
+          false_description
+        ) 
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    for (const item of progress) {
+      await connection.execute(progressQuery, [
+        newRequestId,
+        item.stage,
+        item.description,
+        item.completed ? new Date() : null,
+        item.completed,
+        item.falseDescription,
+      ]);
+    }
+
+    await connection.execute(
+      `UPDATE Service_Progress 
+       SET completed = true,
+           status_date = NOW()
+       WHERE service_request_id = ? AND 
+             (stage = 'Ongoing Pickup' OR 
+              stage = 'Completed Pickup' OR 
+              stage = 'At Store' OR 
+              stage = 'In Queue')`,
+      [newRequestId]
+    );
+
+    await connection.commit();
+
+    res.status(201).json({
+      success: true,
+      message: "Service request created!",
+      service_request_id: newRequestId,
+      qr_code: qrCodeData,
+      queue_number: queueNumber,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error creating service request:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    if (connection) connection.release();
   }
 };
 
@@ -710,6 +881,7 @@ export const handleViewUnits = async (req, res, db) => {
   }
 };
 
+// GET THE LIST OF CUSTOMER IN QUEUE
 export const handleGetCountRequestInQueue = async (req, res, connection) => {
   const { id } = req.params; // Store ID to filter requests
 
@@ -719,7 +891,7 @@ export const handleGetCountRequestInQueue = async (req, res, connection) => {
     const query = `
       SELECT COUNT(*) AS count
       FROM Service_Request
-      WHERE store_id = ? AND request_status = 'At Store'
+      WHERE store_id = ? AND request_status = 'In Queue'
     `;
 
     const [results] = await connection.execute(query, [id]);
@@ -1077,27 +1249,17 @@ export const handlePutRemoveInQueue = async (req, res, connection) => {
 
 export const handleUpdateGenerateQueueNumber = async (req, res, connection) => {
   const { id } = req.params; // store id
-
+  const { request_id } = req.body;
   try {
     await connection.beginTransaction();
 
-    const [rows] = await connection.execute(
-      `SELECT completed FROM Service_Progress 
-       WHERE service_request_id = ? AND (stage = 'At Store' OR stage = 'In Queue')`,
-      [id]
-    );
+    const [rows] = await connection.execute(``, [id]);
 
     if (rows.length > 0 && rows.every((row) => row.completed === true)) {
       await connection.rollback();
       return;
     }
-    await connection.execute(
-      `UPDATE Service_Progress 
-       SET completed = true,
-           status_date = NOW()
-       WHERE service_request_id = ? AND completed = false AND (stage = 'At Store' OR stage = 'In Queue')`,
-      [id]
-    );
+    await connection.execute(``, [id]);
 
     await connection.commit();
 
@@ -1113,3 +1275,371 @@ export const handleUpdateGenerateQueueNumber = async (req, res, connection) => {
     });
   }
 };
+
+// export const handleSetCustomerInQueue = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const {
+//     customerId,
+//     userId,
+//     serviceId,
+//     unitId,
+//     fullname,
+//     weight,
+//     customerNotes,
+//     supplies,
+//   } = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const trackingCode = generateTrackingCode();
+
+//     // Step 1: Insert into Service_Request
+//     const serviceRequestQuery = `
+//       INSERT INTO Service_Request (
+//         store_id,
+//         user_id,
+//         customer_id,
+//         service_type_id,
+//         customer_fullname,
+//         notes,
+//         request_date,
+//         request_status,
+//         tracking_code,
+//         customer_type,
+//         isPickup
+//       ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'In Laundry', ?, 'Walk-In', ?)
+//     `;
+
+//     const [serviceRequestResult] = await connection.execute(
+//       serviceRequestQuery,
+//       [
+//         id,
+//         userId,
+//         customerId,
+//         serviceId,
+//         fullname,
+//         customerNotes,
+//         trackingCode,
+//         1,
+//       ]
+//     );
+
+//     const serviceRequestId = serviceRequestResult.insertId;
+
+//     await connection.execute(
+//       `UPDATE Service_Request
+//         SET pickup_date = ?
+//         WHERE id = ?`,
+//       [newPickupDate, serviceRequestId]
+//     );
+
+//     const qrCodeData = `SR-${serviceRequestId}-${trackingCode}`;
+
+//     await connection.execute(
+//       `UPDATE Service_Request
+//        SET qr_code = ?, qr_code_generated = 1
+//        WHERE id = ?`,
+//       [qrCodeData, serviceRequestId]
+//     );
+
+//     // Step 2: Insert the progress of new service
+//     const progressQuery = `
+//     INSERT INTO Service_Progress (
+//         service_request_id,
+//         stage,
+//         description,
+//         status_date,
+//         completed,
+//         false_description
+//       )
+//     VALUES (?, ?, ?, ?, ?, ?)`;
+
+//     for (const item of progress) {
+//       await connection.execute(progressQuery, [
+//         serviceRequestId,
+//         item.stage,
+//         item.description,
+//         item.completed ? new Date() : null,
+//         item.completed,
+//         item.falseDescription,
+//       ]);
+//     }
+
+//     // Step 3: After step 2 update the existing progress
+//     await connection.execute(
+//       `UPDATE Service_Progress
+//        SET completed = true,
+//            status_date = NOW()
+//        WHERE service_request_id = ? AND (stage = 'Ongoing Pickup' OR stage = 'Completed Pickup')`,
+//       [serviceRequestId]
+//     );
+
+//     // Step 4: Insert into Laundry_Assignment
+//     const assignmentQuery = `
+//       INSERT INTO Laundry_Assignment (
+//         service_request_id,
+//         unit_id,
+//         assigned_by,
+//         weight,
+//         assigned_at,
+//         isAssignmentStatus
+//       ) VALUES (?, ?, ?, ?, NOW(), 0)
+//     `;
+
+//     const [result] = await connection.execute(assignmentQuery, [
+//       serviceRequestId,
+//       unitId,
+//       userId,
+//       weight,
+//     ]);
+
+//     const assignmentId = result.insertId;
+
+//     // Step 5: Update Laundry_Unit's isUnitStatus to 1 (Occupied)
+//     const updateUnitQuery = `
+//       UPDATE Laundry_Unit
+//       SET isUnitStatus = 1
+//       WHERE id = ?
+//     `;
+
+//     await connection.execute(updateUnitQuery, [unitId]);
+
+//     // Step 6: check the supplies if have item
+//     if (supplies && supplies.length > 0) {
+//       for (const supply of supplies) {
+//         const { supplyId, quantity, amount } = supply;
+
+//         const relatedItemQuery = `
+//           INSERT INTO Related_Item (
+//             assignment_id,
+//             inventory_id,
+//             quantity,
+//             amount
+//           )
+//           VALUES (?, ?, ?, ?)
+//         `;
+//         await connection.execute(relatedItemQuery, [
+//           assignmentId,
+//           supplyId,
+//           quantity,
+//           amount,
+//         ]);
+
+//         // Update the quantity in the Inventory table
+//         const updateInventoryQuery = `
+//           UPDATE Inventory
+//           SET quantity = quantity - ?
+//           WHERE id = ?
+//         `;
+//         await connection.execute(updateInventoryQuery, [quantity, supplyId]);
+//       }
+//     }
+
+//     // Step 7: After step 6  update the existing progress
+//     await connection.execute(
+//       `UPDATE Service_Progress
+//          SET completed = true,
+//              status_date = NOW()
+//          WHERE service_request_id = ? AND (stage = 'At Store' OR stage = 'In Queue' OR stage = 'In Laundry')`,
+//       [serviceRequestId]
+//     );
+
+//     // Commit the transaction
+//     await connection.commit();
+
+//     res
+//       .status(200)
+//       .json({ success: true, message: "Assignment created successfully." });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error(error);
+//     res.status(500).json({
+//       error: "An error occurred while setting the laundry assignment.",
+//     });
+//   }
+// };
+
+// export const handleSetWalkInRequest = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const {
+//     customerId,
+//     userId,
+//     serviceId,
+//     unitId,
+//     fullname,
+//     weight,
+//     customerNotes,
+//     supplies,
+//   } = req.body;
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const trackingCode = generateTrackingCode();
+
+//     // Step 1: Insert into Service_Request
+//     const serviceRequestQuery = `
+//       INSERT INTO Service_Request (
+//         store_id,
+//         user_id,
+//         customer_id,
+//         service_type_id,
+//         customer_fullname,
+//         notes,
+//         request_date,
+//         request_status,
+//         tracking_code,
+//         customer_type,
+//         isPickup
+//       ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'In Laundry', ?, 'Walk-In', ?)
+//     `;
+
+//     const [serviceRequestResult] = await connection.execute(
+//       serviceRequestQuery,
+//       [
+//         id,
+//         userId,
+//         customerId,
+//         serviceId,
+//         fullname,
+//         customerNotes,
+//         trackingCode,
+//         1,
+//       ]
+//     );
+
+//     const serviceRequestId = serviceRequestResult.insertId;
+
+//     await connection.execute(
+//       `UPDATE Service_Request
+//         SET pickup_date = ?
+//         WHERE id = ?`,
+//       [newPickupDate, serviceRequestId]
+//     );
+
+//     const qrCodeData = `SR-${serviceRequestId}-${trackingCode}`;
+
+//     await connection.execute(
+//       `UPDATE Service_Request
+//        SET qr_code = ?, qr_code_generated = 1
+//        WHERE id = ?`,
+//       [qrCodeData, serviceRequestId]
+//     );
+
+//     // Step 2: Insert the progress of new service
+//     const progressQuery = `
+//     INSERT INTO Service_Progress (
+//         service_request_id,
+//         stage,
+//         description,
+//         status_date,
+//         completed,
+//         false_description
+//       )
+//     VALUES (?, ?, ?, ?, ?, ?)`;
+
+//     for (const item of progress) {
+//       await connection.execute(progressQuery, [
+//         serviceRequestId,
+//         item.stage,
+//         item.description,
+//         item.completed ? new Date() : null,
+//         item.completed,
+//         item.falseDescription,
+//       ]);
+//     }
+
+//     // Step 3: After step 2 update the existing progress
+//     await connection.execute(
+//       `UPDATE Service_Progress
+//        SET completed = true,
+//            status_date = NOW()
+//        WHERE service_request_id = ? AND (stage = 'Ongoing Pickup' OR stage = 'Completed Pickup')`,
+//       [serviceRequestId]
+//     );
+
+//     // Step 4: Insert into Laundry_Assignment
+//     const assignmentQuery = `
+//       INSERT INTO Laundry_Assignment (
+//         service_request_id,
+//         unit_id,
+//         assigned_by,
+//         weight,
+//         assigned_at,
+//         isAssignmentStatus
+//       ) VALUES (?, ?, ?, ?, NOW(), 0)
+//     `;
+
+//     const [result] = await connection.execute(assignmentQuery, [
+//       serviceRequestId,
+//       unitId,
+//       userId,
+//       weight,
+//     ]);
+
+//     const assignmentId = result.insertId;
+
+//     // Step 5: Update Laundry_Unit's isUnitStatus to 1 (Occupied)
+//     const updateUnitQuery = `
+//       UPDATE Laundry_Unit
+//       SET isUnitStatus = 1
+//       WHERE id = ?
+//     `;
+
+//     await connection.execute(updateUnitQuery, [unitId]);
+
+//     // Step 6: check the supplies if have item
+//     if (supplies && supplies.length > 0) {
+//       for (const supply of supplies) {
+//         const { supplyId, quantity, amount } = supply;
+
+//         const relatedItemQuery = `
+//           INSERT INTO Related_Item (
+//             assignment_id,
+//             inventory_id,
+//             quantity,
+//             amount
+//           )
+//           VALUES (?, ?, ?, ?)
+//         `;
+//         await connection.execute(relatedItemQuery, [
+//           assignmentId,
+//           supplyId,
+//           quantity,
+//           amount,
+//         ]);
+
+//         // Update the quantity in the Inventory table
+//         const updateInventoryQuery = `
+//           UPDATE Inventory
+//           SET quantity = quantity - ?
+//           WHERE id = ?
+//         `;
+//         await connection.execute(updateInventoryQuery, [quantity, supplyId]);
+//       }
+//     }
+
+//     // Step 7: After step 6  update the existing progress
+//     await connection.execute(
+//       `UPDATE Service_Progress
+//          SET completed = true,
+//              status_date = NOW()
+//          WHERE service_request_id = ? AND (stage = 'At Store' OR stage = 'In Queue' OR stage = 'In Laundry')`,
+//       [serviceRequestId]
+//     );
+
+//     // Commit the transaction
+//     await connection.commit();
+
+//     res
+//       .status(200)
+//       .json({ success: true, message: "Assignment created successfully." });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error(error);
+//     res.status(500).json({
+//       error: "An error occurred while setting the laundry assignment.",
+//     });
+//   }
+// };

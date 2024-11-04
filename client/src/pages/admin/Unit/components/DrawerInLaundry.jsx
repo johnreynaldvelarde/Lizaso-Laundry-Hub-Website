@@ -57,6 +57,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
   }, [fetchInprogressData, open]);
 
   const handleRefreshData = () => {
+    refreshData();
     fetchInprogressData;
   };
 
@@ -317,6 +318,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
           open={isOpen}
           onClose={closePopup}
           data={popupData}
+          refreshData={handleRefreshData}
         />
       )}
       {isOpen && popupType === "Walk-In" && (
@@ -324,6 +326,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
           open={isOpen}
           onClose={closePopup}
           data={popupData}
+          refreshData={handleRefreshData}
         />
       )}
 

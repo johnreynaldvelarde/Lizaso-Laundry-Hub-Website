@@ -20,7 +20,7 @@ export const updateProgressInQueueAtStore = {
   putProgressInQueueAtStore: async (id) => {
     try {
       const response = await axiosPrivate.put(
-        `/monitored-unit/${id}/update-progress-inqueue-store`
+        `/monitored-unit/${id}/update-inqueue-generate-number`
       );
       return response;
     } catch (error) {

@@ -2,6 +2,7 @@ import express from "express";
 import { handleCreateStore } from "../services/admin/useStore.js";
 import {
   handleCreateUnits,
+  handleSetCustomerInQueue,
   handleSetLaundryAssignment,
   handleSetWalkInRequest,
   handleTypeOnlineTransaction,
@@ -40,6 +41,18 @@ const withDatabaseConnection = (handler) => async (req, res) => {
 };
 
 //#UNIT MONITORED SECTION
+
+router.post(
+  "/monitored-unit/:id/set-customer-inqueue",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetCustomerInQueue(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.post(
   "/monitored-unit/set-new-transaction-online",
   withDatabaseConnection(async (req, res, connection) => {

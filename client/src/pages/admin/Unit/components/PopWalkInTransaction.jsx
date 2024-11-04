@@ -34,7 +34,7 @@ import {
 import toast from "react-hot-toast";
 import useAuth from "../../../../contexts/AuthContext";
 
-const PopWalkInTransaction = ({ open, onClose, data }) => {
+const PopWalkInTransaction = ({ open, onClose, data, refreshData }) => {
   const { userDetails } = useAuth();
   const [selectedId, setSelectedId] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -93,6 +93,7 @@ const PopWalkInTransaction = ({ open, onClose, data }) => {
 
       if (response.success) {
         toast.success(response.message);
+        refreshData();
         handlePrint();
         onClose();
       } else {

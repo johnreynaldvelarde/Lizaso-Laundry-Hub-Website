@@ -25,7 +25,10 @@ import {
   getSelectedCustomer,
   getServiceType,
 } from "../../../../services/api/getApi";
-import { createWalkInServiceRequest } from "../../../../services/api/postApi";
+import {
+  createNewInqueue,
+  createWalkInServiceRequest,
+} from "../../../../services/api/postApi";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import { COLORS } from "../../../../constants/color";
@@ -112,9 +115,7 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
     if (!selectedCustomer) {
       newErrors.selectedCustomer = "Customer is required";
     }
-    if (!weight) {
-      newErrors.weight = "Weight is required";
-    } else if (weight <= 0) {
+    if (weight <= 0) {
       newErrors.weight = "Weight must be greater than 0";
     }
     return newErrors;
@@ -130,8 +131,9 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
 
     if (field === "selectedCustomer") {
       setSelectedCustomer(value);
-    } else if (field === "weight") {
-      setWeight(value);
+    }
+    if (field === "notes") {
+      setNotes(value);
     }
 
     setErrors((prevErrors) => ({
@@ -154,30 +156,16 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
 
-      const suppliesData = selectedSupplies.map((supplyId) => {
-        const supply = itemData.find((s) => s.inventory_id === supplyId);
-        const quantity = quantities[supplyId] || 1;
-        const totalAmount = (supply.price * quantity).toFixed(2);
-
-        return {
-          supplyId,
-          quantity,
-          amount: totalAmount,
-        };
-      });
-
       const data = {
         customerId: selectedCustomer.id,
         userId: userDetails.userId,
         serviceId: selectedTabId,
         fullname: selectedCustomer.fullname,
-        weight: weight,
         customerNotes: notes,
-        supplies: suppliesData,
       };
 
       try {
-        const response = await createWalkInServiceRequest.setWalkInRequest(
+        const response = await createNewInqueue.setInQueue(
           userDetails.storeId,
           data
         );
@@ -186,14 +174,6 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
           toast.success(response.message);
           refreshData();
           onClose();
-
-          setSelectedCustomer(null);
-          setSelectedTabId(null);
-          setWeight("");
-          setSelectedSupplies([]);
-          setQuantities({});
-          setQuantityErrors({});
-          setErrors({});
         } else {
           toast.error(response.message);
         }
@@ -351,98 +331,6 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
           )}
         </FormControl>
 
-        {/* Weight Input */}
-        {/* <FormControl fullWidth margin="normal" error={!!errors.weight}>
-          <TextField
-            label="Weight (kg)"
-            variant="outlined"
-            type="number"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            placeholder="Enter weight in kilograms"
-            error={!!errors.weight}
-          />
-          {errors.weight && (
-            <Typography
-              variant="caption"
-              color="error"
-              sx={{ marginTop: "3px", marginLeft: "5px" }}
-            >
-              {errors.weight}
-            </Typography>
-          )}
-        </FormControl> */}
-
-        {/* Select Item for this Transaction */}
-        {/* <FormControl fullWidth variant="outlined" sx={{ marginTop: "20px" }}>
-          <InputLabel>Select Laundry Items</InputLabel>
-          <Select
-            label="Select Laundry Items"
-            multiple
-            value={selectedSupplies}
-            onChange={handleSupplySelect}
-            renderValue={(selected) =>
-              selected.map((supplyId) => {
-                const supply = itemData.find(
-                  (s) => s.inventory_id === supplyId
-                );
-                return (
-                  <Chip
-                    key={supplyId}
-                    label={supply ? supply.item_name : ""}
-                    sx={{ margin: "5px" }}
-                  />
-                );
-              })
-            }
-          >
-            {itemData.map((supply) => (
-              <MenuItem key={supply.inventory_id} value={supply.inventory_id}>
-                {`${supply.item_name} (Available: ${supply.quantity})`}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
-
-        {selectedSupplies.length > 0 && (
-          <div style={{ marginTop: "20px" }}>
-            {selectedSupplies.map((supplyId) => {
-              const supply = itemData.find((s) => s.inventory_id === supplyId);
-              const quantity = quantities[supplyId] || 1; // Default quantity is 1
-              const totalPrice = (supply.price * quantity).toFixed(2); // Calculate total price
-
-              return (
-                <div key={supplyId} style={{ marginBottom: "10px" }}>
-                  <Typography variant="body2">
-                    {supply.item_name} Quantity:
-                  </Typography>
-                  <TextField
-                    type="number"
-                    fullWidth
-                    value={quantity}
-                    onChange={(e) =>
-                      handleQuantityChange(supplyId, parseInt(e.target.value))
-                    }
-                    inputProps={{ min: 1, max: supply.quantity }} // Set max to available quantity
-                    error={Boolean(quantityErrors[supplyId])}
-                    helperText={quantityErrors[supplyId]}
-                  />
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      marginTop: "5px",
-                      color: COLORS.primary,
-                      fontWeight: 500,
-                    }}
-                  >
-                    Total Price: ₱{totalPrice}
-                  </Typography>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
         {/* Additional Info Toggle */}
         <Box
           display="flex"
@@ -482,6 +370,7 @@ const PopAddInQueue = ({ open, onClose, refreshData }) => {
           </FormControl>
         </Collapse>
       </DialogContent>
+
       {/* Footer */}
       <CustomPopFooterButton
         label={"Proceed"}

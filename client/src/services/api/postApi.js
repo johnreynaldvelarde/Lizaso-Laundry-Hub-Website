@@ -21,6 +21,20 @@ export const createUnit = {
   },
 };
 
+export const createNewInqueue = {
+  setInQueue: async (data, storeId) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/monitored-unit/${storeId}/set-customer-inqueue`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 export const createLaundryAssignment = {
   setLaundryAssignment: async (data) => {
     try {

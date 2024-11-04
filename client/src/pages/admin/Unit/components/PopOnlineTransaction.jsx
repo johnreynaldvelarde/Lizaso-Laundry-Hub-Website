@@ -29,7 +29,7 @@ import toast from "react-hot-toast";
 import useAuth from "../../../../contexts/AuthContext";
 import { getCurrentDay } from "../../../../utils/method";
 
-const PopOnlineTransaction = ({ open, onClose, data }) => {
+const PopOnlineTransaction = ({ open, onClose, data, refreshData }) => {
   const { userDetails } = useAuth();
   const currentDay = getCurrentDay();
   const [selectedId, setSelectedId] = useState("");
@@ -88,6 +88,7 @@ const PopOnlineTransaction = ({ open, onClose, data }) => {
 
       if (response.success) {
         toast.success(response.message);
+        refreshData();
         handlePrint();
         onClose();
       } else {
