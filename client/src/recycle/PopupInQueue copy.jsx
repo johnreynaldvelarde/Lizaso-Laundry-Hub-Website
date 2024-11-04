@@ -7,10 +7,10 @@ import {
   Box,
   Chip,
   Stack,
-  Button,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { CalendarDots, PlusCircle } from "@phosphor-icons/react";
+
 import PopupAssignUnit from "./PopupAssignUnit";
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import useFetchData from "../../../../hooks/common/useFetchData";
@@ -31,9 +31,6 @@ import CustomCustomerInQueue from "./import/CustomCustomerInQueue";
 const PopupInQueue = ({ open, onClose }) => {
   const { userDetails } = useAuth();
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { data: unitsData, fetchData: fetchUnits } = useFetchData();
@@ -74,45 +71,6 @@ const PopupInQueue = ({ open, onClose }) => {
 
   const allUnitsAvailable =
     unitsData && unitsData.every((unit) => unit.isUnitStatus === 1);
-
-  useEffect(() => {
-    if (sampleData) {
-      setFilteredData(sampleData);
-    }
-  }, [sampleData]);
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    applyFilters(selectedStatus, event.target.value);
-  };
-
-  const handleStatusChange = (event) => {
-    const status = event.target.value;
-    setSelectedStatus(status);
-    applyFilters(status, searchTerm);
-  };
-
-  const applyFilters = (status, search) => {
-    const filtered = sampleData.filter((item) => {
-      const isStatusMatch = status
-        ? item.customer_type === status // Ensure status is checked against customer_type
-        : true;
-
-      const isSearchMatch =
-        item.customer_fullname.toLowerCase().includes(search.toLowerCase()) ||
-        item.tracking_code.toLowerCase().includes(search.toLowerCase()) ||
-        (item.queue_number !== null &&
-          item.queue_number.toString().includes(search.toLowerCase()));
-
-      return isStatusMatch && isSearchMatch;
-    });
-
-    setFilteredData(filtered);
-  };
-
-  useEffect(() => {
-    applyFilters(selectedStatus, searchTerm);
-  }, [selectedStatus, searchTerm, sampleData]);
 
   return (
     <Dialog
@@ -221,8 +179,8 @@ const PopupInQueue = ({ open, onClose }) => {
               }}
             >
               <CustomSearch
-                searchTerm={searchTerm}
-                handleSearchChange={handleSearchChange}
+                // searchTerm={searchTerm}
+                // handleSearchChange={handleSearchChange}
                 placeholder={"Search name or tracking code or queue number ..."}
                 customWidth={450}
               />
@@ -236,44 +194,141 @@ const PopupInQueue = ({ open, onClose }) => {
                 },
               }}
             >
-              <CustomFilterCustomerType
-                selectedStatus={selectedStatus}
-                handleStatusChange={handleStatusChange}
-              />
+              <CustomFilterCustomerType customWidth={250} />
             </Box>
-
-            {/* Clear Filters Button */}
-            <Button
-              variant="outlined"
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedStatus("");
-                setFilteredData(sampleData);
-              }}
-              sx={{
-                width: {
-                  xs: "100%", // Full width on small screens
-                  sm: "auto", // Auto width on larger screens
-                },
-                textTransform: "none",
-                borderColor: COLORS.border,
-                color: COLORS.primary,
-                "&:hover": {
-                  borderColor: COLORS.secondary,
-                  backgroundColor: COLORS.secondaryLight,
-                  color: COLORS.secondary,
-                },
-              }}
-            >
-              Clear Filters
-            </Button>
           </Box>
         </Box>
       </DialogTitle>
 
       {/* Sub Header 3 */}
       <DialogContent>
-        <CustomCustomerInQueue customers={filteredData} loading={loading} />
+        <Box>
+          <CustomCustomerInQueue customers={sampleData} loading={loading} />
+          <Box>
+            {/* 
+          {inQueueData.length === 0 ? (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                p: 3,
+                border: "1px solid",
+                borderColor: "grey.300",
+                borderRadius: 2,
+                boxShadow: 1,
+              }}
+            >
+              <img
+                src={nodata}
+                alt="No Data"
+                style={{ width: 128, height: 128, marginBottom: "8px" }}
+              />
+              <Typography
+                variant="body1"
+                sx={{ color: COLORS.primary, fontWeight: 500 }}
+              >
+                No data available at the moment
+              </Typography>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                overflowX: "auto",
+                paddingBottom: 1,
+              }}
+            >
+              {inQueueData.map((customer) => (
+                <Paper
+                  key={customer.id}
+                  sx={{
+                    padding: 2,
+                    boxShadow: "none !important",
+                    borderRadius: "10px",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    minWidth: 250,
+                    flexShrink: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      component="h3"
+                      sx={{ fontWeight: 600 }}
+                    >
+                      {customer.customer_fullname}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: styles.textColor2 }}
+                    >
+                      <strong>Service Type:</strong> {customer.service_name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: styles.textColor2 }}
+                    >
+                      <strong>Waiting Time:</strong>{" "}
+                      <span style={{ color: styles.textColor1 }}>
+                        {formatDistanceToNow(new Date(customer.request_date), {
+                          addSuffix: true,
+                        })}
+                      </span>
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
+                    {customer.notes && customer.notes.trim() !== "" && (
+                      <Tooltip title={customer.notes} arrow>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          size="small"
+                          sx={{
+                            borderColor: "#5787C8",
+                            borderRadius: "5px",
+                            fontWeight: 500,
+                            textTransform: "none",
+                            "&:hover": {
+                              borderColor: "#5787C8",
+                              backgroundColor: "rgba(87, 135, 200, 0.1)",
+                            },
+                          }}
+                        >
+                          Notes
+                        </Button>
+                      </Tooltip>
+                    )}
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={() => openPopup("selectAssignUnit", customer.id)}
+                      sx={{
+                        backgroundColor: "#5787C8",
+                        borderRadius: "5px",
+                        fontWeight: 500,
+                        textTransform: "none",
+                        "&:hover": {
+                          backgroundColor: "#3A5A85",
+                        },
+                      }}
+                    >
+                      Assign
+                    </Button>
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          )} */}
+          </Box>
+        </Box>
       </DialogContent>
 
       {/* <ConfirmationDialog
@@ -317,3 +372,43 @@ const PopupInQueue = ({ open, onClose }) => {
 };
 
 export default PopupInQueue;
+
+{
+  /* <IconButton
+                      onClick={() => openPopup("selectAssignUnit", customer.id)}
+                    >
+                      <MinusSquare size={20} color="#DB524B" weight="duotone" />
+                    </IconButton> */
+}
+
+{
+  /* <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+            <Paper
+              elevation={3}
+              sx={{
+                padding: 3,
+                borderRadius: "8px",
+                maxWidth: "300px", // You can adjust this width
+                textAlign: "center",
+                backgroundColor: "#f0f8ff", // Light background color
+                border: "1px solid #2196f3", // Blue border
+              }}
+            >
+              <CheckCircle sx={{ color: "#2196f3", fontSize: 40 }} />
+              <Typography variant="h6" sx={{ fontWeight: 600, mt: 2 }}>
+                Net 10
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1, color: "#555" }}>
+                Enjoy unlimited talk and text with 10GB of high-speed data.
+              </Typography>
+              <Box sx={{ mt: 2 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ fontWeight: 500, color: "#2196f3" }}
+                >
+                  Only $35/month
+                </Typography>
+              </Box>
+            </Paper>
+          </Box> */
+}
