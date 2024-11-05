@@ -475,6 +475,7 @@ export const handleRegister = async (req, res, db) => {
   }
 };
 
+// Working
 export const handleRefreshToken = async (req, res) => {
   const { refreshToken } = req.cookies;
 

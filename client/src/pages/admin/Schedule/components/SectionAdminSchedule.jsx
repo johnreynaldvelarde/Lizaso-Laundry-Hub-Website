@@ -186,11 +186,6 @@ const SectionAdminSchedule = ({ storeId }) => {
           title={"View Schedules"}
           subtitle={"Organize and Oversee Service Requests"}
         />
-        {/* <CustomeAddButton
-          onClick={handleGoToMonitoredUnits}
-          label={"Create new request"}
-          icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
-        /> */}
       </Box>
 
       {/* Sub Header */}
