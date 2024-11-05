@@ -13,6 +13,7 @@ export const handleCreateStore = async (req, res, connection) => {
     longitude,
   } = req.body;
 
+
   try {
     await connection.beginTransaction();
 
@@ -50,13 +51,14 @@ export const handleCreateStore = async (req, res, connection) => {
     const address_id = addressResult.insertId;
 
     // Insert the store into the Stores table with the address_id
-    await connection.execute(
+    const [result] = await connection.execute(
       `INSERT INTO Stores (address_id, store_no, store_name, store_contact, store_email, is_main_store, updated_at, date_created, isStatus, isArchive)
          VALUES (?, ?, ?, ?, ?, 0, NOW(), NOW(), 1, 0)`,
       [address_id, store_no, store_name, store_contact, store_email]
     );
 
     const newStoreId = result.insertId;
+
 
     // Insert the store into the Stores table with the address_id
     await connection.execute(
