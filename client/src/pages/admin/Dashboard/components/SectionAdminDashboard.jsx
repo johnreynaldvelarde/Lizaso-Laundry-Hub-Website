@@ -6,6 +6,11 @@ import {
   Typography,
   CircularProgress,
   Stack,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import { COLORS } from "../../../../constants/color";
@@ -86,6 +91,21 @@ const keyMetrics = [
   // Add more metrics as needed
 ];
 
+const tableData1 = [
+  { id: 1, name: "John Doe", role: "Manager" },
+  { id: 2, name: "Jane Smith", role: "Employee" },
+];
+
+const tableData2 = [
+  { id: 1, product: "Laundry Detergent", stock: 50 },
+  { id: 2, product: "Fabric Softener", stock: 20 },
+];
+
+const tableData3 = [
+  { id: 1, service: "Express", price: "₱100" },
+  { id: 2, service: "Regular", price: "₱50" },
+];
+
 const SectionAdminDashboard = () => {
   return (
     <>
@@ -107,8 +127,132 @@ const SectionAdminDashboard = () => {
       {/* Key Metrics */}
       <CustomDashHorizontal keyMetrics={keyMetrics} />
 
-      {/* Total Storage Bar Chart Placeholder */}
-      <Box sx={{ mb: 4, textAlign: "center" }}>
+      <Box marginTop={2}>
+        <Grid container spacing={3}>
+          {/* Left Column with Three Tables */}
+          <Grid item xs={12} sm={8}>
+            <Box sx={{ mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 4,
+                  boxShadow: "none",
+                  border: 1,
+                  borderColor: COLORS.border,
+                  borderRadius: "14px",
+                }}
+              >
+                <Typography variant="h6">Employee List</Typography>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Role</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableData1.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.role}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 4,
+                  boxShadow: "none",
+                  border: 1,
+                  borderColor: COLORS.border,
+                  borderRadius: "14px",
+                }}
+              >
+                <Typography variant="h6">Employee List</Typography>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Role</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableData1.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.role}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 4,
+                  boxShadow: "none",
+                  border: 1,
+                  borderColor: COLORS.border,
+                  borderRadius: "14px",
+                }}
+              >
+                <Typography variant="h6">Employee List</Typography>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Role</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableData1.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.role}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box>
+          </Grid>
+
+          {/* Right Column with Paper List */}
+          <Grid item xs={12} sm={4}>
+            <Paper
+              sx={{
+                p: 4,
+                boxShadow: "none",
+                border: 1,
+                borderColor: COLORS.border,
+                borderRadius: "14px",
+              }}
+            >
+              <Typography variant="h6">Notifications</Typography>
+              <Box sx={{ mt: 2 }}>
+                <ul>
+                  <li>New order placed</li>
+                  <li>Inventory updated</li>
+                  <li>Customer inquiry</li>
+                </ul>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
+  );
+};
+
+export default SectionAdminDashboard;
+
+{
+  /* <Box sx={{ mb: 4, textAlign: "center" }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
           Total Storage Used
         </Typography>
@@ -122,14 +266,12 @@ const SectionAdminDashboard = () => {
           +32.40% last year
         </Typography>
         <Box sx={{ mt: 4, height: 200, backgroundColor: COLORS.lightGray }}>
-          {/* Place for Bar Chart */}
           <Typography variant="body1" sx={{ p: 2 }}>
             Bar Chart Placeholder
           </Typography>
         </Box>
       </Box>
 
-      {/* Circular Progress for Total Storage */}
       <Box sx={{ textAlign: "center", mb: 4 }}>
         <CircularProgress
           variant="determinate"
@@ -152,14 +294,17 @@ const SectionAdminDashboard = () => {
             Total used storage 78%
           </Typography>
         </Stack>
-      </Box>
+      </Box> */
+}
 
-      {/* Quick Access */}
-      <Typography variant="h6" sx={{ mb: 2 }}>
+{
+  /* Quick Access */
+}
+{
+  /* <Typography variant="h6" sx={{ mb: 2 }}>
         Quick Access
       </Typography>
       <Grid container spacing={2} sx={{ mb: 4 }}>
-        {/* Replace with icons */}
         <Grid item xs={3}>
           <Paper sx={{ p: 2 }}>Icon 1</Paper>
         </Grid>
@@ -172,21 +317,17 @@ const SectionAdminDashboard = () => {
         <Grid item xs={3}>
           <Paper sx={{ p: 2 }}>Icon 4</Paper>
         </Grid>
-      </Grid>
+      </Grid> */
+}
 
-      {/* Recent Activities */}
-      <Typography variant="h6" sx={{ mb: 2 }}>
+{
+  /* <Typography variant="h6" sx={{ mb: 2 }}>
         Recent Activities
       </Typography>
       <Paper sx={{ p: 2 }}>
-        {/* Replace with activity list */}
         <Typography variant="body1">Activity 1</Typography>
         <Typography variant="body1">Activity 2</Typography>
         <Typography variant="body1">Activity 3</Typography>
         <Typography variant="body1">Activity 4</Typography>
-      </Paper>
-    </>
-  );
-};
-
-export default SectionAdminDashboard;
+      </Paper> */
+}

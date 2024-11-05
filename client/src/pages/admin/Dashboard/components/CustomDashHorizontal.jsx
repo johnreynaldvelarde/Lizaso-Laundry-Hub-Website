@@ -77,11 +77,12 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
           display: "flex",
           overflowX: "auto",
           scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": { display: "none" }, // Hide scrollbar for aesthetic
+          "&::-webkit-scrollbar": { display: "none" },
+          gap: 2,
         }}
       >
         {keyMetrics.map((metric, index) => (
-          <Box key={index} sx={{ minWidth: 450, flexShrink: 0, p: 1 }}>
+          <Box key={index} sx={{ minWidth: 450, flexShrink: 0 }}>
             <Paper
               sx={{
                 p: 4,
