@@ -12,7 +12,11 @@ import {
   Divider,
 } from "@mui/material";
 import { useReactToPrint } from "react-to-print";
-import { transactionDate, transactionTime } from "../../../utils/method";
+import {
+  getCurrentDay,
+  transactionDate,
+  transactionTime,
+} from "../../../utils/method";
 import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitle";
 import { COLORS } from "../../../constants/color";
 import logo from "../../../assets/images/logo.png";
@@ -24,6 +28,7 @@ import toast from "react-hot-toast";
 
 const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
   const contentRef = useRef(null);
+  const currentDay = getCurrentDay();
   const [loading, setLoading] = useState(false);
   const { data: transactionData, fetchData: fetchCalculatedTransaction } =
     useFetchData();
@@ -252,6 +257,7 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
                   >
                     {customerData.service_request.service_name}
                   </Typography>
+
                   <Box
                     sx={{
                       borderRadius: "8px",
@@ -261,14 +267,51 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
                     <Typography
                       align="center"
                       sx={{
-                        color: COLORS.secondary,
-                        fontWeight: 600,
+                        color: COLORS.primary,
+                        fontWeight: 500,
                         fontSize: 10,
                       }}
                     >
-                      Base Price:
-                      <span className="ml-1">
-                        {customerData.service_request.service_default_price}
+                      Base Price:{" "}
+                      <span
+                        style={{
+                          color:
+                            transactionData.isActive === 1 &&
+                            transactionData.valid_days.includes(currentDay)
+                              ? "grey"
+                              : COLORS.secondary,
+                          textDecorationLine:
+                            transactionData.isActive === 1 &&
+                            transactionData.valid_days.includes(currentDay)
+                              ? "line-through"
+                              : "none",
+                        }}
+                      >
+                        {`₱ ${customerData.service_request.service_default_price}`}
+                      </span>
+                    </Typography>
+                    <Typography
+                      align="center"
+                      sx={{
+                        color: COLORS.primary,
+                        fontWeight: 500,
+                        fontSize: 10,
+                      }}
+                    >
+                      Discount Promo:
+                      <span>
+                        {transactionData.isActive &&
+                          transactionData.valid_days.includes(currentDay) && (
+                            <Typography
+                              sx={{
+                                color: COLORS.error,
+                                fontWeight: 600,
+                                fontSize: 10,
+                              }}
+                            >
+                              {`₱ ${transactionData.discount_price}`}
+                            </Typography>
+                          )}
                       </span>
                     </Typography>
                   </Box>
@@ -294,26 +337,6 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
                       fontWeight: 500,
                     }}
                   >{`₱${transactionData.base_total_amount}`}</Typography>
-
-                  {transactionData.discount_applied && (
-                    <Box
-                      sx={{
-                        borderRadius: "8px",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Typography
-                        align="center"
-                        sx={{
-                          color: COLORS.secondary,
-                          fontWeight: 600,
-                          fontSize: 10,
-                        }}
-                      >
-                        {transactionData.discount_applied}
-                      </Typography>
-                    </Box>
-                  )}
                 </Grid>
               </Grid>
             </List>

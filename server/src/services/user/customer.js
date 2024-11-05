@@ -305,6 +305,55 @@ export const handleGetStoreList = async (req, res, db) => {
   }
 };
 
+export const handleGetServicePromoList = async (req, res, connection) => {
+  const { id } = req.params; // store id
+
+  try {
+    await connection.beginTransaction();
+
+    const query = `
+     SELECT 
+        st.id AS service_id,
+        st.service_name,
+        st.description,
+        st.default_price,
+        sp.discount_price,
+        sp.valid_days,
+        sp.start_date,
+        sp.end_date
+      FROM 
+        Service_Type st
+      JOIN 
+        Service_Promo sp ON st.id = sp.service_id
+      WHERE 
+        st.store_id = ? AND                     
+        sp.isActive = 1 AND                     
+        sp.start_date <= NOW() AND             
+        sp.end_date >= NOW()                 
+      ORDER BY 
+        st.service_name;
+    `;
+
+    const [rows] = await connection.execute(query, [id]);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching service promos:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while fetching data.",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
 export const handleGetServiceTypeAndPromotions = async (
   req,
   res,

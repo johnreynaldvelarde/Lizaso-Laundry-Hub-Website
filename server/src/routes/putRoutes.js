@@ -33,7 +33,10 @@ import {
   handleUpdatePromo,
   handleUpdateServiceDelete,
 } from "../services/admin/useServices.js";
-import { handleUpdateServiceRequestCompletedPickup } from "../services/admin/useSchedule.js";
+import {
+  handleUpdateServiceRequestAtStoreToInQueue,
+  handleUpdateServiceRequestCompletedPickup,
+} from "../services/admin/useSchedule.js";
 
 const router = express.Router();
 
@@ -111,6 +114,18 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateServiceRequestCompletedPickup(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/schedules/:id/update-at-store-in-queue",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestAtStoreToInQueue(req, res, connection);
     } catch (error) {
       console.error("Error retrieving service request:", error);
       res.status(500).json({ error: "Internal Server Error" });

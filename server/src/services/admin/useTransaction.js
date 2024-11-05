@@ -179,7 +179,7 @@ export const handleGetCustomerTypeStats = async (req, res, db) => {
 
     const customData = [
       { name: "Online", value: 0 },
-      { name: "Walk-in", value: 0 },
+      { name: "Walk-In", value: 0 },
     ];
 
     rows.forEach((row) => {

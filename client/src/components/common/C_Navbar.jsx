@@ -192,7 +192,7 @@ const C_Navbar = () => {
         <div className="flex items-center space-x-3">
           <div className="relative flex items-center space-x-3">
             {/* Message */}
-            <Tooltip title="Message" arrow>
+            {/* <Tooltip title="Message" arrow>
               <IconButton
                 className="rounded-circle"
                 onClick={handleClickMessage}
@@ -201,7 +201,7 @@ const C_Navbar = () => {
                   <MdOutlineMailOutline style={{ color: styles.black }} />
                 </Badge>
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             {/* Notifications */}
             <Tooltip title="Notifications" arrow>

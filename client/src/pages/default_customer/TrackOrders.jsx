@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import useAuth from "../../contexts/AuthContext";
 import { motion } from "framer-motion";
-import norequest from "../../assets/images/nodata.jpg";
+import norequest from "../../assets/images/no_data_table.jpg";
 import { useNavigate } from "react-router-dom";
 import styles from "../../styles/style";
 import {

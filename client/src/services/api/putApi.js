@@ -86,6 +86,19 @@ export const updateCompletedPickupToAtStore = {
   },
 };
 
+export const updateAtStoreToInQueue = {
+  putAtStoreInQueue: async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/schedules/${id}/update-at-store-in-queue`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 //#INVENTORY SECTION
 export const updateCategoryName = {
   putCategoryName: async (id, data) => {

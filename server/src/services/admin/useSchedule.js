@@ -126,9 +126,12 @@ export const handleGetScheduleServiceRequest = async (req, res, connection) => {
       ORDER BY
         CASE 
           WHEN sr.request_status = 'Pending Pickup' THEN 1
-          WHEN sr.request_status = 'Ready for Delivery' THEN 2
-          WHEN sr.request_status = 'Ongoing Pickup' THEN 3
-          WHEN sr.request_status = 'Out for Delivery' THEN 4
+          WHEN sr.request_status = 'Ongoing Pickup' THEN 2
+          WHEN sr.request_status = 'Completed Pickup' THEN 3
+          WHEN sr.request_status = 'At Store' THEN 4
+          WHEN sr.request_status = 'In Queue' THEN 5
+          WHEN sr.request_status = 'Ready for Delivery' THEN 6
+          WHEN sr.request_status = 'Out for Delivery' THEN 7
           ELSE 5
         END;
     `;
@@ -225,44 +228,44 @@ export const handleUpdateServiceRequestCompletedPickup = async (
   }
 };
 
-// export const handleUpdateServiceRequestCompletedPickup = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params;
+export const handleUpdateServiceRequestAtStoreToInQueue = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
 
-//   try {
-//     await connection.beginTransaction();
+  try {
+    await connection.beginTransaction();
 
-//     const updateQuery = `
-//       UPDATE Service_Request
-//       SET request_status = 'At Store'
-//       WHERE id = ?`;
+    const updateQuery = `
+      UPDATE Service_Request
+      SET request_status = 'In Queue'
+      WHERE id = ?`;
 
-//     await connection.execute(updateQuery, [id]);
+    await connection.execute(updateQuery, [id]);
 
-//     const updateProgressQuery = `
-//       UPDATE Service_Progress
-//       SET completed = true,
-//           status_date = NOW()
-//       WHERE service_request_id = ? AND stage = 'At Store'`;
+    const updateProgressQuery = `
+      UPDATE Service_Progress
+      SET completed = true,
+          status_date = NOW()
+      WHERE service_request_id = ? AND stage = 'In Queue'`;
 
-//     await connection.execute(updateProgressQuery, [id]);
+    await connection.execute(updateProgressQuery, [id]);
 
-//     await connection.commit();
+    await connection.commit();
 
-//     res.status(200).json({
-//       success: true,
-//       message: "Request status updated to At Store.",
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while updating the request.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
+    res.status(200).json({
+      success: true,
+      message: "Request status updated to In Queue.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the request.",
+    });
+  } finally {
+    connection.release();
+  }
+};

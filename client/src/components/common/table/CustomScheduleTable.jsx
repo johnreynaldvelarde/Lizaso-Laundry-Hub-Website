@@ -21,7 +21,10 @@ import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
 import ConfirmationDialog from "../ConfirmationDialog";
 import ChangeConfirmationDialong from "../ChangeConfirmationDialong";
-import { updateCompletedPickupToAtStore } from "../../../services/api/putApi";
+import {
+  updateAtStoreToInQueue,
+  updateCompletedPickupToAtStore,
+} from "../../../services/api/putApi";
 
 const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
@@ -61,8 +64,7 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
     if (id) {
       try {
         console.log(id);
-        const response =
-          await updateCompletedPickupToAtStore.putCompletedAtStore(id);
+        const response = await updateAtStoreToInQueue.putAtStoreInQueue(id);
         if (response.success) {
           refreshData();
           toast.success(response.message);

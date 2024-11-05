@@ -49,7 +49,7 @@ export const getServicePromoHeader = {
   getPromoHeader: async (storeId) => {
     try {
       const response = await axiosPrivate.get(
-        `/customers/${storeId}/get-service-types`
+        `/customers/${storeId}/get-service-promo-list`
       );
       return response.data;
     } catch (error) {

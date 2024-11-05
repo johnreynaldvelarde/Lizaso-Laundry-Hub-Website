@@ -11,6 +11,7 @@ import {
 import useLaundryPlans from "../../hooks/customers/useLaundryPlans";
 import useFetchData from "../../hooks/common/useFetchData";
 import { COLORS } from "../../constants/color";
+import CustomHeaderPromo from "./components/CustomHeaderPromo";
 
 const LaundryServices = () => {
   const { userDetails } = useAuth();
@@ -45,14 +46,6 @@ const LaundryServices = () => {
     fetchServiceAndPromotionsData();
     fetchServicePromoAvailablePromoData();
   }, [fetchServiceAndPromotionsData, fetchServicePromoAvailablePromoData]);
-
-  const specialPromos = [
-    { id: 1, label: "Wash & Fold", price: 18, promo: "20% Off Today!" },
-    { id: 2, label: "Dry Cleaning", price: 22, promo: "15% Off Today!" },
-    { id: 3, label: "Express Service", price: 25, promo: "Free Delivery!" },
-    { id: 4, label: "Stain Removal", price: 18, promo: "10% Off Today!" },
-    { id: 5, label: "Ironing", price: 12, promo: "5% Off Today!" },
-  ];
 
   const promoRef = useRef(null);
 
@@ -102,46 +95,7 @@ const LaundryServices = () => {
 
           {/* Right Side - Special Promo Services */}
           <div className="flex-1 min-w-[300px] lg:min-w-[400px] max-w-[800px] flex flex-col justify-center mt-14 lg:mt-0">
-            <h3 className="text-2xl font-bold text-[#5787C8] mb-4">
-              Services Promo
-            </h3>
-            <div className="relative">
-              {/* Left Arrow */}
-              <button
-                onClick={scrollLeft}
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
-              >
-                <FaChevronLeft className="text-[#5787C8]" />
-              </button>
-
-              {/* Promotions Container */}
-              <div
-                ref={promoRef}
-                className="hori-scrollable flex overflow-x-auto scroll-smooth py-2 space-x-4"
-              >
-                {specialPromos.map((promo) => (
-                  <div
-                    key={promo.id}
-                    className="relative bg-white border border-gray-300 rounded-lg shadow-lg p-4 m-2 transform transition-transform duration-300 hover:scale-105"
-                  >
-                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-md">
-                      {promo.promo}
-                    </span>
-                    <FaCheckCircle className="text-3xl text-[#5787C8] mb-2" />
-                    <h3 className="text-lg font-semibold">{promo.label}</h3>
-                    <p className="text-gray-600">${promo.price}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Right Arrow */}
-              <button
-                onClick={scrollRight}
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-gray-200 z-10"
-              >
-                <FaChevronRight className="text-[#5787C8]" />
-              </button>
-            </div>
+            <CustomHeaderPromo servicesPromo={servicesPromo} />
           </div>
         </div>
       </div>

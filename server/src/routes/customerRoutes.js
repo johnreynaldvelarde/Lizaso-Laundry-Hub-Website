@@ -4,6 +4,7 @@ import {
   handleGetCalculatedTransactionForCustomer,
   handleGetCustomerConvo,
   handleGetCustomerTrackOrderAndProgress,
+  handleGetServicePromoList,
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
   handleSetFeedbackAndReview,
@@ -76,6 +77,18 @@ router.post(
 );
 
 // GET
+router.get(
+  "/customers/:id/get-service-promo-list",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetServicePromoList(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service types:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.get(
   "/customers/:id/get-service-types",
   withDatabaseConnection(async (req, res, connection) => {
