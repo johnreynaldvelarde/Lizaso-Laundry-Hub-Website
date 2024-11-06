@@ -16,6 +16,7 @@ import CustomDashHorizontal from "./CustomDashHorizontal";
 import CustomTopNewCustomer from "./CustomTopNewCustomer";
 import CustomTotalRevenueByMonth from "./CustomTotalRevenueByMonth";
 import CustomTopReadyToDelivery from "./CustomTopReadyToDelivery";
+import CustomLocationMapCustomerStores from "./CustomLocationMapCustomerStores";
 
 const tableData1 = [
   { id: 1, name: "John Doe", role: "Manager" },
@@ -111,7 +112,9 @@ const SectionAdminDashboard = () => {
             <Box sx={{ mb: 3 }}>
               <CustomTotalRevenueByMonth />
             </Box>
-            <Box sx={{ mb: 3 }}></Box>
+            <Box sx={{ mb: 3 }}>
+              <CustomLocationMapCustomerStores />
+            </Box>
           </Grid>
 
           {/* Right Column with Paper List */}

@@ -140,7 +140,7 @@ const CustomTopReadyToDelivery = () => {
                   {customer.ready_order_count || 0}
                 </Typography>
                 <Typography fontSize={12} sx={{ color: COLORS.subtitle }}>
-                  Ready Orders
+                  Waiting Time
                 </Typography>
               </Box>
             </Box>
