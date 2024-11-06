@@ -53,7 +53,12 @@ import {
   handleGetServicePromoList,
   handleGetServiceTypeList,
 } from "../services/admin/useServices.js";
-import { handleAdminGetTotalRevenue } from "../services/admin/useDashboard.js";
+import {
+  handleAdminGetTotalCustomers,
+  handleAdminGetTotalLaundryLoadProcess,
+  handleAdminGetTotalLaundryOrders,
+  handleAdminGetTotalRevenue,
+} from "../services/admin/useDashboard.js";
 
 const router = express.Router();
 
@@ -76,6 +81,39 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleAdminGetTotalRevenue(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/get-total-laundry-orders",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalLaundryOrders(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/get-total-customers",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalCustomers(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/get-total-laundry-load",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalLaundryLoadProcess(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

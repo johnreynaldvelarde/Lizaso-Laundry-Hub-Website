@@ -1,81 +1,93 @@
 import { COLORS } from "../../../../../constants/color";
 
-export const customLineChartData = [
-  {
-    name: "Revenue",
-    data: [50, 64, 48, 66, 49],
-  },
-];
+export const getCustomLineChartOptions = (chartData) => {
+  if (!Array.isArray(chartData) || chartData.length === 0) {
+    console.error("Invalid chartData:", chartData);
+    return {};
+  }
 
-export const getCustomLineChartOptions = (categories) => ({
-  chart: {
-    toolbar: {
-      show: false,
-    },
-    dropShadow: {
-      enabled: true,
-      top: 13,
-      left: 0,
-      blur: 10,
-      opacity: 0.1,
-      color: COLORS.secondary,
-    },
-  },
-  markers: {
-    size: 0,
-    colors: "white",
-    strokeColors: COLORS.error,
-    strokeWidth: 3,
-    strokeOpacity: 0.9,
-    strokeDashArray: 0,
-    fillOpacity: 1,
-    discrete: [],
-    shape: "circle",
-    radius: 2,
-    offsetX: 0,
-    offsetY: 0,
-    showNullDataPoints: true,
-  },
-  tooltip: {
-    theme: "dark",
-  },
-  dataLabels: {
-    enabled: false,
-  },
-  stroke: {
-    curve: "smooth",
-    type: "line",
-  },
-  xaxis: {
-    type: "numeric",
-    categories: categories,
-    labels: {
-      style: {
-        colors: COLORS.subtitle,
-        fontSize: "12px",
-        fontWeight: "500",
+  const categories = chartData.map((item) => item.name || "Unknown");
+  const values = chartData.map((item) => {
+    const value = parseFloat(item.value);
+    return isNaN(value) ? 0 : value; // Return 0 if value is invalid
+  });
+
+  return {
+    chart: {
+      toolbar: {
+        show: false,
+      },
+      dropShadow: {
+        enabled: true,
+        top: 13,
+        left: 0,
+        blur: 10,
+        opacity: 0.1,
+        color: COLORS?.secondary,
       },
     },
-    axisBorder: {
+    markers: {
+      size: 0,
+      colors: "white",
+      strokeColors: COLORS?.error,
+      strokeWidth: 3,
+      strokeOpacity: 0.9,
+      strokeDashArray: 0,
+      fillOpacity: 1,
+      discrete: [],
+      shape: "circle",
+      radius: 2,
+      offsetX: 0,
+      offsetY: 0,
+      showNullDataPoints: true,
+    },
+    tooltip: {
+      theme: "dark",
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    stroke: {
+      curve: "smooth",
+      type: "line",
+    },
+    xaxis: {
+      type: "category",
+      categories: categories,
+      labels: {
+        style: {
+          colors: COLORS?.subtitle,
+          fontSize: "12px",
+          fontWeight: "500",
+        },
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+    },
+    yaxis: {
       show: false,
     },
-    axisTicks: {
+    series: [
+      {
+        name: "Total",
+        data: values,
+      },
+    ],
+    legend: {
       show: false,
     },
-  },
-  yaxis: {
-    show: false,
-  },
-  legend: {
-    show: false,
-  },
-  grid: {
-    show: false,
-    column: {
-      opacity: 0.5,
+    grid: {
+      show: false,
+      column: {
+        opacity: 0.5,
+      },
     },
-  },
-});
+  };
+};
 
 export const customBarChartData = [
   {

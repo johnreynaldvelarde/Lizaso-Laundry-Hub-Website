@@ -1,27 +1,124 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import {
   Box,
   Paper,
   Typography,
   CircularProgress,
   IconButton,
+  Skeleton,
 } from "@mui/material";
 import { COLORS } from "../../../../constants/color";
 import { ArrowFatLineLeft, ArrowFatLineRight } from "@phosphor-icons/react";
 import CustomLineChart from "./chart/CustomLineChart";
-import {
-  customLineChartData,
-  getCustomLineChartOptions,
-} from "./data/chartData";
+import { getCustomLineChartOptions } from "./data/chartData";
 import { getLast5Months } from "./utils/chartUtils";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import useFetchData from "../../../../hooks/common/useFetchData";
+import {
+  getAdminTotalCustomers,
+  getAdminTotalLaundryLoad,
+  getAdminTotalLaundryOrders,
+  getAdminTotalRevenue,
+} from "../../../../services/api/getApi";
+import total_revenue from "../../../../assets/gif/total_revenue.gif";
+import total_service_request from "../../../../assets/gif/total_service_request.gif";
+import total_customers from "../../../../assets/gif/total_customers.gif";
+import total_average_weight from "../../../../assets/gif/total_average_weight.gif";
 
-const CustomDashHorizontal = ({ keyMetrics }) => {
+const CustomDashHorizontal = () => {
   const scrollRef = useRef(null);
   const [isScrollable, setIsScrollable] = useState(false);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const { data: totalRevenue, fetchData: fetchTotalRevenue } = useFetchData();
+  const { data: totalLaundryOrders, fetchData: fetchTotalLaundryOrders } =
+    useFetchData();
+  const { data: totalCustomers, fetchData: fetchTotalCustomers } =
+    useFetchData();
+  const { data: totalLoad, fetchData: fetchTotalLoad } = useFetchData();
+
+  const fetchTotalRevenueData = useCallback(async () => {
+    setLoading(true);
+    await fetchTotalRevenue(getAdminTotalRevenue.getTotalRevenue);
+    setLoading(false);
+  }, [fetchTotalRevenue]);
+
+  const fetchTotalLaundryOrdersData = useCallback(async () => {
+    setLoading(true);
+    await fetchTotalLaundryOrders(
+      getAdminTotalLaundryOrders.getTotalLaundryOrders
+    );
+    setLoading(false);
+  }, [fetchTotalLaundryOrders]);
+
+  const fetchTotalCustomersData = useCallback(async () => {
+    setLoading(true);
+    await fetchTotalCustomers(getAdminTotalCustomers.getTotalCustomers);
+    setLoading(false);
+  }, [fetchTotalCustomers]);
+
+  const fetchTotalLoadData = useCallback(async () => {
+    setLoading(true);
+    await fetchTotalLoad(getAdminTotalLaundryLoad.getTotalLaundryLoad);
+    setLoading(false);
+  }, [fetchTotalLoad]);
+
+  useEffect(() => {
+    fetchTotalRevenueData();
+    fetchTotalLaundryOrdersData();
+    fetchTotalCustomersData();
+    fetchTotalLoadData();
+  }, [
+    fetchTotalRevenueData,
+    fetchTotalLaundryOrdersData,
+    fetchTotalCustomersData,
+    fetchTotalLoadData,
+  ]);
+
+  const { title, amount, change, chart_data } = totalRevenue;
+  const { title_orders, amount_orders, change_orders, chart_data_orders } =
+    totalLaundryOrders;
+  const {
+    title_customers,
+    amount_customers,
+    change_customers,
+    chart_data_customers,
+  } = totalCustomers;
+  const { title_load, amount_load, change_load, chart_data_load } = totalLoad;
+
+  const keyMetricsData = [
+    {
+      title: title,
+      amount: amount,
+      change: change,
+      chart_data: chart_data,
+      gif_icon: total_revenue,
+    },
+    {
+      title: title_orders,
+      amount: amount_orders,
+      change: change_orders,
+      chart_data: chart_data_orders,
+      gif_icon: total_service_request,
+    },
+    {
+      title: title_customers,
+      amount: amount_customers,
+      change: change_customers,
+      chart_data: chart_data_customers,
+      gif_icon: total_customers,
+    },
+    {
+      title: title_load,
+      amount: amount_load,
+      change: change_load,
+      chart_data: chart_data_load,
+      gif_icon: total_average_weight,
+    },
+  ];
 
   useEffect(() => {
     // Check if scrolling is necessary
@@ -29,7 +126,7 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
       setIsScrollable(true);
       setShowRightArrow(true);
     }
-  }, [keyMetrics]);
+  }, [keyMetricsData]);
 
   const handleScroll = (direction) => {
     const scrollAmount = 200;
@@ -51,11 +148,6 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
       );
     }
   };
-
-  const dynamicCategories = getLast5Months();
-  const updatedChartOptions = getCustomLineChartOptions(dynamicCategories);
-
-  console.log(keyMetrics);
 
   return (
     <Box sx={{ position: "relative", overflow: "hidden", width: "100%" }}>
@@ -90,7 +182,7 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
           gap: 2,
         }}
       >
-        {keyMetrics.map((metric, index) => (
+        {keyMetricsData.map((metric, index) => (
           <Box key={index} sx={{ flexShrink: 0 }}>
             <Paper
               sx={{
@@ -102,7 +194,6 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                gap: 3,
               }}
             >
               <Box sx={{ display: "flex", alignItems: "flex-start" }}>
@@ -116,56 +207,74 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
                 </Box>
 
                 <Box sx={{ flex: 1, textAlign: "left" }}>
-                  <Typography variant="h6" sx={{ color: COLORS.primary }}>
-                    {metric.title}
-                  </Typography>
-                  <Typography
-                    variant="h4"
-                    sx={{ fontWeight: 600, color: COLORS.text }}
-                  >
-                    {metric.amount ? metric.amount.toLocaleString() : "N/A"}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color={
-                      parseFloat(metric.change) < 0
-                        ? COLORS.error
-                        : COLORS.success
-                    }
-                    display="inline"
-                    fontWeight={600}
-                  >
-                    {/* Icon for negative or positive change */}
-                    {parseFloat(metric.change) < 0 ? (
-                      <TrendingDownIcon
-                        fontSize="small"
-                        style={{ marginRight: 4 }}
-                      />
-                    ) : (
-                      <TrendingUpIcon
-                        fontSize="small"
-                        style={{ marginRight: 4 }}
-                      />
-                    )}
-                    {metric.change}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    ml={1}
-                    color={COLORS.primary}
-                    display="inline"
-                    fontWeight={500}
-                  >
-                    from last month
-                  </Typography>
+                  {loading ? (
+                    <Skeleton width="60%" />
+                  ) : (
+                    <Typography variant="h6" sx={{ color: COLORS.primary }}>
+                      {metric.title}
+                    </Typography>
+                  )}
+                  {loading ? (
+                    <Skeleton width="40%" />
+                  ) : (
+                    <Typography
+                      variant="h4"
+                      sx={{ fontWeight: 600, color: COLORS.text }}
+                    >
+                      {metric.amount ? metric.amount.toLocaleString() : "N/A"}
+                    </Typography>
+                  )}
+                  {loading ? (
+                    <Skeleton width="30%" />
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      color={
+                        parseFloat(metric.change) < 0
+                          ? COLORS.error
+                          : COLORS.success
+                      }
+                      display="inline"
+                      fontWeight={600}
+                    >
+                      {/* Icon for negative or positive change */}
+                      {parseFloat(metric.change) < 0 ? (
+                        <TrendingDownIcon
+                          fontSize="small"
+                          style={{ marginRight: 4 }}
+                        />
+                      ) : (
+                        <TrendingUpIcon
+                          fontSize="small"
+                          style={{ marginRight: 4 }}
+                        />
+                      )}
+                      {metric.change}
+                    </Typography>
+                  )}
+                  {loading ? (
+                    <Skeleton width="50%" />
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      ml={1}
+                      color={COLORS.primary}
+                      display="inline"
+                      fontWeight={500}
+                    >
+                      from last month
+                    </Typography>
+                  )}
                 </Box>
               </Box>
 
               <Box>
-                {metric.chart_data ? (
+                {loading ? (
+                  <Skeleton variant="rectangular" height={200} />
+                ) : metric.chart_data ? (
                   <CustomLineChart
-                    chartOptions={updatedChartOptions}
-                    chartData={customLineChartData}
+                    chartData={metric.chart_data}
+                    chartOptions={getCustomLineChartOptions(metric.chart_data)}
                   />
                 ) : (
                   <CircularProgress />

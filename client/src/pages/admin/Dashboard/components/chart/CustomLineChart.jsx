@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
@@ -20,6 +20,24 @@ class CustomLineChart extends React.Component {
   }
 
   render() {
+    const { chartData, chartOptions } = this.state;
+    const series = [
+      {
+        name: "Total",
+        data: chartData.map((item) => item.value),
+      },
+    ];
+
+    const categories = chartData.map((item) => item.name);
+
+    const updatedChartOptions = {
+      ...chartOptions,
+      xaxis: {
+        ...chartOptions.xaxis,
+        categories: categories,
+      },
+    };
+
     return (
       <Box
         sx={{
@@ -27,8 +45,8 @@ class CustomLineChart extends React.Component {
         }}
       >
         <ReactApexChart
-          options={this.state.chartOptions}
-          series={this.state.chartData}
+          options={updatedChartOptions}
+          series={series}
           type="line"
           width="100%"
           height="90%"

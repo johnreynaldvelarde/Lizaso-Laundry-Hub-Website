@@ -19,6 +19,47 @@ export const getAdminTotalRevenue = {
   },
 };
 
+export const getAdminTotalLaundryOrders = {
+  getTotalLaundryOrders: async () => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/get-total-laundry-orders`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+export const getAdminTotalCustomers = {
+  getTotalCustomers: async () => {
+    try {
+      const response = await axiosPrivate.get(`/dashboard/get-total-customers`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+export const getAdminTotalLaundryLoad = {
+  getTotalLaundryLoad: async () => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/get-total-laundry-load`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+// DASHBOARD USER SECTION
 export const getDashboard = {
   getDashboard: async (storeId) => {
     try {
