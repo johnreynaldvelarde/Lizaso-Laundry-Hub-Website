@@ -3,33 +3,20 @@ import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 
 const C_Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white py-6">
+    <footer className="bg-gray-800 text-white py-3">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-center md:justify-between items-center">
+        {/* <div className="flex flex-col md:flex-row justify-center md:justify-between items-center"> */}
           {/* Company Info */}
-          <div className="mb-6 md:mb-0 text-center md:text-left w-full md:w-1/3">
+          {/* <div className="mb-6 md:mb-0 text-center md:text-left w-full md:w-1/3">
             <h2 className="text-xl font-bold">Lizaso Laundry Hub</h2>
             <p className="text-sm mt-2">
             RW76+VG Balagtas, Bulacan
             </p>
             <p className="text-sm mt-1">Email: info@lizasohub.com</p>
             <p className="text-sm mt-1">Phone: +63-931-006-4466</p>
-          </div>
-          {/* Google Map link */}
-          {/* <div className="w-full md:w-1/3 text-center md:text-left items-center"> 
-            <h2 className="text-lg font-bold mb-4">Visit Us</h2>
-            <div className="relative w-full" style={{ paddingBottom: '30%' }}> 
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30857.50845539111!2d120.89066533476561!3d14.814671899999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ad3ba49ce853%3A0xc6554a9f835aeea1!2sLIZASO%20LAUNDRY%20HUB!5e0!3m2!1sen!2sph!4v1730653756614!5m2!1sen!2sph"
-                className="absolute top-0 left-0 w-full h-full border-0"
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
           </div> */}
           {/* Resources Section */}
-          <div className="mb-6 md:mb-0 w-full md:w-1/3 text-center">
+          {/* <div className="mb-6 md:mb-0 w-full md:w-1/3 text-center">
             <ul className="space-y-2">
               <li>
                 <a href="#" className="hover:underline">
@@ -52,9 +39,9 @@ const C_Footer = () => {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* Social Media Icons */}
-          <div className="w-full md:w-1/3 text-center md:text-right">
+          {/* <div className="w-full md:w-1/3 text-center md:text-right">
             <h3 className="text-lg font-semibold mb-2">Follow Us</h3>
             <div className="flex justify-center md:justify-end gap-4">
               <a
@@ -87,8 +74,8 @@ const C_Footer = () => {
               </a>
             </div>
           </div>
-        </div>
-        <div className="mt-6 text-center text-sm">
+        </div> */}
+        <div className="p-4 text-center text-sm">
           <p>
             &copy; {new Date().getFullYear()} Lizaso Laundry Hub. All rights
             reserved.
