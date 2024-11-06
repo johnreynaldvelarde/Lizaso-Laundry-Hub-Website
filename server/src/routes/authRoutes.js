@@ -1,6 +1,10 @@
 import express from "express";
 import { getPool } from "../db/dbConfig.js";
-import { handleLogin, getUserDetails } from "../services/authService.js";
+import {
+  handleLogin,
+  getUserDetails,
+  handleLogout,
+} from "../services/authService.js";
 import jwt from "jsonwebtoken";
 import {
   handleCheckCustomerDetailsWeb,
@@ -91,29 +95,17 @@ function handleRefreshToken(req, res) {
   });
 }
 
-const tokenBlacklist = new Set();
-
-// Middleware to check if a token is blacklisted
-const isTokenBlacklisted = (token) => {
-  return tokenBlacklist.has(token);
-};
-
 // Logout route
-router.post("/logout", (req, res) => {
-  console.log("Logout na");
-  const refreshToken = req.cookies.refreshToken;
-
-  // Handle JWT invalidation
-  if (refreshToken) {
-    // Add the refresh token to the blacklist
-    tokenBlacklist.add(refreshToken);
-
-    // Clear the refresh token cookie
-    res.clearCookie("refreshToken");
-  }
-
-  res.status(200).json({ success: true, message: "Logged out successfully" });
-});
+router.post(
+  "/logout",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleLogout(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 router.get(
   "/customers/:id/check-customer-details-web",
@@ -127,3 +119,27 @@ router.get(
 );
 
 export default router;
+
+// const tokenBlacklist = new Set();
+
+// // Middleware to check if a token is blacklisted
+// const isTokenBlacklisted = (token) => {
+//   return tokenBlacklist.has(token);
+// };
+
+// router.post("/logout", (req, res) => {
+//   // console.log("Logout na");
+
+//   // const refreshToken = req.cookies.refreshToken;
+
+//   // // Handle JWT invalidation
+//   // if (refreshToken) {
+//   //   // Add the refresh token to the blacklist
+//   //   tokenBlacklist.add(refreshToken);
+
+//   //   // Clear the refresh token cookie
+//   //   res.clearCookie("refreshToken");
+//   // }
+
+//   // res.status(200).json({ success: true, message: "Logged out successfully" });
+// });

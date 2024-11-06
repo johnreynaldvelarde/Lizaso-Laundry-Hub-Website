@@ -173,7 +173,7 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
 
           <Stack direction="row" spacing={1.5} alignItems="center">
             {/* For message */}
-            <Tooltip title="Messages" arrow>
+            {/* <Tooltip title="Messages" arrow>
               <IconButton
                 className="rounded-circle"
                 onClick={handleOpenMessage}
@@ -182,7 +182,7 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
                   <MdOutlineMailOutline />
                 </Badge>
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             {/* For notications */}
             <Tooltip title="Notifications" arrow>

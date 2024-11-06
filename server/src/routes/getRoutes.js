@@ -39,7 +39,10 @@ import {
   handleGetSelectedStaff,
 } from "../services/admin/useSchedule.js";
 import { handleGetReviewsList } from "../services/admin/useReviews.js";
-import { handleGetActivityLog } from "../services/admin/useActivityLog.js";
+import {
+  handleGetActivityLog,
+  handleGetActivityLogStats,
+} from "../services/admin/useActivityLog.js";
 import {
   handleGetCustomerTypeStats,
   handleGetTotalSalesByMonth,
@@ -496,10 +499,21 @@ router.get(
 
 // #ACTIVITY LOG SECTION
 router.get(
-  "/activity-log/get-activity-log",
+  "/activity-logs/get-activity-log",
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetActivityLog(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/activity-logs/get-activity-log-stats",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetActivityLogStats(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

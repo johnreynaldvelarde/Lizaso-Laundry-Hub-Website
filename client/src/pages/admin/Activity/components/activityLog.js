@@ -11,11 +11,3 @@ export const ActionTypes = {
   ADMINISTRATIVE: "Administrative",
   SYSTEM_EVENT: "System_event",
 };
-
-export const ActionDescriptions = {
-  [ActionTypes.AUTHENTICATION]: {
-    LOGIN: (username) => `${username} has successfully logged into the system.`,
-    LOGOUT: (username) => `${username} has securely logged out of the system.`,
-    FAILED_LOGIN_ATTEMPT: (username) => `Failed login attempt by ${username}.`,
-  },
-};

@@ -642,7 +642,23 @@ export const getCustomerTypeStats = {
 export const getActivityLog = {
   viewActivityLog: async () => {
     try {
-      const response = await axiosPrivate.get(`/activity-log/get-activity-log`);
+      const response = await axiosPrivate.get(
+        `/activity-logs/get-activity-log`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+export const getActivityLogStats = {
+  viewActivityLogStats: async () => {
+    try {
+      const response = await axiosPrivate.get(
+        `/activity-logs/get-activity-log-stats`
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching:", error);

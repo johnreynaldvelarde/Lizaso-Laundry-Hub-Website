@@ -1,7 +1,7 @@
 import { Box, TableCell, Typography } from "@mui/material";
 import { COLORS } from "../../constants/color";
 
-const DateCell = ({ dateCreated }) => {
+const DateOnly = ({ dateCreated }) => {
   // Assuming dateCreated is a string like "February 16, 2000 12:00 PM"
   const date = new Date(dateCreated);
   const options = { month: "long", day: "numeric", year: "numeric" };
@@ -19,14 +19,8 @@ const DateCell = ({ dateCreated }) => {
       >
         {formattedDate}
       </Typography>
-      <Typography
-        variant="body2"
-        sx={{ fontWeight: "500", color: COLORS.text4 }}
-      >
-        {formattedTime}
-      </Typography>
     </Box>
   );
 };
 
-export default DateCell;
+export default DateOnly;

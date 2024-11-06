@@ -1,67 +1,68 @@
 export const handleGetActivityLog = async (req, res, db) => {
-  const { id } = req.params;
   try {
-    const query = `
-        SELECT 
-          fr.id AS review_id,
-          fr.rating,
-          fr.comment,
-          fr.created_at,
-          fr.updated_at,
-          fr.is_approved,
-          CONCAT(ua.first_name, ' ', ua.middle_name, ' ', ua.last_name) AS customer_full_name,
-          st.service_name
-        FROM Feedback_Review AS fr
-        JOIN User_Account AS ua ON fr.customer_id = ua.id
-        LEFT JOIN Service_Request AS sr ON fr.service_request_id = sr.id
-        LEFT JOIN Service_Type AS st ON sr.service_type_id = st.id
-        WHERE fr.store_id = ? 
-      `;
+    await db.beginTransaction();
 
-    const [rows] = await db.query(query, [id]);
-    res.status(200).json({
-      success: true,
-      data: rows,
-    });
+    const [rows] = await db.execute(
+      `
+      SELECT 
+        Activity_Log.id,
+        Activity_Log.user_id,
+        CONCAT(User_Account.first_name, ' ', COALESCE(User_Account.middle_name, ''), ' ', User_Account.last_name) AS fullname,
+        User_Account.username,
+        Activity_Log.user_type,
+        Activity_Log.action_type,
+        Activity_Log.action_description,
+        Activity_Log.timestamp
+      FROM 
+        Activity_Log
+      JOIN 
+        User_Account ON Activity_Log.user_id = User_Account.id
+      ORDER BY 
+        Activity_Log.timestamp DESC
+      `
+    );
+
+    await db.commit();
+
+    res.status(200).json({ data: rows });
   } catch (error) {
-    console.error("Error fetching reviews:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    console.error("Error retrieving activity log:", error);
+    await db.rollback();
+    res.status(500).json({ error: "Failed to retrieve activity log" });
+  } finally {
+    if (db) db.release();
   }
 };
 
-export const handleUpdateReview = async (req, res, db) => {
-  const { id } = req.params; // Review ID
-  const { is_approved } = req.body; // New approval status
-
+export const handleGetActivityLogStats = async (req, res, db) => {
   try {
-    // Update the is_approved field for the specified review
-    const updateQuery = `
-        UPDATE Feedback_Review 
-        SET is_approved = ? 
-        WHERE id = ?
-      `;
+    await db.beginTransaction();
 
-    const [result] = await db.query(updateQuery, [is_approved, id]);
+    const [rows] = await db.execute(`
+      SELECT 
+        DAYOFWEEK(timestamp) AS day_of_week,   -- Get day of the week (1 = Sunday, 2 = Monday, ..., 7 = Saturday)
+        HOUR(timestamp) AS hour_of_day,        -- Get hour of the day (0-23)
+        COUNT(*) AS activity_count
+      FROM activity_log
+      GROUP BY day_of_week, hour_of_day
+      ORDER BY day_of_week, hour_of_day;
+    `);
 
-    if (result.affectedRows === 0) {
-      return res.status(200).json({
-        success: false,
-        message: "Review not found or no update made",
-      });
-    }
+    await db.commit();
 
-    res.status(200).json({
-      success: true,
-      message: "Review status updated",
+    const heatmapData = Array.from({ length: 7 }, () => Array(24).fill(0));
+
+    rows.forEach((row) => {
+      const { day_of_week, hour_of_day, activity_count } = row;
+      heatmapData[day_of_week - 1][hour_of_day] = activity_count;
     });
+
+    res.status(200).json({ data: heatmapData });
   } catch (error) {
-    console.error("Error updating review approval status:", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
+    console.error("Error fetching activity log stats:", error);
+    await db.rollback();
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    if (db) db.release();
   }
 };

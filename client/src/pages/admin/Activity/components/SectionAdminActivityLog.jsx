@@ -12,49 +12,49 @@ import CustomHeaderTitleTable from "../../../../components/common/CustomHeaderTi
 import CustomSearch from "../../../../components/common/table/filter/CustomSearch";
 import CustomCreatedDate from "../../../../components/common/table/filter/CustomCreatedDate";
 import {
-  getCustomerGrowthOverTime,
-  getCustomerList,
+  getActivityLog,
+  getActivityLogStats,
 } from "../../../../services/api/getApi";
 import { parseISO } from "date-fns";
 import { checkDateMatch } from "../../../../utils/method";
 import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
+import CustomActivityLogTable from "../../../../components/common/table/CustomActivityLogTable";
+import CustomActivityLogHeatmap from "../../../../components/common/chart/CustomActivityLogHeatmap";
 
 const SectionAdminActivityLog = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  const { data: customerListData, fetchData: fetchCustomerList } =
-    useFetchData();
-  const { data: customerStatsData, fetchData: fetchCustomerStats } =
-    useFetchData();
   const [loading, setLoading] = useState(true);
 
-  const fetchCustomerListData = useCallback(async () => {
-    setLoading(true);
-    await fetchCustomerList(getCustomerList.viewCustomerList, storeId);
-    setLoading(false);
-  }, [fetchCustomerList, storeId]);
+  const { data: activityLog, fetchData: fetchActivityLog } = useFetchData();
 
-  const fetchCustomerStatsData = useCallback(async () => {
+  const { data: activityLogStats, fetchData: fetchActivityLogStats } =
+    useFetchData();
+
+  const fetchActivityLogData = useCallback(async () => {
     setLoading(true);
-    await fetchCustomerStats(
-      getCustomerGrowthOverTime.viewCustomerGrow,
-      storeId
-    );
+    await fetchActivityLog(getActivityLog.viewActivityLog);
     setLoading(false);
-  }, [fetchCustomerStats, storeId]);
+  }, [fetchActivityLog]);
+
+  const fetchActivityLogStatsData = useCallback(async () => {
+    setLoading(true);
+    await fetchActivityLogStats(getActivityLogStats.viewActivityLogStats);
+    setLoading(false);
+  }, [fetchActivityLogStats]);
 
   useEffect(() => {
-    fetchCustomerListData();
-    fetchCustomerStatsData();
-  }, [fetchCustomerListData]);
+    fetchActivityLogData();
+    fetchActivityLogStatsData();
+  }, [fetchActivityLogData, fetchActivityLogStatsData]);
 
   useEffect(() => {
-    if (customerListData) {
-      setFilteredData(customerListData);
+    if (activityLog) {
+      setFilteredData(activityLog);
     }
-  }, [customerListData]);
+  }, [activityLog]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -68,15 +68,15 @@ const SectionAdminActivityLog = ({ storeId }) => {
   };
 
   const applyFilters = (dateOption, search) => {
-    const filtered = customerListData.filter((item) => {
-      const requestDate = parseISO(item.date_created);
+    const filtered = activityLog.filter((item) => {
+      const requestDate = parseISO(item.timestamp);
       const isDateMatch = dateOption
         ? checkDateMatch(dateOption, requestDate)
         : true;
 
       // Filter by search term in customer fullname
       const isSearchMatch =
-        item.full_name.toLowerCase().includes(search.toLowerCase()) ||
+        item.fullname.toLowerCase().includes(search.toLowerCase()) ||
         item.username.toLowerCase().includes(search.toLowerCase());
 
       return isDateMatch && isSearchMatch;
@@ -86,10 +86,10 @@ const SectionAdminActivityLog = ({ storeId }) => {
 
   useEffect(() => {
     applyFilters(selectedDate, searchTerm);
-  }, [selectedDate, searchTerm, customerListData]);
+  }, [selectedDate, searchTerm, activityLog]);
 
   const handleRefreshData = () => {
-    fetchCustomerListData();
+    fetchActivityLogData();
   };
 
   return (
@@ -114,7 +114,8 @@ const SectionAdminActivityLog = ({ storeId }) => {
         display="flex"
         sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
       >
-        <CustomerGrowthChart customerGrowthData={customerStatsData} />
+        <CustomActivityLogHeatmap activityLogData={activityLogStats} />
+        {/* <CustomerGrowthChart customerGrowthData={customerStatsData} /> */}
       </Box>
 
       {/* Content */}
@@ -130,7 +131,7 @@ const SectionAdminActivityLog = ({ storeId }) => {
           }}
         >
           <Box sx={{ display: "flex" }}>
-            <CustomHeaderTitleTable title={"All Customers"} />
+            <CustomHeaderTitleTable title={"All Activity Log"} />
           </Box>
 
           <Box
@@ -214,7 +215,7 @@ const SectionAdminActivityLog = ({ storeId }) => {
         </Box>
 
         <Box>
-          <CustomCustomerTable
+          <CustomActivityLogTable
             tableData={filteredData}
             loading={loading}
             refreshData={handleRefreshData}

@@ -12,6 +12,8 @@ const createToken = (payload, secret, expiresIn) => {
   return jwt.sign(payload, secret, { expiresIn });
 };
 
+const tokenBlacklist = new Set();
+
 export const handleLogin = async (req, res, db) => {
   const { username, password } = req.body;
 
@@ -73,8 +75,12 @@ export const handleLogin = async (req, res, db) => {
         user.id,
       ]);
 
-      // Set user type based on the user_type field
-      userType = user.user_type; // Assuming user_type distinguishes between roles
+      const actionType = ActionTypes.AUTHENTICATION;
+      const actionDescription = ActionDescriptions[actionType].LOGIN(username);
+
+      await logActivity(db, user.id, roleName, actionType, actionDescription);
+
+      userType = user.user_type;
     } else {
       return res
         .status(404)
@@ -185,6 +191,33 @@ export const handleRegister = async (req, res, db) => {
   }
 };
 
+export const handleLogout = async (req, res, db) => {
+  const { user_id, username, roleName } = req.body;
+
+  console.log(req.body);
+
+  const actionType = ActionTypes.AUTHENTICATION;
+  const actionDescription = ActionDescriptions[actionType].LOGOUT(username);
+
+  await logActivity(db, user_id, roleName, actionType, actionDescription);
+
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+      tokenBlacklist.add(refreshToken);
+      res.clearCookie("refreshToken");
+    }
+
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+  } catch (err) {
+    console.error("Error during logout:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 export const handleRefreshToken = async (req, res) => {
   const { refreshToken } = req.cookies;
 
@@ -291,71 +324,3 @@ export const getUserDetails = async (req, res, db) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-// export const getUserDetails = async (req, res, db) => {
-//   const authHeader = req.headers.authorization;
-
-//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-//     return res.status(401).json({ success: false, message: "Unauthorized" });
-//   }
-
-//   const token = authHeader.split(" ")[1];
-//   const decoded = decodeToken(token);
-
-//   if (!decoded) {
-//     return res.status(401).json({ success: false, message: "Invalid token" });
-//   }
-
-//   const { userId } = decoded;
-
-//   try {
-//     const [userAccountResults] = await db.query(
-//       `SELECT ua.*, rp.role_name, rp.can_read, rp.can_write, rp.can_edit, rp.can_delete
-//        FROM User_Account ua
-//        LEFT JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
-//        WHERE ua.id = ?`,
-//       [userId]
-//     );
-
-//     if (userAccountResults.length > 0) {
-//       const user = userAccountResults[0];
-
-//       // Prepare the response based on user type
-//       const response = {
-//         success: true,
-//         user: {
-//           userId: user.id,
-//           storeId: user.store_id,
-//           firstname: user.first_name,
-//           middlename: user.middle_name,
-//           lastname: user.last_name,
-//           email: user.email,
-//           phone: user.mobile_number,
-//           fullName: `${user.first_name} ${user.last_name}`,
-//           username: user.username,
-//           userType: user.user_type, // Include user type in response
-//         },
-//       };
-
-//       // If user type is not 'Customer', add role permissions
-//       if (user.user_type !== "Customer") {
-//         response.user.roleName = user.role_name;
-//         response.user.permissions = {
-//           canRead: user.can_read,
-//           canWrite: user.can_write,
-//           canEdit: user.can_edit,
-//           canDelete: user.can_delete,
-//         };
-//       }
-
-//       return res.status(200).json(response);
-//     } else {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
-//   } catch (error) {
-//     console.error("Error fetching user details:", error);
-//     return res.status(500).json({ success: false, message: "Server error" });
-//   }
-// };

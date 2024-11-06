@@ -1,79 +1,39 @@
-// import { axiosPublic, axiosPrivate } from "../api/axios";
-// import { useContext } from "react";
-// import { useNavigate } from "react-router-dom";
-// import AuthContext from "../contexts/AuthContext";
-
-// const useLogout = () => {
-//   const setUserDetails = useContext(AuthContext); // Adjust according to your context
-//   const navigate = useNavigate();
-
-//   //   const logout = async () => {
-//   //     try {
-//   //       // Send logout request to server
-//   //       await axiosPrivate.post("/logout");
-
-//   //       // Clear access token from app state
-//   //       setUserDetails(null);
-
-//   //       // Redirect to the login page or home page
-//   //       navigate("/"); // Adjust the path as needed
-//   //     } catch (error) {
-//   //       console.error("Logout failed:", error);
-//   //     }
-//   //   };
-
-//   const logout = async () => {
-//     try {
-//       await axiosPrivate.post("/logout", {}, { withCredentials: true });
-//       setAccessToken(null);
-//       setUserDetails({
-//         userId: "",
-//         storeId: "",
-//         fullName: "",
-//         username: "",
-//       });
-//       // Optionally redirect to login page
-//       navigate("/");
-//     } catch (error) {
-//       console.error("Logout failed:", error);
-//     }
-//   };
-
-//   return logout;
-// };
-
-// export default useLogout;
-
-// src/hooks/useLogout.js
-import { useAuth } from "../contexts/AuthContext"; // Adjust the path to your AuthContext
-import axios from "axios";
-
-const API_URL = "http://localhost:3002/api"; // Define your API base URL
+import { useAuth } from "../contexts/AuthContext";
+import { axiosPublic } from "../services/api/axios";
 
 const useLogout = () => {
-  const { setAccessToken, setUser, setIsLoading } = useAuth();
+  const { userDetails, setAccessToken, setUser, setIsLoading } = useAuth();
+
+  const data = {
+    user_id: userDetails.userId,
+    username: userDetails.username,
+    roleName: userDetails.roleName,
+  };
 
   const logout = async () => {
+    setIsLoading(true);
     try {
-      // Send logout request to server
-      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+      const response = await axiosPublic.post("/logout", data);
 
-      // Clear access token and user details from app state
-      setAccessToken(null);
-      setUser({
-        userId: "",
-        storeId: "",
-        fullName: "",
-        username: "",
-      });
+      console.log(response);
 
-      // Optionally, redirect to login page
-      window.location.href = "/";
+      if (response) {
+        setAccessToken(null);
+        setUser({
+          userId: "",
+          storeId: "",
+          fullName: "",
+          username: "",
+        });
 
-      // Optionally, handle additional cleanup if needed
-      setIsLoading(true); // Set loading to true during logout
+        window.location.href = "/";
+      } else {
+        console.error("Error during logout - No response from login endpoint");
+      }
     } catch (error) {
       console.error("Logout failed:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

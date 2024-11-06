@@ -19,6 +19,9 @@ import { getStatusColor } from "./custom/method";
 import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
+import DateTime from "../../table/DateTime";
+import DateOnly from "../../table/DateOnly";
+import { getActionType } from "../../../pages/admin/Activity/components/method";
 
 const CustomActivityLogTable = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
@@ -49,12 +52,11 @@ const CustomActivityLogTable = ({ tableData, loading, refreshData }) => {
           <TableHead className="bg-[#F1F1F1] border-b">
             <TableRow>
               <TableCell sx={cellHeadStyles}>ID</TableCell>
-              <TableCell sx={cellHeadStyles}>Date Created</TableCell>
-              <TableCell sx={cellHeadStyles}>Name</TableCell>
-              <TableCell sx={cellHeadStyles}>Service Type</TableCell>
-              <TableCell sx={cellHeadStyles}>Payment Method</TableCell>
-              <TableCell sx={cellHeadStyles}>Status</TableCell>
-              <TableCell sx={cellHeadStyles}>Actions</TableCell>
+              <TableCell sx={cellHeadStyles}>User</TableCell>
+              <TableCell sx={cellHeadStyles}>Date</TableCell>
+              <TableCell sx={cellHeadStyles}>Time</TableCell>
+              <TableCell sx={cellHeadStyles}>Action</TableCell>
+              <TableCell sx={cellHeadStyles}>Description</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -114,31 +116,24 @@ const CustomActivityLogTable = ({ tableData, loading, refreshData }) => {
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <DateCell dateCreated={data.request_date} />
-                    </TableCell>
-                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.text }}
                       >
-                        {data.customer_fullname}
+                        {data.fullname}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: "500", color: COLORS.text4 }}
+                      >
+                        {data.username}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.primary }}
-                      >
-                        {data.service_name}
-                      </Typography>
+                      <DateOnly dateCreated={data.timestamp} />
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: "600", color: COLORS.secondary }}
-                      >
-                        {data.payment_method}
-                      </Typography>
+                      <DateTime dateCreated={data.timestamp} />
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
@@ -146,44 +141,30 @@ const CustomActivityLogTable = ({ tableData, loading, refreshData }) => {
                         sx={{
                           paddingX: 2,
                           paddingY: 0.5,
-                          backgroundColor: getStatusColor(data.request_status),
-                          fontWeight: "600",
+                          backgroundColor: getActionType(data.action_type),
+                          fontWeight: "500",
                           color: COLORS.white,
                           borderRadius: 8,
                           display: "inline-block",
                         }}
                       >
-                        {data.request_status}
+                        {data.action_type}
                       </Typography>
                     </TableCell>
-                    <TableCell>
-                      {data.request_status === "Pending Pickup" ? (
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: COLORS.secondary,
-                            textTransform: "none",
-                          }}
-                          onClick={() => {
-                            openPopup("assignTo", data.id);
-                          }}
-                        >
-                          Assign To
-                        </Button>
-                      ) : data.request_status === "Ready for delivery" ? (
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: COLORS.secondary,
-                            textTransform: "none",
-                          }}
-                          onClick={() => {
-                            openPopup("assignTo", data.id);
-                          }}
-                        >
-                          Assign To
-                        </Button>
-                      ) : null}
+                    <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: "600",
+                          color: COLORS.primary,
+                          marginTop: 1,
+                          whiteSpace: "normal",
+                          wordWrap: "break-word",
+                          overflowWrap: "break-word",
+                        }}
+                      >
+                        {data.action_description}
+                      </Typography>
                     </TableCell>
                   </TableRow>
                 ))
