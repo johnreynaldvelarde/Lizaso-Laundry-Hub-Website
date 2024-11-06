@@ -404,6 +404,60 @@ export const handleAdminGetTotalLaundryLoadProcess = async (
   }
 };
 
+//#
+export const handleAdminGetListCustomerMostServiceRequest = async (
+  req,
+  res,
+  db
+) => {
+  try {
+    await db.beginTransaction();
+
+    // SQL query to fetch the top customers with the most service requests and their address line
+    const query = `
+      SELECT 
+        u.id AS customer_id,
+        u.first_name,
+        u.middle_name,
+        u.last_name,
+        u.email,
+        a.address_line,  -- Include address_line from Addresses table
+        COUNT(sr.id) AS service_request_count
+      FROM 
+        User_Account u
+      LEFT JOIN 
+        Service_Request sr ON u.id = sr.customer_id
+      LEFT JOIN 
+        Addresses a ON u.address_id = a.id  -- Join with Addresses table to get address_line
+      WHERE 
+        u.user_type = 'Customer'
+      GROUP BY 
+        u.id
+      ORDER BY 
+        service_request_count DESC
+    `;
+
+    const [rows] = await db.execute(query);
+
+    await db.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows, // Send the data including the address_line
+    });
+  } catch (error) {
+    await db.rollback();
+    console.error(
+      "Error fetching customers with most service requests:",
+      error
+    );
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 export const handleGetTotalSalesByMonth = async (req, res, db) => {
   const { id } = req.params; // Store's id
 

@@ -13,6 +13,7 @@ import {
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import { COLORS } from "../../../../constants/color";
 import CustomDashHorizontal from "./CustomDashHorizontal";
+import CustomTopNewCustomer from "./CustomTopNewCustomer";
 
 const tableData1 = [
   { id: 1, name: "John Doe", role: "Manager" },
@@ -27,6 +28,57 @@ const tableData2 = [
 const tableData3 = [
   { id: 1, service: "Express", price: "₱100" },
   { id: 2, service: "Regular", price: "₱50" },
+];
+
+const newCustomers = [
+  {
+    first_name: "John",
+    middle_name: "Michael",
+    last_name: "Doe",
+    email: "johndoe@example.com",
+    address: "123 Main St, Springfield",
+    serviceRequests: 5,
+  },
+  {
+    first_name: "Jane",
+    middle_name: "Ann",
+    last_name: "Smith",
+    email: "janesmith@example.com",
+    address: "456 Oak St, Shelbyville",
+    serviceRequests: 2,
+  },
+  {
+    first_name: "John",
+    middle_name: "Michael",
+    last_name: "Doe",
+    email: "johndoe@example.com",
+    address: "123 Main St, Springfield",
+    serviceRequests: 5,
+  },
+  {
+    first_name: "Jane",
+    middle_name: "Ann",
+    last_name: "Smith",
+    email: "janesmith@example.com",
+    address: "456 Oak St, Shelbyville",
+    serviceRequests: 2,
+  },
+  {
+    first_name: "John",
+    middle_name: "Michael",
+    last_name: "Doe",
+    email: "johndoe@example.com",
+    address: "123 Main St, Springfield",
+    serviceRequests: 5,
+  },
+  {
+    first_name: "Jane",
+    middle_name: "Ann",
+    last_name: "Smith",
+    email: "janesmith@example.com",
+    address: "456 Oak St, Shelbyville",
+    serviceRequests: 2,
+  },
 ];
 
 const SectionAdminDashboard = () => {
@@ -83,88 +135,11 @@ const SectionAdminDashboard = () => {
                 </Table>
               </Paper>
             </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Paper
-                sx={{
-                  p: 4,
-                  boxShadow: "none",
-                  border: 1,
-                  borderColor: COLORS.border,
-                  borderRadius: "14px",
-                }}
-              >
-                <Typography variant="h6">Employee List</Typography>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Role</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tableData1.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.role}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Paper>
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Paper
-                sx={{
-                  p: 4,
-                  boxShadow: "none",
-                  border: 1,
-                  borderColor: COLORS.border,
-                  borderRadius: "14px",
-                }}
-              >
-                <Typography variant="h6">Employee List</Typography>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Role</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tableData1.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.role}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Paper>
-            </Box>
           </Grid>
 
           {/* Right Column with Paper List */}
           <Grid item xs={12} sm={4}>
-            <Paper
-              sx={{
-                p: 4,
-                boxShadow: "none",
-                border: 1,
-                borderColor: COLORS.border,
-                borderRadius: "14px",
-              }}
-            >
-              <Typography variant="h6">Notifications</Typography>
-              <Box sx={{ mt: 2 }}>
-                <ul>
-                  <li>New order placed</li>
-                  <li>Inventory updated</li>
-                  <li>Customer inquiry</li>
-                </ul>
-              </Box>
-            </Paper>
+            <CustomTopNewCustomer />
           </Grid>
         </Grid>
       </Box>
@@ -173,3 +148,65 @@ const SectionAdminDashboard = () => {
 };
 
 export default SectionAdminDashboard;
+
+{
+  /* <Box sx={{ mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 4,
+                  boxShadow: "none",
+                  border: 1,
+                  borderColor: COLORS.border,
+                  borderRadius: "14px",
+                }}
+              >
+                <Typography variant="h6">Employee List</Typography>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Role</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableData1.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.role}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 4,
+                  boxShadow: "none",
+                  border: 1,
+                  borderColor: COLORS.border,
+                  borderRadius: "14px",
+                }}
+              >
+                <Typography variant="h6">Employee List</Typography>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Role</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {tableData1.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.role}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </Box> */
+}

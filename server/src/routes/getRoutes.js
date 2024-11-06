@@ -54,6 +54,7 @@ import {
   handleGetServiceTypeList,
 } from "../services/admin/useServices.js";
 import {
+  handleAdminGetListCustomerMostServiceRequest,
   handleAdminGetTotalCustomers,
   handleAdminGetTotalLaundryLoadProcess,
   handleAdminGetTotalLaundryOrders,
@@ -114,6 +115,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleAdminGetTotalLaundryLoadProcess(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/get-total-customer-most-request",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetListCustomerMostServiceRequest(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

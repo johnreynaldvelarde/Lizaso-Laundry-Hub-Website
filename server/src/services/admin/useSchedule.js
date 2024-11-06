@@ -2,17 +2,13 @@ export const handleGetScheduleStatsByAdmin = async (req, res, connection) => {
   try {
     await connection.beginTransaction();
 
-    const query = `
+    const currentMonthQuery = `
       SELECT 
         COUNT(*) AS total_requests,
         SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) AS pending_requests,
         SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) AS complete_delivery_requests,
-        SUM(CASE WHEN request_status = 'Canceled' THEN 1 ELSE 0 END) AS canceled_requests,
-        DATE_FORMAT(NOW(), '%Y-%m') AS current_month,
-        COUNT(*) * 100.0 / COUNT(*) AS total_percentage,
-        SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS pending_percentage,
-        SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS complete_delivery_percentage,
-        SUM(CASE WHEN request_status = 'Canceled' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS canceled_percentage
+        SUM(CASE WHEN request_status = 'Laundry Completed' THEN 1 ELSE 0 END) AS laundry_completed_requests,
+        DATE_FORMAT(NOW(), '%Y-%m') AS current_month
       FROM 
         Service_Request
       WHERE 
@@ -20,13 +16,91 @@ export const handleGetScheduleStatsByAdmin = async (req, res, connection) => {
         AND MONTH(request_date) = MONTH(CURRENT_DATE());
     `;
 
-    const [rows] = await connection.execute(query);
+    // Query for previous month's stats
+    const previousMonthQuery = `
+      SELECT 
+        COUNT(*) AS total_requests,
+        SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) AS pending_requests,
+        SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) AS complete_delivery_requests,
+        SUM(CASE WHEN request_status = 'Laundry Completed' THEN 1 ELSE 0 END) AS laundry_completed_requests
+      FROM 
+        Service_Request
+      WHERE 
+        YEAR(request_date) = YEAR(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
+        AND MONTH(request_date) = MONTH(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH));
+    `;
+
+    const [currentMonthRows] = await connection.execute(currentMonthQuery);
+    const [previousMonthRows] = await connection.execute(previousMonthQuery);
+
+    const currentMonthStats = currentMonthRows[0] || {};
+    const previousMonthStats = previousMonthRows[0] || {};
+
+    const totalRequestsCurrent = currentMonthStats.total_requests || 0;
+    const pendingRequestsCurrent = currentMonthStats.pending_requests || 0;
+    const completeDeliveryRequestsCurrent =
+      currentMonthStats.complete_delivery_requests || 0;
+    const laundryCompletedRequestsCurrent =
+      currentMonthStats.laundry_completed_requests || 0;
+
+    const totalRequestsPrevious = previousMonthStats.total_requests || 0;
+    const pendingRequestsPrevious = previousMonthStats.pending_requests || 0;
+    const completeDeliveryRequestsPrevious =
+      previousMonthStats.complete_delivery_requests || 0;
+    const laundryCompletedRequestsPrevious =
+      previousMonthStats.laundry_completed_requests || 0;
+
+    const calculatePercentageChange = (current, previous) => {
+      if (previous === 0) {
+        if (current === 0) {
+          return "0.00%"; // No change
+        }
+        return "+100.00%"; // Full increase when previous is zero
+      }
+      const change = ((current - previous) / previous) * 100;
+
+      // Limiting the max percentage to 100% and ensuring the value is formatted to 2 decimal places
+      return `${Math.min(change, 100).toFixed(2)}%`;
+    };
+
+    // Calculate percentage change for total requests
+    const totalPercentage = calculatePercentageChange(
+      totalRequestsCurrent,
+      totalRequestsPrevious
+    );
+    const pendingPercentage = calculatePercentageChange(
+      pendingRequestsCurrent,
+      pendingRequestsPrevious
+    );
+    const completeDeliveryPercentage = calculatePercentageChange(
+      completeDeliveryRequestsCurrent,
+      completeDeliveryRequestsPrevious
+    );
+    const laundryCompletedPercentage = calculatePercentageChange(
+      laundryCompletedRequestsCurrent,
+      laundryCompletedRequestsPrevious
+    );
+
+    // Prepare data for response (no store_id included)
+    const data = [
+      {
+        total_requests: totalRequestsCurrent.toString(),
+        pending_requests: pendingRequestsCurrent.toString(),
+        complete_delivery_requests: completeDeliveryRequestsCurrent.toString(),
+        laundry_completed_requests: laundryCompletedRequestsCurrent.toString(),
+        current_month: currentMonthStats.current_month,
+        total_percentage: totalPercentage,
+        pending_percentage: pendingPercentage,
+        complete_delivery_percentage: completeDeliveryPercentage,
+        laundry_completed_percentage: laundryCompletedPercentage,
+      },
+    ];
 
     await connection.commit();
 
     res.status(200).json({
       success: true,
-      data: rows,
+      data,
     });
   } catch (error) {
     console.error("Error:", error);
@@ -39,40 +113,117 @@ export const handleGetScheduleStatsByAdmin = async (req, res, connection) => {
 };
 
 export const handleGetScheduleStatsByUser = async (req, res, connection) => {
-  const { id } = req.params;
+  const { id: store_id } = req.params;
 
   try {
     await connection.beginTransaction();
 
-    const query = `
+    const currentMonthQuery = `
       SELECT 
-        store_id,  -- Include store_id in the SELECT statement
         COUNT(*) AS total_requests,
         SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) AS pending_requests,
         SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) AS complete_delivery_requests,
-        SUM(CASE WHEN request_status = 'Canceled' THEN 1 ELSE 0 END) AS canceled_requests,
-        DATE_FORMAT(NOW(), '%Y-%m') AS current_month,
-        COUNT(*) * 100.0 / COUNT(*) AS total_percentage,
-        SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS pending_percentage,
-        SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS complete_delivery_percentage,
-        SUM(CASE WHEN request_status = 'Canceled' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS canceled_percentage
+        SUM(CASE WHEN request_status = 'Laundry Completed' THEN 1 ELSE 0 END) AS laundry_completed_requests,
+        DATE_FORMAT(NOW(), '%Y-%m') AS current_month
       FROM 
         Service_Request
       WHERE 
-        store_id = ? AND
-        YEAR(request_date) = YEAR(CURRENT_DATE())
-        AND MONTH(request_date) = MONTH(CURRENT_DATE())
-      GROUP BY 
-        store_id;  -- Group by store_id to aggregate results
+        store_id = ? 
+        AND YEAR(request_date) = YEAR(CURRENT_DATE())
+        AND MONTH(request_date) = MONTH(CURRENT_DATE());
     `;
 
-    const [rows] = await connection.execute(query, [id]);
+    // Query for previous month's stats
+    const previousMonthQuery = `
+      SELECT 
+        COUNT(*) AS total_requests,
+        SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) AS pending_requests,
+        SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) AS complete_delivery_requests,
+        SUM(CASE WHEN request_status = 'Laundry Completed' THEN 1 ELSE 0 END) AS laundry_completed_requests
+      FROM 
+        Service_Request
+      WHERE 
+        store_id = ? 
+        AND YEAR(request_date) = YEAR(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH))
+        AND MONTH(request_date) = MONTH(DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH));
+    `;
+
+    const [currentMonthRows] = await connection.execute(currentMonthQuery, [
+      store_id,
+    ]);
+    const [previousMonthRows] = await connection.execute(previousMonthQuery, [
+      store_id,
+    ]);
+
+    const currentMonthStats = currentMonthRows[0] || {};
+    const previousMonthStats = previousMonthRows[0] || {};
+
+    const totalRequestsCurrent = currentMonthStats.total_requests || 0;
+    const pendingRequestsCurrent = currentMonthStats.pending_requests || 0;
+    const completeDeliveryRequestsCurrent =
+      currentMonthStats.complete_delivery_requests || 0;
+    const laundryCompletedRequestsCurrent =
+      currentMonthStats.laundry_completed_requests || 0;
+
+    const totalRequestsPrevious = previousMonthStats.total_requests || 0;
+    const pendingRequestsPrevious = previousMonthStats.pending_requests || 0;
+    const completeDeliveryRequestsPrevious =
+      previousMonthStats.complete_delivery_requests || 0;
+    const laundryCompletedRequestsPrevious =
+      previousMonthStats.laundry_completed_requests || 0;
+
+    const calculatePercentageChange = (current, previous) => {
+      if (previous === 0) {
+        if (current === 0) {
+          return "0.00%"; // No change
+        }
+        return "+100.00%"; // Full increase when previous is zero
+      }
+      const change = ((current - previous) / previous) * 100;
+
+      // Limiting the max percentage to 100% and ensuring the value is formatted to 2 decimal places
+      return `${Math.min(change, 100).toFixed(2)}%`;
+    };
+
+    // Calculate percentage change for total requests
+    const totalPercentage = calculatePercentageChange(
+      totalRequestsCurrent,
+      totalRequestsPrevious
+    );
+    const pendingPercentage = calculatePercentageChange(
+      pendingRequestsCurrent,
+      pendingRequestsPrevious
+    );
+    const completeDeliveryPercentage = calculatePercentageChange(
+      completeDeliveryRequestsCurrent,
+      completeDeliveryRequestsPrevious
+    );
+    const laundryCompletedPercentage = calculatePercentageChange(
+      laundryCompletedRequestsCurrent,
+      laundryCompletedRequestsPrevious
+    );
+
+    // Prepare data for response
+    const data = [
+      {
+        store_id: parseInt(store_id, 10),
+        total_requests: totalRequestsCurrent.toString(),
+        pending_requests: pendingRequestsCurrent.toString(),
+        complete_delivery_requests: completeDeliveryRequestsCurrent.toString(),
+        laundry_completed_requests: laundryCompletedRequestsCurrent.toString(),
+        current_month: currentMonthStats.current_month,
+        total_percentage: totalPercentage,
+        pending_percentage: pendingPercentage,
+        complete_delivery_percentage: completeDeliveryPercentage,
+        laundry_completed_percentage: laundryCompletedPercentage,
+      },
+    ];
 
     await connection.commit();
 
     res.status(200).json({
       success: true,
-      data: rows,
+      data,
     });
   } catch (error) {
     console.error("Error:", error);

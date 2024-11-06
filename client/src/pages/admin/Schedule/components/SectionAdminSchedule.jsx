@@ -24,8 +24,11 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarSlash,
+  Flag,
   Hourglass,
   PlusCircle,
+  TrendDown,
+  TrendUp,
   Truck,
 } from "@phosphor-icons/react";
 import { COLORS } from "../../../../constants/color";
@@ -84,26 +87,28 @@ const SectionAdminSchedule = ({ storeId }) => {
   }, [scheduleData]);
 
   const {
-    total_requests = 0,
-    pending_requests = 0,
-    complete_delivery_requests = 0,
-    canceled_requests = 0,
-    total_percentage = 0,
-    pending_percentage = 0,
-    complete_delivery_percentage = 0,
-    canceled_percentage = 0,
+    total_requests,
+    pending_requests,
+    complete_delivery_requests,
+    laundry_completed_requests,
+    total_percentage,
+    pending_percentage,
+    complete_delivery_percentage,
+    laundry_completed_percentage,
   } = statsArray[0]
     ? {
-        total_requests: Number(statsArray[0].total_requests) || 0,
-        pending_requests: Number(statsArray[0].pending_requests) || 0,
+        total_requests: statsArray[0].total_requests || 0,
+        pending_requests: statsArray[0].pending_requests || 0,
         complete_delivery_requests:
-          Number(statsArray[0].complete_delivery_requests) || 0,
-        canceled_requests: Number(statsArray[0].canceled_requests) || 0,
-        total_percentage: Number(statsArray[0].total_percentage) || 0,
-        pending_percentage: Number(statsArray[0].pending_percentage) || 0,
+          statsArray[0].complete_delivery_requests || 0,
+        laundry_completed_requests:
+          statsArray[0].laundry_completed_requests || 0,
+        total_percentage: statsArray[0].total_percentage || 0,
+        pending_percentage: statsArray[0].pending_percentage || 0,
         complete_delivery_percentage:
-          Number(statsArray[0].complete_delivery_percentage) || 0,
-        canceled_percentage: Number(statsArray[0].canceled_percentage) || 0,
+          statsArray[0].complete_delivery_percentage || 0,
+        laundry_completed_percentage:
+          statsArray[0].laundry_completed_percentage || 0,
       }
     : {};
 
@@ -111,29 +116,29 @@ const SectionAdminSchedule = ({ storeId }) => {
     {
       title: "Total Service Request",
       value: total_requests,
-      percentageChange: `${total_percentage}%`,
+      percentageChange: `${total_percentage}`,
       icon: <AddressBookTabs size={35} color={COLORS.white} weight="duotone" />,
       backgroundColor: COLORS.secondary,
     },
     {
       title: "Pending Request",
       value: pending_requests,
-      percentageChange: `${pending_percentage}%`,
+      percentageChange: `${pending_percentage}`,
       icon: <Hourglass size={35} color={COLORS.white} weight="duotone" />,
       backgroundColor: COLORS.accent,
     },
     {
       title: "Complete Delivery",
       value: complete_delivery_requests,
-      percentageChange: `${complete_delivery_percentage}%`,
+      percentageChange: `${complete_delivery_percentage}`,
       icon: <Truck size={35} color={COLORS.white} weight="duotone" />,
       backgroundColor: COLORS.success,
     },
     {
-      title: "Canceled Request",
-      value: canceled_requests,
-      percentageChange: `${canceled_percentage}%`,
-      icon: <CalendarSlash size={35} color={COLORS.white} weight="duotone" />,
+      title: "Laundry Completed",
+      value: laundry_completed_requests,
+      percentageChange: `${laundry_completed_percentage}`,
+      icon: <Flag size={35} color={COLORS.white} weight="duotone" />,
       backgroundColor: COLORS.error,
     },
   ];
@@ -248,7 +253,9 @@ const SectionAdminSchedule = ({ storeId }) => {
               <Box
                 sx={{
                   marginRight: 1,
-                  backgroundColor: COLORS.pale_sucess,
+                  backgroundColor: item.percentageChange.includes("-")
+                    ? COLORS.pale_error
+                    : COLORS.pale_sucess,
                   borderRadius: 20,
                   display: "flex",
                   alignItems: "center",
@@ -257,18 +264,22 @@ const SectionAdminSchedule = ({ storeId }) => {
                   height: 40,
                 }}
               >
-                <ArrowUpRight
-                  size={25}
-                  color={COLORS.success}
-                  weight="duotone"
-                />
+                {item.percentageChange.includes("-") ? (
+                  <TrendDown size={25} color={COLORS.error} weight="duotone" />
+                ) : (
+                  <TrendUp size={25} color={COLORS.success} weight="duotone" />
+                )}
               </Box>
 
               <Box sx={{ marginTop: 1 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   <span
                     className="text-base font-semibold"
-                    style={{ color: COLORS.success }}
+                    style={{
+                      color: item.percentageChange.includes("-")
+                        ? COLORS.error // Red color for negative percentage
+                        : COLORS.success, // Green color for positive percentage
+                    }}
                   >
                     {item.percentageChange}
                   </span>
@@ -276,7 +287,7 @@ const SectionAdminSchedule = ({ storeId }) => {
                     className="ml-1 font-medium text-sm"
                     style={{ color: COLORS.primary }}
                   >
-                    Increased of activity
+                    from last month
                   </span>
                 </Typography>
               </Box>
