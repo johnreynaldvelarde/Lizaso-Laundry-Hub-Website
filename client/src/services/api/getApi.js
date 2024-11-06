@@ -6,8 +6,34 @@ const handleError = (error) => {
   return new Error(message);
 };
 
-// #UNIT MONITORED SECTION
+//#DASHBOARD ADMIN SECTION
+export const getAdminDashboard = {
+  getAdmin: async () => {
+    try {
+      const response = await axiosPrivate.get(`/dashboard/get-calculated`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
 
+export const getDashboard = {
+  getDashboard: async (storeId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/${storeId}/get-calculated`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+// #UNIT MONITORED SECTION
 export const getCalculatedTransaction = {
   getTransaction: async (assignmentId) => {
     try {

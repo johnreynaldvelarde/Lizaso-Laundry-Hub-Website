@@ -8,12 +8,16 @@ import {
 } from "@mui/material";
 import { COLORS } from "../../../../constants/color";
 import { ArrowFatLineLeft, ArrowFatLineRight } from "@phosphor-icons/react";
-import CustomLineChart from "./chart/CustomLineChart";
 import {
-  customLineChartData,
-  getCustomLineChartOptions,
-} from "./data/chartData";
-import { getLast5Months } from "./utils/chartUtils";
+  LineChart,
+  Line,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 const CustomDashHorizontal = ({ keyMetrics }) => {
   const scrollRef = useRef(null);
@@ -50,9 +54,6 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
     }
   };
 
-  const dynamicCategories = getLast5Months();
-  const updatedChartOptions = getCustomLineChartOptions(dynamicCategories);
-
   return (
     <Box sx={{ position: "relative", overflow: "hidden", width: "100%" }}>
       {/* Left Arrow */}
@@ -87,10 +88,10 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
         }}
       >
         {keyMetrics.map((metric, index) => (
-          <Box key={index} sx={{ flexShrink: 0 }}>
+          <Box key={index} sx={{ minWidth: 450, flexShrink: 0 }}>
             <Paper
               sx={{
-                p: 2,
+                p: 4,
                 boxShadow: "none",
                 border: 1,
                 borderColor: COLORS.border,
@@ -98,7 +99,6 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                gap: 3,
               }}
             >
               <Box sx={{ display: "flex", alignItems: "flex-start" }}>
@@ -127,15 +127,18 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
                 </Box>
               </Box>
 
-              <Box>
-                {metric.data ? (
-                  <CustomLineChart
-                    chartOptions={updatedChartOptions}
-                    chartData={customLineChartData}
-                  />
-                ) : (
-                  <CircularProgress />
-                )}
+              <Box sx={{}}>
+                <Paper
+                  sx={{
+                    padding: 5, // Adjust padding as needed
+                    backgroundColor: COLORS.background, // Example color, change as needed
+                    borderRadius: "8px", // Adjust border radius as needed
+                    textAlign: "center", // Center the text
+                    boxShadow: 2, // Add some shadow for elevation
+                  }}
+                >
+                  <Typography variant="body2">{metric.progress}%</Typography>
+                </Paper>
               </Box>
             </Paper>
           </Box>

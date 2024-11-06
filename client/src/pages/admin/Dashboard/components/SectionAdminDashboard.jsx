@@ -29,6 +29,14 @@ const keyMetrics = [
     progress: 32,
     color: "#4690FF",
     gif_icon: total_sales,
+    data: [
+      { name: "Jan", value: 4000 },
+      { name: "Feb", value: 3000 },
+      { name: "Mar", value: 5000 },
+      { name: "Apr", value: 7000 },
+      { name: "May", value: 6000 },
+      { name: "Jun", value: 8000 },
+    ],
   },
   {
     title: "Total Service Request",
@@ -37,6 +45,14 @@ const keyMetrics = [
     progress: 48,
     color: "#B4162C",
     gif_icon: total_service_request,
+    data: [
+      { name: "Jan", value: 4000 },
+      { name: "Feb", value: 3000 },
+      { name: "Mar", value: 5000 },
+      { name: "Apr", value: 7000 },
+      { name: "May", value: 6000 },
+      { name: "Jun", value: 8000 },
+    ],
   },
   {
     title: "Total Customers",
@@ -45,6 +61,14 @@ const keyMetrics = [
     progress: 89,
     color: "#4CAF50",
     gif_icon: total_customers,
+    data: [
+      { name: "Jan", value: 4000 },
+      { name: "Feb", value: 3000 },
+      { name: "Mar", value: 5000 },
+      { name: "Apr", value: 7000 },
+      { name: "May", value: 6000 },
+      { name: "Jun", value: 8000 },
+    ],
   },
   {
     title: "Total Music",
@@ -52,43 +76,15 @@ const keyMetrics = [
     change: "+14.45%",
     progress: 54,
     color: "#FFC107",
+    data: [
+      { name: "Jan", value: 4000 },
+      { name: "Feb", value: 3000 },
+      { name: "Mar", value: 5000 },
+      { name: "Apr", value: 7000 },
+      { name: "May", value: 6000 },
+      { name: "Jun", value: 8000 },
+    ],
   },
-  {
-    title: "Total Music",
-    amount: "63,076 GB",
-    change: "+14.45%",
-    progress: 54,
-    color: "#FFC107",
-  },
-  {
-    title: "Total Music",
-    amount: "63,076 GB",
-    change: "+14.45%",
-    progress: 54,
-    color: "#FFC107",
-  },
-  {
-    title: "Total Music",
-    amount: "63,076 GB",
-    change: "+14.45%",
-    progress: 54,
-    color: "#FFC107",
-  },
-  {
-    title: "Total Music",
-    amount: "63,076 GB",
-    change: "+14.45%",
-    progress: 54,
-    color: "#FFC107",
-  },
-  {
-    title: "Total Music",
-    amount: "63,076 GB",
-    change: "+14.45%",
-    progress: 54,
-    color: "#FFC107",
-  },
-  // Add more metrics as needed
 ];
 
 const tableData1 = [
@@ -127,7 +123,7 @@ const SectionAdminDashboard = () => {
       {/* Key Metrics */}
       <CustomDashHorizontal keyMetrics={keyMetrics} />
 
-      <Box marginTop={2}>
+      <Box marginTop={3}>
         <Grid container spacing={3}>
           {/* Left Column with Three Tables */}
           <Grid item xs={12} sm={8}>
