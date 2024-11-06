@@ -458,53 +458,39 @@ export const handleAdminGetListCustomerMostServiceRequest = async (
   }
 };
 
-export const handleGetTotalSalesByMonth = async (req, res, db) => {
-  const { id } = req.params; // Store's id
-
+export const handleAdminGetRevenueByMonth = async (req, res, db) => {
   try {
-    // Start a transaction
     await db.beginTransaction();
 
-    // SQL query to get total sales by month, including months with zero sales
     const query = `
-        SELECT 
-          months.month,
-          IFNULL(SUM(t.total_amount), 0) AS sales
-        FROM 
-          (SELECT 'Jan' AS month UNION SELECT 'Feb' UNION SELECT 'Mar' UNION 
-           SELECT 'Apr' UNION SELECT 'May' UNION SELECT 'Jun' UNION 
-           SELECT 'Jul' UNION SELECT 'Aug' UNION SELECT 'Sep' UNION 
-           SELECT 'Oct' UNION SELECT 'Nov' UNION SELECT 'Dec') AS months
-        LEFT JOIN 
-          Transactions t ON DATE_FORMAT(t.created_at, '%b') = months.month 
-          AND t.store_id = ?  -- Using store_id instead of assignment_id
-        GROUP BY 
-          months.month
-        ORDER BY 
-          FIELD(months.month, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');  -- Corrected closing parenthesis
-      `;
+      SELECT 
+        MONTHNAME(created_at) AS month, 
+        SUM(total_amount) AS revenue
+      FROM Transactions
+      WHERE status = 'Completed'
+      GROUP BY MONTH(created_at)
+      ORDER BY MONTH(created_at)
+    `;
 
-    // Execute the query using the existing connection
-    const [rows] = await db.execute(query, [id]);
+    // Execute the query
+    const [rows] = await db.execute(query);
 
-    // Commit the transaction if successful
     await db.commit();
 
-    // Format the result to match your desired structure
-    const formattedData = rows.map((row) => ({
+    // Format the data to match the required structure
+    const monthlyRevenueData = rows.map((row) => ({
       month: row.month,
-      sales: row.sales,
+      revenue: row.revenue,
     }));
 
     res.status(200).json({
       success: true,
-      data: formattedData, // Returning the formatted data
+      data: monthlyRevenueData,
     });
   } catch (error) {
     // Rollback the transaction in case of an error
     await db.rollback();
-    console.error("Error fetching total sales by month:", error);
+    console.error("Error fetching revenue by month:", error);
     res.status(500).json({
       success: false,
       message: "Server error",

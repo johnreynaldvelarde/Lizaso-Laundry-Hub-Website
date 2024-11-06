@@ -55,6 +55,7 @@ import {
 } from "../services/admin/useServices.js";
 import {
   handleAdminGetListCustomerMostServiceRequest,
+  handleAdminGetRevenueByMonth,
   handleAdminGetTotalCustomers,
   handleAdminGetTotalLaundryLoadProcess,
   handleAdminGetTotalLaundryOrders,
@@ -126,6 +127,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleAdminGetListCustomerMostServiceRequest(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/get-revenue-growth-month",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetRevenueByMonth(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

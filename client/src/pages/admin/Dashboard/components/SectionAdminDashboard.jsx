@@ -14,6 +14,8 @@ import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import { COLORS } from "../../../../constants/color";
 import CustomDashHorizontal from "./CustomDashHorizontal";
 import CustomTopNewCustomer from "./CustomTopNewCustomer";
+import CustomTotalRevenueByMonth from "./CustomTotalRevenueByMonth";
+import CustomTopReadyToDelivery from "./CustomTopReadyToDelivery";
 
 const tableData1 = [
   { id: 1, name: "John Doe", role: "Manager" },
@@ -107,39 +109,19 @@ const SectionAdminDashboard = () => {
           {/* Left Column with Three Tables */}
           <Grid item xs={12} sm={8}>
             <Box sx={{ mb: 3 }}>
-              <Paper
-                sx={{
-                  p: 4,
-                  boxShadow: "none",
-                  border: 1,
-                  borderColor: COLORS.border,
-                  borderRadius: "14px",
-                }}
-              >
-                <Typography variant="h6">Employee List</Typography>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Role</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tableData1.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.role}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Paper>
+              <CustomTotalRevenueByMonth />
             </Box>
+            <Box sx={{ mb: 3 }}></Box>
           </Grid>
 
           {/* Right Column with Paper List */}
           <Grid item xs={12} sm={4}>
-            <CustomTopNewCustomer />
+            <Box mb={3}>
+              <CustomTopNewCustomer />
+            </Box>
+            <Box mb={3}>
+              <CustomTopReadyToDelivery />
+            </Box>
           </Grid>
         </Grid>
       </Box>
@@ -148,65 +130,3 @@ const SectionAdminDashboard = () => {
 };
 
 export default SectionAdminDashboard;
-
-{
-  /* <Box sx={{ mb: 3 }}>
-              <Paper
-                sx={{
-                  p: 4,
-                  boxShadow: "none",
-                  border: 1,
-                  borderColor: COLORS.border,
-                  borderRadius: "14px",
-                }}
-              >
-                <Typography variant="h6">Employee List</Typography>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Role</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tableData1.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.role}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Paper>
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Paper
-                sx={{
-                  p: 4,
-                  boxShadow: "none",
-                  border: 1,
-                  borderColor: COLORS.border,
-                  borderRadius: "14px",
-                }}
-              >
-                <Typography variant="h6">Employee List</Typography>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Role</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {tableData1.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.role}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Paper>
-            </Box> */
-}

@@ -73,6 +73,20 @@ export const getAdminListCustomerMostRequest = {
   },
 };
 
+export const getAdminRevenueGrowthByMonth = {
+  getRevenueMonth: async () => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/get-revenue-growth-month`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
 export const getAdminListReadyForDelivery = {
   getListNewCustomer: async () => {
     try {
