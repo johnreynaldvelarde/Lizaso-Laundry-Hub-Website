@@ -1,39 +1,103 @@
-export const handleGetScheduleStatsByAdmin = async (req, res, connection) => {
+export const handleAdminGetTotalRevenue = async (req, res, connection) => {
   try {
     await connection.beginTransaction();
 
-    const query = `
-        SELECT 
-          COUNT(*) AS total_requests,
-          SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) AS pending_requests,
-          SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) AS complete_delivery_requests,
-          SUM(CASE WHEN request_status = 'Canceled' THEN 1 ELSE 0 END) AS canceled_requests,
-          DATE_FORMAT(NOW(), '%Y-%m') AS current_month,
-          COUNT(*) * 100.0 / COUNT(*) AS total_percentage,
-          SUM(CASE WHEN request_status = 'Pending Pickup' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS pending_percentage,
-          SUM(CASE WHEN request_status = 'Completed Delivery' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS complete_delivery_percentage,
-          SUM(CASE WHEN request_status = 'Canceled' THEN 1 ELSE 0 END) * 100.0 / COUNT(*) AS canceled_percentage
-        FROM 
-          Service_Request
-        WHERE 
-          YEAR(request_date) = YEAR(CURRENT_DATE())
-          AND MONTH(request_date) = MONTH(CURRENT_DATE());
-      `;
+    // Query to fetch total revenue for the entire current year
+    const totalRevenueQuery = `
+      SELECT
+          SUM(total_amount) AS total_revenue
+      FROM Transactions
+      WHERE status = 'Completed'
+        AND YEAR(created_at) = YEAR(CURRENT_DATE());
+    `;
 
-    const [rows] = await connection.execute(query);
+    const [totalRevenueRows] = await connection.execute(totalRevenueQuery);
+    const totalRevenue = totalRevenueRows[0]?.total_revenue || 0;
+
+    // Query to fetch revenue for the last 5 months, including the current month
+    const query = `
+      SELECT
+          MONTH(created_at) AS month,
+          YEAR(created_at) AS year,
+          SUM(total_amount) AS revenue
+      FROM Transactions
+      WHERE status = 'Completed' 
+        AND created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 5 MONTH)
+      GROUP BY YEAR(created_at), MONTH(created_at)
+      ORDER BY YEAR(created_at) DESC, MONTH(created_at) DESC;
+  `;
+
+    const [monthlyRevenueRows] = await connection.execute(query);
+    const currentMonth = new Date().getMonth();
+    const months = [
+      "JAN",
+      "FEB",
+      "MAR",
+      "APR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AUG",
+      "SEP",
+      "OCT",
+      "NOV",
+      "DEC",
+    ];
+
+    const chartData = months
+      .map((month, index) => {
+        const monthData = monthlyRevenueRows.find(
+          (row) => row.month === index + 1 // Adjust for 1-based month number
+        );
+        return {
+          name: month,
+          value: monthData ? monthData.revenue : 0, // Use 0 for months with no revenue
+        };
+      })
+      .slice(currentMonth - 4, currentMonth + 1); // Get the last 5 months, including the current month
+
+    console.log("Chart Data:", chartData);
+
+    const currentRevenue = chartData[4]?.value || 0;
+    const previousRevenue = chartData[3]?.value || 0;
+
+    console.log("Current Revenue:", currentRevenue);
+    console.log("Previous Revenue:", previousRevenue);
+
+    // Calculate change percentage
+    const change =
+      previousRevenue === 0
+        ? currentRevenue === 0
+          ? 0
+          : 100 // If both are 0, no change, if previous is 0 but current is not, it's a 100% increase
+        : ((currentRevenue - previousRevenue) / previousRevenue) * 100;
+
+    // Format the change
+    const formattedChange = `${change > 0 ? "+" : ""}${change.toFixed(2)}%`;
+
+    // Final data object
+    const data = {
+      title: "Total Revenue (Yearly)",
+      amount: `₱${totalRevenue.toLocaleString()}`, // Total revenue for the entire year
+      change: formattedChange, // Formatted percentage change
+      chart_data: chartData, // Monthly revenue breakdown for the last 5 months
+    };
+
+    // Debugging: Output the final data
+    console.log("Final Data:", data);
 
     await connection.commit();
 
     res.status(200).json({
       success: true,
-      data: rows,
+      data: data,
     });
   } catch (error) {
     console.error("Error:", error);
     await connection.rollback();
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve schedule statistics.",
+      message: "Failed to fetch total revenue data.",
     });
   }
 };

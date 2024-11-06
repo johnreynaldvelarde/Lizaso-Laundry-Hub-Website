@@ -14,6 +14,8 @@ import {
   getCustomLineChartOptions,
 } from "./data/chartData";
 import { getLast5Months } from "./utils/chartUtils";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 
 const CustomDashHorizontal = ({ keyMetrics }) => {
   const scrollRef = useRef(null);
@@ -52,6 +54,8 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
 
   const dynamicCategories = getLast5Months();
   const updatedChartOptions = getCustomLineChartOptions(dynamicCategories);
+
+  console.log(keyMetrics);
 
   return (
     <Box sx={{ position: "relative", overflow: "hidden", width: "100%" }}>
@@ -119,16 +123,46 @@ const CustomDashHorizontal = ({ keyMetrics }) => {
                     variant="h4"
                     sx={{ fontWeight: 600, color: COLORS.text }}
                   >
-                    {metric.amount.toLocaleString()}
+                    {metric.amount ? metric.amount.toLocaleString() : "N/A"}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {metric.change} last month
+                  <Typography
+                    variant="body2"
+                    color={
+                      parseFloat(metric.change) < 0
+                        ? COLORS.error
+                        : COLORS.success
+                    }
+                    display="inline"
+                    fontWeight={600}
+                  >
+                    {/* Icon for negative or positive change */}
+                    {parseFloat(metric.change) < 0 ? (
+                      <TrendingDownIcon
+                        fontSize="small"
+                        style={{ marginRight: 4 }}
+                      />
+                    ) : (
+                      <TrendingUpIcon
+                        fontSize="small"
+                        style={{ marginRight: 4 }}
+                      />
+                    )}
+                    {metric.change}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    ml={1}
+                    color={COLORS.primary}
+                    display="inline"
+                    fontWeight={500}
+                  >
+                    from last month
                   </Typography>
                 </Box>
               </Box>
 
               <Box>
-                {metric.data ? (
+                {metric.chart_data ? (
                   <CustomLineChart
                     chartOptions={updatedChartOptions}
                     chartData={customLineChartData}

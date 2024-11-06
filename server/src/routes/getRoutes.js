@@ -53,6 +53,7 @@ import {
   handleGetServicePromoList,
   handleGetServiceTypeList,
 } from "../services/admin/useServices.js";
+import { handleAdminGetTotalRevenue } from "../services/admin/useDashboard.js";
 
 const router = express.Router();
 
@@ -69,7 +70,19 @@ const withDatabaseConnection = (handler) => async (req, res) => {
   }
 };
 
-// Store Section
+// #DASHBOARD ADMIN
+router.get(
+  "/dashboard/get-total-revenue",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalRevenue(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #STORE SECTION
 router.get(
   "/view-store",
   withDatabaseConnection(async (req, res, connection) => {
