@@ -39,6 +39,27 @@ export const loginService = {
       throw handleError(error);
     }
   },
+
+  // Google Login
+  googleLogin: async () => {
+    try {
+      const response = await axiosPublic.get("/auth/google");
+      const { success, userId, userType, accessToken, message } = response.data;
+
+      if (success) {
+        return {
+          success,
+          userId,
+          userType,
+          accessToken,
+        };
+      } else {
+        throw new Error(message || "Google login failed.");
+      }
+    } catch (error) {
+      throw handleError(error);
+    }
+  },
 };
 
 // Register Service
@@ -64,21 +85,3 @@ export const checkUsername = {
     }
   },
 };
-
-// export const registerService = {
-//   register: async (data) => {
-//     try {
-//       const response = await axiosPrivate.post("/register", data);
-//       return response.data;
-//       // const { success, message, redirectUrl } = response.data;
-
-//       // if (success) {
-//       //   return { success, message, redirectUrl };
-//       // } else {
-//       //   throw new Error(message || "Registration failed.");
-//       // }
-//     } catch (error) {
-//       throw error;
-//     }
-//   },
-// };

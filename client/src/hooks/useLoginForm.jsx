@@ -82,6 +82,43 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const googleUser = await loginService.googleLogin();
+      const { success, userId, userType, roleName, permissions, accessToken } =
+        googleUser;
+
+      if (success && accessToken) {
+        setAccessToken(accessToken);
+        await fetchUserDetails(accessToken);
+
+        if (userType === "Customer") {
+          const customerDetails =
+            await checkCustomerDetails.getCheckCustomerDetails(userId);
+
+          if (customerDetails.success !== false) {
+            navigate(
+              customerDetails.storeIdIsNull || customerDetails.addressIsNull
+                ? "/complete-details"
+                : "/customer-page"
+            );
+          } else {
+            toast.error("Failed to check customer details.");
+          }
+        } else {
+          navigate("/main");
+        }
+      } else {
+        setErrorMessage("Google login failed.");
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleForgotPassword = () => {
     console.log("Forgot Password");
   };
@@ -102,6 +139,7 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
     setRememberMe,
     errorMessage,
     handleLogin,
+    handleGoogleLogin,
     handleForgotPassword,
     handleInputChange,
     isVisible,

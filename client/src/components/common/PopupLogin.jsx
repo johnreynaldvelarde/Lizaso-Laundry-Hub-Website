@@ -20,6 +20,7 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
     setRememberMe,
     errorMessage,
     handleLogin,
+    handleGoogleLogin,
     handleForgotPassword,
     handleInputChange,
     isVisible,
@@ -142,22 +143,6 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
                 Forgot Password?
               </button>
             </div>
-            <button
-              onClick={handleLogin}
-              className="mt-2 w-full mb-4 py-2 px-4 border border-blue-500 text-blue-500 rounded-lg flex items-center justify-center"
-            >
-              <GoogleIcon className="mr-2" />{" "}
-              <span className="font-base" style={{ color: COLORS.secondary }}>
-                Continue with Google
-              </span>
-            </button>
-
-            {/* <button
-              onClick={handleLogin}
-              className="w-full py-2 px-4 bg-blue-700 text-white rounded-lg flex items-center justify-center"
-            >
-              <FacebookIcon className="mr-2" /> Sign in with Facebook
-            </button> */}
           </div>
         </div>
       )}
@@ -166,3 +151,24 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
 };
 
 export default PopupLogin;
+
+{
+  /* <button
+              onClick={handleGoogleLogin}
+              className="mt-2 w-full mb-4 py-2 px-4 border border-blue-500 text-blue-500 rounded-lg flex items-center justify-center"
+            >
+              <GoogleIcon className="mr-2" />{" "}
+              <span className="font-base" style={{ color: COLORS.secondary }}>
+                Continue with Google
+              </span>
+            </button> */
+}
+
+{
+  /* <button
+              onClick={handleLogin}
+              className="w-full py-2 px-4 bg-blue-700 text-white rounded-lg flex items-center justify-center"
+            >
+              <FacebookIcon className="mr-2" /> Sign in with Facebook
+            </button> */
+}
