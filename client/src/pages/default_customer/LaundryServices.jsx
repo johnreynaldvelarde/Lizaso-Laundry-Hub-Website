@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import useAuth from "../../contexts/AuthContext";
-import PopupServiceSelect from "./PopupServiceSelect";
 import background_1 from "../../assets/images/background_2.jpg";
 import styles from "../../styles/style";
-import { FaCheckCircle, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import {
   getCustomerServiceAndPromotions,
   getServicePromoHeader,
@@ -50,16 +48,6 @@ const LaundryServices = () => {
     fetchServiceAndPromotionsData();
     fetchServicePromoAvailablePromoData();
   }, [fetchServiceAndPromotionsData, fetchServicePromoAvailablePromoData]);
-
-  const promoRef = useRef(null);
-
-  const scrollLeft = () => {
-    promoRef.current.scrollBy({ left: -300, behavior: "smooth" });
-  };
-
-  const scrollRight = () => {
-    promoRef.current.scrollBy({ left: 300, behavior: "smooth" });
-  };
 
   const handleSelectService = (service) => {
     setSelectedService(service);
