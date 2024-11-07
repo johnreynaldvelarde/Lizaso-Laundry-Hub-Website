@@ -12,6 +12,8 @@ const Schedule = () => {
         <SectionAdminSchedule storeId={userDetails.storeId} />
       ) : userDetails?.roleName === "Manager" ? (
         <SectionAdminSchedule />
+      ) : userDetails?.roleName === "Store Staff" ? (
+        <SectionAdminSchedule />
       ) : (
         <AccessDenied />
       )}
