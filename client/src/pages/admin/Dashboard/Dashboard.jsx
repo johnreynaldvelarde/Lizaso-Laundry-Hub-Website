@@ -13,6 +13,8 @@ const Dashboard = () => {
         <SectionAdminDashboard />
       ) : userDetails?.roleName === "Manager" ? (
         <SectionUserDashboard store_id={userDetails.storeId} />
+      ) : userDetails?.roleName === "Store Staff" ? (
+        <SectionUserDashboard store_id={userDetails.storeId} />
       ) : (
         <AccessDenied />
       )}
