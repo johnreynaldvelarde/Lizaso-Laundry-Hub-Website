@@ -102,6 +102,20 @@ export const getCalculatedTransactionForCustomer = {
   },
 };
 
+export const getPaymentHistory = {
+  getHistory: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/customers/${id}/get-payment-history`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
 //  <----- Get Customer Message ----->
 export const getChatMessages = {
   getMessages: async (user_one_id, user_two_id) => {

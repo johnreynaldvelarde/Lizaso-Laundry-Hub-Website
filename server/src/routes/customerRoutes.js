@@ -4,6 +4,7 @@ import {
   handleGetCalculatedTransactionForCustomer,
   handleGetCustomerConvo,
   handleGetCustomerTrackOrderAndProgress,
+  handleGetPaymentHistory,
   handleGetServicePromoList,
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
@@ -140,6 +141,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetMessages(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/customers/:id/get-payment-history",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetPaymentHistory(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

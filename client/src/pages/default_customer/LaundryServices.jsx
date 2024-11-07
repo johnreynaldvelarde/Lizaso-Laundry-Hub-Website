@@ -18,6 +18,7 @@ const LaundryServices = () => {
   const { userDetails } = useAuth();
   const { selectedService, setSelectedService } = useLaundryPlans();
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { data: services, fetchData: fetchServiceTypeAndPromotions } =
     useFetchData();
@@ -25,22 +26,24 @@ const LaundryServices = () => {
   const { data: servicesPromo, fetchData: fetchAvailablePromo } =
     useFetchData();
 
-  const fetchServiceAndPromotionsData = useCallback(() => {
+  const fetchServiceAndPromotionsData = useCallback(async () => {
+    setLoading(true);
     if (userDetails.storeId) {
-      fetchServiceTypeAndPromotions(
+      await fetchServiceTypeAndPromotions(
         getCustomerServiceAndPromotions.getServiceWithPromotions,
         userDetails.storeId
       );
     }
+    setLoading(false);
   }, [fetchServiceTypeAndPromotions, userDetails.storeId]);
 
-  const fetchServicePromoAvailablePromoData = useCallback(() => {
-    setLoading(true);
-    fetchAvailablePromo(
+  const fetchServicePromoAvailablePromoData = useCallback(async () => {
+    setIsLoading(true);
+    await fetchAvailablePromo(
       getServicePromoHeader.getPromoHeader,
       userDetails.storeId
     );
-    setLoading(false);
+    setIsLoading(false);
   }, [fetchAvailablePromo, userDetails.storeId]);
 
   useEffect(() => {
@@ -96,7 +99,10 @@ const LaundryServices = () => {
 
           {/* Right Side - Special Promo Services */}
           <div className="flex-1 min-w-[300px] lg:min-w-[400px] max-w-[800px] flex flex-col justify-center mt-14 lg:mt-0">
-            <CustomHeaderPromo servicesPromo={servicesPromo} />
+            <CustomHeaderPromo
+              servicesPromo={servicesPromo}
+              loading={loading}
+            />
           </div>
         </div>
       </div>
@@ -108,6 +114,7 @@ const LaundryServices = () => {
         handleSelectService={handleSelectService}
         handleClosePopup={handleClosePopup}
         background_1={background_1}
+        loading={isLoading}
       />
     </>
   );

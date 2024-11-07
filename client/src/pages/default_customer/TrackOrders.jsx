@@ -24,16 +24,19 @@ import PopFeedbackAndReview from "./components/PopFeedbackAndReview";
 const TrackOrders = () => {
   const navigate = useNavigate();
   const { userDetails } = useAuth();
+  const [loading, setLoading] = useState(true);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const { data: orders, fetchData: fetchCustomerTrackOrder } = useFetchData();
 
-  const fetchCustomerTrackOrderData = useCallback(() => {
-    fetchCustomerTrackOrder(
+  const fetchCustomerTrackOrderData = useCallback(async () => {
+    setLoading(true);
+    await fetchCustomerTrackOrder(
       getCustomerTrackOrderAndProgress.getCustomerTrackOrder,
       userDetails.userId
     );
+    setLoading(false);
   }, [fetchCustomerTrackOrder, userDetails?.userId]);
 
   useEffect(() => {

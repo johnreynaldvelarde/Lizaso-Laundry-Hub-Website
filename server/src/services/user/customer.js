@@ -789,6 +789,158 @@ export const handleGetCustomerTrackOrderAndProgress = async (
   }
 };
 
+//#PAYMENT HISTORY
+export const handleGetPaymentHistory = async (req, res, connection) => {
+  const { id } = req.params; // customer_id (passed in the URL)
+
+  try {
+    await connection.beginTransaction();
+
+    // Query to get payment history based on customer_id
+    const query = `
+      SELECT 
+          t.id AS transaction_id,
+          t.assignment_id,
+          t.transaction_code,
+          t.total_amount,
+          t.payment_method,
+          t.status AS transaction_status,
+          t.created_at,
+          t.updated_at,
+          sr.customer_fullname,
+          sr.customer_type,
+          ri.quantity AS related_item_quantity,
+          ri.amount AS related_item_amount,
+          i.item_name AS related_item_name,
+          la.weight,
+          st.service_name,
+          st.default_price
+      FROM 
+          Transactions t
+      LEFT JOIN 
+          Laundry_Assignment la ON t.assignment_id = la.id
+      LEFT JOIN 
+          Service_Request sr ON la.service_request_id = sr.id
+      LEFT JOIN 
+          Service_Type st ON st.id = sr.service_type_id
+      LEFT JOIN 
+          Related_Item ri ON ri.assignment_id = t.assignment_id
+      LEFT JOIN 
+          Inventory inv ON inv.id = ri.inventory_id
+      LEFT JOIN 
+          Item i ON i.id = inv.item_id
+      WHERE 
+          sr.customer_id = ?
+          AND (i.isArchive = 0 OR i.isArchive IS NULL)
+      ORDER BY 
+          t.created_at DESC;
+    `;
+
+    // Execute the query with the provided customer_id
+    const [rows] = await connection.execute(query, [id]);
+
+    // Group the related items under each transaction
+    const transactions = rows.reduce((acc, row) => {
+      // Find the existing transaction
+      let transaction = acc.find(
+        (t) => t.transaction_id === row.transaction_id
+      );
+
+      // If the transaction doesn't exist, create a new one
+      if (!transaction) {
+        transaction = {
+          transaction_id: row.transaction_id,
+          assignment_id: row.assignment_id,
+          transaction_code: row.transaction_code,
+          total_amount: row.total_amount,
+          payment_method: row.payment_method,
+          transaction_status: row.transaction_status,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+          customer_fullname: row.customer_fullname,
+          customer_type: row.customer_type,
+          service_name: row.service_name,
+          weight: row.weight,
+          default_price: row.default_price,
+          related_items: [], // Initialize related items array
+        };
+        acc.push(transaction);
+      }
+
+      // If there's a related item, add it to the transaction's related items array
+      if (row.related_item_name) {
+        transaction.related_items.push({
+          item_name: row.related_item_name,
+          quantity: row.related_item_quantity,
+          amount: row.related_item_amount,
+        });
+      }
+
+      return acc;
+    }, []);
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: transactions,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error fetching transaction history:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+// export const handleGetPaymentHistory = async (req, res, connection) => {
+//   const { id } = req.params; // customer id
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const query = `
+//       SELECT
+//         t.transaction_code,
+//         t.id AS transaction_id,
+//         la.id AS,
+//         t.payment_method,
+//         t.created_at AS transaction_date,
+//         t.total_amount,
+//         sr.service_type_id AS service_type
+//       FROM Transactions t
+//       JOIN Laundry_Assignment la ON t.assignment_id = la.id
+//       JOIN Service_Request sr ON la.service_request_id = sr.id
+//       JOIN User_Account ua ON sr.customer_id = ua.id
+//       WHERE ua.id = ? AND ua.user_type = 'Customer'
+//       ORDER BY t.created_at DESC;
+//     `;
+
+//     // Execute the query with the provided customer id
+//     const [rows] = await connection.execute(query, [id]);
+
+//     await connection.commit();
+
+//     res.status(200).json({
+//       success: true,
+//       data: rows,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error ", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching data.",
+//     });
+//   } finally {
+//     if (connection) connection.release();
+//   }
+// };
+
 export const handleGetCalculatedTransactionForCustomer = async (
   req,
   res,
