@@ -105,6 +105,21 @@ a.active > .linkBtn {
   background-clip: content-box;
 }
 
+.scrollables::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollables::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollables::-webkit-scrollbar-thumb {
+  background: #c8c8c8;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
 /* Horizontal Scroll */
 .hori-scrollable {
   height: 100%;

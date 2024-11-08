@@ -1,26 +1,20 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  TextField,
-  Button,
-  Avatar,
-  useMediaQuery,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box } from "@mui/material";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import usePopup from "../../../../hooks/common/usePopup";
 import { COLORS } from "../../../../constants/color";
 import CustomInbox from "./CustomInbox";
+import CustomMessage from "./CustomMessage";
 
 const SectionAdminInbox = ({ storeId }) => {
-  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
-  const [searchName, setSearchName] = useState("");
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
+  const [selectedMessage, setSelectedMessage] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Function to handle message selection
+  const handleSelectMessage = (message) => {
+    setSelectedMessage(message);
+  };
 
   return (
     <>
@@ -38,25 +32,43 @@ const SectionAdminInbox = ({ storeId }) => {
           subtitle={"Explore Messages & Customer Interactions"}
         />
       </Box>
-
       {/* Content */}
-      <Box>
-        <CustomInbox />
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Box sx={{ width: "35%" }}>
+          <CustomInbox
+            onSelectMessage={handleSelectMessage}
+            selectedMessage={selectedMessage}
+          />
+        </Box>
+        <Box
+          sx={{
+            width: "65%",
+            borderLeft: `1px solid ${COLORS.border}`,
+            paddingLeft: 2,
+          }}
+        >
+          {/* Pass selected message to CustomMessage */}
+          <CustomMessage selectedMessage={selectedMessage} />
+        </Box>
       </Box>
-
-      {/* Popup */}
-      {isOpen && popupType === "addCustomer" && (
-        <PopAddNewCustomer
-          open={isOpen}
-          onClose={closePopup}
-          refreshData={handleRefreshData}
-        />
-      )}
     </>
   );
 };
 
 export default SectionAdminInbox;
+
+{
+  /* Popup */
+}
+{
+  /* {isOpen && popupType === "addCustomer" && (
+        <PopAddNewCustomer
+          open={isOpen}
+          onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
+      )} */
+}
 
 {
   /* {filteredConversations.map((conversation) => {
