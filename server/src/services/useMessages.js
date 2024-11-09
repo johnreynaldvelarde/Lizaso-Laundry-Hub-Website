@@ -425,3 +425,130 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
     connection.release();
   }
 };
+
+export const handleGetInboxAdmin = async (req, res, connection) => {
+  const { id } = req.params; // id of the admin or user
+
+  try {
+    await connection.beginTransaction();
+
+    const [conversations] = await connection.query(
+      `
+        SELECT
+          c.id AS conversation_id,
+          CONCAT(ua.first_name, ' ', ua.middle_name, ' ', ua.last_name) AS name,
+          m.message,
+          DATE_FORMAT(m.date_sent, '%h:%i %p') AS timestamp,
+          ua.user_type AS role
+        FROM
+          Conversations c
+        JOIN
+          Messages m ON m.conversation_id = c.id
+        JOIN
+          User_Account ua ON ua.id = m.sender_id
+        WHERE
+          (m.recipient_id = ? OR m.sender_id = ?)
+        ORDER BY
+          m.date_sent DESC;
+      `,
+      [id, id]
+    );
+
+    console.log(conversations);
+
+    // Return the conversations to the client
+    res.status(200).json(conversations);
+  } catch (error) {
+    console.error("Error retrieving inbox data:", error);
+    res.status(500).send("Error retrieving inbox data");
+  } finally {
+    connection.release();
+  }
+};
+
+// export const handleGetInboxAdmin = async (req, res, connection) => {
+//   const { id } = req.params; // admin's id
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const [conversations] = await connection.query(
+//       `
+//       SELECT
+//         c.id AS conversation_id,
+//         c.user_one_id,
+//         c.user_two_id,
+//         c.last_message_id,
+//         c.last_message_date,
+//         c.created_at,
+//         c.updated_at,
+//         m.message AS last_message_content,
+//         m.sent_at AS last_message_sent_at,
+//         u1.first_name AS user_one_first_name,
+//         u1.middle_name AS user_one_middle_name,
+//         u1.last_name AS user_one_last_name,
+//         u1.user_type AS user_one_role,
+//         u2.first_name AS user_two_first_name,
+//         u2.middle_name AS user_two_middle_name,
+//         u2.last_name AS user_two_last_name,
+//         u2.user_type AS user_two_role
+//       FROM Conversations c
+//       LEFT JOIN Messages m ON m.id = c.last_message_id
+//       LEFT JOIN User_Account u1 ON u1.id = c.user_one_id
+//       LEFT JOIN User_Account u2 ON u2.id = c.user_two_id
+//       WHERE c.user_one_id = ? OR c.user_two_id = ?
+//       ORDER BY c.last_message_date DESC;
+//       `,
+//       [id, id] // Fetch conversations where the admin is involved
+//     );
+
+//     await connection.commit();
+
+//     // Format the conversation data
+//     const formattedConversations = conversations.map((conversation) => {
+//       // Select the appropriate user (either user_one or user_two) based on the admin's involvement
+//       const selectedUser =
+//         conversation.user_one_id === id
+//           ? {
+//               id: conversation.user_one_id,
+//               name: `${conversation.user_one_first_name} ${
+//                 conversation.user_one_middle_name || ""
+//               } ${conversation.user_one_last_name}`,
+//               role: conversation.user_one_role,
+//             }
+//           : {
+//               id: conversation.user_two_id,
+//               name: `${conversation.user_two_first_name} ${
+//                 conversation.user_two_middle_name || ""
+//               } ${conversation.user_two_last_name}`,
+//               role: conversation.user_two_role,
+//             };
+
+//       // Format the response with the selected user's information and the last message
+//       return {
+//         id: selectedUser.id,
+//         name: selectedUser.name,
+//         message: conversation.last_message_content,
+//         timestamp: new Date(
+//           conversation.last_message_sent_at
+//         ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+//         role: selectedUser.role,
+//       };
+//     });
+
+//     // Send the response
+//     res.status(200).json({
+//       success: true,
+//       conversations: formattedConversations,
+//     });
+//   } catch (error) {
+//     await connection.rollback();
+//     console.error("Error fetching inbox:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching inbox.",
+//     });
+//   } finally {
+//     connection.release();
+//   }
+// };

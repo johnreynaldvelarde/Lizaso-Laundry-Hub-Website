@@ -6,7 +6,7 @@ import { COLORS } from "../../../../constants/color";
 import CustomInbox from "./CustomInbox";
 import CustomMessage from "./CustomMessage";
 
-const SectionAdminInbox = ({ storeId }) => {
+const SectionAdminInbox = ({ userId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +38,7 @@ const SectionAdminInbox = ({ storeId }) => {
           <CustomInbox
             onSelectMessage={handleSelectMessage}
             selectedMessage={selectedMessage}
+            userId={userId}
           />
         </Box>
         <Box

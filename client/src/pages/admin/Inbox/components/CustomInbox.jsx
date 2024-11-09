@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import { COLORS } from "../../../../constants/color";
 import no_message from "../../../../assets/images/no_data_table.jpg";
+import useFetchData from "../../../../hooks/common/useFetchData";
+import { getInboxAdmin } from "../../../../services/api/getApi";
 
 const sampleMessages = [
   {
@@ -147,9 +149,21 @@ const EmptyState = ({ message }) => (
   </Box>
 );
 
-const CustomInbox = ({ onSelectMessage, selectedMessage }) => {
+const CustomInbox = ({ onSelectMessage, selectedMessage, userId }) => {
   const [searchName, setSearchName] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const { data: inbox, fetchData: fetchInbox } = useFetchData();
+
+  const fetchInboxData = useCallback(async () => {
+    setLoading(true);
+    await fetchInbox(getInboxAdmin.viewInboxAdmin, userId);
+    setLoading(false);
+  }, [fetchInbox]);
+
+  useEffect(() => {
+    fetchInboxData();
+  }, [fetchInboxData]);
 
   useEffect(() => {
     if (sampleMessages.length > 0 && !selectedMessage) {

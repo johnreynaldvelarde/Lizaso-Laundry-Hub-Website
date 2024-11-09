@@ -553,6 +553,19 @@ export const getInbox = {
   },
 };
 
+export const getInboxAdmin = {
+  viewInboxAdmin: async (userId) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/inbox/${userId}/get-inbox-admin`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
 //#FEEDBACK AND REVIEWS SECTION
 export const getReviews = {
   viewReviews: async (id) => {

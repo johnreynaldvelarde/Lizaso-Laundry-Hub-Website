@@ -30,6 +30,7 @@ import {
 } from "../services/admin/useUser.js";
 import { handleGetServiceTypeAndStore } from "../services/admin/useSettings.js";
 import {
+  handleGetInboxAdmin,
   handleGetInboxOnlyAdmin,
   handleGetMessagesOnlyWeb,
 } from "../services/useMessages.js";
@@ -411,6 +412,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetInboxOnlyAdmin(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/inbox/:id/get-inbox-admin",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetInboxAdmin(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
