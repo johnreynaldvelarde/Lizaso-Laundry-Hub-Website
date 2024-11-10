@@ -9,7 +9,10 @@ import {
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
   handleSetFeedbackAndReview,
+  handleUpdateCustomerAddress,
   handleUpdateCustomerBasicInformationWeb,
+  handleUpdateCustomerProfile,
+  handleUpdateResetPassword,
 } from "../services/user/customer.js";
 import { handleCheckCustomerDetails } from "../services/useCheck.js";
 import {
@@ -175,6 +178,39 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateCustomerBasicInformationWeb(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/update-profile",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateCustomerProfile(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/update-address",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateCustomerAddress(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/update-reset-password",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateResetPassword(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

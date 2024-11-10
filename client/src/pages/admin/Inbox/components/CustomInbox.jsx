@@ -58,7 +58,7 @@ const UserList = ({ title, users, onSelectMessage, selectedMessage }) => (
               >
                 <Avatar
                   sx={{ marginRight: 1 }}
-                  // src={getRandomAvatar()}
+                  // src={getRandomAvatar}
                   // src={`https://randomuser.me/api/portraits/${
                   //   message.role === "Customer" ? "women" : "men"
                   // }/${message.id}.jpg`}
@@ -111,6 +111,7 @@ const EmptyState = ({ message }) => (
       flexDirection: "column",
       height: "100px",
       textAlign: "center",
+      padding: 10,
     }}
   >
     <img

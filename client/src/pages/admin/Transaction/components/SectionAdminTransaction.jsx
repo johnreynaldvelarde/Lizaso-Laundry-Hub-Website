@@ -102,9 +102,9 @@ const SectionAdminTransaction = ({ storeId }) => {
       const isStatusMatch = status ? item.transaction_status === status : true;
 
       // Filter by search term in customer fullname
-      const isSearchMatch = item.customer_fullname
-        .toLowerCase()
-        .includes(search.toLowerCase());
+      const isSearchMatch =
+        item.customer_fullname.toLowerCase().includes(search.toLowerCase()) ||
+        item.transaction_code.toLowerCase().includes(search.toLowerCase());
 
       return isDateMatch && isStatusMatch && isSearchMatch;
     });
@@ -204,7 +204,7 @@ const SectionAdminTransaction = ({ storeId }) => {
             <CustomSearch
               searchTerm={searchTerm}
               handleSearchChange={handleSearchChange}
-              placeholder={"Search name..."}
+              placeholder={"Search name or code..."}
             />
           </Box>
 

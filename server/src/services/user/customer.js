@@ -1,8 +1,13 @@
 import QRCode from "qrcode";
 import { generateTrackingCode } from "../../helpers/generateCode.js";
 import { progress } from "../../helpers/_progress.js";
+import {
+  comparePassword,
+  generatePasswordSalt,
+  hashPassword,
+} from "../../helpers/auth.js";
 
-// POST
+// #POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
   const { store_id, service_type_id, customer_name, notes, payment_method } =
@@ -276,7 +281,7 @@ export const handleSetFeedbackAndReview = async (req, res, connection) => {
   }
 };
 
-// GET
+// #GET
 export const handleGetStoreList = async (req, res, db) => {
   try {
     const [rows] = await db.query(
@@ -897,50 +902,6 @@ export const handleGetPaymentHistory = async (req, res, connection) => {
   }
 };
 
-// export const handleGetPaymentHistory = async (req, res, connection) => {
-//   const { id } = req.params; // customer id
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const query = `
-//       SELECT
-//         t.transaction_code,
-//         t.id AS transaction_id,
-//         la.id AS,
-//         t.payment_method,
-//         t.created_at AS transaction_date,
-//         t.total_amount,
-//         sr.service_type_id AS service_type
-//       FROM Transactions t
-//       JOIN Laundry_Assignment la ON t.assignment_id = la.id
-//       JOIN Service_Request sr ON la.service_request_id = sr.id
-//       JOIN User_Account ua ON sr.customer_id = ua.id
-//       WHERE ua.id = ? AND ua.user_type = 'Customer'
-//       ORDER BY t.created_at DESC;
-//     `;
-
-//     // Execute the query with the provided customer id
-//     const [rows] = await connection.execute(query, [id]);
-
-//     await connection.commit();
-
-//     res.status(200).json({
-//       success: true,
-//       data: rows,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error ", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while fetching data.",
-//     });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// };
-
 export const handleGetCalculatedTransactionForCustomer = async (
   req,
   res,
@@ -1093,6 +1054,7 @@ export const handleGetCalculatedTransactionForCustomer = async (
   }
 };
 
+//#PUT
 export const handleUpdateCustomerBasicInformationWeb = async (
   req,
   res,
@@ -1152,6 +1114,7 @@ export const handleUpdateCustomerBasicInformationMobile = async (
     store_id,
     address_line,
     country,
+    region,
     province,
     city,
     postal_code,
@@ -1163,9 +1126,18 @@ export const handleUpdateCustomerBasicInformationMobile = async (
     await connection.beginTransaction();
 
     const [addressResult] = await connection.execute(
-      `INSERT INTO Addresses (address_line, country, province, city, postal_code, latitude, longitude, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`,
-      [address_line, country, province, city, postal_code, latitude, longitude]
+      `INSERT INTO Addresses (address_line, country, region, province, city, postal_code, latitude, longitude, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [
+        address_line,
+        country,
+        region,
+        province,
+        city,
+        postal_code,
+        latitude,
+        longitude,
+      ]
     );
 
     const addressId = addressResult.insertId;
@@ -1191,273 +1163,214 @@ export const handleUpdateCustomerBasicInformationMobile = async (
   }
 };
 
-// export const handleGetCalculatedTransactionForCustomer = async (
-//   req,
-//   res,
-//   connection
-// ) => {
-//   const { id } = req.params;
+export const handleUpdateCustomerProfile = async (req, res, connection) => {
+  const { id } = req.params;
+  const { mobile_number, email, username, firstname, middlename, lastname } =
+    req.body;
 
-//   try {
-//     await connection.beginTransaction();
+  try {
+    await connection.beginTransaction();
 
-//     // Updated query to get all data in one row
-//     const query = `
-//       SELECT
-//         la.id AS laundry_assignment_id,
-//         sr.id AS service_request_id,
-//         st.default_price,
-//         la.weight,
-//         (st.default_price * la.weight) AS base_total_amount,
-//         sp.discount_percentage,
-//         sp.discount_price,
-//         sp.valid_days,
-//         sp.start_date,
-//         sp.end_date,
-//         sp.isActive,
-//         GROUP_CONCAT(inv.item_id SEPARATOR ', ') AS item_ids,
-//         GROUP_CONCAT(inv.price SEPARATOR ', ') AS item_prices,
-//         GROUP_CONCAT(it.item_name SEPARATOR ', ') AS item_names,
-//         GROUP_CONCAT(ri.quantity SEPARATOR ', ') AS quantities,
-//         GROUP_CONCAT(ri.amount SEPARATOR ', ') AS related_item_totals,
-//         SUM(ri.amount) AS total_related_items
-//       FROM
-//         Laundry_Assignment la
-//       INNER JOIN
-//         Service_Request sr ON la.service_request_id = sr.id
-//       INNER JOIN
-//         Service_Type st ON sr.service_type_id = st.id
-//       LEFT JOIN
-//         Service_Promo sp ON st.id = sp.service_id
-//       LEFT JOIN
-//         Related_Item ri ON la.id = ri.assignment_id
-//       LEFT JOIN
-//         Inventory inv ON ri.inventory_id = inv.id
-//       LEFT JOIN
-//         Item it ON inv.item_id = it.id
-//       WHERE
-//         la.id = ?
-//         AND (sp.isActive = 1 OR sp.id IS NULL)
-//         AND (sp.start_date IS NULL OR CURRENT_DATE BETWEEN sp.start_date AND sp.end_date)
-//       GROUP BY la.id;
-//     `;
+    const usernameCheckQuery = `
+      SELECT COUNT(*) AS count
+      FROM User_Account
+      WHERE username = ? AND id != ?; 
+    `;
+    const [rows] = await connection.execute(usernameCheckQuery, [username, id]);
 
-//     const [rows] = await connection.execute(query, [id]);
+    if (rows[0].count > 0) {
+      return res
+        .status(200)
+        .json({ message: "Username is already taken by another user." });
+    }
 
-//     if (rows.length > 0) {
-//       const {
-//         weight,
-//         base_total_amount,
-//         discount_percentage,
-//         discount_price,
-//         valid_days,
-//         isActive,
-//         item_ids,
-//         item_prices,
-//         item_names,
-//         quantities,
-//         related_item_totals,
-//         total_related_items,
-//       } = rows[0];
+    const updateQuery = `
+      UPDATE User_Account
+      SET 
+        mobile_number = ?,
+        email = ?,
+        username = ?,
+        first_name = ?,
+        middle_name = ?,
+        last_name = ?
+      WHERE id = ?;  
+    `;
 
-//       let final_total = parseFloat(base_total_amount);
-//       let discount_applied = null;
+    await connection.execute(updateQuery, [
+      mobile_number,
+      email,
+      username,
+      firstname,
+      middlename,
+      lastname,
+      id,
+    ]);
 
-//       console.log(
-//         `Base Total Amount (Service Price * Weight): ${base_total_amount}`
-//       );
+    await connection.commit();
 
-//       // Apply promo if active
-//       if (
-//         isActive &&
-//         valid_days &&
-//         valid_days.includes(
-//           new Date().toLocaleString("en-US", { weekday: "long" })
-//         )
-//       ) {
-//         if (discount_percentage > 0) {
-//           console.log(`Promo Active: ${discount_percentage}% Discount Applied`);
-//           const discount_amount = final_total * (discount_percentage / 100);
-//           final_total -= discount_amount;
-//           console.log(`Discount Amount: -${discount_amount}`);
-//           discount_applied = {
-//             type: "percentage",
-//             value: discount_percentage,
-//             amount: discount_amount,
-//           };
-//         } else if (discount_price > 0) {
-//           console.log(`Promo Active: ${discount_price} Price Discount Applied`);
-//           final_total -= parseFloat(discount_price);
-//           console.log(`Discount Amount: -${discount_price}`);
-//           discount_applied = {
-//             type: "price",
-//             value: discount_price,
-//             amount: discount_price,
-//           };
-//         }
-//       } else {
-//         console.log("No valid promo applied.");
-//       }
+    res
+      .status(200)
+      .json({ success: true, message: "Your info is now up-to-date!" });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ message: "Error updating customer information" });
+  } finally {
+    connection.release();
+  }
+};
 
-//       final_total += parseFloat(total_related_items || 0);
+export const handleUpdateCustomerAddress = async (req, res, connection) => {
+  const { id } = req.params; // address id (Primary Key for the address)
+  const {
+    address_line,
+    country,
+    region,
+    province,
+    city,
+    postal_code,
+    latitude,
+    longitude,
+  } = req.body;
 
-//       const itemIdsArray = item_ids ? item_ids.split(", ") : [];
-//       const itemNamesArray = item_ids ? item_names.split(", ") : [];
-//       const itemPricesArray = item_prices ? item_prices.split(", ") : [];
-//       const quantitiesArray = quantities ? quantities.split(", ") : [];
-//       const relatedItemTotalsArray = related_item_totals
-//         ? related_item_totals.split(", ")
-//         : [];
+  try {
+    await connection.beginTransaction();
 
-//       res.status(200).json({
-//         success: true,
-//         data: {
-//           base_total_amount,
-//           weight: weight,
-//           discount_applied,
-//           related_items: {
-//             item_ids: itemIdsArray,
-//             item_prices: itemPricesArray,
-//             item_names: itemNamesArray,
-//             quantities: quantitiesArray,
-//             related_item_totals: relatedItemTotalsArray,
-//           },
-//           total_related_items: total_related_items || 0,
-//           final_total: final_total.toFixed(2),
-//         },
-//       });
-//     } else {
-//       console.log("No valid data found or no active promo.");
-//       res.status(404).json({
-//         success: false,
-//         message: "No valid data found or no active promo.",
-//       });
-//     }
+    // Update the customer address details
+    const updateQuery = `
+      UPDATE Addresses
+      SET 
+        address_line = ?,
+        country = ?,
+        region = ?,
+        province = ?,
+        city = ?,
+        postal_code = ?,
+        latitude = ?,
+        longitude = ?,
+        updated_at = NOW()
+      WHERE id = ?;  
+    `;
 
-//     await connection.commit();
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error fetching assignment:", error);
-//     res.status(500).json({
-//       success: false,
-//       error: "An error occurred while fetching the assignment.",
-//     });
-//   } finally {
-//     connection.release();
-//   }
-// };
+    await connection.execute(updateQuery, [
+      address_line,
+      country,
+      region,
+      province,
+      city,
+      postal_code,
+      latitude,
+      longitude,
+      id,
+    ]);
 
-//#PUT
+    await connection.commit();
 
-// export const handleSetCustomerServiceRequest = async (req, res, connection) => {
-//   const { id } = req.params; // Customer ID
-//   const { store_id, service_type_id, customer_name, notes, payment_method } =
-//     req.body;
+    res.status(200).json({
+      success: true,
+      message: "Your address has been successfully updated!",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ message: "Error updating customer address" });
+  } finally {
+    connection.release();
+  }
+};
 
-//   try {
-//     await connection.beginTransaction();
+export const handleUpdateResetPassword = async (req, res, connection) => {
+  const { id } = req.params;
+  const { currentPassword, password } = req.body;
 
-//     const countQuery = `
-//       SELECT COUNT(*) AS request_count
-//       FROM Service_Request
-//       WHERE customer_id = ?
-//         AND customer_type = 'Online'
-//         AND request_status NOT IN ('Canceled', 'Completed Delivery', 'Completed');
-//     `;
+  try {
+    const [user] = await connection.execute(
+      "SELECT password FROM User_Security WHERE user_id = ?",
+      [id]
+    );
 
-//     const [countResult] = await connection.execute(countQuery, [id]);
-//     const requestCount = countResult[0].request_count;
+    if (!user || user.length === 0) {
+      return res.status(200).json({ message: "User not found." });
+    }
 
-//     if (requestCount >= 2) {
-//       return res.status(200).json({
-//         success: false,
-//         message: "Max of 2 active requests allowed",
-//       });
-//     }
+    const isPasswordCorrect = await comparePassword(
+      currentPassword,
+      user[0].password
+    );
 
-//     const trackingCode = generateTrackingCode();
+    if (!isPasswordCorrect) {
+      return res
+        .status(200)
+        .json({ message: "Current password is incorrect." });
+    }
 
-//     const query = `
-//       INSERT INTO Service_Request (
-//           store_id,
-//           customer_id,
-//           service_type_id,
-//           customer_fullname,
-//           customer_type,
-//           notes,
-//           request_date,
-//           request_status,
-//           tracking_code,
-//           qr_code_generated,
-//           payment_method
-//         )
-//       VALUES (?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?)`;
+    const newPasswordHash = await hashPassword(password);
 
-//     const [result] = await connection.execute(query, [
-//       store_id,
-//       id,
-//       service_type_id,
-//       customer_name,
-//       "Online",
-//       notes,
-//       "Pending Pickup",
-//       trackingCode,
-//       0,
-//       payment_method,
-//     ]);
+    await connection.execute(
+      "UPDATE User_Security SET password = ?, password_salt = ? WHERE user_id = ?",
+      [newPasswordHash, null, id]
+    );
 
-//     // Get the ID of the newly created service request
-//     const newRequestId = result.insertId;
+    res.status(200).json({
+      success: true,
+      message: "Password has been successfully updated!",
+    });
+  } catch (error) {
+    console.error("Error in resetting password:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating password." });
+  } finally {
+    connection.release();
+  }
+};
 
-//     // Generate a unique QR code based on the service request ID
-//     const qrCodeData = `SR-${newRequestId}-${trackingCode}`; // Unique string for QR code (e.g., Service Request ID and timestamp)
+export const handleUpdateChangeStore = async (req, res, connection) => {
+  const { id } = req.params; // userId
+  const { store_id } = req.body;
 
-//     const qrCodeString = await QRCode.toDataURL(qrCodeData);
+  try {
+    await connection.beginTransaction();
 
-//     // Update the Service_Request table with the generated QR code
-//     const updateQuery = `
-//       UPDATE Service_Request
-//       SET qr_code = ?, qr_code_generated = 1
-//       WHERE id = ?`;
+    // Update the customer address details
+    const updateQuery = `
+      UPDATE Addresses
+      SET 
+        address_line = ?,
+        country = ?,
+        region = ?,
+        province = ?,
+        city = ?,
+        postal_code = ?,
+        latitude = ?,
+        longitude = ?,
+        updated_at = NOW()
+      WHERE id = ?;  
+    `;
 
-//     await connection.execute(updateQuery, [qrCodeData, newRequestId]);
+    await connection.execute(updateQuery, [
+      address_line,
+      country,
+      region,
+      province,
+      city,
+      postal_code,
+      latitude,
+      longitude,
+      id,
+    ]);
 
-//     // Insert initial progress entry into Service_Progress table
-//     const progressQuery = `
-//       INSERT INTO Service_Progress (
-//           service_request_id,
-//           stage,
-//           description,
-//           status_date,
-//           completed,
-//           false_description
-//         )
-//       VALUES (?, ?, ?, ?, ?, ?)`;
+    await connection.commit();
 
-//     for (const item of progress) {
-//       await connection.execute(progressQuery, [
-//         newRequestId,
-//         item.stage,
-//         item.description,
-//         item.completed ? new Date() : null,
-//         item.completed,
-//         item.falseDescription,
-//       ]);
-//     }
-
-//     await connection.commit();
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Service request created!",
-//       service_request_id: newRequestId,
-//       qr_code: qrCodeData,
-//     });
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error creating service request:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// };
+    res.status(200).json({
+      success: true,
+      message: "Your address has been successfully updated!",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ message: "Error updating customer address" });
+  } finally {
+    connection.release();
+  }
+};
