@@ -1,20 +1,18 @@
 import React, { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
-import usePopup from "../../../../hooks/common/usePopup";
 import { COLORS } from "../../../../constants/color";
 import CustomInbox from "./CustomInbox";
 import CustomMessage from "./CustomMessage";
 
 const SectionAdminInbox = ({ userId }) => {
-  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [selectedMessage, setSelectedMessage] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // Function to handle message selection
   const handleSelectMessage = (message) => {
     setSelectedMessage(message);
   };
+
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down("lg"));
 
   return (
     <>
@@ -32,9 +30,21 @@ const SectionAdminInbox = ({ userId }) => {
           subtitle={"Explore Messages & Customer Interactions"}
         />
       </Box>
+
       {/* Content */}
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Box sx={{ width: "35%" }}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: 2,
+        }}
+      >
+        <Box
+          sx={{
+            width: isMobile ? "100%" : "30%",
+            marginBottom: isMobile ? "16px" : "0",
+          }}
+        >
           <CustomInbox
             onSelectMessage={handleSelectMessage}
             selectedMessage={selectedMessage}
@@ -43,13 +53,12 @@ const SectionAdminInbox = ({ userId }) => {
         </Box>
         <Box
           sx={{
-            width: "65%",
-            borderLeft: `1px solid ${COLORS.border}`,
-            paddingLeft: 2,
+            width: isMobile ? "100%" : "70%",
+            borderLeft: isMobile ? "none" : `1px solid ${COLORS.border}`,
+            paddingLeft: isMobile ? 0 : 2,
           }}
         >
-          {/* Pass selected message to CustomMessage */}
-          <CustomMessage selectedMessage={selectedMessage} />
+          <CustomMessage selectedMessage={selectedMessage} userId={userId} />
         </Box>
       </Box>
     </>
@@ -57,61 +66,3 @@ const SectionAdminInbox = ({ userId }) => {
 };
 
 export default SectionAdminInbox;
-
-{
-  /* Popup */
-}
-{
-  /* {isOpen && popupType === "addCustomer" && (
-        <PopAddNewCustomer
-          open={isOpen}
-          onClose={closePopup}
-          refreshData={handleRefreshData}
-        />
-      )} */
-}
-
-{
-  /* {filteredConversations.map((conversation) => {
-                  const isSelected =
-                    selectedConversation?.conversation_id ===
-                    conversation.conversation_id;
-
-                  const decryptedMessage = decryptMessage(
-                    conversation.last_message.message
-                  );
-
-                  return (
-                    <ListItem
-                      component="button"
-                      key={conversation.conversation_id}
-                      onClick={() => {
-                        selectConversation(conversation.conversation_id);
-                        setFullname(conversation.user_one.full_name);
-                        setSelectedRecipientId(conversation.user_one.id);
-                      }}
-                      sx={{
-                        borderRadius: "10px",
-                        padding: "10px 16px",
-                        mb: "8px",
-                        backgroundColor: isSelected
-                          ? COLORS.secondaryLight
-                          : "transparent",
-                        "&:hover": { backgroundColor: "#E8F0FE" },
-                      }}
-                    >
-                      <Avatar
-                        src={conversation.user_one.avatar}
-                        alt={conversation.user_one.full_name}
-                        sx={{ marginRight: "10px" }}
-                      />
-                      <ListItemText
-                        primary={conversation.user_one.full_name}
-                        secondary={decryptedMessage}
-                        primaryTypographyProps={{ fontWeight: "500" }}
-                        secondaryTypographyProps={{ color: "gray" }}
-                      />
-                    </ListItem>
-                  );
-                })} */
-}

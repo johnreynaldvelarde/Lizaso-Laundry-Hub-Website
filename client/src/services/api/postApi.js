@@ -216,6 +216,21 @@ export const createNewCustomerAccount = {
   },
 };
 
+//#INBOX
+export const createMessageSenderAdmin = {
+  setCustomerMessageAdmin: async (data) => {
+    try {
+      const response = await axiosPrivate.post(
+        `/inbox/set-new-messsages-admin`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 //#SERVICES MANAGEMENT SECTION
 export const createNewServicesPromo = {
   setServicesPromo: async (data) => {

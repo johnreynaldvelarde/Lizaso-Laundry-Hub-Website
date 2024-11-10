@@ -24,6 +24,7 @@ import {
   handleSetRolesPermissions,
 } from "../services/admin/useUser.js";
 import { handleSetServicesPromo } from "../services/admin/useServices.js";
+import { handleSetNewMessages } from "../services/useMessages.js";
 
 const router = express.Router();
 
@@ -182,6 +183,18 @@ router.post(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleRegisterCustomerModule(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// #INBOX SECTION ADMIN AND MANAGER
+router.post(
+  "/inbox/set-new-messsages-admin",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleSetNewMessages(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

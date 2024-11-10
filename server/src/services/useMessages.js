@@ -1,3 +1,4 @@
+//#POST
 export const handleSetNewMessages = async (req, res, connection) => {
   const { sender_id, recipient_id, message } = req.body;
 
@@ -78,6 +79,7 @@ export const handleSetNewMessages = async (req, res, connection) => {
   }
 };
 
+//#GET
 export const handleGetMessages = async (req, res, connection) => {
   const { user_one_id, user_two_id } = req.params;
 
@@ -254,120 +256,7 @@ export const handleGetMessagesOnlyWeb = async (req, res, connection) => {
   }
 };
 
-export const handleGetInboxOnlyAdmin = async (req, res, connection) => {
-  const { id } = req.params; // user_id
-
-  try {
-    // Start a transaction
-    await connection.beginTransaction();
-
-    // Query to get conversations where the user is either user_one_id or user_two_id
-    const [conversations] = await connection.query(
-      `SELECT 
-        conv.id AS conversation_id,
-        conv.user_one_id,
-        conv.user_two_id,
-        conv.last_message_id,
-        conv.last_message_date,
-        CONCAT(ua1.first_name, ' ', IFNULL(ua1.middle_name, ''), ' ', ua1.last_name) AS user_one_name,
-        CONCAT(ua2.first_name, ' ', IFNULL(ua2.middle_name, ''), ' ', ua2.last_name) AS user_two_name,
-        ua1.user_type AS user_type_one,
-        ua2.user_type AS user_type_two,
-        m.message,
-        m.is_read,
-        m.sender_id,
-        m.recipient_id,
-        m.date_sent
-      FROM 
-        Conversations conv
-      LEFT JOIN User_Account ua1 ON conv.user_one_id = ua1.id
-      LEFT JOIN User_Account ua2 ON conv.user_two_id = ua2.id
-      LEFT JOIN Messages m ON conv.last_message_id = m.id
-      WHERE 
-        (conv.user_one_id = ? OR conv.user_two_id = ?)
-      ORDER BY conv.last_message_date DESC`,
-      [id, id]
-    );
-
-    if (conversations.length === 0) {
-      // Query to get all users except the current user
-      const [users] = await connection.query(
-        `SELECT 
-          id,
-          CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) AS full_name,
-          user_type
-         FROM User_Account
-         WHERE id != ? AND isStatus = 0 AND isArchive = 0`,
-        [id]
-      );
-
-      await connection.commit();
-
-      // Return user list with "Start a conversation" option
-      return res.status(200).json({
-        success: true,
-        message: "no_convo",
-        data: users.map((user) => ({
-          conversation_id: 0,
-          user_one: {
-            id: user.id,
-            full_name: user.full_name ? user.full_name.trim() : "", // Check if full_name exists
-            user_type_one: user.user_type,
-          },
-          user_two: null,
-          last_message: {
-            message: "Start a conversation",
-          },
-        })),
-      });
-    }
-
-    // user_id: user.id,
-    // full_name: user.full_name.trim(),
-    // user_type: user.user_type,
-    // start_conversation: "Start a conversation",
-
-    // Commit the transaction
-    await connection.commit();
-
-    // Return the list of conversations as the inbox if conversations are found
-    res.status(200).json({
-      success: true,
-      data: conversations.map((conv) => ({
-        conversation_id: conv.conversation_id,
-        user_one: {
-          id: conv.user_one_id,
-          full_name: conv.user_one_name.trim(),
-          user_type_one: conv.user_type_one,
-        },
-        user_two: {
-          id: conv.user_two_id,
-          full_name: conv.user_two_name.trim(),
-          user_type_two: conv.user_type_one,
-        },
-        last_message: {
-          message: conv.message,
-          is_read: conv.is_read,
-          sender_id: conv.sender_id,
-          recipient_id: conv.recipient_id,
-          date_sent: conv.date_sent,
-        },
-      })),
-    });
-  } catch (error) {
-    // Rollback in case of any errors
-    await connection.rollback();
-    console.error("Error fetching inbox:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching the inbox.",
-    });
-  } finally {
-    // Release the connection
-    connection.release();
-  }
-};
-
+//#PUT
 export const handleUpdateMessageIsRead = async (req, res, connection) => {
   const { user_one_id, user_two_id } = req.params;
   console.log(req.params);
@@ -426,45 +315,171 @@ export const handleUpdateMessageIsRead = async (req, res, connection) => {
   }
 };
 
+//  Website Side
 export const handleGetInboxAdmin = async (req, res, connection) => {
-  const { id } = req.params; // id of the admin or user
+  const { id } = req.params; // Admin's ID
 
   try {
     await connection.beginTransaction();
 
+    // 1. Fetch all conversations
     const [conversations] = await connection.query(
       `
-        SELECT
-          c.id AS conversation_id,
-          CONCAT(ua.first_name, ' ', ua.middle_name, ' ', ua.last_name) AS name,
-          m.message,
-          DATE_FORMAT(m.date_sent, '%h:%i %p') AS timestamp,
-          ua.user_type AS role
-        FROM
-          Conversations c
-        JOIN
-          Messages m ON m.conversation_id = c.id
-        JOIN
-          User_Account ua ON ua.id = m.sender_id
-        WHERE
-          (m.recipient_id = ? OR m.sender_id = ?)
-        ORDER BY
-          m.date_sent DESC;
+      SELECT
+        c.id AS conversation_id,
+        c.user_one_id,
+        c.user_two_id,
+        c.last_message_id,
+        c.last_message_date,
+        c.created_at,
+        c.updated_at,
+        m.message AS last_message_content,
+        m.date_sent AS last_message_sent_at,
+        m.is_read AS last_message_is_read,
+        u1.first_name AS user_one_first_name,
+        u1.middle_name AS user_one_middle_name,
+        u1.last_name AS user_one_last_name,
+        u1.user_type AS user_one_role,
+        u2.first_name AS user_two_first_name,
+        u2.middle_name AS user_two_middle_name,
+        u2.last_name AS user_two_last_name,
+        u2.user_type AS user_two_role
+      FROM Conversations c
+      LEFT JOIN Messages m ON m.id = c.last_message_id
+      LEFT JOIN User_Account u1 ON u1.id = c.user_one_id
+      LEFT JOIN User_Account u2 ON u2.id = c.user_two_id
+      WHERE c.user_one_id = ? OR c.user_two_id = ?
+      ORDER BY c.last_message_date DESC;
       `,
       [id, id]
     );
 
-    console.log(conversations);
+    // 2. Fetch all users (exclude the logged-in admin)
+    const [users] = await connection.query(
+      `
+      SELECT id, first_name, middle_name, last_name, user_type 
+      FROM User_Account 
+      WHERE id != ? AND isArchive = 0
+      `,
+      [id]
+    );
 
-    // Return the conversations to the client
-    res.status(200).json(conversations);
+    // 3. Process conversations to get user info
+    const formattedConversations = conversations.map((conversation) => {
+      const selectedUser =
+        conversation.user_one_id === id
+          ? {
+              id: conversation.user_one_id,
+              name: `${conversation.user_one_first_name} ${
+                conversation.user_one_middle_name || ""
+              } ${conversation.user_one_last_name}`,
+              role: conversation.user_one_role,
+            }
+          : {
+              id: conversation.user_two_id,
+              name: `${conversation.user_two_first_name} ${
+                conversation.user_two_middle_name || ""
+              } ${conversation.user_two_last_name}`,
+              role: conversation.user_two_role,
+            };
+
+      return {
+        id: selectedUser.id,
+        name: selectedUser.name,
+        message: conversation.last_message_content,
+        timestamp: new Date(
+          conversation.last_message_sent_at
+        ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        role: selectedUser.role,
+        is_read: conversation.last_message_is_read,
+      };
+    });
+
+    // 4. Add users who have no conversation yet
+    // Check if the user exists in any conversation, otherwise mark as having no conversation
+    const usersWithNoConversations = users.filter((user) => {
+      const userInConversation = conversations.some(
+        (conversation) =>
+          conversation.user_one_id === user.id ||
+          conversation.user_two_id === user.id
+      );
+      return !userInConversation;
+    });
+
+    const usersWithNoConversationsFormatted = usersWithNoConversations.map(
+      (user) => ({
+        id: user.id,
+        name: `${user.first_name} ${user.middle_name || ""} ${user.last_name}`,
+        message: "",
+        timestamp: null, // No timestamp for users with no conversations
+        role: user.user_type,
+        is_read: null,
+      })
+    );
+
+    // 5. Combine conversations and users with no conversations
+    const allConversations = [
+      ...formattedConversations,
+      ...usersWithNoConversationsFormatted,
+    ];
+
+    // Send the response
+    res.status(200).json({
+      success: true,
+      data: allConversations,
+    });
+
+    await connection.commit();
   } catch (error) {
-    console.error("Error retrieving inbox data:", error);
-    res.status(500).send("Error retrieving inbox data");
+    await connection.rollback();
+    console.error("Error fetching inbox:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching inbox.",
+    });
   } finally {
     connection.release();
   }
 };
+
+// export const handleGetInboxAdmin = async (req, res, connection) => {
+//   const { id } = req.params; // id of the admin or user
+//   console.log(id);
+
+//   try {
+//     await connection.beginTransaction();
+
+//     const [conversations] = await connection.query(
+//       `
+//         SELECT
+//           c.id AS conversation_id,
+//           CONCAT(ua.first_name, ' ', ua.middle_name, ' ', ua.last_name) AS name,
+//           m.message,
+//           DATE_FORMAT(m.date_sent, '%h:%i %p') AS timestamp,
+//           ua.user_type AS role
+//         FROM
+//           Conversations c
+//         JOIN
+//           Messages m ON m.conversation_id = c.id
+//         JOIN
+//           User_Account ua ON ua.id = m.sender_id
+//         WHERE
+//           (m.recipient_id = ? OR m.sender_id = ?)
+//         ORDER BY
+//           m.date_sent DESC;
+//       `,
+//       [id, id]
+//     );
+
+//     // Return the conversations to the client
+//     res.status(200).json(conversations);
+//   } catch (error) {
+//     console.error("Error retrieving inbox data:", error);
+//     res.status(500).send("Error retrieving inbox data");
+//   } finally {
+//     connection.release();
+//   }
+// };
 
 // export const handleGetInboxAdmin = async (req, res, connection) => {
 //   const { id } = req.params; // admin's id
@@ -483,7 +498,8 @@ export const handleGetInboxAdmin = async (req, res, connection) => {
 //         c.created_at,
 //         c.updated_at,
 //         m.message AS last_message_content,
-//         m.sent_at AS last_message_sent_at,
+//         m.date_sent AS last_message_sent_at,
+//         m.is_read AS last_message_is_read,
 //         u1.first_name AS user_one_first_name,
 //         u1.middle_name AS user_one_middle_name,
 //         u1.last_name AS user_one_last_name,
@@ -499,14 +515,12 @@ export const handleGetInboxAdmin = async (req, res, connection) => {
 //       WHERE c.user_one_id = ? OR c.user_two_id = ?
 //       ORDER BY c.last_message_date DESC;
 //       `,
-//       [id, id] // Fetch conversations where the admin is involved
+//       [id, id]
 //     );
 
 //     await connection.commit();
 
-//     // Format the conversation data
 //     const formattedConversations = conversations.map((conversation) => {
-//       // Select the appropriate user (either user_one or user_two) based on the admin's involvement
 //       const selectedUser =
 //         conversation.user_one_id === id
 //           ? {
@@ -533,6 +547,7 @@ export const handleGetInboxAdmin = async (req, res, connection) => {
 //           conversation.last_message_sent_at
 //         ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
 //         role: selectedUser.role,
+//         is_read: conversation.last_message_is_read,
 //       };
 //     });
 
@@ -549,6 +564,120 @@ export const handleGetInboxAdmin = async (req, res, connection) => {
 //       message: "Error fetching inbox.",
 //     });
 //   } finally {
+//     connection.release();
+//   }
+// };
+
+// export const handleGetInboxOnlyAdmin = async (req, res, connection) => {
+//   const { id } = req.params; // user_id
+
+//   try {
+//     // Start a transaction
+//     await connection.beginTransaction();
+
+//     // Query to get conversations where the user is either user_one_id or user_two_id
+//     const [conversations] = await connection.query(
+//       `SELECT
+//         conv.id AS conversation_id,
+//         conv.user_one_id,
+//         conv.user_two_id,
+//         conv.last_message_id,
+//         conv.last_message_date,
+//         CONCAT(ua1.first_name, ' ', IFNULL(ua1.middle_name, ''), ' ', ua1.last_name) AS user_one_name,
+//         CONCAT(ua2.first_name, ' ', IFNULL(ua2.middle_name, ''), ' ', ua2.last_name) AS user_two_name,
+//         ua1.user_type AS user_type_one,
+//         ua2.user_type AS user_type_two,
+//         m.message,
+//         m.is_read,
+//         m.sender_id,
+//         m.recipient_id,
+//         m.date_sent
+//       FROM
+//         Conversations conv
+//       LEFT JOIN User_Account ua1 ON conv.user_one_id = ua1.id
+//       LEFT JOIN User_Account ua2 ON conv.user_two_id = ua2.id
+//       LEFT JOIN Messages m ON conv.last_message_id = m.id
+//       WHERE
+//         (conv.user_one_id = ? OR conv.user_two_id = ?)
+//       ORDER BY conv.last_message_date DESC`,
+//       [id, id]
+//     );
+
+//     if (conversations.length === 0) {
+//       // Query to get all users except the current user
+//       const [users] = await connection.query(
+//         `SELECT
+//           id,
+//           CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) AS full_name,
+//           user_type
+//          FROM User_Account
+//          WHERE id != ? AND isStatus = 0 AND isArchive = 0`,
+//         [id]
+//       );
+
+//       await connection.commit();
+
+//       // Return user list with "Start a conversation" option
+//       return res.status(200).json({
+//         success: true,
+//         message: "no_convo",
+//         data: users.map((user) => ({
+//           conversation_id: 0,
+//           user_one: {
+//             id: user.id,
+//             full_name: user.full_name ? user.full_name.trim() : "", // Check if full_name exists
+//             user_type_one: user.user_type,
+//           },
+//           user_two: null,
+//           last_message: {
+//             message: "Start a conversation",
+//           },
+//         })),
+//       });
+//     }
+
+//     // user_id: user.id,
+//     // full_name: user.full_name.trim(),
+//     // user_type: user.user_type,
+//     // start_conversation: "Start a conversation",
+
+//     // Commit the transaction
+//     await connection.commit();
+
+//     // Return the list of conversations as the inbox if conversations are found
+//     res.status(200).json({
+//       success: true,
+//       data: conversations.map((conv) => ({
+//         conversation_id: conv.conversation_id,
+//         user_one: {
+//           id: conv.user_one_id,
+//           full_name: conv.user_one_name.trim(),
+//           user_type_one: conv.user_type_one,
+//         },
+//         user_two: {
+//           id: conv.user_two_id,
+//           full_name: conv.user_two_name.trim(),
+//           user_type_two: conv.user_type_one,
+//         },
+//         last_message: {
+//           message: conv.message,
+//           is_read: conv.is_read,
+//           sender_id: conv.sender_id,
+//           recipient_id: conv.recipient_id,
+//           date_sent: conv.date_sent,
+//         },
+//       })),
+//     });
+//   } catch (error) {
+//     // Rollback in case of any errors
+//     await connection.rollback();
+//     console.error("Error fetching inbox:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "An error occurred while fetching the inbox.",
+//     });
+//   } finally {
+//     // Release the connection
 //     connection.release();
 //   }
 // };

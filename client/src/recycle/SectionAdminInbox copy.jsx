@@ -11,10 +11,10 @@ import {
   Avatar,
   useMediaQuery,
 } from "@mui/material";
-import useMessages from "../../../../hooks/common/useMessages";
-import { decryptMessage, encryptMessage } from "../../../../utils/messages";
-import { createMessageSenderCustomer } from "../../../../services/api/customerApi";
-import { COLORS } from "../../../../constants/color";
+import useMessages from "../hooks/common/useMessages";
+import { decryptMessage, encryptMessage } from "../utils/messages";
+import { createMessageSenderCustomer } from "../services/api/customerApi";
+import { COLORS } from "../constants/color";
 
 const SectionAdminInbox = ({ userId }) => {
   const [searchTerm, setSearchTerm] = useState("");
