@@ -21,7 +21,7 @@ const LandingNavbar = ({
       <div className="container px-4 mx-auto relative text-sm">
         <div className="flex justify-between items-center">
           <div className="flex items-center flex-shrink-0">
-            <img className="h-12 w-12 mr-1" src={logo} alt="logo" />
+            <img className="h-12 w-12 mr-1 mb-2" src={logo} alt="logo" />
             <span className="text-xl tracking-tight">
               <span className="font-bold" style={{ color: styles.textColor1 }}>
                 Lizaso

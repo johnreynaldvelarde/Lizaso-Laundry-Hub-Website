@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
 // Import pages
 import { StartingPage, Main, CheckStartingPoint, MainCustomer } from "./pages";
@@ -7,7 +12,7 @@ import NotFound from "./pages/NotFound";
 
 // Import the AuthProvider
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/common/ProtectedRoute";
+import ProtectedRoute from "./contexts/ProtectedRoute";
 
 const App = () => {
   return (

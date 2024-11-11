@@ -29,7 +29,7 @@ const Sidebar = ({ window, sideBarWidth, mobileOpen, handleDrawerToggle }) => {
         }}
       >
         <Toolbar>
-          <img src={logo} alt="Logo" width="40" />
+          <img className="h-12 w-12 mr-1 mb-2" src={logo} alt="Logo" />
           <span className="text-xl tracking-tight">
             <span className="font-bold" style={{ color: styles.textColor1 }}>
               Lizaso

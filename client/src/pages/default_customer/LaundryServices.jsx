@@ -87,10 +87,10 @@ const LaundryServices = () => {
 
           {/* Right Side - Special Promo Services */}
           <div className="flex-1 min-w-[300px] lg:min-w-[400px] max-w-[800px] flex flex-col justify-center mt-14 lg:mt-0">
-            <CustomHeaderPromo
+            {/* <CustomHeaderPromo
               servicesPromo={servicesPromo}
               loading={loading}
-            />
+            /> */}
           </div>
         </div>
       </div>

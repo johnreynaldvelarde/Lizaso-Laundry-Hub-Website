@@ -67,7 +67,6 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         const user = response.data.user;
-
         if (user) {
           // Initialize user details with common properties
           const userDetails = {
@@ -80,12 +79,11 @@ export const AuthProvider = ({ children }) => {
             phone: user.phone,
             fullName: user.fullName,
             username: user.username,
-            roleName: user.userType,
           };
 
           // Add roleName and permissions only if the user is not a customer
           if (user.userType !== "Customer") {
-            userDetails.roleName = user.roleName || null;
+            userDetails.roleName = user.roleName || null; // Ensure roleName is null if not defined
             userDetails.permissions = {
               canRead: user.permissions?.canRead || false,
               canWrite: user.permissions?.canWrite || false,
@@ -96,6 +94,39 @@ export const AuthProvider = ({ children }) => {
 
           setUserDetails(userDetails);
         }
+
+        // if (user.userType === "Customer") {
+        //   setUserDetails({
+        //     userId: user.userId,
+        //     storeId: user.storeId,
+        //     firstname: user.firstname,
+        //     middlename: user.middlename,
+        //     lastname: user.lastname,
+        //     email: user.email,
+        //     phone: user.phone,
+        //     fullName: user.fullName,
+        //     username: user.username,
+        //   });
+        // } else {
+        //   setUserDetails({
+        //     userId: user.userId,
+        //     storeId: user.storeId,
+        //     firstname: user.firstname,
+        //     middlename: user.middlename,
+        //     lastname: user.lastname,
+        //     email: user.email,
+        //     phone: user.phone,
+        //     fullName: user.fullName,
+        //     username: user.username,
+        //     roleName: user.roleName,
+        //     permissions: {
+        //       canRead: user.permissions.canRead,
+        //       canWrite: user.permissions.canWrite,
+        //       canEdit: user.permissions.canEdit,
+        //       canDelete: user.permissions.canDelete,
+        //     },
+        //   });
+        // }
       } else {
         console.error("Error fetching user details:", response.data.message);
       }
@@ -138,3 +169,29 @@ export const AuthProvider = ({ children }) => {
 };
 
 export default useAuth;
+
+// const fetchUserDetails = async (token) => {
+//   if (token) {
+//     try {
+//       const response = await axiosPrivate(`/user/me`, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
+
+//       if (response.data.success) {
+//         const user = response.data.user;
+//         setUserDetails({
+//           userId: user.userId,
+//           storeId: user.storeId,
+//           fullName: user.fullName,
+//           username: user.username,
+//         });
+//       } else {
+//         console.error("Error fetching user details:", response.data.message);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching user details:", error);
+//     }
+//   }
+// };
