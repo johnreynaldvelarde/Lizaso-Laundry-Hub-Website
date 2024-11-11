@@ -6,12 +6,23 @@ import {
   generatePasswordSalt,
   hashPassword,
 } from "../../helpers/auth.js";
+import { logNotification } from "../useExtraSystem.js";
+import {
+  NotificationDescriptions,
+  NotificationStatus,
+} from "../../helpers/notificationLog.js";
 
 // #POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
   const { id } = req.params; // Customer ID
-  const { store_id, service_type_id, customer_name, notes, payment_method } =
-    req.body;
+  const {
+    store_id,
+    service_type_id,
+    service_name,
+    customer_name,
+    notes,
+    payment_method,
+  } = req.body;
 
   try {
     await connection.beginTransaction();
@@ -119,6 +130,20 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
         item.falseDescription,
       ]);
     }
+
+    const notificationType = NotificationStatus.PENDING_PICKUP;
+    const notificationDescription = NotificationDescriptions[notificationType](
+      customer_name,
+      service_name
+    );
+
+    await logNotification(
+      connection,
+      store_id,
+      id,
+      notificationType,
+      notificationDescription
+    );
 
     await connection.commit();
 
@@ -836,6 +861,7 @@ export const handleGetPaymentHistory = async (req, res, connection) => {
           Item i ON i.id = inv.item_id
       WHERE 
           sr.customer_id = ?
+          AND sr.customer_type = "Online"
           AND (i.isArchive = 0 OR i.isArchive IS NULL)
       ORDER BY 
           t.created_at DESC;

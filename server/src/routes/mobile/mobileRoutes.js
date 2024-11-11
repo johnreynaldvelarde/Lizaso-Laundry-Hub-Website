@@ -2,6 +2,7 @@ import express from "express";
 import {
   handleGetDelivery,
   handleGetLaundryPickup,
+  handleGetNotificationStaff,
   handleSetMessagesSenderIsStaff,
   handleUpdateServiceRequestBackToPending,
   handleUpdateServiceRequestFinishPickup,
@@ -84,6 +85,29 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateMessageIsRead(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// NOTIFICATION
+router.get(
+  "/mobile-customer-staff/:id/get-notification-customer",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetInbox(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/mobile-customer-staff/:id/get-notification-staff",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetNotificationStaff(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

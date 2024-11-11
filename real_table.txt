@@ -16,6 +16,17 @@ isStatus
 isArchive
 date_created
 
+
+---> Notifications <---
+id
+store_id (Foregin Key)
+user_id (Foregin Key)
+notification_type
+notification_description
+status  ( "Unread", "Read", "Archived")
+created_at
+read_at
+
 ---> User_Security <---
 id
 user_id (Foregin Key)

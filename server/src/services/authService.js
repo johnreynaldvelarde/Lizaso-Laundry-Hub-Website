@@ -194,8 +194,6 @@ export const handleRegister = async (req, res, db) => {
 export const handleLogout = async (req, res, db) => {
   const { user_id, username, roleName } = req.body;
 
-  console.log(req.body);
-
   const actionType = ActionTypes.AUTHENTICATION;
   const actionDescription = ActionDescriptions[actionType].LOGOUT(username);
 
