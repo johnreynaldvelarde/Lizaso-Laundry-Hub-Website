@@ -101,10 +101,42 @@ const Pricing = () => {
                       <h3 className="text-2xl font-bold text-black">Special Promo</h3>
                     </div>
                     <p className="mt-2 text-gray-600">Loyal customers with 8 times service availed get our +1 free laundry</p>
+                    <div className="flex items-center justify-start pt-3">
+                        <ul className="text-white flex gap-1">
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              1
+                          </li>
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              2
+                          </li>
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              3
+                          </li>
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              4
+                          </li>
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              5
+                          </li>
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              6
+                          </li>
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              7
+                          </li>
+                          <li className="bg-blue-500 text-sm text-center rounded-full w-5">
+                              8
+                          </li>
+                          <li className="bg-red-500 text-sm text-center rounded-full w-6">
+                              9
+                          </li>
+                        </ul>
+                    </div>
                     <div className="flex items-center pl-10 sm:pl-0 gap-1">
-                      <p className="mt-2 text-black font-semibold font-mono text-[30px]">7 + 1</p>
+                      <p className="mt-2 text-black font-semibold font-mono text-[30px]">8 + 1</p>
                       <p className="mt-2 text-red-600 font-semibold font-mono text-[30px]">Free</p>
                     </div>
+
                     <p className="mt-2 text-blue-800 font-bold font-serif pl-10 sm:pl-0">Wash & Dry, Wash or Dry</p>
                   </div>
                   {/* Card 4 */}
