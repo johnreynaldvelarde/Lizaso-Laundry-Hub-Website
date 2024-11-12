@@ -100,7 +100,7 @@ const Pricing = () => {
                       />
                       <h3 className="text-2xl font-bold text-black">Special Promo</h3>
                     </div>
-                    <p className="mt-2 text-gray-600">Loyal customers with 7 times service availed get our +1 free laundry</p>
+                    <p className="mt-2 text-gray-600">Loyal customers with 8 times service availed get our +1 free laundry</p>
                     <div className="flex items-center pl-10 sm:pl-0 gap-1">
                       <p className="mt-2 text-black font-semibold font-mono text-[30px]">7 + 1</p>
                       <p className="mt-2 text-red-600 font-semibold font-mono text-[30px]">Free</p>
