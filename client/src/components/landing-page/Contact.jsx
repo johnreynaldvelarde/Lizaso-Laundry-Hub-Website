@@ -76,7 +76,7 @@ const Contact = () => {
               </p>
               <div className="relative w-full" style={{ paddingBottom: '30%' }}> 
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30857.50845539111!2d120.89066533476561!3d14.814671899999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ad3ba49ce853%3A0xc6554a9f835aeea1!2sLIZASO%20LAUNDRY%20HUB!5e0!3m2!1sen!2sph!4v1730653756614!5m2!1sen!2sph"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d246860.06540026376!2d120.62288761138919!3d14.814673868218325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397ad3ba49ce853%3A0xc6554a9f835aeea1!2sLIZASO%20LAUNDRY%20HUB!5e0!3m2!1sen!2sph!4v1731408134298!5m2!1sen!2sph" 
                   className="absolute top-0 left-0 w-full h-full border-0"
                   allowFullScreen=""
                   loading="lazy"
