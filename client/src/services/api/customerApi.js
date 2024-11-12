@@ -147,10 +147,56 @@ export const updateMessageisRead = {
 };
 
 export const updateCustomerProfile = {
-  putUpdateProfile: async (user_one_id, user_two_id) => {
+  putUpdateProfile: async (id, data) => {
     try {
-      const response = await axiosPrivate.get(
-        `/mobile-customer-staff/${user_one_id}/${user_two_id}/get-messages`
+      const response = await axiosPrivate.put(
+        `/customers/${id}/update-profile`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+export const updateCustomerAddress = {
+  putUpdateAddress: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/customers/${id}/update-address`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+export const updateCustomerPassword = {
+  putUpdatePassword: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/customers/${id}/update-reset-password`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
+export const updateCustomerChangeStore = {
+  putUpdatePassword: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/customers/${id}/update-change-store`,
+        data
       );
       return response.data;
     } catch (error) {

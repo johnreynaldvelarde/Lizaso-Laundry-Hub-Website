@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [userDetails, setUserDetails] = useState({
     userId: "",
     storeId: "",
+    addressId: "",
     firstname: "",
     middlename: "",
     lastname: "",
@@ -30,6 +31,16 @@ export const AuthProvider = ({ children }) => {
       canWrite: false,
       canEdit: false,
       canDelete: false,
+    },
+    address: {
+      addressLine: "",
+      country: "",
+      region: "",
+      province: "",
+      city: "",
+      postalCode: "",
+      latitude: null,
+      longitude: null,
     },
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +84,7 @@ export const AuthProvider = ({ children }) => {
           const userDetails = {
             userId: user.userId,
             storeId: user.storeId,
+            addressId: user.addressId,
             firstname: user.firstname,
             middlename: user.middlename,
             lastname: user.lastname,
@@ -81,6 +93,16 @@ export const AuthProvider = ({ children }) => {
             fullName: user.fullName,
             username: user.username,
             roleName: user.userType,
+            address: {
+              addressLine: user.address?.addressLine || "",
+              country: user.address?.country || "",
+              region: user.address?.region || "",
+              province: user.address?.province || "",
+              city: user.address?.city || "",
+              postalCode: user.address?.postalCode || "",
+              latitude: user.address?.latitude || null,
+              longitude: user.address?.longitude || null,
+            },
           };
 
           // Add roleName and permissions only if the user is not a customer

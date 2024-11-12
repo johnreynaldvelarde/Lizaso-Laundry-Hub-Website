@@ -40,7 +40,12 @@ const CustomPopFooterButton = ({ label, onClose, onSubmit, loading }) => {
         disabled={loading}
       >
         {loading ? (
-          <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+          <div
+            className="w-6 h-6 border-2 border-t-transparent border-white rounded-full"
+            style={{
+              animation: "spin 1s linear infinite",
+            }}
+          ></div>
         ) : (
           label
         )}

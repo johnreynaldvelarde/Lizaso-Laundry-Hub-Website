@@ -6,8 +6,6 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
   const { accessToken, isLoading, userDetails } = useAuth();
   const location = useLocation();
 
-  console.log(userDetails);
-
   if (isLoading) {
     return <div>Loading...</div>;
   }

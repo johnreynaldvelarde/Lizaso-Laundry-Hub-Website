@@ -272,31 +272,56 @@ export const getUserDetails = async (req, res, db) => {
 
   try {
     const [userAccountResults] = await db.query(
-      `SELECT ua.*, rp.role_name, rp.can_read, rp.can_write, rp.can_edit, rp.can_delete 
+      `SELECT ua.*, 
+              rp.role_name, 
+              rp.can_read, 
+              rp.can_write, 
+              rp.can_edit, 
+              rp.can_delete, 
+              a.address_line, 
+              a.country, 
+              a.region, 
+              a.province, 
+              a.city, 
+              a.postal_code, 
+              a.latitude, 
+              a.longitude 
        FROM User_Account ua 
        LEFT JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id 
+       LEFT JOIN Addresses a ON ua.address_id = a.id 
        WHERE ua.id = ?`,
       [userId]
     );
 
-    // Check if the user was found
     if (userAccountResults.length > 0) {
       const user = userAccountResults[0];
 
-      // Prepare the response object
       const response = {
         success: true,
         user: {
           userId: user.id,
           storeId: user.store_id,
+          addressId: user.address_id,
           firstname: user.first_name,
           middlename: user.middle_name,
           lastname: user.last_name,
           email: user.email,
           phone: user.mobile_number,
-          fullName: `${user.first_name} ${user.last_name}`,
+          fullName: `${user.first_name} ${
+            user.middle_name ? user.middle_name + " " : ""
+          }${user.last_name}`,
           username: user.username,
           userType: user.user_type,
+          address: {
+            addressLine: user.address_line,
+            country: user.country,
+            region: user.region,
+            province: user.province,
+            city: user.city,
+            postalCode: user.postal_code,
+            latitude: user.latitude,
+            longitude: user.longitude,
+          },
         },
       };
 
