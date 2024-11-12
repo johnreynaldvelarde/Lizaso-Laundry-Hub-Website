@@ -11,10 +11,7 @@ import toast from "react-hot-toast";
 import CustomPopHeaderTitle from "../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../components/common/CustomPopFooterButton";
 import { COLORS } from "../../../constants/color";
-import {
-  updateCustomerAddress,
-  updateCustomerPassword,
-} from "../../../services/api/customerApi";
+import { updateCustomerPassword } from "../../../services/api/customerApi";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 const PopUpdatePassword = ({

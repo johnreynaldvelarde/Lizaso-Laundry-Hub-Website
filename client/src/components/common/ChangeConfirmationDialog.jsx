@@ -6,7 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import { motion } from "framer-motion";
 
-function ChangeConfirmationDialong({ open, onClose, onConfirm, id }) {
+function ChangeConfirmationDialog({ open, onClose, onConfirm, id }) {
   const dialogVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 },
@@ -76,4 +76,4 @@ function ChangeConfirmationDialong({ open, onClose, onConfirm, id }) {
   );
 }
 
-export default ChangeConfirmationDialong;
+export default ChangeConfirmationDialog;

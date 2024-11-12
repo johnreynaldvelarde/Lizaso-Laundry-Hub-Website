@@ -20,11 +20,11 @@ import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import PopPendingAssignTo from "../../../pages/admin/Schedule/components/PopPendingAssignTo";
 import ConfirmationDialog from "../ConfirmationDialog";
-import ChangeConfirmationDialong from "../ChangeConfirmationDialong";
 import {
   updateAtStoreToInQueue,
   updateCompletedPickupToAtStore,
 } from "../../../services/api/putApi";
+import ChangeConfirmationDialog from "../ChangeConfirmationDialog";
 
 const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
@@ -290,7 +290,7 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
       )}
 
       {isOpen && popupType === "markInStore" && (
-        <ChangeConfirmationDialong
+        <ChangeConfirmationDialog
           open={isOpen}
           onClose={closePopup}
           id={popupData}
@@ -299,7 +299,7 @@ const CustomScheduleTable = ({ tableData, loading, refreshData }) => {
       )}
 
       {isOpen && popupType === "markInQueue" && (
-        <ChangeConfirmationDialong
+        <ChangeConfirmationDialog
           open={isOpen}
           onClose={closePopup}
           id={popupData}

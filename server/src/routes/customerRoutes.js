@@ -9,6 +9,7 @@ import {
   handleGetServiceTypeAndPromotions,
   handleSetCustomerServiceRequest,
   handleSetFeedbackAndReview,
+  handleUpdateChangeStore,
   handleUpdateCustomerAddress,
   handleUpdateCustomerBasicInformationWeb,
   handleUpdateCustomerProfile,
@@ -211,6 +212,17 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateResetPassword(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/update-change-store",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateChangeStore(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

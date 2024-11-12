@@ -45,6 +45,7 @@ import usePopup from "../../hooks/common/usePopup";
 import PopUpdateProfile from "../../pages/default_customer/components/PopUpdateProfile";
 import PopUpdateAddress from "../../pages/default_customer/components/PopUpdateAddress";
 import PopUpdatePassword from "../../pages/default_customer/components/PopUpdatePassword";
+import PopChangeStore from "../../pages/default_customer/components/PopChangeStore";
 
 const C_Navbar = () => {
   const { userDetails, fetchUserDetails, accessToken } = useAuth();
@@ -608,7 +609,7 @@ const C_Navbar = () => {
               </MenuItem>
               <Divider />
               <MenuItem
-                onClick={() => openPopup("updateStore")}
+                onClick={() => openPopup("updateChangeStore")}
                 sx={{ display: "flex", alignItems: "center" }}
               >
                 <Storefront size={25} color={COLORS.primary} weight="duotone" />
@@ -670,6 +671,15 @@ const C_Navbar = () => {
           userDetails={userDetails}
           fetchUserDetails={fetchUserDetails}
           accessToken={accessToken}
+        />
+      )}
+
+      {isOpen && popupType === "updateChangeStore" && (
+        <PopChangeStore
+          open={isOpen}
+          onClose={closePopup}
+          userDetails={userDetails}
+          logout={handleLogout}
         />
       )}
     </Box>

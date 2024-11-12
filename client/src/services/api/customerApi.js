@@ -192,7 +192,7 @@ export const updateCustomerPassword = {
 };
 
 export const updateCustomerChangeStore = {
-  putUpdatePassword: async (id, data) => {
+  putUpdateChangeStore: async (id, data) => {
     try {
       const response = await axiosPrivate.put(
         `/customers/${id}/update-change-store`,

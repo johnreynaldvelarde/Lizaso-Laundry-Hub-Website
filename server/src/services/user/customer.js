@@ -1352,50 +1352,83 @@ export const handleUpdateResetPassword = async (req, res, connection) => {
 };
 
 export const handleUpdateChangeStore = async (req, res, connection) => {
-  const { id } = req.params; // userId
+  const { id } = req.params;
   const { store_id } = req.body;
 
   try {
     await connection.beginTransaction();
 
-    // Update the customer address details
-    const updateQuery = `
-      UPDATE Addresses
-      SET 
-        address_line = ?,
-        country = ?,
-        region = ?,
-        province = ?,
-        city = ?,
-        postal_code = ?,
-        latitude = ?,
-        longitude = ?,
-        updated_at = NOW()
-      WHERE id = ?;  
-    `;
+    const checkCurrentStoreQuery = `
+       SELECT store_id
+       FROM User_Account
+       WHERE id = ?;
+     `;
+    const [currentStoreResult] = await connection.execute(
+      checkCurrentStoreQuery,
+      [id]
+    );
+    const currentStore = currentStoreResult[0]?.store_id;
 
-    await connection.execute(updateQuery, [
-      address_line,
-      country,
-      region,
-      province,
-      city,
-      postal_code,
-      latitude,
-      longitude,
-      id,
-    ]);
+    if (currentStore === store_id) {
+      return res.status(200).json({
+        success: false,
+        message: "You are already assigned to this store.",
+      });
+    }
+
+    const checkPendingAssignmentsQuery = `
+      SELECT COUNT(*) AS pendingAssignments
+      FROM Laundry_Assignment AS la
+      JOIN Service_Request AS sr ON la.service_request_id = sr.id
+      WHERE sr.user_id = ? AND la.isAssignmentStatus = 0;  -- Status 0 means In Progress
+    `;
+    const [pendingAssignmentsResult] = await connection.execute(
+      checkPendingAssignmentsQuery,
+      [id]
+    );
+    const { pendingAssignments } = pendingAssignmentsResult[0];
+
+    const checkPendingTransactionsQuery = `
+      SELECT COUNT(*) AS pendingTransactions
+      FROM Transactions AS t
+      JOIN Laundry_Assignment AS la ON t.assignment_id = la.id
+      JOIN Service_Request AS sr ON la.service_request_id = sr.id
+      WHERE sr.customer_id = ? AND t.status != 'Completed';
+    `;
+    const [pendingTransactionsResult] = await connection.execute(
+      checkPendingTransactionsQuery,
+      [id]
+    );
+    const { pendingTransactions } = pendingTransactionsResult[0];
+
+    if (pendingAssignments > 0 || pendingTransactions > 0) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message:
+          "Cannot switch stores with unfinished services or transactions.",
+      });
+    }
+
+    const updateQuery = `
+      UPDATE User
+      SET store_id = ?
+      WHERE id = ?;
+    `;
+    await connection.execute(updateQuery, [store_id, id]);
 
     await connection.commit();
 
     res.status(200).json({
       success: true,
-      message: "Your address has been successfully updated!",
+      message: "Your store has been successfully changed.",
     });
   } catch (error) {
     await connection.rollback();
     console.error("Database operation error:", error);
-    res.status(500).json({ message: "Error updating customer address" });
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the store." });
   } finally {
     connection.release();
   }
