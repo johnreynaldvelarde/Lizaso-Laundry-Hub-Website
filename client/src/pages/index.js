@@ -25,8 +25,6 @@ export { default as AddStore } from "./admin/Store/AddStore";
 
 // Section Inventory
 export { default as Inventory } from "./admin/Inventory/Inventory";
-export { default as AddItem } from "./admin/Inventory/AddItem";
-export { default as ItemCategory } from "./admin/Inventory/ItemCategory";
 
 // Section User
 export { default as User } from "./admin/User/User";

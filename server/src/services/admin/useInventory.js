@@ -8,23 +8,29 @@ export const handleCreateNewItem = async (req, res, connection) => {
     const checkQuery = `
       SELECT id FROM Item 
       WHERE item_name = ? 
+      AND store_id = ? 
       AND isArchive = 0
     `;
 
-    const [existingItem] = await connection.execute(checkQuery, [item_name]);
+    const [existingItem] = await connection.execute(checkQuery, [
+      item_name,
+      store_id,
+    ]);
 
     if (existingItem.length > 0) {
-      return res
-        .status(200)
-        .json({ success: false, message: "Item name already exists." });
+      return res.status(200).json({
+        success: false,
+        message: "Item name already exists in this store",
+      });
     }
 
     const insertItemQuery = `
-    INSERT INTO Item (category_id, item_name, isArchive, date_created, updated_at) 
-    VALUES (?, ?, 0, NOW(), NOW())
+    INSERT INTO Item (category_id, store_id, item_name, isArchive, date_created, updated_at) 
+    VALUES (?, ?, ?,  0, NOW(), NOW())
   `;
     const [result] = await connection.execute(insertItemQuery, [
       category_id,
+      store_id,
       item_name,
     ]);
 
@@ -54,22 +60,22 @@ export const handleCreateItemCategory = async (req, res, db) => {
   const { category_name } = req.body;
 
   try {
-    // Start transaction
     await db.beginTransaction();
 
-    // Check if category name already exists
     const [existingCategoryName] = await db.execute(
       "SELECT * FROM Item_Category WHERE category_name = ?",
       [category_name]
     );
-    if (existingCategoryName.length > 0) {
+    if (
+      existingCategoryName.length > 0 &&
+      existingCategoryName[0].isArchive === 0
+    ) {
       return res.status(200).json({
         success: false,
         message: "Category name already exists",
       });
     }
 
-    // Insert new category
     await db.execute(
       "INSERT INTO Item_Category (category_name, isArchive, updated_at, date_created) VALUES (?, ?, NOW(), NOW())",
       [category_name, false]

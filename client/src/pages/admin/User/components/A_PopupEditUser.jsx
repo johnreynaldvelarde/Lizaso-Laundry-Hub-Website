@@ -21,7 +21,14 @@ import { createAdminBasedNewUser } from "../../../../services/api/postApi";
 import { updateAdminBasedUser } from "../../../../services/api/putApi";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
-const A_PopupEditUser = ({ open, onClose, storeData, roleData, userData }) => {
+const A_PopupEditUser = ({
+  open,
+  onClose,
+  storeData,
+  roleData,
+  userData,
+  refreshData,
+}) => {
   const { userDetails } = useAuth();
   const [username, setUsername] = useState("");
   const [firstname, setFirstname] = useState("");
@@ -52,8 +59,6 @@ const A_PopupEditUser = ({ open, onClose, storeData, roleData, userData }) => {
           ? 0
           : userData.isStatus === "Deactivated"
           ? 1
-          : userData.isStatus === "Pending"
-          ? 2
           : null
       );
     } else {
@@ -155,6 +160,7 @@ const A_PopupEditUser = ({ open, onClose, storeData, roleData, userData }) => {
           userData
         );
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
         } else {
@@ -390,7 +396,6 @@ const A_PopupEditUser = ({ open, onClose, storeData, roleData, userData }) => {
             </MenuItem>
             <MenuItem value={0}>Activate</MenuItem>
             <MenuItem value={1}>Deactivate</MenuItem>
-            <MenuItem value={2}>Pending</MenuItem>
           </TextField>
           {/* Select a store*/}
           <TextField

@@ -482,15 +482,6 @@ const SectionAdminInventory = () => {
               marginLeft: "auto",
             }}
           >
-            {/* Reuse item button */}
-            <CustomOutlinedAddButton
-              onClick={() => openPopup("reuseItem")}
-              label={"Reuse item"}
-              icon={
-                <Repeat size={24} color={COLORS.secondary} weight="duotone" />
-              }
-            />
-
             {/* Add new item button */}
             <CustomAddButton
               onClick={() => openPopup("addItem")}
@@ -513,18 +504,25 @@ const SectionAdminInventory = () => {
 
       {/* Popup */}
       {isOpen && popupType === "addCategory" && (
-        <PopAddCategory open={isOpen} onClose={closePopup} />
-      )}
-      {isOpen && popupType === "editCategory" && (
-        <PopEditCategory open={isOpen} onClose={closePopup} data={popupData} />
-      )}
-      {isOpen && popupType === "addItem" && (
-        <PopAddNewItem open={isOpen} onClose={closePopup} data={categoryData} />
-      )}
-      {isOpen && popupType === "reuseItem" && (
-        <PopReuseItem
+        <PopAddCategory
           open={isOpen}
           onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
+      )}
+      {isOpen && popupType === "editCategory" && (
+        <PopEditCategory
+          open={isOpen}
+          onClose={closePopup}
+          data={popupData}
+          refreshData={handleRefreshData}
+        />
+      )}
+      {isOpen && popupType === "addItem" && (
+        <PopAddNewItem
+          open={isOpen}
+          onClose={closePopup}
+          data={categoryData}
           refreshData={handleRefreshData}
         />
       )}

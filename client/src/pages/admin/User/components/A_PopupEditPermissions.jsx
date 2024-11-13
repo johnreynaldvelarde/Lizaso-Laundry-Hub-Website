@@ -17,7 +17,12 @@ import { COLORS } from "../../../../constants/color";
 import { updatePermissions } from "../../../../services/api/putApi";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
-const A_PopupEditPermissions = ({ open, onClose, permissionsData }) => {
+const A_PopupEditPermissions = ({
+  open,
+  onClose,
+  permissionsData,
+  refreshData,
+}) => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -58,6 +63,7 @@ const A_PopupEditPermissions = ({ open, onClose, permissionsData }) => {
       );
 
       if (response.success) {
+        refreshData();
         toast.success(response.message);
         onClose();
       } else {

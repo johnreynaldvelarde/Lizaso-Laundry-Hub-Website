@@ -111,6 +111,12 @@ const SectionAdminUser = () => {
     }
   }, [stores]);
 
+  const handleRefreshData = () => {
+    fetchRolesData();
+    fetchStoresData();
+    fetchUsersData();
+  };
+
   // For Popup
   const [openPopupAddUser, setOpenPopupAddUser] = useState(false);
   const [openPopupEditUser, setOpenPopupEditUser] = useState(false);
@@ -301,6 +307,7 @@ const SectionAdminUser = () => {
         try {
           const response = await updateRemoveUser.putRemoveUser(id);
           if (response.success) {
+            handleRefreshData();
           } else {
             toast.error(response.message);
           }
@@ -326,6 +333,7 @@ const SectionAdminUser = () => {
       try {
         const response = await updateRemoveUser.putRemoveUser(id);
         if (response.success) {
+          handleRefreshData();
           toast.success(response.message);
         } else {
           toast.error(response.message);
@@ -983,6 +991,7 @@ const SectionAdminUser = () => {
         onClose={handleClosePopupAddUser}
         roleData={roles}
         storeData={stores}
+        refreshData={handleRefreshData}
       />
 
       <A_PopupEditUser
@@ -991,23 +1000,14 @@ const SectionAdminUser = () => {
         roleData={roles}
         storeData={stores}
         userData={selectedEditData}
-      />
-
-      <A_PopupAddRole
-        open={openPopupAddRole}
-        onClose={handleClosePopupAddRole}
+        refreshData={handleRefreshData}
       />
 
       <A_PopupEditPermissions
         open={openPopupEditPermission}
         onClose={handleClosePopupEditPermissions}
         permissionsData={selectedPermissionsData}
-      />
-
-      <A_PopupRenameRole
-        open={openPopupRenameRole}
-        onClose={handleClosePopupRenameRole}
-        roleData={selectedRenameRole}
+        refreshData={handleRefreshData}
       />
 
       <ConfirmationDialog

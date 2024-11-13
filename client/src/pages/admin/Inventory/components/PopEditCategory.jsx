@@ -11,7 +11,7 @@ import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderT
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 import { updateCategoryName } from "../../../../services/api/putApi";
 
-const PopEditCategory = ({ open, onClose, data }) => {
+const PopEditCategory = ({ open, onClose, data, refreshData }) => {
   const { userDetails } = useAuth();
   const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,6 +59,7 @@ const PopEditCategory = ({ open, onClose, data }) => {
           }
         );
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
         } else {

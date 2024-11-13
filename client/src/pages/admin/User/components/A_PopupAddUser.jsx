@@ -21,7 +21,13 @@ import { createAdminBasedNewUser } from "../../../../services/api/postApi";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 
-const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
+const A_PopupAddUser = ({
+  open,
+  onClose,
+  storeData,
+  roleData,
+  refreshData,
+}) => {
   const { userDetails } = useAuth();
   const [username, setUsername] = useState("");
   const [defaultPassword, setDefaultPassword] = useState("lizaso12345");
@@ -140,6 +146,7 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
         );
 
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
         } else {
@@ -442,7 +449,6 @@ const A_PopupAddUser = ({ open, onClose, storeData, roleData }) => {
             </MenuItem>
             <MenuItem value={0}>Activate</MenuItem>
             <MenuItem value={1}>Deactivate</MenuItem>
-            <MenuItem value={2}>Pending</MenuItem>
           </TextField>
           {/* Select a store*/}
           <TextField

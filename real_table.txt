@@ -290,6 +290,7 @@ date_created
 --> Item <--
 id (Primary Key)
 category_id (Foregin Key)
+store_id (Foregin Key)
 item_name
 isArchive
 updated_at

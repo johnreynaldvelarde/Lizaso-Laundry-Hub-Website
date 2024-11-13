@@ -21,12 +21,7 @@ const Inventory = lazy(() =>
 const Settings = lazy(() =>
   import("../../pages").then((module) => ({ default: module.Settings }))
 );
-const AddItem = lazy(() =>
-  import("../../pages").then((module) => ({ default: module.AddItem }))
-);
-const ItemCategory = lazy(() =>
-  import("../../pages").then((module) => ({ default: module.ItemCategory }))
-);
+
 const Schedule = lazy(() =>
   import("../../pages").then((module) => ({ default: module.Schedule }))
 );
@@ -120,9 +115,7 @@ const Main = () => {
             <Route path="store" element={<Store />} />
             <Route path="add-store" element={<AddStore />} />
             <Route path="inventory" element={<Inventory />} />
-            <Route path="add-item" element={<AddItem />} />
             <Route path="add-unit" element={<AddUnits />} />
-            <Route path="item-category" element={<ItemCategory />} />
             <Route path="all-user" element={<User />} />
             <Route path="add-user" element={<AddUser />} />
             <Route path="inbox" element={<Inbox />} />

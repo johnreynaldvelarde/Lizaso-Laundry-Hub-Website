@@ -43,8 +43,7 @@ import CustomOutlinedAddButton from "../../../../components/common/CustomOutline
 import PopReuseItem from "./PopReuseItem";
 import DeleteConfirmationDialog from "../../../../components/common/DeleteConfirmationDialog";
 
-const SectionManagerInventory = () => {
-  const { userDetails } = useAuth();
+const SectionManagerInventory = ({ userDetails }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const { data: categoryData, fetchData: fetchCategory } = useFetchData();
   const { data: inventoryData, fetchData: fetchInventory } = useFetchData();

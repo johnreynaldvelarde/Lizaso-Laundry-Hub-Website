@@ -10,7 +10,7 @@ import {
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
-const PopAddCategory = ({ open, onClose }) => {
+const PopAddCategory = ({ open, onClose, refreshData }) => {
   const { userDetails } = useAuth();
   const [categoryName, setCategoryName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,6 +47,7 @@ const PopAddCategory = ({ open, onClose }) => {
           category_name: categoryName,
         });
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
         } else {

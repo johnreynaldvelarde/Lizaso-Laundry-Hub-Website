@@ -23,7 +23,7 @@ import {
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
-const PopAddNewItem = ({ open, onClose, data }) => {
+const PopAddNewItem = ({ open, onClose, data, refreshData }) => {
   const { userDetails } = useAuth();
   const [itemName, setItemName] = useState("");
   const [itemPrice, setItemPrice] = useState("");
@@ -87,6 +87,7 @@ const PopAddNewItem = ({ open, onClose, data }) => {
         const response = await createNewItem.setNewItem(data);
 
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
         } else {
