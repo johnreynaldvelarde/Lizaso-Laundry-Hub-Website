@@ -8,6 +8,7 @@ import {
 import jwt from "jsonwebtoken";
 import {
   handleCheckCustomerDetailsWeb,
+  handleIsUserExists,
   handleRegisterCustomer,
 } from "../services/authentication.js";
 
@@ -120,26 +121,14 @@ router.get(
 
 export default router;
 
-// const tokenBlacklist = new Set();
-
-// // Middleware to check if a token is blacklisted
-// const isTokenBlacklisted = (token) => {
-//   return tokenBlacklist.has(token);
-// };
-
-// router.post("/logout", (req, res) => {
-//   // console.log("Logout na");
-
-//   // const refreshToken = req.cookies.refreshToken;
-
-//   // // Handle JWT invalidation
-//   // if (refreshToken) {
-//   //   // Add the refresh token to the blacklist
-//   //   tokenBlacklist.add(refreshToken);
-
-//   //   // Clear the refresh token cookie
-//   //   res.clearCookie("refreshToken");
-//   // }
-
-//   // res.status(200).json({ success: true, message: "Logged out successfully" });
-// });
+// Forget Password and Email is Exist
+router.post(
+  "/is-email-exist",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleIsUserExists(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);

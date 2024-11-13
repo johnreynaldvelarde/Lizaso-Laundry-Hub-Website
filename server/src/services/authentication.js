@@ -215,6 +215,43 @@ export const handleRegisterCustomer = async (req, res, db) => {
   }
 };
 
+export const handleIsUserExists = async (req, res, db) => {
+  const { email } = req.body;
+
+  try {
+    await db.beginTransaction();
+
+    const [rows] = await db.execute(
+      `
+        SELECT * FROM User_Account 
+        WHERE email = ? 
+        LIMIT 1
+      `,
+      [email]
+    );
+
+    if (rows.length === 0) {
+      return res.status(200).json({
+        success: false,
+        message: "No account found with this email address.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Email exists in the database.",
+    });
+  } catch (error) {
+    await db.rollback();
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again.",
+    });
+  } finally {
+    if (db) db.release();
+  }
+};
+
 //#GET SECTION
 export const getUserMobileDetails = async (req, res, db) => {
   const authHeader = req.headers.authorization;
