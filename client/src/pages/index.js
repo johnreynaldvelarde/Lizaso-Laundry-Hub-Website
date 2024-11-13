@@ -9,7 +9,6 @@ export { default as Dashboard } from "./admin/Dashboard/Dashboard";
 
 // Section Unit
 export { default as UnitMonitor } from "./admin/Unit/UnitMonitor";
-export { default as AddUnits } from "./admin/Unit/AddUnits";
 
 // Section Customer
 export { default as Customers } from "./admin/Customers/Customers";

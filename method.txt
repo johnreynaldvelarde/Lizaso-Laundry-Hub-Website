@@ -2,4 +2,5 @@
   const handleRefreshData = () => {
     fetchActivityLogData();
   };
-refreshData 
+refreshData
+Administrator

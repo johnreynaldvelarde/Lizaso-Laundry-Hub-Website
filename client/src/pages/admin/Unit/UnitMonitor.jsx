@@ -5,9 +5,7 @@ import {
   Box,
   Button,
   Badge,
-  Menu,
   MenuItem,
-  Paper,
   Typography,
   TextField,
   useMediaQuery,
@@ -15,9 +13,15 @@ import {
   FormControl,
   Select,
   Skeleton,
+  IconButton,
 } from "@mui/material";
 import useUnitMonitor from "../../../hooks/admin/useUnitMonitor";
-import { HourglassLow, PlusCircle } from "@phosphor-icons/react";
+import {
+  HourglassLow,
+  MinusSquare,
+  PencilLine,
+  PlusCircle,
+} from "@phosphor-icons/react";
 import PopupSelectUnit from "./components/PopupSelectUnit";
 import PopupInQueue from "./components/PopupInQueue";
 import nodata from "../../../assets/images/no_data_all.jpg";
@@ -40,9 +44,12 @@ import { statusUnit } from "../../../data/unit/unitStatus";
 import PopAddNewUnits from "./components/PopAddNewUnits";
 import occupiedAnimation from "../../../assets/animated/logo_move.json";
 import Lottie from "react-lottie";
+import DeleteConfirmationDialog from "../../../components/common/DeleteConfirmationDialog";
+import { updateRemoveUnit } from "../../../services/api/putApi";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const {
     openDialog,
     selectedUnit,
@@ -53,21 +60,14 @@ const UnitMonitor = () => {
     handleSearchChange,
     handleOpenInQueue,
     handleCloseInQueue,
-    // <------------------------->
   } = useUnitMonitor();
   const [filteredUnits, setFilteredUnits] = useState([]);
   const [filterStatus, setFilterStatus] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { isOpen, popupType, openPopup, closePopup } = usePopup();
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-
   const open = Boolean(anchorEl);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -156,6 +156,26 @@ const UnitMonitor = () => {
     },
   };
 
+  const handleEditUnit = (id) => {};
+
+  const handleRemoveUnit = async () => {
+    if (popupData) {
+      try {
+        const response = await updateRemoveUnit.putRemoveUnit(popupData);
+        if (response.success) {
+          handleRefreshData();
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        toast.error(`Error: ${error.message || "Something went wrong"}`);
+      }
+    } else {
+      toast.error("Error Action!!!");
+    }
+  };
+
   return (
     <Box sx={{ pt: "100px", pb: "20px", px: { xs: 1, md: 2 } }}>
       {/* Header */}
@@ -171,20 +191,24 @@ const UnitMonitor = () => {
           title={"Monitored Units"}
           subtitle={"Tracking and managing all active laundry units"}
         />
-        <CustomAddButton
-          label={"Add new units"}
-          onClick={() => {
-            openPopup("addUnits");
-          }}
-          icon={
-            <PlusCircle
-              size={24}
-              color={COLORS.white}
-              weight="duotone"
-              sx={{ display: { xs: "none", sm: "inline" } }}
-            />
-          }
-        />
+
+        {(userDetails?.roleName === "Administrator" ||
+          userDetails?.roleName === "Manager") && (
+          <CustomAddButton
+            label={"Add new units"}
+            onClick={() => {
+              openPopup("addUnits");
+            }}
+            icon={
+              <PlusCircle
+                size={24}
+                color={COLORS.white}
+                weight="duotone"
+                sx={{ display: { xs: "none", sm: "inline" } }}
+              />
+            }
+          />
+        )}
       </Box>
       <Box
         sx={{
@@ -414,6 +438,38 @@ const UnitMonitor = () => {
                 overflow: "hidden",
               }}
             >
+              {(userDetails?.roleName === "Administrator" ||
+                userDetails?.roleName === "Manager") && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    display: "flex",
+                  }}
+                >
+                  {/* Edit Button */}
+                  <IconButton
+                    onClick={() => handleEditUnit(unit.id)}
+                    sx={{
+                      color: COLORS.secondary,
+                    }}
+                  >
+                    <PencilLine size={25} weight="duotone" />
+                  </IconButton>
+
+                  {/* Remove Button */}
+                  <IconButton
+                    onClick={() => openPopup("removeUnit", unit.id)}
+                    sx={{
+                      color: COLORS.error,
+                    }}
+                  >
+                    <MinusSquare size={25} weight="duotone" />
+                  </IconButton>
+                </Box>
+              )}
+
               <Typography
                 variant="h6"
                 sx={{
@@ -462,19 +518,6 @@ const UnitMonitor = () => {
                   }}
                 />
               )}
-              {/* <img
-                src={getUnitImage(unit.isUnitStatus)}
-                alt={unit.unit_name}
-                style={{
-                  width: "100%",
-                  maxWidth: "170px",
-                  height: "auto",
-                  maxHeight: "calc(341px - 80px)",
-                  objectFit: "contain",
-                  marginTop: "10px",
-                  marginBottom: "30px",
-                }}
-              /> */}
               <Button
                 variant="contained"
                 sx={{
@@ -565,6 +608,14 @@ const UnitMonitor = () => {
         onClose={() => toggleDrawer(false)}
         refreshData={handleRefreshData}
       />
+      {isOpen && popupType === "removeUnit" && (
+        <DeleteConfirmationDialog
+          open={isOpen}
+          onClose={closePopup}
+          onConfirm={handleRemoveUnit}
+          id={popupData}
+        />
+      )}
     </Box>
   );
 };

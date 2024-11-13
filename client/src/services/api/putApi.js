@@ -16,6 +16,20 @@ export const updateCustomerBasicInformation = {
 };
 
 //#UNIT MONITORED SECTION
+export const updateRemoveUnit = {
+  putRemoveUnit: async (id) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/monitored-unit/${id}/remove-laundry-unit`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating unit:", error);
+      throw error;
+    }
+  },
+};
+
 export const updateProgressInQueueAtStore = {
   putProgressInQueueAtStore: async (id) => {
     try {

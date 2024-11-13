@@ -3,6 +3,7 @@ import { handleCreateStore } from "../services/admin/useStore.js";
 import {
   handlePutAssignment,
   handlePutRemoveInQueue,
+  handleRemoveUnit,
   handleUpdateGenerateQueueNumber,
   handleUpdateProgressInqueueAndAtStore,
 } from "../services/admin/useUnits.js";
@@ -61,6 +62,17 @@ router.post(
 );
 
 // UNIT MONITORED SECTION
+router.put(
+  "/monitored-unit/:id/remove-laundry-unit",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleRemoveUnit(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.put(
   "/user/:id/update-assignment",
   withDatabaseConnection(async (req, res, connection) => {

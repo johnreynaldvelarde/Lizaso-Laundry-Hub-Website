@@ -1133,13 +1133,64 @@ export const handleGetCalculatedTransaction = async (req, res, connection) => {
 };
 
 //#PUT
+export const handleRemoveUnit = async (req, res, connection) => {
+  const { id } = req.params;
+  try {
+    await connection.beginTransaction();
+
+    const [unitRows] = await connection.execute(
+      `SELECT isUnitStatus FROM Laundry_Unit WHERE id = ?`,
+      [id]
+    );
+
+    if (unitRows.length === 0) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: "Laundry unit not found.",
+      });
+    }
+
+    const unitStatus = unitRows[0].isUnitStatus;
+
+    if (unitStatus !== 0) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: "Unit is not available for removal.",
+      });
+    }
+
+    await connection.execute(
+      `UPDATE Laundry_Unit 
+       SET isUnitStatus = 3,  
+           isArchive = true  
+       WHERE id = ?`,
+      [id]
+    );
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Laundry unit status updated successfully.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "Error updating laundry unit status.",
+      error,
+    });
+  }
+};
+
 export const handleUpdateProgressInqueueAndAtStore = async (
   req,
   res,
   connection
 ) => {
   const { id } = req.params;
-  console.log(id);
   try {
     await connection.beginTransaction();
 
