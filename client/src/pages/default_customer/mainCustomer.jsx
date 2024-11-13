@@ -1,8 +1,9 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import C_Navbar from "../../components/common/C_Navbar";
 import C_Footer from "../../components/common/C_Footer";
 import LoadingBar from "../../components/LoadingBar";
+import showNotification from "../../utils/showNotification";
 
 const LaundryServices = lazy(() =>
   import("../../pages").then((module) => ({ default: module.LaundryServices }))
@@ -17,6 +18,19 @@ const PaymentHistory = lazy(() =>
 );
 
 const MainCustomer = () => {
+  // useEffect(() => {
+  //   // Show a toast every 5 seconds
+  //   const intervalId = setInterval(() => {
+  //     showNotification({
+  //       message: "This is an automatic notification.",
+  //       type: "info",
+  //     });
+  //   }, 5000);
+
+  //   // Clear the interval on component unmount
+  //   return () => clearInterval(intervalId);
+  // }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <C_Navbar />

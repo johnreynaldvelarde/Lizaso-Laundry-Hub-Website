@@ -6,6 +6,8 @@ import {
   endOfMonth,
   startOfYear,
   endOfYear,
+  isToday,
+  format,
 } from "date-fns";
 
 export const generatePDF = async (ref) => {
@@ -90,4 +92,23 @@ export const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
   const distance = R * c;
   return distance.toFixed(1);
+};
+
+export const formatTimeNotification = (dateString) => {
+  if (!dateString) {
+    return "No date available";
+  }
+
+  const notificationDate = new Date(dateString);
+
+  if (isNaN(notificationDate.getTime())) {
+    return "Invalid date";
+  }
+
+  // Format the date
+  if (isToday(notificationDate)) {
+    return format(notificationDate, "hh:mm a");
+  } else {
+    return format(notificationDate, "MMMM d, yyyy");
+  }
 };

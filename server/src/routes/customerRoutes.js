@@ -4,6 +4,7 @@ import {
   handleGetCalculatedTransactionForCustomer,
   handleGetCustomerConvo,
   handleGetCustomerTrackOrderAndProgress,
+  handleGetNotificationCustomer,
   handleGetPaymentHistory,
   handleGetServicePromoList,
   handleGetServiceTypeAndPromotions,
@@ -13,6 +14,7 @@ import {
   handleUpdateCustomerAddress,
   handleUpdateCustomerBasicInformationWeb,
   handleUpdateCustomerProfile,
+  handleUpdateNotificationCustomerClearAll,
   handleUpdateResetPassword,
 } from "../services/user/customer.js";
 import { handleCheckCustomerDetails } from "../services/useCheck.js";
@@ -162,7 +164,29 @@ router.get(
   })
 );
 
+router.get(
+  "/customers/:id/get-notifications-customer",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetNotificationCustomer(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 // PUT
+router.get(
+  "/customers/:id/update-notifications-customer-clear-all",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateNotificationCustomerClearAll(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.put(
   "/customers/:user_one_id/:user_two_id/put-update-message",
   withDatabaseConnection(async (req, res, connection) => {

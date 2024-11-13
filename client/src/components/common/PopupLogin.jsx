@@ -7,6 +7,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import useLoginForm from "../../hooks/useLoginForm";
 import { COLORS } from "../../constants/color";
+import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
   const {
@@ -101,9 +102,13 @@ const PopupLogin = ({ showLoginPopup, setLoginShowPopup }) => {
                     className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
                   >
                     {passwordVisible ? (
-                      <VisibilityOffIcon />
+                      <Eye weight="duotone" size={25} color={COLORS.primary} />
                     ) : (
-                      <VisibilityIcon />
+                      <EyeSlash
+                        weight="duotone"
+                        size={25}
+                        color={COLORS.primary}
+                      />
                     )}
                   </button>
                 </div>

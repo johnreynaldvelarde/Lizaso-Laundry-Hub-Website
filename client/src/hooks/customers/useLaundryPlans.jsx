@@ -39,13 +39,16 @@ const useLaundryPlans = (onClose) => {
     if (field === "name") {
       setName(value);
     }
+    if (field === "service_name") {
+      setServiceType(value);
+    }
     setErrors((prevErrors) => ({
       ...prevErrors,
       [field]: "",
     }));
   };
 
-  const handleSubmit = async (serviceId, e) => {
+  const handleSubmit = async (serviceId, e, selectedPayment, service_name) => {
     e.preventDefault();
 
     const newErrors = validateFields();
@@ -63,6 +66,7 @@ const useLaundryPlans = (onClose) => {
         const customerData = {
           store_id: storeId,
           service_type_id: serviceId,
+          service_name: service_name,
           customer_name: name,
           notes: note,
           payment_method: selectedPayment,

@@ -28,8 +28,8 @@ const port = process.env.PORT || 3002;
 
 const allowedOrigins = [
   process.env.NODE_ENV === "production"
-    ? process.env.PRODUCTION_FRONTEND_URL
-    : process.env.DEVELOPMENT_FRONTEND_URL,
+    ? process.env.PRODUCTION_FRONTEND_URL // For production
+    : process.env.DEVELOPMENT_FRONTEND_URL, // For development
 ];
 
 app.use(express.json());
@@ -38,11 +38,13 @@ app.use(
     origin: (origin, callback) => {
       if (process.env.NODE_ENV === "production") {
         if (allowedOrigins.includes(origin) || !origin) {
+          // Allow requests with no origin (like mobile apps or Postman)
           callback(null, true);
         } else {
           callback(new Error("Not allowed by CORS"));
         }
       } else {
+        // In development, allow localhost
         callback(null, true);
       }
     },
@@ -64,7 +66,9 @@ app.use(
   mobileRoutes
 );
 
+// Create an HTTP server
 const server = http.createServer(app);
+
 setupSocketIO(server);
 
 // Ensure main store exists and start the server
@@ -75,8 +79,7 @@ const initServer = async () => {
     try {
       await ensureMainStoreExists(connection);
       await createDefaultAdmin(connection);
-
-      server.listen(port, () => {
+      app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
       });
     } finally {
@@ -89,3 +92,8 @@ const initServer = async () => {
 };
 
 initServer();
+
+// const allowedOrigins = [
+//   process.env.FRONTEND_URL,
+//   "https://your-production-frontend-url.com",
+// ];

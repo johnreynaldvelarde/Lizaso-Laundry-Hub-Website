@@ -21,6 +21,7 @@ import {
   handleRegisterCustomer,
 } from "../../services/authentication.js";
 import {
+  handleGetNotificationCustomer,
   handleGetStoreList,
   handleUpdateCustomerBasicInformationMobile,
 } from "../../services/user/customer.js";
@@ -96,7 +97,7 @@ router.get(
   "/mobile-customer-staff/:id/get-notification-customer",
   withDatabaseConnection(async (req, res, connection) => {
     try {
-      await handleGetInbox(req, res, connection);
+      await handleGetNotificationCustomer(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

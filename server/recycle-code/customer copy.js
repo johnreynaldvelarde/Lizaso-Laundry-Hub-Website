@@ -47,6 +47,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
 
     const trackingCode = generateTrackingCode();
 
+    // Get the next queue number for today's requests in the specified store
     const queueQuery = `
       SELECT IFNULL(MAX(queue_number), 0) + 1 AS next_queue_number
       FROM Service_Request
@@ -168,11 +169,13 @@ export const handleSetMessagesSenderIsCustomer = async (
   res,
   connection
 ) => {
-  const { sender_id, receiver_id, message } = req.body;
+  const { sender_id, receiver_id, message } = req.body; // Extract necessary data from the request body
 
   try {
+    // Begin transaction
     await connection.beginTransaction();
 
+    // Check if a conversation already exists
     const findConversationQuery = `
       SELECT id FROM Conversations 
       WHERE (customer_sender_id = ? AND user_receiver_id = ?) OR 
@@ -1126,79 +1129,51 @@ export const handleGetNotificationCustomer = async (req, res, connection) => {
 };
 
 //#PUT
-// NOTIFCATION CLEAR ALL
 export const handleUpdateNotificationCustomerClearAll = async (
   req,
   res,
   connection
 ) => {
-  const { id } = req.params; // user ID
+  const { id } = req.params; // user Id
 
   try {
     await connection.beginTransaction();
 
-    const updateQuery = `
-      UPDATE Notifications
-      SET status = 'Read', read_at = NOW()
-      WHERE user_id = ?
+    const query = `
+      SELECT 
+        n.id,
+        n.store_id,
+        n.user_id,
+        n.notification_type,
+        n.notification_description,
+        n.status,
+        n.created_at,
+        n.read_at
+      FROM Notifications n
+      WHERE n.user_id = ?
+      ORDER BY n.created_at DESC
     `;
-    const [result] = await connection.execute(updateQuery, [id]);
 
-    await connection.commit();
+    const [rows] = await connection.execute(query, [id]);
 
-    res.status(200).json({
+    if (rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No notifications found for this user.",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
       success: true,
-      message:
-        result.affectedRows > 0
-          ? "All notifications marked as read."
-          : "No notifications found to update.",
+      message: "Notifications fetched successfully.",
+      data: rows,
     });
   } catch (error) {
     await connection.rollback();
-    console.error("Error updating notifications:", error);
     res.status(500).json({
       success: false,
-      message: "An error occurred while updating notifications.",
-      error: error.message,
-    });
-  } finally {
-    if (connection) connection.release();
-  }
-};
-
-// NOTIFCATION ONLY READ
-export const handleUpdateNotificationCustomerOnlyRead = async (
-  req,
-  res,
-  connection
-) => {
-  const { id } = req.params;
-
-  try {
-    await connection.beginTransaction();
-
-    const updateQuery = `
-      UPDATE Notifications
-      SET status = 'Read', read_at = NOW()
-      WHERE id = ?
-    `;
-    const [result] = await connection.execute(updateQuery, [id]);
-
-    await connection.commit();
-
-    res.status(200).json({
-      success: true,
-      message:
-        result.affectedRows > 0
-          ? "Notification marked as read."
-          : "Notification not found.",
-    });
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error updating notification:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while updating the notification.",
+      message: "An error occurred while fetching data.",
       error: error.message,
     });
   } finally {

@@ -131,7 +131,36 @@ export const getChatMessages = {
   },
 };
 
+export const getNotificationsList = {
+  getNotifications: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/customers/${id}/get-notifications-customer`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
 // #PUT
+export const updateNotificationClearAll = {
+  putUpdateProfile: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/customers/${id}/update-notifications-customer-clear-all`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 export const updateMessageisRead = {
   putMessageisRead: async (user_one_id, user_two_id) => {
     try {

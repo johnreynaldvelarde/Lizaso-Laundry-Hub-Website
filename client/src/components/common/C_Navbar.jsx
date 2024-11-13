@@ -13,20 +13,14 @@ import {
   IconButton,
   Tooltip,
   Badge,
-  Avatar,
   Divider,
   Typography,
-  Button,
   useMediaQuery,
   Drawer,
-  ListItemIcon,
 } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { MdOutlineMailOutline, MdPayments } from "react-icons/md";
-import { MdLocalLaundryService } from "react-icons/md";
-import { FaClipboardList } from "react-icons/fa";
-import { Logout, Settings } from "@mui/icons-material";
 import {
   AddressBook,
   List,
@@ -35,7 +29,6 @@ import {
   Storefront,
   TextOutdent,
   User,
-  UserCircle,
 } from "@phosphor-icons/react";
 import { COLORS } from "../../constants/color";
 import SideCustomerItem from "./SideCustomerItem";
@@ -46,9 +39,15 @@ import PopUpdateProfile from "../../pages/default_customer/components/PopUpdateP
 import PopUpdateAddress from "../../pages/default_customer/components/PopUpdateAddress";
 import PopUpdatePassword from "../../pages/default_customer/components/PopUpdatePassword";
 import PopChangeStore from "../../pages/default_customer/components/PopChangeStore";
+import useNavbarData from "../../hooks/common/useNavbarData";
+import { formatTimeNotification } from "../../utils/method";
 
 const C_Navbar = () => {
   const { userDetails, fetchUserDetails, accessToken } = useAuth();
+  const { loading, notifications, fetchNotificationsData } = useNavbarData({
+    userDetails,
+  });
+
   const logout = useLogout();
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -57,13 +56,6 @@ const C_Navbar = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
-
-  const icons = [
-    <MdLocalLaundryService />,
-    <FaClipboardList />,
-    <MdPayments />,
-  ];
-  const tooltipTitles = ["Laundry Services", "Track Orders", "Payment History"];
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -84,43 +76,7 @@ const C_Navbar = () => {
     setActiveIndex(index !== -1 ? index : 0);
   }, [location.pathname]);
 
-  const messages = [
-    {
-      senderName: "John Doe",
-      avatar: "https://via.placeholder.com/150",
-      preview: "Hey, are you available tomorrow?",
-      timestamp: "5 min ago",
-    },
-    {
-      senderName: "Jane Smith",
-      avatar: "https://via.placeholder.com/150",
-      preview: "Let's catch up soon!",
-      timestamp: "15 min ago",
-    },
-    {
-      senderName: "Mark Lee",
-      avatar: "https://via.placeholder.com/150",
-      preview: "Don't forget the meeting at 3 PM.",
-      timestamp: "1 hour ago",
-    },
-  ];
-
-  const notifications = [
-    {
-      id: 1,
-      senderName: "Laundry Hub",
-      avatar: "/images/laundry-icon.png",
-      message: "Your laundry is ready for pickup.",
-      timestamp: "10 minutes ago",
-    },
-    {
-      id: 2,
-      senderName: "Laundry Hub",
-      avatar: "/images/laundry-icon.png",
-      message: "Your laundry is ready for pickup.",
-      timestamp: "10 minutes ago",
-    },
-  ];
+  const messages = [];
 
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("lg"));
 
@@ -137,6 +93,10 @@ const C_Navbar = () => {
   const handleLinkClick = () => {
     setDrawerOpen(false);
   };
+
+  useEffect(() => {
+    fetchNotificationsData();
+  }, [fetchNotificationsData]);
 
   return (
     <Box className="sticky top-0 z-50 py-3 backdrop-blur-lg bg-white bg-opacity-80 border-b border-neutral-700/40 ">
@@ -439,7 +399,7 @@ const C_Navbar = () => {
                 overflow: "visible",
                 filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                 mt: 1.5,
-                width: "320px", // Set a wider width for better readability
+                width: "320px",
                 "& .MuiAvatar-root": {
                   width: 40,
                   height: 40,
@@ -479,8 +439,8 @@ const C_Navbar = () => {
               </div>
             </div>
             <Divider />
-            <div className="scrollable max-h-[300px] overflow-y-auto">
-              {notifications.length === 0 ? ( // Check if there are no notifications
+            <div className="scrollables max-h-[300px] overflow-y-auto">
+              {notifications.length === 0 ? (
                 <div className="flex items-center justify-center p-4 text-gray-500">
                   No notifications
                 </div>
@@ -497,14 +457,17 @@ const C_Navbar = () => {
                       className="w-10 h-10 rounded-full mr-3 bg-gray-200"
                     />
                     <div className="flex-1">
-                      <p className="font-semibold text-sm">
-                        {notification.senderName}
+                      <p
+                        className="font-semibold text-sm"
+                        style={{ color: COLORS.text }}
+                      >
+                        {notification.notification_type}
                       </p>
                       <p className="text-xs text-gray-500 truncate max-w-[200px]">
-                        {notification.message}
+                        {notification.notification_description}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        {notification.timestamp}
+                        {formatTimeNotification(notification.created_at)}
                       </p>
                     </div>
                   </div>

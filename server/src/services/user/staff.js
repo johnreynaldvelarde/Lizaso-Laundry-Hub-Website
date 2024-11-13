@@ -1,6 +1,12 @@
+import { io } from "../../socket/socket.js";
 import { haversineDistance } from "../../helpers/distanceComputing.js";
-// POST
+import { logNotification } from "../useExtraSystem.js";
+import {
+  NotificationDescriptions,
+  NotificationStatus,
+} from "../../helpers/notificationLog.js";
 
+// POST
 export const handleSetMessagesSenderIsStaff = async (req, res, connection) => {
   const { sender_id, receiver_id, message } = req.body; // sender_id = staff ID, receiver_id = customer ID
   try {
@@ -323,23 +329,57 @@ export const handleUpdateServiceRequestCancel = async (
   try {
     await connection.beginTransaction();
 
-    const updateQuery = `
-        UPDATE Service_Request
-        SET request_status = 'Canceled',  user_id = ?
-        WHERE id = ?`;
+    const getCustomerIdQuery = `
+      SELECT customer_id 
+      FROM Service_Request 
+      WHERE id = ?
+    `;
+    const [customerRows] = await connection.execute(getCustomerIdQuery, [id]);
 
+    if (customerRows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found." });
+    }
+
+    const { customer_id } = customerRows[0];
+
+    const updateQuery = `
+      UPDATE Service_Request
+      SET request_status = 'Canceled', user_id = ?
+      WHERE id = ?
+    `;
     const [result] = await connection.execute(updateQuery, [user_id, id]);
 
     if (result.affectedRows === 0) {
       return res
         .status(404)
-        .json({ success: false, message: "Request not found." });
+        .json({ success: false, message: "Failed to update request status." });
     }
+
+    // Log notification
+    const notificationType = NotificationStatus.CANCELED;
+    const notificationDescription =
+      NotificationDescriptions[notificationType]();
+
+    await logNotification(
+      connection,
+      null,
+      customer_id,
+      notificationType,
+      notificationDescription
+    );
+
+    io.emit("sendNotificationToUser", {
+      userId: customer_id,
+      message: "Your service request has been canceled.",
+    });
+
     await connection.commit();
 
     res.status(200).json({
       success: true,
-      message: "Request status updated to cancelled.",
+      message: "Request status updated to canceled.",
     });
   } catch (error) {
     await connection.rollback();

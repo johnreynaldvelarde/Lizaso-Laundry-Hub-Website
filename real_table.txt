@@ -372,7 +372,7 @@ isCompleted
 
 --> Transaction <--
 id (Primary Key)
-assigment_id (Foregin Key)
+assignment_id (Foregin Key)
 total_amount,
 payment_method,
 status

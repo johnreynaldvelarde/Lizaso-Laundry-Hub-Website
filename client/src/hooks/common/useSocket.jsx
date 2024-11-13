@@ -1,28 +1,53 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_SERVER_URL = "http://localhost:3000";
+// Define the socket server URL
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 const useSocket = () => {
-  const [socket] = useState(() => io(SOCKET_SERVER_URL));
-  const [messages, setMessages] = useState([]);
+  const [socket, setSocket] = useState(null);
 
+  // This effect will run once when the component mounts
   useEffect(() => {
-    // Listen for new messages
-    socket.on("newMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    // Initialize socket connection when the component mounts
+    const newSocket = io(SOCKET_URL);
+    setSocket(newSocket);
+
+    // Listen for 'newNotification' event from the server
+    newSocket.on("newNotification", (notification) => {
+      console.log("Received newNotification:", notification);
+      fetchNotificationsData(); // Assuming this is a function to trigger some UI update
     });
 
+    // Cleanup the socket when the component unmounts
     return () => {
-      socket.disconnect();
+      newSocket.disconnect();
     };
-  }, [socket]);
+  }, []); // Empty dependency array ensures this runs only once (on mount)
 
-  const sendMessage = (msg) => {
-    socket.emit("sendMessage", msg);
+  // Emit a message to the server
+  const sendMessage = (message) => {
+    if (socket) {
+      socket.emit("sendMessage", message);
+    } else {
+      console.error("Socket is not connected.");
+    }
   };
 
-  return { messages, sendMessage };
+  // Emit a notification to the server
+  const sendNotification = (notification) => {
+    if (socket) {
+      socket.emit("sendNotification", notification);
+    } else {
+      console.error("Socket is not connected.");
+    }
+  };
+
+  return {
+    socket,
+    sendMessage,
+    sendNotification,
+  };
 };
 
 export default useSocket;

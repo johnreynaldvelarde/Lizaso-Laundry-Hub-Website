@@ -50,6 +50,6 @@ export const NotificationDescriptions = {
   [NotificationStatus.COMPLETED_DELIVERY]: (customerName) =>
     `Delivery completed for ${customerName}. Payment has been confirmed.`,
 
-  [NotificationStatus.CANCELED]: (customerName) =>
-    `The service request for ${customerName} has been canceled.`,
+  [NotificationStatus.CANCELED]: () =>
+    `Your service request have been canceled.`,
 };
