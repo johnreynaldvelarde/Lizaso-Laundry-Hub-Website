@@ -1,5 +1,3 @@
-import LaundryPlans from "./default_customer/LaundryServices";
-
 // Landing Page
 export { default as StartingPage } from "./start/StartingPage";
 

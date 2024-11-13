@@ -29,7 +29,7 @@ import axios from "axios";
 import { createNewCustomerAccount } from "../../../../services/api/postApi";
 import usePopup from "../../../../hooks/common/usePopup";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import PopupTermsAndCondition from "../../../../recycle/PopupTermsAndConditon1";
+import PopupTermsAndCondition from "./PopupTermsAndConditon";
 
 const PopAddNewCustomer = ({ open, onClose, refreshData }) => {
   const { userDetails } = useAuth();

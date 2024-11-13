@@ -12,7 +12,7 @@ const Customers = () => {
       {userDetails?.roleName === "Administrator" ? (
         <SectionAdminCustomers storeId={userDetails.storeId} />
       ) : userDetails?.roleName === "Manager" ? (
-        <SectionUserCustomers />
+        <SectionUserCustomers storeId={userDetails.storeId} />
       ) : (
         <AccessDenied />
       )}

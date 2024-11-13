@@ -104,7 +104,7 @@ const Main = () => {
           width: { xs: "100%", md: `calc(100% - ${sideBarWidth}px)` },
         }}
       >
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingBar />}>
           <Routes>
             <Route path="/" element={<Navigate to="dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
