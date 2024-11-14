@@ -57,29 +57,29 @@ export const ensureMainStoreExists = async (db) => {
 
       console.log("Main store created.");
 
-      // Step 3: Check if service types already exist for this store
-      const [existingServiceTypes] = await db.execute(
-        "SELECT COUNT(*) AS count FROM Service_Type WHERE store_id = ?",
-        [storeId]
-      );
+      // // Step 3: Check if service types already exist for this store
+      // const [existingServiceTypes] = await db.execute(
+      //   "SELECT COUNT(*) AS count FROM Service_Type WHERE store_id = ?",
+      //   [storeId]
+      // );
 
-      if (existingServiceTypes[0].count === 0) {
-        // Step 4: Insert default service types for the newly created store
-        const insertServiceQuery = `
-          INSERT INTO Service_Type (store_id, service_name, default_price, date_created, isArchive)
-          VALUES (?, 'Wash', 65, NOW(), FALSE),
-                 (?, 'Dry', 60, NOW(), FALSE),
-                 (?, 'Fold', 30, NOW(), FALSE),
-                 (?, 'Wash/Dry', 125, NOW(), FALSE),
-                 (?, 'Wash/Dry/Fold', 155, NOW(), FALSE)`;
+      // if (existingServiceTypes[0].count === 0) {
+      //   // Step 4: Insert default service types for the newly created store
+      //   const insertServiceQuery = `
+      //     INSERT INTO Service_Type (store_id, service_name, default_price, date_created, isArchive)
+      //     VALUES (?, 'Wash', 65, NOW(), FALSE),
+      //            (?, 'Dry', 60, NOW(), FALSE),
+      //            (?, 'Fold', 30, NOW(), FALSE),
+      //            (?, 'Wash/Dry', 125, NOW(), FALSE),
+      //            (?, 'Wash/Dry/Fold', 155, NOW(), FALSE)`;
 
-        const serviceValues = [storeId, storeId, storeId, storeId, storeId];
+      //   const serviceValues = [storeId, storeId, storeId, storeId, storeId];
 
-        await db.execute(insertServiceQuery, serviceValues);
-        console.log("Default service types added.");
-      } else {
-        console.log("Service types already exist for this store.");
-      }
+      //   await db.execute(insertServiceQuery, serviceValues);
+      //   console.log("Default service types added.");
+      // } else {
+      //   console.log("Service types already exist for this store.");
+      // }
 
       await db.commit();
     }
