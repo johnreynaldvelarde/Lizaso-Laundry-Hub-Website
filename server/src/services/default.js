@@ -16,7 +16,6 @@ export const ensureMainStoreExists = async (db) => {
   try {
     await db.beginTransaction();
 
-    // Step 1: Check if there's already a main store
     const [[{ count }]] = await db.execute(
       "SELECT COUNT(*) AS count FROM Stores WHERE is_main_store = TRUE"
     );
@@ -24,7 +23,7 @@ export const ensureMainStoreExists = async (db) => {
     if (count === 0) {
       const storeNo = "LIZASO-" + new Date().getTime(); // Unique store ID starting with LIZASO
 
-      // Step 2: Insert the address into the Addresses table
+      // Step 1: Insert the address into the Addresses table
       const insertAddressQuery = `
         INSERT INTO Addresses (address_line, country, region, province, city, postal_code, latitude, longitude, updated_at) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
@@ -46,7 +45,7 @@ export const ensureMainStoreExists = async (db) => {
       );
       const addressId = addressResult.insertId;
 
-      // Step 3: Insert the store into the Stores table using the address_id
+      // Step 2: Insert the store into the Stores table using the address_id
       const insertStoreQuery = `
         INSERT INTO Stores 
         (address_id, store_no, store_name, store_contact, store_email, is_main_store, updated_at, date_created, isStatus) 
@@ -58,14 +57,14 @@ export const ensureMainStoreExists = async (db) => {
 
       console.log("Main store created.");
 
-      // Step 4: Check if service types already exist for this store
+      // Step 3: Check if service types already exist for this store
       const [existingServiceTypes] = await db.execute(
         "SELECT COUNT(*) AS count FROM Service_Type WHERE store_id = ?",
         [storeId]
       );
 
       if (existingServiceTypes[0].count === 0) {
-        // Step 5: Insert default service types for the newly created store
+        // Step 4: Insert default service types for the newly created store
         const insertServiceQuery = `
           INSERT INTO Service_Type (store_id, service_name, default_price, date_created, isArchive)
           VALUES (?, 'Wash', 65, NOW(), FALSE),
@@ -77,6 +76,9 @@ export const ensureMainStoreExists = async (db) => {
         const serviceValues = [storeId, storeId, storeId, storeId, storeId];
 
         await db.execute(insertServiceQuery, serviceValues);
+        console.log("Default service types added.");
+      } else {
+        console.log("Service types already exist for this store.");
       }
 
       await db.commit();
