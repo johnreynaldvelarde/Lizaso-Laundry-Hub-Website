@@ -367,12 +367,12 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, refreshData }) => {
         {/* Weight Input */}
         <FormControl fullWidth margin="normal" error={!!errors.weight}>
           <TextField
-            label="Weight (kg)"
+            label="Load"
             variant="outlined"
             type="number"
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
-            placeholder="Enter weight in kilograms"
+            placeholder="Enter a load"
             error={!!errors.weight}
           />
           {errors.weight && (

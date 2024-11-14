@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Paper, Typography } from "@mui/material";
-import useFetchData from "../../../../hooks/common/useFetchData";
+import useFetchData from "../../../../../hooks/common/useFetchData";
 import Chart from "react-apexcharts";
-import { COLORS } from "../../../../constants/color";
-import CustomActivityLogTable from "../../../../components/common/table/CustomActivityLogTable";
-import CustomTableReadyForDelivery from "./table/CustomTableReadyForDelivery";
-import { getTableListReadyForDeliveryAndAttemptedDelivery } from "../../../../services/api/getApi";
-import CustomSearch from "../../../../components/common/table/filter/CustomSearch";
-import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
+import { COLORS } from "../../../../../constants/color";
+import CustomActivityLogTable from "../../../../../components/common/table/CustomActivityLogTable";
+import CustomTableReadyForDelivery from "../table/CustomTableReadyForDelivery";
+import { getTableListReadyForDeliveryAndAttemptedDelivery } from "../../../../../services/api/getApi";
+import CustomSearch from "../../../../../components/common/table/filter/CustomSearch";
+import CustomHeaderTitle from "../../../../../components/common/CustomHeaderTitle";
 
 const CustomRightTopReadyToDelivery = ({ storeId }) => {
   const [searchTerm, setSearchTerm] = useState("");

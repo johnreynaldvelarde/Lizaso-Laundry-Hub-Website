@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import { Box, Paper, Typography } from "@mui/material";
-import { COLORS } from "../../../../constants/color";
-import customer_mark from "../../../../assets/images/customer_mark.png";
-import store_mark from "../../../../assets/images/store_mark_location.png"; // Main store marker icon
-import useFetchData from "../../../../hooks/common/useFetchData";
-import { getListStoreAndCustomerLocation } from "../../../../services/api/getApi";
+import { COLORS } from "../../../../../constants/color";
+import customer_mark from "../../../../../assets/images/customer_mark.png";
+import store_mark from "../../../../../assets/images/store_mark_location.png"; // Main store marker icon
+import useFetchData from "../../../../../hooks/common/useFetchData";
+import { getListStoreAndCustomerLocation } from "../../../../../services/api/getApi";
 import L from "leaflet";
 
 const CustomLocationMapCustomerStores = () => {
@@ -23,11 +23,12 @@ const CustomLocationMapCustomerStores = () => {
   }, [fetchStoreAndCustomerLocation]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchStoreAndCustomerLocationData();
-    }, 1000);
+    fetchStoreAndCustomerLocationData();
+    // const interval = setInterval(() => {
 
-    return () => clearInterval(interval);
+    // }, 20000);
+
+    // return () => clearInterval(interval);
   }, [fetchStoreAndCustomerLocationData]);
 
   // Default icons for main store and customer

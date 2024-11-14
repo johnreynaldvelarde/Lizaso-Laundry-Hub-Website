@@ -2,10 +2,10 @@ import React from "react";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomDashHorizontal from "./CustomDashHorizontal";
 import CustomTotalRevenueByMonth from "./CustomTotalRevenueByMonth";
-import CustomLocationMapCustomerStores from "./CustomLocationMapCustomerStores";
-import CustomAllSample1 from "./right/CustomAllSample1";
+import CustomLocationMapCustomerStores from "./left/CustomLocationMapCustomerStores";
 import CustomAllSample from "./right/CustomAllSample";
-import CustomRightTopReadyToDelivery from "./CustomRightTopReadyToDelivery";
+import CustomTopMostUseService from "./right/CustomTopMostUseService";
+import CustomRightTopReadyToDelivery from "./left/CustomRightTopReadyToDelivery";
 
 const SectionUserDashboard = ({ store_id }) => {
   return (
@@ -33,9 +33,9 @@ const SectionUserDashboard = ({ store_id }) => {
           </div>
 
           {/* Right Column with Paper List */}
-          <div className="col-span-1 sm:col-span-2  lg:col-span-1">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="mb-3">
-              <CustomAllSample1 />
+              <CustomTopMostUseService />
             </div>
             <div className="mb-3">
               <CustomAllSample />

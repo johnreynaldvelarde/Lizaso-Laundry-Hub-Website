@@ -229,6 +229,21 @@ export const getListStoreAndCustomerLocation = {
   },
 };
 
+// TOP MOST USE SERVICE
+export const getListTopMostUseService = {
+  getTopMostUseService: async () => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/get-most-use-service`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
 // #UNIT MONITORED SECTION
 export const getCalculatedTransaction = {
   getTransaction: async (assignmentId) => {

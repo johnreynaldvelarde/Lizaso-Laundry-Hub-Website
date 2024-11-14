@@ -58,6 +58,7 @@ import {
 } from "../services/admin/useServices.js";
 import {
   handleAdminGetListCustomerMostServiceRequest,
+  handleAdminGetListTopMostUseService,
   handleAdminGetMapCustomerAndStore,
   handleAdminGetRevenueByMonth,
   handleAdminGetTotalCustomers,
@@ -228,6 +229,18 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleAdminGetMapCustomerAndStore(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// TOP MOST USE SERVICE
+router.get(
+  "/dashboard/get-most-use-service",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetListTopMostUseService(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

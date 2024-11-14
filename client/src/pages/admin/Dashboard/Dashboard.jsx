@@ -10,7 +10,7 @@ const Dashboard = () => {
   return (
     <Box sx={{ pt: "100px", pb: "20px", px: "20px" }}>
       {userDetails?.roleName === "Administrator" ? (
-        <SectionAdminDashboard />
+        <SectionAdminDashboard store_id={userDetails.storeId} />
       ) : userDetails?.roleName === "Manager" ? (
         <SectionUserDashboard store_id={userDetails.storeId} />
       ) : userDetails?.roleName === "Store Staff" ? (

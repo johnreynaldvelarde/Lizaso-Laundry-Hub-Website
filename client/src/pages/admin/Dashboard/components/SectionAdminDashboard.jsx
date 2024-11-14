@@ -3,12 +3,11 @@ import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomDashHorizontal from "./CustomDashHorizontal";
 import CustomTopNewCustomer from "./CustomTopNewCustomer";
 import CustomTotalRevenueByMonth from "./CustomTotalRevenueByMonth";
-import CustomTopReadyToDelivery from "./CustomTopReadyToDelivery";
-import CustomLocationMapCustomerStores from "./CustomLocationMapCustomerStores";
-import CustomAllSample1 from "./right/CustomAllSample1";
-import CustomAllSample from "./right/CustomAllSample";
+import CustomLocationMapCustomerStores from "./left/CustomLocationMapCustomerStores";
+import CustomTopMostUseService from "./right/CustomTopMostUseService";
+import CustomRightTopReadyToDelivery from "./left/CustomRightTopReadyToDelivery";
 
-const SectionAdminDashboard = () => {
+const SectionAdminDashboard = ({ store_id }) => {
   return (
     <>
       {/* Header */}
@@ -18,30 +17,29 @@ const SectionAdminDashboard = () => {
           subtitle={"Overview of Key Metrics and Insights"}
         />
       </div>
-
       {/* Key Metrics */}
       <CustomDashHorizontal />
-
-      {/* Grid Layout for the Dashboard */}
-      <div className="mt-3">
+      <div className="mt-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {/* Left Column with Three Tables */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-2">
-            <div className="mb-3">
+            <div className="mb-5">
               <CustomTotalRevenueByMonth />
             </div>
-            <div className="mb-3">
+            <div className="mb-5">
+              <CustomRightTopReadyToDelivery storeId={store_id} />
+            </div>
+            <div className="mb-5">
               <CustomLocationMapCustomerStores />
             </div>
           </div>
 
           {/* Right Column with Paper List */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
-            <div className="mb-3">
-              {/* <CustomTopNewCustomer /> */} <CustomAllSample1 />
+            <div className="mb-5">
+              <CustomTopMostUseService />
             </div>
-            <div className="mb-3">
-              <CustomAllSample />
+            <div className="mb-5">
+              <CustomTopNewCustomer />
             </div>
           </div>
         </div>

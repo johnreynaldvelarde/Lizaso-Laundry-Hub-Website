@@ -981,3 +981,41 @@ export const handleAdminGetMapCustomerAndStore = async (
     });
   }
 };
+
+export const handleAdminGetListTopMostUseService = async (req, res, db) => {
+  try {
+    await db.beginTransaction();
+
+    const query = `
+      SELECT 
+        st.service_name,
+        COUNT(sr.id) AS request_count
+      FROM 
+        Service_Type st
+      LEFT JOIN 
+        Service_Request sr ON st.id = sr.service_type_id
+      WHERE 
+        st.isArchive = 0  
+      GROUP BY 
+        st.service_name
+      ORDER BY 
+        request_count DESC
+    `;
+
+    const [rows] = await db.execute(query);
+
+    await db.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
+  } catch (error) {
+    await db.rollback();
+    console.error("Error fetching most-used services:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
