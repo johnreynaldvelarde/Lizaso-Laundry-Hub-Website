@@ -12,10 +12,8 @@ export const getMainStoreId = async (db) => {
   }
 };
 
-// Function to ensure that the main store exists
 export const ensureMainStoreExists = async (db) => {
   try {
-    // Start the transaction
     await db.beginTransaction();
 
     const [[{ count }]] = await db.execute(
@@ -27,12 +25,13 @@ export const ensureMainStoreExists = async (db) => {
 
       // Step 1: Insert the address into the Addresses table
       const insertAddressQuery = `
-        INSERT INTO Addresses (address_line, country, province, city, postal_code, latitude, longitude, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`;
+        INSERT INTO Addresses (address_line, country, region, province, city, postal_code, latitude, longitude, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
 
       const addressValues = [
         "Balagtas, Bulacan", // address_line
         "Philippines", // country
+        "Region III - Central Luzon", // region
         "Bulacan", // province
         "Balagtas", // city
         "3016", // postal_code
@@ -88,12 +87,12 @@ export const createDefaultAdmin = async (db) => {
     );
 
     if (count === 0) {
-      const username = "admin";
+      const username = "adminLizaso";
       const firstName = "Admin";
-      const lastName = "User";
+      const lastName = "Lizaso";
       const email = "admin@example.com";
       const mobile_number = "09310064466";
-      const password = "admin123";
+      const password = "@admin12345";
       const user_type = "Administrator";
       const hashedPassword = await bcrypt.hash(password, 10);
       const passwordSalt = await bcrypt.genSalt(10);
@@ -155,12 +154,13 @@ export const createDefaultAdmin = async (db) => {
         }
 
         const insertAddressQuery = `
-          INSERT INTO Addresses (address_line,  country, province, city, postal_code, latitude, longitude, updated_at) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())`;
+          INSERT INTO Addresses (address_line, country, region, province, city, postal_code, latitude, longitude, updated_at) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`;
 
         const addressValues = [
           "Balagtas, Bulacan",
           "Philippines", // country
+          "Region III - Central Luzon", // region
           "Bulacan", // province
           "Balagtas", // city
           "3016", // postal_code
