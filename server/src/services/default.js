@@ -63,6 +63,8 @@ export const ensureMainStoreExists = async (db) => {
         [storeId]
       );
 
+      console.log("STORE ID" + storeId);
+
       console.log(existingServiceTypes);
 
       // if (existingServiceTypes[0].count === 0) {
