@@ -35,7 +35,7 @@ const port = process.env.PORT || 3002;
 const allowedOrigins = [
   process.env.NODE_ENV === "production"
     ? process.env.PRODUCTION_FRONTEND_URL
-    : "http://localhost:5173",
+    : "http://localhost:5173", // This should be your frontend development URL
 ];
 
 app.use(express.json());
