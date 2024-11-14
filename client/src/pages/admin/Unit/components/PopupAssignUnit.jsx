@@ -93,9 +93,9 @@ function PopupAssignUnit({ open, onClose, inqueueID, refreshData }) {
   const validateFields = () => {
     const newErrors = {};
     if (!weight) {
-      newErrors.weight = "Weight is required";
+      newErrors.weight = "Load is required";
     } else if (weight <= 0) {
-      newErrors.weight = "Weight must be greater than 0";
+      newErrors.weight = "Load must be greater than 0";
     }
     return newErrors;
   };
@@ -156,6 +156,7 @@ function PopupAssignUnit({ open, onClose, inqueueID, refreshData }) {
         );
 
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
 
@@ -241,12 +242,12 @@ function PopupAssignUnit({ open, onClose, inqueueID, refreshData }) {
 
         {/* Weight Input */}
         <TextField
-          label="Weight (kg)"
+          label="Load"
           variant="outlined"
           fullWidth
           type="number"
           value={weight}
-          placeholder="Enter weight in kilograms"
+          placeholder="Enter a load"
           onChange={handleInputChange("weight")}
           error={Boolean(errors.weight)}
           helperText={errors.weight}
@@ -334,61 +335,3 @@ function PopupAssignUnit({ open, onClose, inqueueID, refreshData }) {
 }
 
 export default PopupAssignUnit;
-
-{
-  /* <FormControl fullWidth variant="outlined" sx={{ marginTop: "20px" }}>
-          <InputLabel>Select Laundry Supplies</InputLabel>
-          <Select
-            label="Select Laundry Supplies"
-            multiple
-            value={selectedSupplies}
-            onChange={handleSupplySelect}
-            renderValue={(selected) =>
-              selected.map((supplyId) => {
-                const supply = itemData.find(
-                  (s) => s.inventory_id === supplyId
-                );
-                return (
-                  <Chip
-                    key={supplyId}
-                    label={supply ? supply.item_name : ""}
-                    sx={{ margin: "5px" }}
-                  />
-                );
-              })
-            }
-          >
-            {itemData.map((supply) => (
-              <MenuItem key={supply.inventory_id} value={supply.inventory_id}>
-                {`${supply.item_name} (Available: ${supply.quantity})`}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {selectedSupplies.length > 0 && (
-          <div style={{ marginTop: "20px" }}>
-            {selectedSupplies.map((supplyId) => {
-              const supply = itemData.find((s) => s.inventory_id === supplyId);
-              return (
-                <div key={supplyId} style={{ marginBottom: "10px" }}>
-                  <Typography variant="body2">
-                    {supply.item_name} Quantity:
-                  </Typography>
-                  <TextField
-                    type="number"
-                    fullWidth
-                    value={quantities[supplyId] || 1}
-                    onChange={(e) =>
-                      handleQuantityChange(supplyId, parseInt(e.target.value))
-                    }
-                    inputProps={{ min: 1 }}
-                    error={Boolean(quantityErrors[supplyId])}
-                    helperText={quantityErrors[supplyId]}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )} */
-}

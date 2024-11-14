@@ -824,40 +824,55 @@ export const handleAdminGetTotalCustomersWithStoreId = async (
   }
 };
 
+// GET LIST OF DELIVERY
 export const handleUserGetListReadyForDelivery = async (
   req,
   res,
   connection
 ) => {
-  const { id } = req.params; // store_id
-  console.log("STORE ID" + id);
+  const { id } = req.params;
   try {
     await connection.beginTransaction();
 
-    // SQL Query to fetch Service Requests that are ready for delivery
+    // SQL Query to fetch Service Requests that are ready for delivery along with the customer address
     const query = `
-      SELECT
-        SR.id AS service_request_id,
-        SR.tracking_code,
-        SR.customer_fullname,
-        SR.delivery_date,
-        SR.request_status,
-        SR.isDelivery,
-        LA.id AS laundry_assignment_id,
-        LA.assigned_at,
-        T.id AS transaction_id,
-        T.total_amount,
-        T.payment_method,
-        T.status AS transaction_status,
-        T.created_at AS transaction_date
-      FROM Service_Request SR
-      LEFT JOIN Laundry_Assignment LA ON LA.service_request_id = SR.id
-      LEFT JOIN Transactions T ON T.assignment_id = LA.id
-      WHERE SR.store_id = ?
-        AND SR.request_status = 'Ready for Delivery'
-        AND LA.isAssignmentStatus = 1
-        AND T.status = 'Completed'
-    `;
+        SELECT
+          SR.id AS service_request_id,
+          SR.tracking_code,
+          SR.customer_fullname,
+          SR.delivery_date,
+          SR.request_status,
+          SR.isDelivery,
+          LA.id AS laundry_assignment_id,
+          LA.assigned_at,
+          T.id AS transaction_id,
+          T.total_amount,
+          T.payment_method,
+          T.status AS transaction_status,
+          T.created_at AS transaction_date,
+          MAX(A.address_line) AS address_line,
+          MAX(A.country) AS country,
+          MAX(A.region) AS region,
+          MAX(A.province) AS province,
+          MAX(A.city) AS city,
+          MAX(A.postal_code) AS postal_code
+        FROM Service_Request SR
+        LEFT JOIN Laundry_Assignment LA ON LA.service_request_id = SR.id
+        LEFT JOIN Transactions T ON T.assignment_id = LA.id
+        LEFT JOIN User_Account UA ON UA.store_id = SR.store_id AND UA.user_type = 'Customer'
+        LEFT JOIN Addresses A ON A.id = UA.address_id
+        WHERE SR.store_id = ?
+          AND SR.request_status IN ('Ready for Delivery', 'Attempted Delivery')
+          AND LA.isAssignmentStatus = 1
+          AND (T.status = 'Completed' OR T.status = 'Pending')
+        GROUP BY SR.id
+         ORDER BY 
+        CASE 
+          WHEN SR.request_status = 'Attempted Delivery' THEN 1
+          WHEN SR.request_status = 'Ready for Delivery' THEN 2
+          ELSE 3
+        END;
+      `;
 
     const [readyForDeliveryRows] = await connection.execute(query, [id]);
 
@@ -876,6 +891,12 @@ export const handleUserGetListReadyForDelivery = async (
       payment_method: row.payment_method,
       transaction_status: row.transaction_status,
       transaction_date: row.transaction_date,
+      address_line: row.address_line,
+      country: row.country,
+      region: row.region,
+      province: row.province,
+      city: row.city,
+      postal_code: row.postal_code,
     }));
 
     await connection.commit();
@@ -890,6 +911,73 @@ export const handleUserGetListReadyForDelivery = async (
     res.status(500).json({
       success: false,
       message: "Failed to fetch Service Requests ready for delivery.",
+    });
+  }
+};
+
+export const handleAdminGetMapCustomerAndStore = async (
+  req,
+  res,
+  connection
+) => {
+  try {
+    await connection.beginTransaction();
+
+    const customerQuery = `
+      SELECT
+        u.id AS user_id,
+        CONCAT(u.first_name, ' ', IFNULL(u.middle_name, ''), ' ', u.last_name) AS full_name,
+        a.latitude AS customer_latitude,
+        a.longitude AS customer_longitude
+      FROM User_Account u
+      LEFT JOIN Addresses a ON u.address_id = a.id
+      WHERE u.user_type = 'Customer'
+        AND u.address_id IS NOT NULL
+        AND u.isArchive = 0
+    `;
+
+    const [customerRows] = await connection.execute(customerQuery);
+
+    const storeQuery = `
+      SELECT
+        s.id AS store_id,
+        s.store_name,
+        a.latitude AS store_latitude,
+        a.longitude AS store_longitude
+      FROM Stores s
+      LEFT JOIN Addresses a ON s.address_id = a.id
+      WHERE s.isArchive = 0
+    `;
+
+    const [storeRows] = await connection.execute(storeQuery);
+
+    const rows = {
+      customers: customerRows.map((row) => ({
+        user_id: row.user_id,
+        full_name: row.full_name,
+        customer_latitude: row.customer_latitude,
+        customer_longitude: row.customer_longitude,
+      })),
+      stores: storeRows.map((row) => ({
+        store_id: row.store_id,
+        store_name: row.store_name,
+        store_latitude: row.store_latitude,
+        store_longitude: row.store_longitude,
+      })),
+    };
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      data: rows, // Returning both customer and store data under `rows`
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch customer and store data",
     });
   }
 };

@@ -335,7 +335,7 @@ const PopOnlineTransaction = ({ open, onClose, data, refreshData }) => {
                           fontWeight: 700,
                         }}
                       >
-                        Weight
+                        Load
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -433,7 +433,7 @@ const PopOnlineTransaction = ({ open, onClose, data, refreshData }) => {
                           fontWeight: 500,
                         }}
                       >
-                        {transactionData.weight}kg
+                        {transactionData.weight}
                       </Typography>
                     </Grid>
                     <Grid item xs={4}>

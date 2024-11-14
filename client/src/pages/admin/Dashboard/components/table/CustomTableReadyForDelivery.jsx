@@ -12,6 +12,7 @@ import {
   Typography,
   Button,
   Skeleton,
+  Tooltip,
 } from "@mui/material";
 import no_data from "../../../../../assets/images/no_data_table.jpg";
 
@@ -21,6 +22,10 @@ import PopPendingAssignTo from "../../../Schedule/components/PopPendingAssignTo"
 import DateTime from "../../../../../components/table/DateTime";
 import DateOnly from "../../../../../components/table/DateOnly";
 import { getActionType } from "../../../Activity/components/method";
+import StatusTransactionCellTable from "../../../../../components/common/table/custom/StatusTransactionCellTable";
+import { getStatusColor } from "../../../../../components/common/table/custom/method";
+import OutlinedIconButton from "../../../../../components/table/OutlinedIconButton";
+import { Eye } from "@phosphor-icons/react";
 
 const CustomTableReadyForDelivery = ({ tableData, loading, refreshData }) => {
   const [page, setPage] = useState(0);
@@ -53,7 +58,8 @@ const CustomTableReadyForDelivery = ({ tableData, loading, refreshData }) => {
               <TableCell sx={cellHeadStyles}>ID</TableCell>
               <TableCell sx={cellHeadStyles}>Customer Name</TableCell>
               <TableCell sx={cellHeadStyles}>Date</TableCell>
-              <TableCell sx={cellHeadStyles}>Description</TableCell>
+              <TableCell sx={cellHeadStyles}>Payment Status</TableCell>
+              <TableCell sx={cellHeadStyles}>Request Status</TableCell>
               <TableCell sx={cellHeadStyles}>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -62,7 +68,7 @@ const CustomTableReadyForDelivery = ({ tableData, loading, refreshData }) => {
               // Skeleton loading state
               Array.from(new Array(rowsPerPage)).map((_, index) => (
                 <TableRow key={index}>
-                  {Array.from(new Array(4)).map((_, colIndex) => (
+                  {Array.from(new Array(6)).map((_, colIndex) => (
                     <TableCell key={colIndex}>
                       <Skeleton variant="rectangular" height={30} />
                     </TableCell>
@@ -100,7 +106,7 @@ const CustomTableReadyForDelivery = ({ tableData, loading, refreshData }) => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((data) => (
                   <TableRow
-                    key={data.id}
+                    key={data.service_request_id}
                     className="border-b"
                     role="checkbox"
                     tabIndex={-1}
@@ -110,7 +116,7 @@ const CustomTableReadyForDelivery = ({ tableData, loading, refreshData }) => {
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.secondary }}
                       >
-                        #{data.id}
+                        #{data.service_request_id}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
@@ -118,20 +124,23 @@ const CustomTableReadyForDelivery = ({ tableData, loading, refreshData }) => {
                         variant="body2"
                         sx={{ fontWeight: "600", color: COLORS.text }}
                       >
-                        {data.fullname}
+                        {data.customer_fullname}
                       </Typography>
                       <Typography
                         variant="body2"
                         sx={{ fontWeight: "500", color: COLORS.text4 }}
                       >
-                        {data.username}
+                        {data.address_line}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <DateOnly dateCreated={data.timestamp} />
+                      <DateOnly dateCreated={data.transaction_date} />
+                      <DateTime dateCreated={data.transaction_date} />
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <DateTime dateCreated={data.timestamp} />
+                      <StatusTransactionCellTable
+                        status={data.transaction_status}
+                      />
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                       <Typography
@@ -139,30 +148,30 @@ const CustomTableReadyForDelivery = ({ tableData, loading, refreshData }) => {
                         sx={{
                           paddingX: 2,
                           paddingY: 0.5,
-                          backgroundColor: getActionType(data.action_type),
+                          backgroundColor: getStatusColor(data.request_status),
                           fontWeight: "500",
                           color: COLORS.white,
                           borderRadius: 8,
                           display: "inline-block",
+                          fontSize: { xs: 10, sm: 10, md: 12, lg: 14 },
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
                         }}
                       >
-                        {data.action_type}
+                        {data.request_status}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: "600",
-                          color: COLORS.primary,
-                          marginTop: 1,
-                          whiteSpace: "normal",
-                          wordWrap: "break-word",
-                          overflowWrap: "break-word",
-                        }}
-                      >
-                        {data.action_description}
-                      </Typography>
+                      <Tooltip title="View" arrow>
+                        <OutlinedIconButton
+                          onClick={() => {
+                            openPopup("restockItem", data.service_request_id);
+                          }}
+                        >
+                          <Eye color={COLORS.primary} weight="duotone" />
+                        </OutlinedIconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))

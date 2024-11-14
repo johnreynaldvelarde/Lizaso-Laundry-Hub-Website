@@ -177,7 +177,7 @@ const CustomCustomerInQueue = ({ customers, loading, refreshData }) => {
                   position: "absolute",
                   top: 8,
                   right: 8,
-                  backgroundColor: COLORS.error,
+                  backgroundColor: COLORS.accent,
                   borderRadius: "50%",
                   width: "30px",
                   height: "30px",

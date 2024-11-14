@@ -215,6 +215,20 @@ export const getTableListReadyForDeliveryAndAttemptedDelivery = {
   },
 };
 
+export const getListStoreAndCustomerLocation = {
+  getStoreCustomerLocation: async () => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/get-store-customer-location`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
 // #UNIT MONITORED SECTION
 export const getCalculatedTransaction = {
   getTransaction: async (assignmentId) => {

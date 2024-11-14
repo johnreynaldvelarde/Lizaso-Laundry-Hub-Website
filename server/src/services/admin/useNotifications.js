@@ -1,8 +1,5 @@
 export const handleGetNotificationUser = async (req, res, connection) => {
   const { id } = req.params;
-
-  console.log("TUNAY NA ID" + id);
-
   try {
     await connection.beginTransaction();
 

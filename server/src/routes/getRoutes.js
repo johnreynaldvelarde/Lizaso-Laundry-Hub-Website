@@ -58,6 +58,7 @@ import {
 } from "../services/admin/useServices.js";
 import {
   handleAdminGetListCustomerMostServiceRequest,
+  handleAdminGetMapCustomerAndStore,
   handleAdminGetRevenueByMonth,
   handleAdminGetTotalCustomers,
   handleAdminGetTotalCustomersWithStoreId,
@@ -215,6 +216,18 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUserGetListReadyForDelivery(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// LOCATION MAP AND CUSTOMER
+router.get(
+  "/dashboard/get-store-customer-location",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetMapCustomerAndStore(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

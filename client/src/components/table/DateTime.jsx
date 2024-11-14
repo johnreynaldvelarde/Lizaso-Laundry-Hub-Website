@@ -11,7 +11,10 @@ const DateTime = ({ dateCreated }) => {
   });
 
   return (
-    <Typography variant="body2" sx={{ fontWeight: "500", color: COLORS.error }}>
+    <Typography
+      variant="body2"
+      sx={{ fontWeight: "500", color: COLORS.secondary }}
+    >
       {timeString}
     </Typography>
   );
