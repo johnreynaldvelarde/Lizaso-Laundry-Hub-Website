@@ -26,20 +26,13 @@ import { setupSocketIO } from "./socket/socket.js";
 const app = express();
 const port = process.env.PORT || 3002;
 
-// const allowedOrigins = [
-//   process.env.NODE_ENV === "production"
-//     ? process.env.PRODUCTION_FRONTEND_URL
-//     : process.env.DEVELOPMENT_FRONTEND_URL,
-// ];
-
 const allowedOrigins = [
   process.env.NODE_ENV === "production"
     ? process.env.PRODUCTION_FRONTEND_URL
-    : "http://localhost:5173", // This should be your frontend development URL
+    : process.env.DEVELOPMENT_FRONTEND_URL,
 ];
 
 app.use(express.json());
-
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -58,7 +51,6 @@ app.use(
     credentials: true,
   })
 );
-
 app.use(cookieParser());
 
 app.use(
