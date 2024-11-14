@@ -48,8 +48,8 @@ export const ensureMainStoreExists = async (db) => {
       // Step 2: Insert the store into the Stores table using the address_id
       const insertStoreQuery = `
         INSERT INTO Stores 
-        (address_id, store_no, store_name, store_contact, store_email, is_main_store, updated_at, date_created, isStatus) 
-        VALUES (?, ?, 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', TRUE, NOW(), NOW(), TRUE)`;
+        (address_id, store_no, store_name, store_contact, store_email, is_main_store, updated_at, date_created, isStatus, isArchive) 
+        VALUES (?, ?, 'Lizaso Laundry Hub', '09310064466', 'lizasolaundryhub@gmail.com', TRUE, NOW(), NOW(), TRUE, FALSE)`;
 
       const storeValues = [addressId, storeNo];
       const [storeResult] = await db.execute(insertStoreQuery, storeValues);
@@ -57,11 +57,13 @@ export const ensureMainStoreExists = async (db) => {
 
       console.log("Main store created.");
 
-      // // Step 3: Check if service types already exist for this store
-      // const [existingServiceTypes] = await db.execute(
-      //   "SELECT COUNT(*) AS count FROM Service_Type WHERE store_id = ?",
-      //   [storeId]
-      // );
+      // Step 3: Check if service types already exist for this store
+      const [existingServiceTypes] = await db.execute(
+        "SELECT COUNT(*) AS count FROM Service_Type WHERE store_id = ?",
+        [storeId]
+      );
+
+      console.log(existingServiceTypes);
 
       // if (existingServiceTypes[0].count === 0) {
       //   // Step 4: Insert default service types for the newly created store
