@@ -12,7 +12,7 @@ const Dashboard = () => {
       {userDetails?.roleName === "Administrator" ? (
         <SectionAdminDashboard />
       ) : userDetails?.roleName === "Manager" ? (
-        <SectionAdminDashboard store_id={userDetails.storeId} />
+        <SectionUserDashboard store_id={userDetails.storeId} />
       ) : userDetails?.roleName === "Store Staff" ? (
         <SectionAdminDashboard store_id={userDetails.storeId} />
       ) : (

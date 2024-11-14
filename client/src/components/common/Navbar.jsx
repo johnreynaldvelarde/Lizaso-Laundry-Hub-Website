@@ -23,19 +23,23 @@ import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import { ArrowDropDown } from "@mui/icons-material";
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { FiMenu } from "react-icons/fi";
 import UserImage from "../admin-components/UserImage";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { FaRegBell } from "react-icons/fa";
 import A_DropNotifications from "./A_DropNotifications";
 import A_DropMessage from "./A_DropMessage";
+import useNavbarData from "../../hooks/common/useNavbarData";
 
 const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
+  const { userDetails, fetchUserDetails, accessToken } = useAuth();
+  const { loading, notifications, fetchNotificationsData } = useNavbarData({
+    userDetails,
+  });
   const [anchorEl, setAnchorEl] = useState(null);
   const [messageAnchorEl, setMessageAnchorEl] = useState(null);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
-  const { userDetails } = useAuth();
 
   const open = Boolean(anchorEl);
   const openMessages = Boolean(messageAnchorEl);
@@ -106,7 +110,7 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
     setAnchorElNotifications(null);
   };
 
-  const notifications = [
+  const notificationss = [
     {
       id: 1,
       senderName: "Laundry Hub",
@@ -122,6 +126,10 @@ const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
       timestamp: "10 minutes ago",
     },
   ];
+
+  useEffect(() => {
+    fetchNotificationsData();
+  }, [fetchNotificationsData]);
 
   return (
     <AppBar

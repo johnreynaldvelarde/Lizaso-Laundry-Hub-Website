@@ -5,6 +5,8 @@ import CustomTopNewCustomer from "./CustomTopNewCustomer";
 import CustomTotalRevenueByMonth from "./CustomTotalRevenueByMonth";
 import CustomTopReadyToDelivery from "./CustomTopReadyToDelivery";
 import CustomLocationMapCustomerStores from "./CustomLocationMapCustomerStores";
+import CustomAllSample1 from "./right/CustomAllSample1";
+import CustomAllSample from "./right/CustomAllSample";
 
 const SectionAdminDashboard = () => {
   return (
@@ -36,10 +38,10 @@ const SectionAdminDashboard = () => {
           {/* Right Column with Paper List */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="mb-3">
-              <CustomTopNewCustomer />
+              {/* <CustomTopNewCustomer /> */} <CustomAllSample1 />
             </div>
             <div className="mb-3">
-              <CustomTopReadyToDelivery />
+              <CustomAllSample />
             </div>
           </div>
         </div>

@@ -1,88 +1,48 @@
 import React from "react";
-import { Box, Grid, Paper, Typography } from "@mui/material";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
-import CustomAddButton from "../../../../components/common/CustomAddButton";
-import { COLORS } from "../../../../constants/color";
-import { PlusCircle } from "@phosphor-icons/react";
-
-import styled from "@emotion/styled";
-
-import BarChart from "../../../../components/sales/charts/BarChart";
-import Stats from "../../../../components/sales/stats/Stats";
-import TopCountries from "../../../../components/sales/stats/TopCountries";
-import TransactionCustomer from "../../../../components/sales/stats/TransactionCustomer";
-import Table from "../../../../components/common/Table";
-import { orders, ordersColumns } from "../../../../data/orders";
+import CustomDashHorizontal from "./CustomDashHorizontal";
+import CustomTotalRevenueByMonth from "./CustomTotalRevenueByMonth";
+import CustomLocationMapCustomerStores from "./CustomLocationMapCustomerStores";
+import CustomAllSample1 from "./right/CustomAllSample1";
+import CustomAllSample from "./right/CustomAllSample";
+import CustomRightTopReadyToDelivery from "./CustomRightTopReadyToDelivery";
 
 const SectionUserDashboard = ({ store_id }) => {
-  const ComponentWrapper = styled(Box)({
-    marginTop: "10px",
-    paddingBottom: "10px",
-  });
   return (
     <>
       {/* Header */}
-      <Box
-        className="flex items-center justify-between mb-8"
-        sx={{
-          flexDirection: { xs: "column", sm: "row" },
-          alignItems: { xs: "center", sm: "flex-start" },
-          width: "100%",
-        }}
-      >
+      <div className="flex items-center justify-between mb-8 flex-col sm:flex-row w-full">
         <CustomHeaderTitle
           title={"Dashboard"}
           subtitle={"Overview of Key Metrics and Insights"}
         />
-      </Box>
+      </div>
+      <CustomDashHorizontal />
 
-      <Box>
-        <ComponentWrapper>
-          <Stats />
-        </ComponentWrapper>
-        <ComponentWrapper>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={8}>
-              <BarChart />
-            </Grid>
-            <Grid item xs={12} md={6} lg={4}>
-              <Paper
-                sx={{
-                  boxShadow: "none !important",
-                  borderRadius: "12px",
-                  borderStyle: "solid",
-                  borderWidth: "1px",
-                  borderColor: "divider",
-                  height: "100%",
-                }}
-              >
-                <TopCountries />
-              </Paper>
-            </Grid>
-          </Grid>
-        </ComponentWrapper>
-        <ComponentWrapper>
-          <TransactionCustomer />
-        </ComponentWrapper>
+      {/* Grid Layout for the Dashboard */}
+      <div className="mt-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Left Column with Three Tables */}
+          <div className="col-span-1 sm:col-span-2 lg:col-span-2">
+            <div className="mb-3">
+              <CustomRightTopReadyToDelivery storeId={store_id} />
+            </div>
+            <div className="mb-3">
+              <CustomLocationMapCustomerStores />
+            </div>
+          </div>
 
-        <ComponentWrapper>
-          <Typography variant="h5" sx={{ my: 3 }}>
-            Latest Orders
-          </Typography>
-          <Table
-            data={orders}
-            fields={ordersColumns}
-            numberOfRows={5}
-            enableTopToolBar={false}
-            enableBottomToolBar={false}
-            enablePagination={false}
-            enableRowSelection={false}
-            enableColumnFilters={false}
-            enableEditing={false}
-            enableColumnDragging={false}
-          />
-        </ComponentWrapper>
-      </Box>
+          {/* Right Column with Paper List */}
+          <div className="col-span-1 sm:col-span-2  lg:col-span-1">
+            <div className="mb-3">
+              <CustomAllSample1 />
+            </div>
+            <div className="mb-3">
+              <CustomAllSample />
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

@@ -6,6 +6,20 @@ const handleError = (error) => {
   return new Error(message);
 };
 
+// ALL AROUND
+export const getListAdminUserNotifications = {
+  getAdminUserNotifications: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/navbar/${id}/get-notifications-user`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 //#DASHBOARD ADMIN SECTION
 export const getAdminTotalRevenue = {
   getTotalRevenue: async () => {
@@ -121,6 +135,77 @@ export const getDashboard = {
     try {
       const response = await axiosPrivate.get(
         `/dashboard/${storeId}/get-calculated`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+export const getAdminTotalRevenueWithStoreId = {
+  getTotalRevenue: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/${id}/get-total-revenue`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+export const getAdminTotalLaundryOrdersWithStoreId = {
+  getTotalLaundryOrders: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/${id}/get-total-laundry-orders`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+export const getAdminTotalCustomersWithStoreId = {
+  getTotalCustomers: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/${id}/get-total-customers`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+export const getAdminTotalLaundryLoadWithStoreId = {
+  getTotalLaundryLoad: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/${id}/get-total-laundry-load`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching customer requests:", error);
+      throw error;
+    }
+  },
+};
+
+// WITH STORE ID ITS TABLE
+export const getTableListReadyForDeliveryAndAttemptedDelivery = {
+  getTableListReadyDelivery: async (id) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/dashboard/${id}/get-list-ready-for-delivery`
       );
       return response.data;
     } catch (error) {

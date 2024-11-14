@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu, MenuItem, Typography, Divider } from "@mui/material";
 import noti_logo from "../../assets/images/logo.png";
+import { formatTimeNotification } from "../../utils/method";
 
 const A_DropNotifications = ({
   anchorElNotifications,
@@ -79,13 +80,13 @@ const A_DropNotifications = ({
                 />
                 <div className="flex-1">
                   <p className="font-semibold text-sm">
-                    {notification.senderName}
+                    {notification.notification_type}
                   </p>
                   <p className="text-xs text-gray-500 truncate max-w-[200px]">
-                    {notification.message}
+                    {notification.notification_description}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {notification.timestamp}
+                    {formatTimeNotification(notification.created_at)}
                   </p>
                 </div>
               </div>

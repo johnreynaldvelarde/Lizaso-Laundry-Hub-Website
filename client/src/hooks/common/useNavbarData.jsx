@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import useFetchData from "./useFetchData";
 import { getNotificationsList } from "../../services/api/customerApi";
 import useSocket from "./useSocket";
+import { getListAdminUserNotifications } from "../../services/api/getApi";
 
 const useNavbarData = ({ userDetails }) => {
   const { socket } = useSocket();
@@ -9,16 +10,26 @@ const useNavbarData = ({ userDetails }) => {
   const { data: notifications, fetchData: fetchNotifications } = useFetchData();
   const { data: message, fetchData: fetchMessage } = useFetchData();
 
-  // Fetch notifications data
   const fetchNotificationsData = useCallback(async () => {
+    if (!userDetails || !userDetails.roleName) {
+      console.warn("userDetails not populated yet.");
+      return; // Exit if userDetails isn't available yet
+    }
+
     setLoading(true);
 
-    const id =
-      userDetails.roleName === "Customer"
-        ? userDetails.userId
-        : userDetails.storeId;
+    const isCustomer = userDetails.roleName === "Customer";
+    const id = isCustomer ? userDetails.userId : userDetails.storeId;
+    const fetchFn = isCustomer
+      ? getNotificationsList.getNotifications
+      : getListAdminUserNotifications.getAdminUserNotifications;
 
-    await fetchNotifications(getNotificationsList.getNotifications, id);
+    // console.log("Role:", userDetails.roleName);
+    // console.log("Is customer:", isCustomer);
+    // console.log("Using fetch function:", fetchFn.name);
+    // console.log("Using ID:", id);
+
+    await fetchNotifications(fetchFn, id);
 
     setLoading(false);
   }, [

@@ -60,10 +60,15 @@ import {
   handleAdminGetListCustomerMostServiceRequest,
   handleAdminGetRevenueByMonth,
   handleAdminGetTotalCustomers,
+  handleAdminGetTotalCustomersWithStoreId,
   handleAdminGetTotalLaundryLoadProcess,
   handleAdminGetTotalLaundryOrders,
+  handleAdminGetTotalLaundryOrdersWithStoreId,
   handleAdminGetTotalRevenue,
+  handleAdminGetTotalRevenueWithStoreId,
+  handleUserGetListReadyForDelivery,
 } from "../services/admin/useDashboard.js";
+import { handleGetNotificationUser } from "../services/admin/useNotifications.js";
 
 const router = express.Router();
 
@@ -79,6 +84,18 @@ const withDatabaseConnection = (handler) => async (req, res) => {
     connection.release();
   }
 };
+// ALL AROUND
+router.get(
+  "/navbar/:id/get-notifications-user",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetNotificationUser(req, res, connection);
+    } catch (error) {
+      console.error("Error handling user notifications:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
 
 // #DASHBOARD ADMIN
 router.get(
@@ -141,6 +158,63 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleAdminGetRevenueByMonth(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// WITH STORE ID
+router.get(
+  "/dashboard/:id/get-total-revenue",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalRevenueWithStoreId(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/:id/get-total-laundry-orders",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalLaundryOrdersWithStoreId(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/:id/get-total-customers",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalCustomersWithStoreId(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/dashboard/:id/get-total-laundry-load",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleAdminGetTotalLaundryLoadProcess(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+// WITH STORE ID ITS TABLE
+router.get(
+  "/dashboard/:id/get-list-ready-for-delivery",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUserGetListReadyForDelivery(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

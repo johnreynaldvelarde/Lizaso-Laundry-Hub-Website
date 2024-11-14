@@ -375,6 +375,7 @@ isCompleted
 
 --> Transaction <--
 id (Primary Key)
+store_id (Foregin Key)
 assignment_id (Foregin Key)
 total_amount,
 payment_method,
@@ -471,6 +472,7 @@ isCompleted
 
 --> Transaction <--
 id (Primary Key)
+store_id (Foregin Key)
 assigment_id (Foregin Key)
 qr_code
 total_amount,
@@ -521,7 +523,20 @@ Out for Delivery – The delivery staff is on the way to deliver the clothes to 
 Completed Delivery – The clothes have been delivered to the customer, and payment has been confirmed.
 Canceled - its cancel the service request of the customer
 
+For the situation where a delivery rider attempts to deliver clothes to a customer, but the customer is not home and the rider returns the clothes to the store, you can use the following status options:
 
+Suggested Statuses:
+"Attempted Delivery": This status indicates that the delivery was attempted, but it was not completed because the customer was unavailable.
+"Returned to Store": This status would indicate that the delivery was unsuccessful, and the clothes were brought back to the store. It clearly describes the outcome of the failed delivery.
+"Failed Delivery": This status could be used to indicate that the delivery could not be completed due to the customer not being available, and the rider returned the clothes to the store.
+Example:
+Request Status: "Attempted Delivery"
+Notes: The rider attempted the delivery, but the customer was not home, so the clothes were returned to the store.
+You can also use a combination of statuses:
+
+Delivery Status: "Attempted"
+Return Status: "Returned to Store" or "Failed Delivery"
+This helps provide a clear view of the delivery attempt and its outcome, and it allows tracking of failed deliveries for follow-up or reattempting.
 
 
 

@@ -17,16 +17,22 @@ import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import {
   getAdminTotalCustomers,
+  getAdminTotalCustomersWithStoreId,
   getAdminTotalLaundryLoad,
+  getAdminTotalLaundryLoadWithStoreId,
   getAdminTotalLaundryOrders,
+  getAdminTotalLaundryOrdersWithStoreId,
   getAdminTotalRevenue,
+  getAdminTotalRevenueWithStoreId,
 } from "../../../../services/api/getApi";
 import total_revenue from "../../../../assets/gif/total_revenue.gif";
 import total_service_request from "../../../../assets/gif/total_service_request.gif";
 import total_customers from "../../../../assets/gif/total_customers.gif";
 import total_average_weight from "../../../../assets/gif/total_average_weight.gif";
+import useAuth from "../../../../contexts/AuthContext";
 
 const CustomDashHorizontal = () => {
+  const { userDetails } = useAuth();
   const scrollRef = useRef(null);
   const [isScrollable, setIsScrollable] = useState(false);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -42,29 +48,70 @@ const CustomDashHorizontal = () => {
 
   const fetchTotalRevenueData = useCallback(async () => {
     setLoading(true);
-    await fetchTotalRevenue(getAdminTotalRevenue.getTotalRevenue);
+
+    const fetchRevenueFn =
+      userDetails.roleName === "Administrator"
+        ? getAdminTotalRevenue.getTotalRevenue
+        : getAdminTotalRevenueWithStoreId.getTotalRevenue;
+
+    const fetchRevenueArgs =
+      userDetails.roleName === "Administrator" ? [] : [userDetails.storeId];
+
+    await fetchTotalRevenue(fetchRevenueFn, ...fetchRevenueArgs);
+
     setLoading(false);
-  }, [fetchTotalRevenue]);
+  }, [fetchTotalRevenue, userDetails.roleName, userDetails.storeId]);
 
   const fetchTotalLaundryOrdersData = useCallback(async () => {
     setLoading(true);
+
+    const fetchLaundryOrdersFn =
+      userDetails.roleName === "Administrator"
+        ? getAdminTotalLaundryOrders.getTotalLaundryOrders
+        : getAdminTotalLaundryOrdersWithStoreId.getTotalLaundryOrders;
+
+    const fetchLaundryOrdersArgs =
+      userDetails.roleName === "Administrator" ? [] : [userDetails.storeId];
+
     await fetchTotalLaundryOrders(
-      getAdminTotalLaundryOrders.getTotalLaundryOrders
+      fetchLaundryOrdersFn,
+      ...fetchLaundryOrdersArgs
     );
+
     setLoading(false);
-  }, [fetchTotalLaundryOrders]);
+  }, [fetchTotalLaundryOrders, userDetails.roleName, userDetails.storeId]);
 
   const fetchTotalCustomersData = useCallback(async () => {
     setLoading(true);
-    await fetchTotalCustomers(getAdminTotalCustomers.getTotalCustomers);
+
+    const fetchCustomersFn =
+      userDetails.roleName === "Administrator"
+        ? getAdminTotalCustomers.getTotalCustomers
+        : getAdminTotalCustomersWithStoreId.getTotalCustomers;
+
+    const fetchCustomersArgs =
+      userDetails.roleName === "Administrator" ? [] : [userDetails.storeId];
+
+    await fetchTotalCustomers(fetchCustomersFn, ...fetchCustomersArgs);
+
     setLoading(false);
-  }, [fetchTotalCustomers]);
+  }, [fetchTotalCustomers, userDetails.roleName, userDetails.storeId]);
 
   const fetchTotalLoadData = useCallback(async () => {
     setLoading(true);
-    await fetchTotalLoad(getAdminTotalLaundryLoad.getTotalLaundryLoad);
+
+    const fetchLoadFn =
+      userDetails.roleName === "Administrator"
+        ? getAdminTotalLaundryLoad.getTotalLaundryLoad
+        : getAdminTotalLaundryLoadWithStoreId.getTotalLaundryLoad;
+
+    const fetchLoadArgs =
+      userDetails.roleName === "Administrator" ? [] : [userDetails.storeId];
+
+    await fetchTotalLoad(fetchLoadFn, ...fetchLoadArgs);
+
     setLoading(false);
-  }, [fetchTotalLoad]);
+  }, [fetchTotalLoad, userDetails.roleName, userDetails.storeId]);
 
   useEffect(() => {
     fetchTotalRevenueData();
