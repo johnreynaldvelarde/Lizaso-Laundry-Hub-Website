@@ -176,7 +176,7 @@ const CustomTransactionTable = ({ tableData, loading }) => {
                           </span>
                           ₱{data.default_price}
                         </Typography>
-                        <Typography
+                        {/* <Typography
                           variant="body2"
                           sx={{
                             fontWeight: "500",
@@ -188,7 +188,7 @@ const CustomTransactionTable = ({ tableData, loading }) => {
                             Weight:
                           </span>
                           {data.weight}kg
-                        </Typography>
+                        </Typography> */}
                       </TableCell>
                       <TableCell sx={{ paddingY: 2, paddingX: 4 }}>
                         <DateCell dateCreated={data.created_at} />

@@ -20,6 +20,7 @@ import CustomPaymentStatus from "../../../../components/common/table/filter/Cust
 import SalesTrendChart from "../../../../components/common/chart/SalesTrendChart";
 import CustomPieChart from "../../../../components/common/chart/CustomPieChart";
 import { FileXls } from "@phosphor-icons/react";
+import * as XLSX from "xlsx";
 
 const SectionAdminTransaction = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -116,6 +117,57 @@ const SectionAdminTransaction = ({ storeId }) => {
   useEffect(() => {
     applyFilters(selectedDate, selectedStatus, searchTerm);
   }, [selectedDate, selectedStatus, searchTerm, transactionData]);
+
+  const handleExportAsExcel = async () => {
+    const data = filteredData.map((item) => ({
+      "Transaction ID": item.transaction_id,
+      "Transaction Code": item.transaction_code,
+      "Customer Fullname": item.customer_fullname,
+      "Customer Type": item.customer_type,
+      "Service Name": item.service_name,
+      "Default Price": item.default_price,
+      Load: item.load,
+      "Total Amount": item.total_amount,
+      "Payment Method": item.payment_method,
+      "Transaction Status": item.transaction_status,
+      "Date Created": item.created_at,
+      "Related Items":
+        item.related_items.length > 0
+          ? item.related_items
+              .map(
+                (ri) =>
+                  `${ri.item_name} (Qty: ${ri.quantity}, Amount: ${ri.amount})`
+              )
+              .join(", ")
+          : "N/A",
+    }));
+
+    const totalAmount = filteredData.reduce((sum, item) => {
+      return sum + parseFloat(item.total_amount);
+    }, 0);
+
+    data.push({
+      "Transaction ID": "Total",
+      "Transaction Code": "",
+      "Customer Fullname": "",
+      "Customer Type": "",
+      "Service Name": "",
+      "Default Price": "",
+      Load: "",
+      "Total Amount": totalAmount.toFixed(2),
+      "Payment Method": "",
+      "Transaction Status": "",
+      "Date Created": "",
+      "Related Items": "",
+    });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Transaction Data");
+
+    XLSX.writeFile(wb, "Transaction History.xlsx");
+  };
 
   return (
     <>
@@ -305,9 +357,7 @@ const SectionAdminTransaction = ({ storeId }) => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => {
-                // Add your export logic here (e.g., exporting to CSV, Excel)
-              }}
+              onClick={handleExportAsExcel}
               sx={{
                 width: {
                   xs: "100%", // Full width on small screens

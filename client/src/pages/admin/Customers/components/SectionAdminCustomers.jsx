@@ -3,7 +3,7 @@ import { Paper, Box, Typography, Button } from "@mui/material";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import { COLORS } from "../../../../constants/color";
-import { PlusCircle } from "@phosphor-icons/react";
+import { FileXls, PlusCircle } from "@phosphor-icons/react";
 import PopAddNewCustomer from "./PopAddNewCustomer";
 import usePopup from "../../../../hooks/common/usePopup";
 import useFetchData from "../../../../hooks/common/useFetchData";
@@ -19,6 +19,7 @@ import {
 import { parseISO } from "date-fns";
 import { checkDateMatch } from "../../../../utils/method";
 import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
+import * as XLSX from "xlsx";
 
 const SectionAdminCustomers = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -91,6 +92,59 @@ const SectionAdminCustomers = ({ storeId }) => {
 
   const handleRefreshData = () => {
     fetchCustomerListData();
+  };
+
+  const handleExportAsExcel = async () => {
+    // Map the customer list data to the structure you want in the Excel file
+    const data = customerListData.map((item) => ({
+      "Customer ID": item.customer_id,
+      "Full Name": item.full_name,
+      Username: item.username,
+      Email: item.email,
+      "Mobile Number": item.mobile_number,
+      "Address Line": item.address.address_line,
+      City: item.address.city,
+      Province: item.address.province,
+      Region: item.address.region, // Assuming there's a 'region' field
+      Country: item.address.country,
+      "Postal Code": item.address.postal_code,
+      Latitude: item.address.latitude, // Assuming there's a 'latitude' field
+      Longitude: item.address.longitude, // Assuming there's a 'longitude' field
+      "Date Created": item.date_created,
+    }));
+
+    // If needed, calculate a total or other summary data here
+    // Example: total number of customers
+    const totalCustomers = customerListData.length;
+
+    // Add a row for the total number of customers at the end of the data
+    data.push({
+      "Customer ID": "Total",
+      "Full Name": "",
+      Username: "",
+      Email: "",
+      "Mobile Number": "",
+      "Address Line": "",
+      City: "",
+      Province: "",
+      Region: "",
+      Country: "",
+      "Postal Code": "",
+      Latitude: "",
+      Longitude: "",
+      "Date Created": "",
+      "Total Customers": totalCustomers,
+    });
+
+    // Convert the data to a sheet
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    // Create a new workbook and append the sheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Customer Data");
+
+    // Export the Excel file
+    XLSX.writeFile(wb, "Customer List.xlsx");
   };
 
   return (
@@ -215,6 +269,45 @@ const SectionAdminCustomers = ({ storeId }) => {
               }}
             >
               Clear Filters
+            </Button>
+          </Box>
+
+          <Box
+            sx={{
+              width: "auto", // Auto width for Export button
+              ml: "auto", // Push Export button to the right edge
+              mt: {
+                xs: 2, // Add top margin for small screens
+                sm: 0, // No margin top on larger screens
+              },
+              width: {
+                xs: "100%", // Full width on small screens
+                sm: "auto", // Auto width on larger screens
+              },
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleExportAsExcel}
+              sx={{
+                width: {
+                  xs: "100%", // Full width on small screens
+                  sm: "auto", // Auto width on larger screens
+                },
+                textTransform: "none",
+                borderColor: COLORS.border,
+                color: COLORS.white,
+                backgroundColor: COLORS.secondary,
+                boxShadow: "none", // Remove shadow
+                "&:hover": {
+                  backgroundColor: COLORS.secondary,
+                  color: COLORS.white,
+                },
+              }}
+              startIcon={<FileXls color={COLORS.white} weight="duotone" />}
+            >
+              Export as Excel
             </Button>
           </Box>
         </Box>

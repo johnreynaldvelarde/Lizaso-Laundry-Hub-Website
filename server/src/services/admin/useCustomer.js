@@ -175,9 +175,12 @@ export const handleGetCustomerList = async (req, res, connection) => {
         ua.date_created,
         a.address_line,
         a.country,
+        a.region,
         a.province,
         a.city,
-        a.postal_code
+        a.postal_code,
+        a.latitude,
+        a.longitude
       FROM 
         User_Account ua
       LEFT JOIN 
@@ -210,9 +213,12 @@ export const handleGetCustomerList = async (req, res, connection) => {
         address: {
           address_line: row.address_line,
           country: row.country,
+          region: row.region,
           province: row.province,
           city: row.city,
           postal_code: row.postal_code,
+          latitude: row.latitude,
+          longitude: row.longitude,
         },
       };
     });

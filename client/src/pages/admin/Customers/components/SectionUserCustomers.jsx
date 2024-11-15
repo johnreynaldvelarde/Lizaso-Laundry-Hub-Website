@@ -19,6 +19,7 @@ import {
 import { parseISO } from "date-fns";
 import { checkDateMatch } from "../../../../utils/method";
 import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
+import * as XLSX from "xlsx";
 
 const SectionUserCustomers = ({ storeId }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -91,6 +92,59 @@ const SectionUserCustomers = ({ storeId }) => {
 
   const handleRefreshData = () => {
     fetchCustomerListData();
+  };
+
+  const handleExportAsExcel = async () => {
+    // Map the customer list data to the structure you want in the Excel file
+    const data = customerListData.map((item) => ({
+      "Customer ID": item.customer_id,
+      "Full Name": item.full_name,
+      Username: item.username,
+      Email: item.email,
+      "Mobile Number": item.mobile_number,
+      "Address Line": item.address.address_line,
+      City: item.address.city,
+      Province: item.address.province,
+      Region: item.address.region, // Assuming there's a 'region' field
+      Country: item.address.country,
+      "Postal Code": item.address.postal_code,
+      Latitude: item.address.latitude, // Assuming there's a 'latitude' field
+      Longitude: item.address.longitude, // Assuming there's a 'longitude' field
+      "Date Created": item.date_created,
+    }));
+
+    // If needed, calculate a total or other summary data here
+    // Example: total number of customers
+    const totalCustomers = customerListData.length;
+
+    // Add a row for the total number of customers at the end of the data
+    data.push({
+      "Customer ID": "Total",
+      "Full Name": "",
+      Username: "",
+      Email: "",
+      "Mobile Number": "",
+      "Address Line": "",
+      City: "",
+      Province: "",
+      Region: "",
+      Country: "",
+      "Postal Code": "",
+      Latitude: "",
+      Longitude: "",
+      "Date Created": "",
+      "Total Customers": totalCustomers,
+    });
+
+    // Convert the data to a sheet
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    // Create a new workbook and append the sheet
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Customer Data");
+
+    // Export the Excel file
+    XLSX.writeFile(wb, "Customer List.xlsx");
   };
 
   return (
@@ -235,9 +289,7 @@ const SectionUserCustomers = ({ storeId }) => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => {
-                // Add your export logic here (e.g., exporting to CSV, Excel)
-              }}
+              onClick={handleExportAsExcel}
               sx={{
                 width: {
                   xs: "100%", // Full width on small screens
