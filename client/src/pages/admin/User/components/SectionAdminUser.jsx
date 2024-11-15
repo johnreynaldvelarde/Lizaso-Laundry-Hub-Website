@@ -19,7 +19,6 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Menu,
   CircularProgress,
   Tooltip,
 } from "@mui/material";
@@ -30,13 +29,11 @@ import {
   PencilLine,
   Eye,
 } from "@phosphor-icons/react";
-import { MoreVert } from "@mui/icons-material";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import noData from "../../../../assets/images/no_data.png";
+import noData from "../../../../assets/images/no_data_table.jpg";
 import { COLORS } from "../../../../constants/color";
 import A_PopupAddUser from "./A_PopupAddUser";
-import A_PopupAddRole from "./A_PopupAddRole";
 import {
   viewAdminBasedStore,
   viewAdminBasedUser,
@@ -49,14 +46,9 @@ import OutlinedIconButton from "../../../../components/table/OutlinedIconButton"
 import ConfirmationDialog from "../../../../components/common/ConfirmationDialog";
 import toast from "react-hot-toast";
 import A_PopupEditUser from "./A_PopupEditUser";
-import {
-  updateRemoveRole,
-  updateRemoveUser,
-} from "../../../../services/api/putApi";
+import { updateRemoveUser } from "../../../../services/api/putApi";
 import A_PopupViewUser from "./A_PopupViewUser";
 import A_PopupEditPermissions from "./A_PopupEditPermissions";
-import A_PopupRenameRole from "./A_PopupRenameRole";
-import CustomAddButton from "../../../../components/common/CustomAddButton";
 import useFetchData from "../../../../hooks/common/useFetchData";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import usePopup from "../../../../hooks/common/usePopup";
@@ -89,20 +81,26 @@ const SectionAdminUser = () => {
     fetchUsers(viewAdminBasedUser.getAdminBasedUser, userDetails.storeId);
   }, [fetchUsers, userDetails?.storeId]);
 
+  // useEffect(() => {
+  //   fetchRolesData();
+  //   fetchStoresData();
+  //   fetchUsersData();
+
+  //   const intervalId = setInterval(() => {
+  //     fetchRolesData();
+  //     fetchStoresData();
+  //     fetchUsersData();
+  //   }, 10000);
+
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [fetchRolesData, fetchStoresData, fetchUsersData]);
+
   useEffect(() => {
     fetchRolesData();
     fetchStoresData();
     fetchUsersData();
-
-    const intervalId = setInterval(() => {
-      fetchRolesData();
-      fetchStoresData();
-      fetchUsersData();
-    }, 10000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
   }, [fetchRolesData, fetchStoresData, fetchUsersData]);
 
   useEffect(() => {
@@ -489,8 +487,6 @@ const SectionAdminUser = () => {
         ))}
       </Box>
 
-      {/* Store and Permission Section */}
-
       {/* Store List */}
       <Box
         sx={{
@@ -850,8 +846,12 @@ const SectionAdminUser = () => {
                         alt="No data"
                         style={{ width: "150px", marginBottom: "10px" }}
                       />
-                      <Typography variant="body1" color="textSecondary">
-                        No available data
+                      <Typography
+                        variant="body1"
+                        color={COLORS.primary}
+                        fontWeight={500}
+                      >
+                        No available user
                       </Typography>
                     </Box>
                   </TableCell>

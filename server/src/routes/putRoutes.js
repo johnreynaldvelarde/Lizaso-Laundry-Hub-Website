@@ -1,5 +1,8 @@
 import express from "express";
-import { handleCreateStore } from "../services/admin/useStore.js";
+import {
+  handleCreateStore,
+  handleUpdateStore,
+} from "../services/admin/useStore.js";
 import {
   handlePutAssignment,
   handlePutRemoveInQueue,
@@ -193,6 +196,18 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleRemoveItem(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+//#STORE MANAGEMENT SECTION
+router.put(
+  "/stores/:id/update-store",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateStore(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

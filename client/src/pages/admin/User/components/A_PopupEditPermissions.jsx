@@ -23,6 +23,7 @@ const A_PopupEditPermissions = ({
   permissionsData,
   refreshData,
 }) => {
+  const { userDetails } = useAuth();
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +49,9 @@ const A_PopupEditPermissions = ({
     setLoading(true);
     const id = permissionsData.id; // Ensure permissionsData is defined in the parent scope
     const updatedPermissionsData = {
+      activity_id: userDetails.userId,
+      activity_username: userDetails.username,
+      activity_roleName: userDetails.roleName,
       permissionsStatus: {
         Read: selectedPermissions.includes("Read"),
         Write: selectedPermissions.includes("Write"),

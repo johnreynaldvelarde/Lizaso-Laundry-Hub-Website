@@ -53,8 +53,10 @@ export const ActionDescriptions = {
   },
   [ActionTypes.STORE_MANAGEMENT]: {
     VIEW_STORES: (username) => `${username} viewed the list of stores.`,
-    ADD_STORE: (username) => `${username} added a new store.`,
-    UPDATE_STORE: (username) => `${username} updated store details.`,
+    ADD_STORE: (username, store_name) =>
+      `${username} added a new store: ${store_name}.`,
+    UPDATE_STORE: (username, store_name) =>
+      `${username} updated store details of ${store_name}.`,
     DELETE_STORE: (username) => `${username} archived a store.`,
   },
   [ActionTypes.USER_MANAGEMENT]: {
@@ -63,6 +65,8 @@ export const ActionDescriptions = {
       `${username} successfully created an account for the user ${name}.`,
     UPDATE_USER: (username, name) =>
       `${username} successfully updated the account information for ${name}.`,
+    UPDATE_PERMISSION: (username) =>
+      `${username} successfully updated the role permission.`,
     DELETE_USER: (username, name) =>
       `${username} deleted the user account of ${name}.`,
   },

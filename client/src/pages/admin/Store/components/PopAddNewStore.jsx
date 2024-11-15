@@ -30,7 +30,8 @@ import mark from "../../../../assets/images/mark_1.png";
 import axios from "axios";
 import { createNewStore } from "../../../../services/api/postApi";
 
-const PopAddNewStore = ({ open, onClose }) => {
+const PopAddNewStore = ({ open, onClose, refreshData }) => {
+  const { userDetails } = useAuth();
   // Store
   const [storeName, setStoreName] = useState("");
   const [storeNo, setStoreNo] = useState("");
@@ -91,7 +92,6 @@ const PopAddNewStore = ({ open, onClose }) => {
       storeEmail: "Store email is required",
 
       // Address
-
       addressLine: "Store main address is required",
       country: "Country is required",
       region: "Region is required",
@@ -102,10 +102,21 @@ const PopAddNewStore = ({ open, onClose }) => {
       longitude: "Longitude is required",
     };
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]+$/;
+
+    const countWords = (str) => {
+      return str.trim().split(/\s+/).length;
+    };
+
+    const validatePhoneNumberLength = (phoneNumber) => {
+      const cleanedPhoneNumber = phoneNumber.replace(/\D/g, "");
+      return cleanedPhoneNumber.length > 10;
+    };
+
     for (const field in fields) {
       let value;
 
-      // Use if-else to determine which value to check
       if (field === "storeName") {
         value = storeName;
       } else if (field === "storeNo") {
@@ -134,6 +145,19 @@ const PopAddNewStore = ({ open, onClose }) => {
 
       if (value === undefined || value === null || value === "") {
         newErrors[field] = fields[field];
+      } else if (
+        (field === "storeName" || field === "addressLine") &&
+        countWords(value) < 2
+      ) {
+        newErrors[field] = `${fields[field]} (must contain at least 2 words)`;
+      } else if (field === "storeContact") {
+        if (!phoneRegex.test(value)) {
+          newErrors[field] = "Store mobile number must contain only digits";
+        } else if (!validatePhoneNumberLength(value)) {
+          newErrors[field] = "Store mobile number must be more than 10 digits";
+        }
+      } else if (field === "storeEmail" && !emailRegex.test(value)) {
+        newErrors[field] = "Store email must be in a valid format";
       }
     }
 
@@ -185,6 +209,9 @@ const PopAddNewStore = ({ open, onClose }) => {
       setLoading(true);
 
       const storeData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
         store_no: storeNo,
         store_name: storeName,
         store_contact: storeContact,
@@ -202,6 +229,7 @@ const PopAddNewStore = ({ open, onClose }) => {
         const response = await createNewStore.setNewStore(storeData);
 
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
         } else {

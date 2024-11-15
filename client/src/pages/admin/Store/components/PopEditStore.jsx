@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAuth from "../../../../contexts/AuthContext";
 import {
   Dialog,
@@ -26,8 +26,10 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import mark from "../../../../assets/images/mark_1.png";
 import axios from "axios";
 import { createNewStore } from "../../../../services/api/postApi";
+import { updateStoreDetails } from "../../../../services/api/putApi";
 
-const PopEditStore = ({ open, onClose }) => {
+const PopEditStore = ({ open, onClose, data, refreshData }) => {
+  const { userDetails } = useAuth();
   // Store
   const [storeName, setStoreName] = useState("");
   const [storeNo, setStoreNo] = useState("");
@@ -45,6 +47,34 @@ const PopEditStore = ({ open, onClose }) => {
   const [longitude, setLongitude] = useState(120.91127);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setStoreName(data.store_name || "");
+      setStoreNo(data.store_no || "");
+      setStoreContact(data.store_contact || "");
+      setStoreEmail(data.store_email || "");
+      setAddressLine(data.address_line || "");
+      setRegion(data.region || "");
+      setProvince(data.province || "");
+      setCity(data.city || "");
+      setPostalCode(data.postal_code || "");
+      setLatitude(data.latitude || "");
+      setLongitude(data.longitude || "");
+    } else {
+      setStoreName("");
+      setStoreNo("");
+      setStoreContact("");
+      setStoreEmail("");
+      setAddressLine("");
+      setRegion("");
+      setProvince("");
+      setCity("");
+      setPostalCode("");
+      setLatitude("");
+      setLongitude("");
+    }
+  }, [data]);
 
   const defaultIcon = new L.Icon({
     iconUrl: mark,
@@ -81,7 +111,6 @@ const PopEditStore = ({ open, onClose }) => {
     const newErrors = {};
 
     const fields = {
-      // Store
       storeName: "Store name is required",
       storeNo: "Store generate number is required",
       storeContact: "Store mobile number or telephone number is required",
@@ -99,10 +128,21 @@ const PopEditStore = ({ open, onClose }) => {
       longitude: "Longitude is required",
     };
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]+$/;
+
+    const countWords = (str) => {
+      return str.trim().split(/\s+/).length;
+    };
+
+    const validatePhoneNumberLength = (phoneNumber) => {
+      const cleanedPhoneNumber = phoneNumber.replace(/\D/g, "");
+      return cleanedPhoneNumber.length > 10;
+    };
+
     for (const field in fields) {
       let value;
 
-      // Use if-else to determine which value to check
       if (field === "storeName") {
         value = storeName;
       } else if (field === "storeNo") {
@@ -131,9 +171,21 @@ const PopEditStore = ({ open, onClose }) => {
 
       if (value === undefined || value === null || value === "") {
         newErrors[field] = fields[field];
+      } else if (
+        (field === "storeName" || field === "addressLine") &&
+        countWords(value) < 2
+      ) {
+        newErrors[field] = `${fields[field]} (must contain at least 2 words)`;
+      } else if (field === "storeContact") {
+        if (!phoneRegex.test(value)) {
+          newErrors[field] = "Store mobile number must contain only digits";
+        } else if (!validatePhoneNumberLength(value)) {
+          newErrors[field] = "Store mobile number must be more than 10 digits";
+        }
+      } else if (field === "storeEmail" && !emailRegex.test(value)) {
+        newErrors[field] = "Store email must be in a valid format";
       }
     }
-
     return newErrors;
   };
 
@@ -182,6 +234,9 @@ const PopEditStore = ({ open, onClose }) => {
       setLoading(true);
 
       const storeData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
         store_no: storeNo,
         store_name: storeName,
         store_contact: storeContact,
@@ -196,9 +251,13 @@ const PopEditStore = ({ open, onClose }) => {
       };
 
       try {
-        const response = await createNewStore.setNewStore(storeData);
+        const response = await updateStoreDetails.putStoreDetails(
+          data.store_id,
+          storeData
+        );
 
         if (response.success) {
+          refreshData();
           toast.success(response.message);
           onClose();
         } else {
@@ -219,8 +278,6 @@ const PopEditStore = ({ open, onClose }) => {
       setLoading(false);
     }
   };
-
-  const handleRemoveStore = async () => {};
 
   const handleMarkerDragEnd = (event) => {
     const marker = event.target;
@@ -676,7 +733,7 @@ const PopEditStore = ({ open, onClose }) => {
       <CustomPopFooterButton
         label={"Update Store"}
         onClose={onClose}
-        // onSubmit={handleCreateStore}
+        onSubmit={handleUpdateStore}
         loading={loading}
       />
     </Dialog>

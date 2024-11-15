@@ -126,31 +126,15 @@ const SectionAdminStore = () => {
     fetchStoresData();
   }, [fetchStoresData]);
 
-  const sampleStores = [
-    {
-      id: 1,
-      storeName: "LIZASO Main",
-      storeAddress: "123 Main St, City",
-      storeContact: "123-456-7890",
-      manager: "John Doe",
-      dateCreated: "2024-01-01",
-    },
-    {
-      id: 2,
-      storeName: "LIZASO Branch 1",
-      storeAddress: "456 Elm St, City",
-      storeContact: "234-567-8901",
-      manager: "Jane Smith",
-      dateCreated: "2024-02-15",
-    },
-  ];
-
-  // Sample notification state
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
 
   const handleSnackbarClose = () => {
     setOpenSnackbar(false);
+  };
+
+  const handleRefreshData = () => {
+    fetchStoresData();
   };
 
   return (
@@ -266,15 +250,6 @@ const SectionAdminStore = () => {
                         <PencilLine color={COLORS.secondary} weight="duotone" />
                       </OutlinedIconButton>
                     </Tooltip>
-                    <Tooltip title="Delete Store" arrow>
-                      <OutlinedIconButton
-                        onClick={() => {
-                          openPopup("deleteStore", store.store_id);
-                        }}
-                      >
-                        <Trash color={COLORS.error} weight="duotone" />
-                      </OutlinedIconButton>
-                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
@@ -285,11 +260,20 @@ const SectionAdminStore = () => {
 
       {/* Popup */}
       {isOpen && popupType === "addNewStore" && (
-        <PopAddNewStore open={isOpen} onClose={closePopup} />
+        <PopAddNewStore
+          open={isOpen}
+          onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
       )}
 
       {isOpen && popupType === "editStore" && (
-        <PopEditStore open={isOpen} onClose={closePopup} />
+        <PopEditStore
+          open={isOpen}
+          onClose={closePopup}
+          data={popupData}
+          refreshData={handleRefreshData}
+        />
       )}
 
       {isOpen && popupType === "deleteStore" && (

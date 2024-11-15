@@ -510,7 +510,12 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
 
 export const handleUpdatePermissions = async (req, res, connection) => {
   const { id } = req.params;
-  const { permissionsStatus } = req.body;
+  const {
+    activity_id,
+    activity_username,
+    activity_roleName,
+    permissionsStatus,
+  } = req.body;
 
   try {
     await connection.beginTransaction();
@@ -536,6 +541,17 @@ export const handleUpdatePermissions = async (req, res, connection) => {
     const [result] = await connection.execute(updateQuery, permissions);
 
     if (result.affectedRows > 0) {
+      const actionType = ActionTypes.USER_MANAGEMENT;
+      const actionDescription =
+        ActionDescriptions[actionType].UPDATE_PERMISSION(activity_username);
+
+      await logActivity(
+        connection,
+        activity_id,
+        activity_roleName,
+        actionType,
+        actionDescription
+      );
       await connection.commit();
       return res
         .status(200)

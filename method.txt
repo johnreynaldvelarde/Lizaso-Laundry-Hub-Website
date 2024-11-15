@@ -4,7 +4,7 @@
   };
 refreshData
 Administrator
-
+ const { userDetails } = useAuth();
 const { activity_id, activity_username, activity_roleName } = req.body;
 
 import { ActionDescriptions, ActionTypes } from "../../helpers/activityLog.js";

@@ -182,6 +182,21 @@ export const updateRemoveItem = {
   },
 };
 
+//#STORE MANAGEMENT SECTION
+export const updateStoreDetails = {
+  putStoreDetails: async (id, data) => {
+    try {
+      const response = await axiosPrivate.put(
+        `/stores/${id}/update-store`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+};
+
 //#USER MANAGEMENT SECTION
 // #For role and permission
 export const updateRemoveRole = {
