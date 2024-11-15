@@ -228,7 +228,7 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
                       fontWeight: 700,
                     }}
                   >
-                    Weight
+                    Load
                   </Typography>
                 </Grid>
                 <Grid item xs={4}>
@@ -325,7 +325,7 @@ const PopReceipt = ({ open, onClose, assignmentId, customerData }) => {
                       fontWeight: 500,
                     }}
                   >
-                    {transactionData.weight}kg
+                    {transactionData.weight}
                   </Typography>
                 </Grid>
                 <Grid item xs={4}>

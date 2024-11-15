@@ -13,8 +13,7 @@ const Service = () => {
           storeId={userDetails.storeId}
           userDetails={userDetails}
         />
-      ) : userDetails?.roleName === "Manager" ||
-        userDetails?.roleName === "Store Staff" ? (
+      ) : userDetails?.roleName === "Manager" ? (
         <SectionAdminServiceManagement
           storeId={userDetails.storeId}
           userDetails={userDetails}

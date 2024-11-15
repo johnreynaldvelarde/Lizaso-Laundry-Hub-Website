@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { COLORS } from "../../../constants/color";
 
+// Function to format the data into a flat structure
 const formatActivityData = (data) => {
   const formattedData = [];
 
@@ -27,8 +28,12 @@ const formatActivityData = (data) => {
   return formattedData;
 };
 
-const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const hourNames = Array.from({ length: 24 }, (_, index) => `${index}:00`);
+// Function to convert hour to 12-hour format (AM/PM)
+const formatHour = (hour) => {
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const hourIn12HourFormat = hour % 12 === 0 ? 12 : hour % 12;
+  return `${hourIn12HourFormat}:00 ${ampm}`;
+};
 
 const CustomActivityLogHeatmap = ({ activityLogData }) => {
   // Check if data is provided
@@ -71,12 +76,12 @@ const CustomActivityLogHeatmap = ({ activityLogData }) => {
               <XAxis
                 dataKey="hour"
                 name="Hour of Day"
-                tickFormatter={(tick) => hourNames[tick]}
+                tickFormatter={(tick) => formatHour(tick)} // Format hour to 12-hour format
               />
               <YAxis
-                dataKey="day"
-                name="Day of Week"
-                tickFormatter={(tick) => dayNames[tick]}
+                dataKey="value"
+                name="Activity Value"
+                tickFormatter={(tick) => tick} // Show the value itself on the Y-axis
               />
               <Tooltip />
               <Bar dataKey="value" barSize={30}>
