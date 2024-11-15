@@ -40,7 +40,6 @@ const StartingPage = () => {
       },
       { threshold: 0.4 }
     ); // Adjust threshold as needed
-    
 
     sectionRefs.current.forEach((section) => {
       if (section) {
@@ -81,7 +80,7 @@ const StartingPage = () => {
           <Pricing />
         </div>
         <div id="about" ref={(el) => (sectionRefs.current[3] = el)}>
-          <About/>
+          <About />
         </div>
         <div id="contact" ref={(el) => (sectionRefs.current[4] = el)}>
           <Contact />
@@ -102,24 +101,3 @@ const StartingPage = () => {
 };
 
 export default StartingPage;
-
-// <div className="bg-white max-w-7xl mx-auto pt-20 px-6">
-// <div id="#">
-//   <Home />
-// </div>
-// <div id="features">
-//   <Features />
-// </div>
-// <div id="pricing">
-//   <Pricing />
-// </div>
-
-// <PopupLogin
-//   showLoginPopup={showLoginPopup}
-//   setLoginShowPopup={setLoginShowPopup}
-// />
-// <PopupCreateAccount
-//   showCreateAccountPopup={showCreateAccountPopup}
-//   setShowCreateAccountPopup={setShowCreateAccountPopup}
-// />
-// </div>

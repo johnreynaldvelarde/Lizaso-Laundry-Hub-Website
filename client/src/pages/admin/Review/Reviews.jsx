@@ -11,6 +11,8 @@ const Reviews = () => {
       {userDetails?.roleName === "Administrator" ? (
         <SectionAdminReview storeId={userDetails.storeId} />
       ) : userDetails?.roleName === "Manager" ? (
+        <SectionAdminReview storeId={userDetails.storeId} />
+      ) : userDetails?.roleName === "Store Staff" ? (
         <AccessDenied />
       ) : (
         <AccessDenied />

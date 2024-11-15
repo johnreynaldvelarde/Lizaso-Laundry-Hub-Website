@@ -6,6 +6,8 @@ import CustomTotalRevenueByMonth from "./CustomTotalRevenueByMonth";
 import CustomLocationMapCustomerStores from "./left/CustomLocationMapCustomerStores";
 import CustomTopMostUseService from "./right/CustomTopMostUseService";
 import CustomRightTopReadyToDelivery from "./left/CustomRightTopReadyToDelivery";
+import CustomAllSample from "./right/CustomAllSample";
+import CustomCustomerMostRequest from "./right/CustomCustomerMostRequest";
 
 const SectionAdminDashboard = ({ store_id }) => {
   return (
@@ -39,7 +41,7 @@ const SectionAdminDashboard = ({ store_id }) => {
               <CustomTopMostUseService />
             </div>
             <div className="mb-5">
-              <CustomTopNewCustomer />
+              <CustomCustomerMostRequest />
             </div>
           </div>
         </div>
