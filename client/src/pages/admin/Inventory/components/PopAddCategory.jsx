@@ -44,6 +44,9 @@ const PopAddCategory = ({ open, onClose, refreshData }) => {
       setLoading(true);
       try {
         const response = await createItemCategory.setCategoryItem({
+          activity_id: userDetails.userId,
+          activity_username: userDetails.username,
+          activity_roleName: userDetails.roleName,
           category_name: categoryName,
         });
         if (response.success) {

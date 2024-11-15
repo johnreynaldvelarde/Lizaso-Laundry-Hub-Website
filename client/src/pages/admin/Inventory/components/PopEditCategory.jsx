@@ -56,6 +56,9 @@ const PopEditCategory = ({ open, onClose, data, refreshData }) => {
           data.category_id,
           {
             category_name: categoryName,
+            activity_id: userDetails.userId,
+            activity_username: userDetails.username,
+            activity_roleName: userDetails.roleName,
           }
         );
         if (response.success) {

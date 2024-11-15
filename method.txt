@@ -30,3 +30,26 @@ activity_id, activity_username, activity_roleName,
       actionType,
       actionDescription
     );
+
+
+    const activityData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
+      }
+      
+      const {
+    activity_id,
+    activity_username,
+    activity_roleName,
+  } = req.body;;
+
+
+
+
+
+  PERMISSION
+  disabled={!userDetails?.permissions?.canRead}
+  disabled={!userDetails?.permissions?.canWrite}
+  disabled={!userDetails?.permissions?.canEdit}
+  disabled={!userDetails?.permissions?.canDelete}

@@ -47,10 +47,26 @@ export const ActionDescriptions = {
   },
   [ActionTypes.INVENTORY_MANAGEMENT]: {
     VIEW_INVENTORY: (username) => `${username} viewed the inventory list.`,
-    ADD_ITEM: (username) => `${username} added a new inventory item.`,
-    UPDATE_ITEM: (username) => `${username} updated an inventory item.`,
-    DELETE_ITEM: (username) => `${username} deleted an inventory item.`,
+    ADD_ITEM: (username, item_name) =>
+      `${username} added a new item to the inventory: ${item_name}.`,
+    UPDATE_ITEM: (username, item_name) =>
+      `${username} updated the inventory item: ${item_name}.`,
+    DELETE_ITEM: (username, item_name) =>
+      `${username} deleted the inventory item: ${item_name}.`,
+
+    UPDATE_STOCK: (username, categoryName) =>
+      `${username} updated the stock of ${categoryName}.`,
+    // Category Actions
+    ADD_CATEGORY: (username, categoryName) =>
+      `${username} added a new category: ${categoryName}.`,
+    UPDATE_CATEGORY: (username, categoryName) =>
+      `${username} updated the category: ${categoryName}.`,
+    DELETE_CATEGORY: (username, categoryName) =>
+      `${username} deleted the category: ${categoryName}.`,
+    VIEW_CATEGORY: (username, categoryName) =>
+      `${username} viewed the category: ${categoryName}.`,
   },
+
   [ActionTypes.STORE_MANAGEMENT]: {
     VIEW_STORES: (username) => `${username} viewed the list of stores.`,
     ADD_STORE: (username, store_name) =>

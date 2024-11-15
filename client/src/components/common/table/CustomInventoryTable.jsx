@@ -51,8 +51,16 @@ const CustomInventoryTable = ({
 
   const handleRemoveItem = async () => {
     if (popupData) {
+      const activityData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
+      };
       try {
-        const response = await updateRemoveItem.putRemoveItem(popupData);
+        const response = await updateRemoveItem.putRemoveItem(
+          popupData,
+          activityData
+        );
         if (response.success) {
           refreshData();
           toast.success(response.message);
@@ -191,6 +199,7 @@ const CustomInventoryTable = ({
                     <TableCell sx={{ paddingY: 2, paddingX: { xs: 4, sm: 0 } }}>
                       <Tooltip title="Restock Item" arrow>
                         <OutlinedIconButton
+                          disabled={!userDetails?.permissions?.canWrite}
                           onClick={() => {
                             openPopup("restockItem", data.inventory_id);
                           }}
@@ -200,6 +209,7 @@ const CustomInventoryTable = ({
                       </Tooltip>
                       <Tooltip title="Edit Item" arrow>
                         <OutlinedIconButton
+                          disabled={!userDetails?.permissions?.canEdit}
                           onClick={() => {
                             openPopup("editItem", data);
                           }}
@@ -213,6 +223,7 @@ const CustomInventoryTable = ({
                       <Tooltip title="Delete User" arrow>
                         {/* if(userDetails.roleName == Manager) */}
                         <OutlinedIconButton
+                          disabled={!userDetails?.permissions?.canDelete}
                           onClick={() => {
                             openPopup("removeItem", data.inventory_id);
                           }}

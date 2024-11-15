@@ -102,6 +102,9 @@ const PopEditItem = ({ open, onClose, getData, editData, refreshData }) => {
         price: itemPrice,
         category_id: selectedCategory,
         status: selectedStatus,
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
       };
 
       console.log(data);

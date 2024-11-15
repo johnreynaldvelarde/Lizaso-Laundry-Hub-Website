@@ -49,6 +49,9 @@ const PopRestock = ({ open, onClose, id, refreshData }) => {
       try {
         const response = await updateStock.putStock(id, {
           quantity: stock,
+          activity_id: userDetails.userId,
+          activity_username: userDetails.username,
+          activity_roleName: userDetails.roleName,
         });
         if (response.success) {
           toast.success(response.message);

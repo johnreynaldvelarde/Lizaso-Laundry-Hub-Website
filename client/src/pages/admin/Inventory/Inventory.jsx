@@ -13,7 +13,7 @@ const Inventory = () => {
         <SectionAdminInventory />
       ) : userDetails?.roleName === "Manager" ||
         userDetails?.roleName === "Store Staff" ? (
-        <SectionManagerInventory userDetails={userDetails} />
+        <SectionAdminInventory />
       ) : (
         <AccessDenied />
       )}

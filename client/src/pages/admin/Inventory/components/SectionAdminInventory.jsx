@@ -115,9 +115,15 @@ const SectionAdminInventory = () => {
 
   const handleRemoveCategory = async () => {
     if (popupData) {
+      const activityData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
+      };
       try {
         const response = await updateRemoveCategory.putRemoveCategory(
-          popupData
+          popupData,
+          activityData
         );
         if (response.success) {
           handleRefreshData();
@@ -149,6 +155,7 @@ const SectionAdminInventory = () => {
           subtitle={"All Categories & Item Availability"}
         />
         <CustomAddButton
+          disabled={!userDetails?.permissions?.canWrite}
           onClick={() => openPopup("addCategory")}
           label={"Add new category"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
@@ -277,10 +284,18 @@ const SectionAdminInventory = () => {
                   },
                 }}
               >
-                <PencilLine size={24} weight="duotone" className="mr-1" />
+                <PencilLine
+                  size={24}
+                  weight="duotone"
+                  className="mr-1"
+                  color={
+                    !userDetails?.permissions?.canEdit
+                      ? COLORS.disabledIcon
+                      : COLORS.secondary
+                  }
+                />
                 Edit Category
               </Button>
-
               <Button
                 disabled={!userDetails?.permissions?.canDelete}
                 variant="outlined"
@@ -299,7 +314,15 @@ const SectionAdminInventory = () => {
                   openPopup("removeCategory", category.category_id);
                 }}
               >
-                <Trash size={24} weight="duotone" color={COLORS.error} />
+                <Trash
+                  size={24}
+                  weight="duotone"
+                  color={
+                    !userDetails?.permissions?.canDelete
+                      ? COLORS.disabledIcon
+                      : COLORS.error
+                  }
+                />
               </Button>
             </Box>
           </Box>
@@ -484,6 +507,7 @@ const SectionAdminInventory = () => {
           >
             {/* Add new item button */}
             <CustomAddButton
+              disabled={!userDetails?.permissions?.canWrite}
               onClick={() => openPopup("addItem")}
               label={"Add new item"}
               icon={

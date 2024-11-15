@@ -19,15 +19,18 @@ import { COLORS } from "../../../constants/color";
 import usePopup from "../../../hooks/common/usePopup";
 import { Trash, PencilLine, StackPlus, Tag } from "@phosphor-icons/react";
 import OutlinedIconButton from "../../table/OutlinedIconButton";
-import useAuth from "../../../contexts/AuthContext";
 import PopEditServices from "../../../pages/admin/Service/components/PopEditServices";
 import PopAddPromo from "../../../pages/admin/Service/components/PopAddPromo";
 import DeleteConfirmationDialog from "../DeleteConfirmationDialog";
 import toast from "react-hot-toast";
 import { updateServiceDelete } from "../../../services/api/putApi";
 
-const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
-  const { userDetails } = useAuth;
+const CustomServicesManagementTable = ({
+  tableData,
+  loading,
+  refreshData,
+  userDetails,
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
@@ -222,6 +225,7 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                         data.promo_status !== "inactive" && (
                           <Tooltip title="Add Promo" arrow>
                             <OutlinedIconButton
+                              disabled={!userDetails?.permissions?.canWrite}
                               onClick={() => {
                                 openPopup("addPromo", data);
                               }}
@@ -233,6 +237,7 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
 
                       <Tooltip title="Edit Services" arrow>
                         <OutlinedIconButton
+                          disabled={!userDetails?.permissions?.canEdit}
                           onClick={() => {
                             openPopup("editService", data);
                           }}
@@ -245,6 +250,7 @@ const CustomServicesManagementTable = ({ tableData, loading, refreshData }) => {
                       </Tooltip>
                       <Tooltip title="Delete Services" arrow>
                         <OutlinedIconButton
+                          disabled={!userDetails?.permissions?.canDelete}
                           onClick={() => {
                             openPopup("deleteService", data.id);
                           }}

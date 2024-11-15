@@ -10,8 +10,12 @@ const Service = () => {
     <Box sx={{ pt: "100px", pb: "20px", px: "20px" }}>
       {userDetails?.roleName === "Administrator" ? (
         <SectionAdminServiceManagement storeId={userDetails.storeId} />
-      ) : userDetails?.roleName === "Manager" ? (
-        <SectionAdminServiceManagement storeId={userDetails.storeId} />
+      ) : userDetails?.roleName === "Manager" ||
+        userDetails?.roleName === "Store Staff" ? (
+        <SectionAdminServiceManagement
+          storeId={userDetails.storeId}
+          userDetails={userDetails}
+        />
       ) : (
         <AccessDenied />
       )}

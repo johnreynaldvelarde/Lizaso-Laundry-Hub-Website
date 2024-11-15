@@ -16,10 +16,7 @@ import {
 
 import toast from "react-hot-toast";
 import { COLORS } from "../../../../constants/color";
-import {
-  createNewItem,
-  createNewRoleAndPermissions,
-} from "../../../../services/api/postApi";
+import { createNewItem } from "../../../../services/api/postApi";
 import CustomPopHeaderTitle from "../../../../components/common/CustomPopHeaderTitle";
 import CustomPopFooterButton from "../../../../components/common/CustomPopFooterButton";
 
@@ -81,6 +78,9 @@ const PopAddNewItem = ({ open, onClose, data, refreshData }) => {
         category_id: selectedCategory,
         item_name: itemName,
         price: itemPrice,
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
       };
 
       try {

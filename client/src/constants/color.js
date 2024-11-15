@@ -98,6 +98,8 @@ export const COLORS = {
   // Service Request Status
   in_laundry: "#9932CC",
   at_store: "#1E90FF",
+
+  disabledIcon: "#A9A9A9",
   //#008080
 };
 

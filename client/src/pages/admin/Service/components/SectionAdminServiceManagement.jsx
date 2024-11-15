@@ -25,7 +25,7 @@ import CustomServicesManagementTable from "../../../../components/common/table/C
 import PopAddNewServices from "./PopAddNewServices";
 import CustomServicesPromoList from "./CustomServicesPromoList";
 
-const SectionAdminServiceManagement = ({ storeId }) => {
+const SectionAdminServiceManagement = ({ storeId, userDetails }) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -116,6 +116,7 @@ const SectionAdminServiceManagement = ({ storeId }) => {
 
       {/* Sub Header */}
       <CustomServicesPromoList
+        userDetails={userDetails}
         servicesPromoData={promoListData}
         refreshData={handleRefreshData}
       />
@@ -242,6 +243,7 @@ const SectionAdminServiceManagement = ({ storeId }) => {
             }}
           >
             <CustomAddButton
+              disabled={!userDetails?.permissions?.canWrite}
               onClick={() => openPopup("addServices")}
               label={"Add new services"}
               icon={
@@ -256,6 +258,7 @@ const SectionAdminServiceManagement = ({ storeId }) => {
             tableData={filteredData}
             loading={loading}
             refreshData={handleRefreshData}
+            userDetails={userDetails}
           />
         </Box>
       </Box>

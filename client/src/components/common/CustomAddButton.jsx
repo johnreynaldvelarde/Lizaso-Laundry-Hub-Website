@@ -10,7 +10,7 @@ const CustomAddButton = ({
   hoverColor = COLORS.secondaryHover, // Default hover color
   width = { xs: "100%", sm: "auto" }, // Default width
   marginTop = { xs: 2, sm: 0 }, // Default margin top
-  disabled = false, // New prop to control the disabled state
+  disabled,
 }) => {
   return (
     <Button

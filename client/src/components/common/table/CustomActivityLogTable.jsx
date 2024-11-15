@@ -126,7 +126,7 @@ const CustomActivityLogTable = ({ tableData, loading, refreshData }) => {
                         variant="body2"
                         sx={{ fontWeight: "500", color: COLORS.text4 }}
                       >
-                        {data.username}
+                        {data.user_type}
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ paddingY: 2, paddingX: 4 }}>

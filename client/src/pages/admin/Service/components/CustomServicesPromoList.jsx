@@ -11,7 +11,11 @@ import {
 import DeactivedConfirmDialog from "../../../../components/common/DeactivedConfirmDialog";
 import toast from "react-hot-toast";
 
-const CustomServicesPromoList = ({ servicesPromoData, refreshData }) => {
+const CustomServicesPromoList = ({
+  servicesPromoData,
+  refreshData,
+  userDetails,
+}) => {
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [loading, setLoading] = useState(false);
 
@@ -212,6 +216,7 @@ const CustomServicesPromoList = ({ servicesPromoData, refreshData }) => {
               }}
             >
               <Button
+                disabled={!userDetails?.permissions?.canEdit}
                 variant="outlined"
                 onClick={() => openPopup("editPromo", service)}
                 sx={{
@@ -229,6 +234,7 @@ const CustomServicesPromoList = ({ servicesPromoData, refreshData }) => {
                 Edit
               </Button>
               <Button
+                disabled={!userDetails?.permissions?.canWrite}
                 variant="outlined"
                 onClick={() => {
                   if (service.promo_status === "active") {

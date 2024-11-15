@@ -1,6 +1,17 @@
+import { ActionDescriptions, ActionTypes } from "../../helpers/activityLog.js";
+import { logActivity } from "../useExtraSystem.js";
+
 //#POST
 export const handleCreateNewItem = async (req, res, connection) => {
-  const { store_id, category_id, item_name, price } = req.body;
+  const {
+    store_id,
+    category_id,
+    item_name,
+    price,
+    activity_id,
+    activity_username,
+    activity_roleName,
+  } = req.body;
 
   try {
     await connection.beginTransaction();
@@ -37,11 +48,25 @@ export const handleCreateNewItem = async (req, res, connection) => {
     const itemId = result.insertId;
 
     // Insert into Inventory
-    const insertInventoryQuery = `
+    const insertInventoryQuery = `  
     INSERT INTO Inventory (store_id, item_id, price, quantity, isStatus) 
     VALUES (?, ?, ?, 0, 0)
   `;
     await connection.execute(insertInventoryQuery, [store_id, itemId, price]);
+
+    const actionType = ActionTypes.INVENTORY_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].ADD_ITEM(
+      activity_username,
+      item_name
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
 
     await connection.commit();
 
@@ -57,7 +82,8 @@ export const handleCreateNewItem = async (req, res, connection) => {
 };
 
 export const handleCreateItemCategory = async (req, res, db) => {
-  const { category_name } = req.body;
+  const { activity_id, activity_username, activity_roleName, category_name } =
+    req.body;
 
   try {
     await db.beginTransaction();
@@ -79,6 +105,20 @@ export const handleCreateItemCategory = async (req, res, db) => {
     await db.execute(
       "INSERT INTO Item_Category (category_name, isArchive, updated_at, date_created) VALUES (?, ?, NOW(), NOW())",
       [category_name, false]
+    );
+
+    const actionType = ActionTypes.INVENTORY_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].ADD_CATEGORY(
+      activity_username,
+      category_name
+    );
+
+    await logActivity(
+      db,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
     );
 
     await db.commit();
@@ -265,7 +305,8 @@ export const handleGetItemListToReuse = async (req, res, db) => {
 //#PUT
 export const handleUpdateCategoryName = async (req, res, connection) => {
   const { id } = req.params;
-  const { category_name } = req.body;
+  const { category_name, activity_id, activity_username, activity_roleName } =
+    req.body;
 
   try {
     await connection.beginTransaction();
@@ -294,6 +335,20 @@ export const handleUpdateCategoryName = async (req, res, connection) => {
 
     await connection.execute(updateQuery, [category_name, id]);
 
+    const actionType = ActionTypes.INVENTORY_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].UPDATE_CATEGORY(
+      activity_username,
+      category_name
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
+
     await connection.commit();
 
     res.status(200).json({
@@ -313,9 +368,24 @@ export const handleUpdateCategoryName = async (req, res, connection) => {
 
 export const handleUpdateRemoveCategory = async (req, res, connection) => {
   const { id } = req.params;
+  const { activity_id, activity_username, activity_roleName } = req.body;
 
   try {
     await connection.beginTransaction();
+
+    const categoryQuery = `
+     SELECT category_name
+     FROM Item_Category
+     WHERE id = ?
+   `;
+    const [categoryRows] = await connection.execute(categoryQuery, [id]);
+    if (categoryRows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+    const category_name = categoryRows[0].category_name;
 
     const checkQuery = `
       SELECT COUNT(*) AS count
@@ -339,6 +409,20 @@ export const handleUpdateRemoveCategory = async (req, res, connection) => {
     `;
     await connection.execute(updateQuery, [id]);
 
+    const actionType = ActionTypes.INVENTORY_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].DELETE_CATEGORY(
+      activity_username,
+      category_name
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
+
     await connection.commit();
     res
       .status(200)
@@ -356,10 +440,28 @@ export const handleUpdateRemoveCategory = async (req, res, connection) => {
 
 export const handleUpdateStock = async (req, res, connection) => {
   const { id } = req.params;
-  const { quantity } = req.body;
+  const { quantity, activity_id, activity_username, activity_roleName } =
+    req.body;
 
   try {
     await connection.beginTransaction();
+
+    const [itemResult] = await connection.execute(
+      `SELECT i.item_name 
+     FROM Inventory inv
+     JOIN Item i ON inv.item_id = i.id
+     WHERE inv.id = ?`,
+      [id]
+    );
+
+    if (itemResult.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found in inventory",
+      });
+    }
+
+    const item_name = itemResult[0].item_name;
 
     const updateQuery = `
       UPDATE Inventory
@@ -368,6 +470,20 @@ export const handleUpdateStock = async (req, res, connection) => {
     `;
 
     await connection.execute(updateQuery, [quantity, id]);
+
+    const actionType = ActionTypes.INVENTORY_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].UPDATE_STOCK(
+      activity_username,
+      item_name
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
 
     await connection.commit();
     res
@@ -384,7 +500,15 @@ export const handleUpdateStock = async (req, res, connection) => {
 
 export const handleUpdateItem = async (req, res, connection) => {
   const { id } = req.params; // Item ID to update
-  const { item_name, price, category_id, status } = req.body;
+  const {
+    item_name,
+    price,
+    category_id,
+    status,
+    activity_id,
+    activity_username,
+    activity_roleName,
+  } = req.body;
 
   try {
     await connection.beginTransaction();
@@ -416,6 +540,20 @@ export const handleUpdateItem = async (req, res, connection) => {
     `;
     await connection.execute(updateInventoryQuery, [price, status, id]);
 
+    const actionType = ActionTypes.INVENTORY_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].UPDATE_ITEM(
+      activity_username,
+      item_name
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
+
     await connection.commit();
     res.status(200).json({
       success: true,
@@ -434,11 +572,27 @@ export const handleUpdateItem = async (req, res, connection) => {
 
 export const handleRemoveItem = async (req, res, connection) => {
   const { id } = req.params;
-
-  console.log(id);
+  const { activity_id, activity_username, activity_roleName } = req.body;
 
   try {
     await connection.beginTransaction();
+
+    const [itemResult] = await connection.execute(
+      `SELECT i.item_name 
+     FROM Inventory inv
+     JOIN Item i ON inv.item_id = i.id
+     WHERE inv.id = ?`,
+      [id]
+    );
+
+    if (itemResult.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found in inventory",
+      });
+    }
+
+    const item_name = itemResult[0].item_name;
 
     const [rows] = await connection.execute(
       `SELECT quantity FROM Inventory WHERE item_id = ?`,
@@ -460,6 +614,20 @@ export const handleRemoveItem = async (req, res, connection) => {
     `;
 
     await connection.execute(updateQuery, [id]);
+
+    const actionType = ActionTypes.INVENTORY_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].DELETE_ITEM(
+      activity_username,
+      item_name
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
 
     await connection.commit();
     res

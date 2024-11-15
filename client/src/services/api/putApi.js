@@ -129,10 +129,11 @@ export const updateCategoryName = {
 };
 
 export const updateRemoveCategory = {
-  putRemoveCategory: async (id) => {
+  putRemoveCategory: async (id, data) => {
     try {
       const response = await axiosPrivate.put(
-        `/inventory/${id}/update-remove-category`
+        `/inventory/${id}/update-remove-category`,
+        data
       );
       return response.data;
     } catch (error) {
@@ -170,10 +171,11 @@ export const updateInventory = {
 };
 
 export const updateRemoveItem = {
-  putRemoveItem: async (id) => {
+  putRemoveItem: async (id, data) => {
     try {
       const response = await axiosPrivate.put(
-        `/inventory/${id}/update-remove-item`
+        `/inventory/${id}/update-remove-item`,
+        data
       );
       return response.data;
     } catch (error) {
