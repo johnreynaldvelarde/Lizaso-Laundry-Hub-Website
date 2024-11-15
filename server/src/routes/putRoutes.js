@@ -7,6 +7,7 @@ import {
   handlePutAssignment,
   handlePutRemoveInQueue,
   handleRemoveUnit,
+  handleUpdateEditUnit,
   handleUpdateGenerateQueueNumber,
   handleUpdateProgressInqueueAndAtStore,
 } from "../services/admin/useUnits.js";
@@ -63,6 +64,17 @@ router.post(
 );
 
 // UNIT MONITORED SECTION
+router.put(
+  "/monitored-unit/:id/update-edit-unit",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateEditUnit(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.put(
   "/monitored-unit/:id/remove-laundry-unit",
   withDatabaseConnection(async (req, res, connection) => {

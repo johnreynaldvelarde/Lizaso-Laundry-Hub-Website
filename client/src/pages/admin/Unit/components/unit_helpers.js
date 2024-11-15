@@ -10,8 +10,6 @@ export const getUnitImage = (status) => {
     case 1:
       return Occupied;
     case 2:
-      return Reserved;
-    case 3:
       return In_Maintaince;
     default:
       return Available;

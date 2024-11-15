@@ -6,6 +6,7 @@ import CustomLocationMapCustomerStores from "./left/CustomLocationMapCustomerSto
 import CustomAllSample from "./right/CustomAllSample";
 import CustomTopMostUseService from "./right/CustomTopMostUseService";
 import CustomRightTopReadyToDelivery from "./left/CustomRightTopReadyToDelivery";
+import CustomCustomerMostRequest from "./right/CustomCustomerMostRequest";
 
 const SectionUserDashboard = ({ store_id }) => {
   return (
@@ -28,17 +29,17 @@ const SectionUserDashboard = ({ store_id }) => {
               <CustomRightTopReadyToDelivery storeId={store_id} />
             </div>
             <div className="mb-3">
-              <CustomLocationMapCustomerStores />
+              <CustomTotalRevenueByMonth />
             </div>
           </div>
 
           {/* Right Column with Paper List */}
           <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             <div className="mb-3">
-              <CustomTopMostUseService />
+              <CustomCustomerMostRequest />
             </div>
             <div className="mb-3">
-              <CustomAllSample />
+              <CustomTopMostUseService />
             </div>
           </div>
         </div>

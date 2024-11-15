@@ -14,48 +14,59 @@ import CustomCreatedDate from "../../../../components/common/table/filter/Custom
 import {
   getCustomerGrowthOverTime,
   getCustomerList,
+  getListUserByStore,
+  viewAdminBasedStore,
+  viewRolesAndPermissions,
 } from "../../../../services/api/getApi";
 import { parseISO } from "date-fns";
 import { checkDateMatch } from "../../../../utils/method";
 import CustomerGrowthChart from "../../../../components/common/chart/CustomerGrowthChart";
 import PopAddNewCustomer from "../../Customers/components/PopAddNewCustomer";
+import CustomUserTable from "../../../../components/common/table/CustomUserTable";
+import A_PopupAddUser from "./A_PopupAddUser";
+import useAuth from "../../../../contexts/AuthContext";
 
 const SectionManagerUser = ({ storeId }) => {
+  const { userDetails } = useAuth();
   const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  const { data: customerListData, fetchData: fetchCustomerList } =
-    useFetchData();
-  const { data: customerStatsData, fetchData: fetchCustomerStats } =
-    useFetchData();
+
+  const { data: userData, fetchData: fetchUserData } = useFetchData();
+  const { data: roles, fetchData: fetchRoles } = useFetchData();
+  const { data: stores, fetchData: fetchStores } = useFetchData();
   const [loading, setLoading] = useState(true);
 
-  const fetchCustomerListData = useCallback(async () => {
+  const fetchUserListData = useCallback(async () => {
     setLoading(true);
-    await fetchCustomerList(getCustomerList.viewCustomerList, storeId);
+    const params = { userId: userDetails.userId };
+    await fetchUserData(getListUserByStore.getAdminBasedUser, storeId, params);
     setLoading(false);
-  }, [fetchCustomerList, storeId]);
+  }, [fetchUserData, storeId]);
 
-  const fetchCustomerStatsData = useCallback(async () => {
-    setLoading(true);
-    await fetchCustomerStats(
-      getCustomerGrowthOverTime.viewCustomerGrow,
-      storeId
+  const fetchStoresData = useCallback(() => {
+    fetchStores(viewAdminBasedStore.getAdminBasedStore, userDetails.storeId);
+  }, [fetchStores, userDetails?.storeId]);
+
+  const fetchRolesData = useCallback(() => {
+    fetchRoles(
+      viewRolesAndPermissions.getRoleAndPermission,
+      userDetails.storeId
     );
-    setLoading(false);
-  }, [fetchCustomerStats, storeId]);
+  }, [fetchRoles, userDetails?.storeId]);
 
   useEffect(() => {
-    fetchCustomerListData();
-    fetchCustomerStatsData();
-  }, [fetchCustomerListData]);
+    fetchUserListData();
+    fetchRolesData();
+    fetchStoresData();
+  }, [fetchUserListData, fetchStoresData, fetchRolesData]);
 
   useEffect(() => {
-    if (customerListData) {
-      setFilteredData(customerListData);
+    if (userData) {
+      setFilteredData(userData);
     }
-  }, [customerListData]);
+  }, [userData]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -69,13 +80,12 @@ const SectionManagerUser = ({ storeId }) => {
   };
 
   const applyFilters = (dateOption, search) => {
-    const filtered = customerListData.filter((item) => {
+    const filtered = userData.filter((item) => {
       const requestDate = parseISO(item.date_created);
       const isDateMatch = dateOption
         ? checkDateMatch(dateOption, requestDate)
         : true;
 
-      // Filter by search term in customer fullname
       const isSearchMatch =
         item.full_name.toLowerCase().includes(search.toLowerCase()) ||
         item.username.toLowerCase().includes(search.toLowerCase());
@@ -87,10 +97,10 @@ const SectionManagerUser = ({ storeId }) => {
 
   useEffect(() => {
     applyFilters(selectedDate, searchTerm);
-  }, [selectedDate, searchTerm, customerListData]);
+  }, [selectedDate, searchTerm, userData]);
 
   const handleRefreshData = () => {
-    fetchCustomerListData();
+    fetchUserListData();
   };
 
   return (
@@ -106,22 +116,22 @@ const SectionManagerUser = ({ storeId }) => {
       >
         <CustomHeaderTitle
           title={"User Management"}
-          subtitle={"Overview of All User Accounts and Activities"}
+          subtitle={"Overview of All User Accounts"}
         />
         <CustomAddButton
-          onClick={() => openPopup("addCustomer")}
-          label={"Add new customer"}
+          onClick={() => openPopup("addUser")}
+          label={"Add new user"}
           icon={<PlusCircle size={24} color={COLORS.white} weight="duotone" />}
         />
       </Box>
 
       {/* Sub Header */}
-      <Box
+      {/* <Box
         display="flex"
         sx={{ width: "100%", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}
       >
         <CustomerGrowthChart customerGrowthData={customerStatsData} />
-      </Box>
+      </Box> */}
 
       {/* Content */}
       <Box mt={5}>
@@ -136,7 +146,7 @@ const SectionManagerUser = ({ storeId }) => {
           }}
         >
           <Box sx={{ display: "flex" }}>
-            <CustomHeaderTitleTable title={"All Customers"} />
+            <CustomHeaderTitleTable title={"All User"} />
           </Box>
 
           <Box
@@ -220,17 +230,22 @@ const SectionManagerUser = ({ storeId }) => {
         </Box>
 
         <Box>
-          <CustomCustomerTable
+          <CustomUserTable
             tableData={filteredData}
             loading={loading}
             refreshData={handleRefreshData}
+            stores={stores}
+            roles={roles}
+            userDetails={userDetails}
           />
         </Box>
       </Box>
 
       {/* Popup */}
-      {isOpen && popupType === "addCustomer" && (
-        <PopAddNewCustomer
+      {isOpen && popupType === "addUser" && (
+        <A_PopupAddUser
+          roleData={roles}
+          storeData={stores}
           open={isOpen}
           onClose={closePopup}
           refreshData={handleRefreshData}

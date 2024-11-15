@@ -53,3 +53,17 @@ activity_id, activity_username, activity_roleName,
   disabled={!userDetails?.permissions?.canWrite}
   disabled={!userDetails?.permissions?.canEdit}
   disabled={!userDetails?.permissions?.canDelete}
+
+   useEffect(() => {
+    if (getData) {
+      setItemName(getData.item_name || "");
+      setItemPrice(getData.price || "");
+      setSelectedCategory(getData.category_id);
+      setSelectedStatus(getData.isStatus);
+    } else {
+      setItemName("");
+      setItemPrice("");
+      setSelectedCategory("");
+      setSelectedStatus("");
+    }
+  }, [getData]);

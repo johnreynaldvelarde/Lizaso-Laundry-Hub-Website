@@ -111,9 +111,9 @@ const PopupSelectUnit = ({ open, onClose, unitName, unitId, refreshData }) => {
       newErrors.selectedCustomer = "Customer is required";
     }
     if (!weight) {
-      newErrors.weight = "Weight is required";
+      newErrors.weight = "Load is required";
     } else if (weight <= 0) {
-      newErrors.weight = "Weight must be greater than 0";
+      newErrors.weight = "Load must be greater than 0";
     }
     return newErrors;
   };

@@ -46,6 +46,7 @@ import occupiedAnimation from "../../../assets/animated/logo_move.json";
 import Lottie from "react-lottie";
 import DeleteConfirmationDialog from "../../../components/common/DeleteConfirmationDialog";
 import { updateRemoveUnit } from "../../../services/api/putApi";
+import PopEditUnit from "./components/PopEditUnit";
 
 const UnitMonitor = () => {
   const { userDetails } = useAuth();
@@ -450,7 +451,8 @@ const UnitMonitor = () => {
                 >
                   {/* Edit Button */}
                   <IconButton
-                    onClick={() => handleEditUnit(unit.id)}
+                    disabled={!userDetails?.permissions?.canEdit}
+                    onClick={() => openPopup("editUnit", unit)}
                     sx={{
                       color: COLORS.secondary,
                     }}
@@ -460,6 +462,7 @@ const UnitMonitor = () => {
 
                   {/* Remove Button */}
                   <IconButton
+                    disabled={!userDetails?.permissions?.canDelete}
                     onClick={() => openPopup("removeUnit", unit.id)}
                     sx={{
                       color: COLORS.error,
@@ -531,8 +534,6 @@ const UnitMonitor = () => {
                       : unit.isUnitStatus === 1
                       ? "#B4162C"
                       : unit.isUnitStatus === 2
-                      ? "#FFA500"
-                      : unit.isUnitStatus === 3
                       ? "gray"
                       : "gray",
                   color: "white",
@@ -543,8 +544,6 @@ const UnitMonitor = () => {
                         : unit.isUnitStatus === 1
                         ? "#8B1A2C"
                         : unit.isUnitStatus === 2
-                        ? "#FF8C00"
-                        : unit.isUnitStatus === 3
                         ? "darkgray"
                         : "darkgray",
                   },
@@ -564,8 +563,6 @@ const UnitMonitor = () => {
                   : unit.isUnitStatus === 1
                   ? "Occupied"
                   : unit.isUnitStatus === 2
-                  ? "Reserved"
-                  : unit.isUnitStatus === 3
                   ? "In Maintenance"
                   : "Unknown"}
               </Button>
@@ -600,6 +597,14 @@ const UnitMonitor = () => {
         <PopAddNewUnits
           open={isOpen}
           onClose={closePopup}
+          refreshData={handleRefreshData}
+        />
+      )}
+      {isOpen && popupType === "editUnit" && (
+        <PopEditUnit
+          open={isOpen}
+          onClose={closePopup}
+          getData={popupData}
           refreshData={handleRefreshData}
         />
       )}

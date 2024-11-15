@@ -12,7 +12,7 @@ const TransactionHistory = () => {
       {userDetails?.roleName === "Administrator" ? (
         <SectionAdminTransaction storeId={userDetails.storeId} />
       ) : userDetails?.roleName === "Manager" ? (
-        <SectionUserTransaction />
+        <SectionAdminTransaction storeId={userDetails.storeId} />
       ) : (
         <AccessDenied />
       )}

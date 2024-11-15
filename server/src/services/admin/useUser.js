@@ -417,7 +417,129 @@ export const handleGetBasedUser = async (req, res, connection) => {
   }
 };
 
+// export const handleGetBasedListUser = async (req, res, connection) => {
+//   const { id } = req.params;
+//   const { userId } = req.query;
+//   try {
+//     await connection.beginTransaction();
+
+//     const checkQuery = `
+//       SELECT id FROM Stores WHERE id = ? LIMIT 1
+//     `;
+//     const [existingStore] = await connection.execute(checkQuery, [id]);
+
+//     if (existingStore.length === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Store not found.",
+//       });
+//     }
+
+//     const getQuery = `
+//       SELECT
+//         id,
+//         store_id,
+//         username,
+//         email,
+//         CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) AS full_name,
+//         user_type,
+//         isOnline,
+//         isStatus,
+//         date_created
+//       FROM User_Account
+//       WHERE store_id = ?
+//         AND user_type NOT IN ('Customer', 'Administrator')
+//         AND isArchive = 0
+//         AND id != ?;
+//     `;
+//     const [users] = await connection.execute(getQuery, [id, userId]);
+
+//     await connection.commit();
+
+//     return res.status(200).json({
+//       success: true,
+//       data: users,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching users:", error);
+//     await connection.rollback();
+//     res.status(500).json({ error: "Server error" });
+//   } finally {
+//     if (connection) connection.release();
+//   }
+// };
+
 // PUT UPDATE
+
+export const handleGetBasedListUser = async (req, res, connection) => {
+  const { id } = req.params; // store_id from request
+  const { userId } = req.query; // Exclude the current user ID
+
+  try {
+    await connection.beginTransaction();
+
+    // Check if the store exists
+    const checkQuery = `
+      SELECT id FROM Stores WHERE id = ? LIMIT 1
+    `;
+    const [existingStore] = await connection.execute(checkQuery, [id]);
+
+    if (existingStore.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found.",
+      });
+    }
+
+    // Fetch users associated with the store, excluding 'Customer', 'Administrator', and the current user
+    const getQuery = `
+      SELECT 
+        ua.id AS user_id,
+        ua.store_id,
+        ua.username,
+        ua.email,
+        ua.mobile_number,
+        ua.first_name,
+        ua.middle_name,
+        ua.last_name,
+        CONCAT(ua.first_name, ' ', COALESCE(ua.middle_name, ''), ' ', ua.last_name) AS full_name,
+        ua.isOnline,
+        CASE 
+          WHEN ua.isStatus = 1 THEN 'Active'
+          WHEN ua.isStatus = 0 THEN 'Deactivated'
+        END AS status,
+        ua.isArchive,
+        ua.date_created,
+        rp.role_name,
+        rp.can_read,
+        rp.can_write,
+        rp.can_edit,
+        rp.can_delete
+      FROM User_Account ua
+      LEFT JOIN Roles_Permissions rp ON ua.role_permissions_id = rp.id
+      WHERE ua.store_id = ?  
+        AND ua.user_type NOT IN ('Customer', 'Administrator') 
+        AND ua.isArchive = 0
+        AND ua.id != ?;
+    `;
+
+    const [users] = await connection.execute(getQuery, [id, userId]);
+
+    await connection.commit();
+
+    return res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    await connection.rollback();
+    res.status(500).json({ error: "Server error" });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
 export const handleUpdateAdminBasedUser = async (req, res, connection) => {
   const { id } = req.params;
   const {

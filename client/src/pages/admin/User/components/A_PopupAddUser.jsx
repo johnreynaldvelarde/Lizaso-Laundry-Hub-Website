@@ -471,8 +471,8 @@ const A_PopupAddUser = ({
             <MenuItem value="" disabled>
               Select a status
             </MenuItem>
-            <MenuItem value={0}>Activate</MenuItem>
-            <MenuItem value={1}>Deactivate</MenuItem>
+            <MenuItem value={0}>Deactivate</MenuItem>
+            <MenuItem value={1}>Activate</MenuItem>
           </TextField>
           {/* Select a store*/}
           <TextField

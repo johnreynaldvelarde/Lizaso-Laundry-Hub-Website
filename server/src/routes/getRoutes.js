@@ -24,6 +24,7 @@ import {
 } from "../services/admin/useInventory.js";
 import { getPool } from "../db/dbConfig.js";
 import {
+  handleGetBasedListUser,
   handleGetBasedUser,
   handleGetRolesPermissions,
   handleGetStoresBasedAdmin,
@@ -476,6 +477,17 @@ router.get(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleGetBasedUser(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.get(
+  "/usermanage/:id/get-user-list",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleGetBasedListUser(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

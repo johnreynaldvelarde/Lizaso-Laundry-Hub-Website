@@ -3,7 +3,7 @@ import { Paper, Box, Typography, Button } from "@mui/material";
 import CustomHeaderTitle from "../../../../components/common/CustomHeaderTitle";
 import CustomAddButton from "../../../../components/common/CustomAddButton";
 import { COLORS } from "../../../../constants/color";
-import { PlusCircle } from "@phosphor-icons/react";
+import { FileXls, PlusCircle } from "@phosphor-icons/react";
 import PopAddNewCustomer from "./PopAddNewCustomer";
 import usePopup from "../../../../hooks/common/usePopup";
 import useFetchData from "../../../../hooks/common/useFetchData";
@@ -215,6 +215,47 @@ const SectionUserCustomers = ({ storeId }) => {
               }}
             >
               Clear Filters
+            </Button>
+          </Box>
+
+          <Box
+            sx={{
+              width: "auto", // Auto width for Export button
+              ml: "auto", // Push Export button to the right edge
+              mt: {
+                xs: 2, // Add top margin for small screens
+                sm: 0, // No margin top on larger screens
+              },
+              width: {
+                xs: "100%", // Full width on small screens
+                sm: "auto", // Auto width on larger screens
+              },
+            }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                // Add your export logic here (e.g., exporting to CSV, Excel)
+              }}
+              sx={{
+                width: {
+                  xs: "100%", // Full width on small screens
+                  sm: "auto", // Auto width on larger screens
+                },
+                textTransform: "none",
+                borderColor: COLORS.border,
+                color: COLORS.white,
+                backgroundColor: COLORS.secondary,
+                boxShadow: "none", // Remove shadow
+                "&:hover": {
+                  backgroundColor: COLORS.secondary,
+                  color: COLORS.white,
+                },
+              }}
+              startIcon={<FileXls color={COLORS.white} weight="duotone" />}
+            >
+              Export as Excel
             </Button>
           </Box>
         </Box>

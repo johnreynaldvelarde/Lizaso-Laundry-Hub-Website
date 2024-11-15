@@ -195,34 +195,6 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
                           In Progress
                         </span>
                       </div>
-                      {/* <div
-                        className="flex flex-col items-center justify-center "
-                        style={{
-                          width: "155px",
-                          height: "155px",
-                          borderRadius: "50%",
-                          borderWidth: 10,
-                          borderColor: COLORS.secondary,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginLeft: "10px",
-                          color: COLORS.primary,
-                        }}
-                      >
-                        <span
-                          className="text-[13px] font-bold text-center flex items-center justify-center"
-                          style={{ color: COLORS.text }}
-                        >
-                          {formatDistanceToNow(new Date(customer.assigned_at))}
-                        </span>
-                        <span
-                          className="text-[12px] font-semibold mt-1"
-                          style={{ color: COLORS.secondary }}
-                        >
-                          In Progress
-                        </span>
-                      </div> */}
                     </div>
 
                     <Divider sx={{ margin: 0, width: "100%" }} />
@@ -250,7 +222,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
                           {customer.customer_type}
                         </span>
                       </Typography>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mb-1">
                         <Button
                           variant="contained"
                           disableElevation
@@ -283,7 +255,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
                             "Create Billing"
                           )}
                         </Button>
-                        <IconButton
+                        {/* <IconButton
                           onClick={() =>
                             handleDialogRemoveInProgress(customer.id)
                           }
@@ -293,7 +265,7 @@ const DrawerInLaundry = ({ open, onClose, refreshData }) => {
                             color="#DB524B"
                             weight="duotone"
                           />
-                        </IconButton>
+                        </IconButton> */}
                       </div>
                     </div>
                   </Paper>

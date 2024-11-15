@@ -1185,6 +1185,66 @@ export const handleRemoveUnit = async (req, res, connection) => {
   }
 };
 
+export const handleUpdateEditUnit = async (req, res, connection) => {
+  const { id } = req.params;
+  const { isUnitStatus } = req.body; // New status to be updated
+
+  console.log(id);
+
+  try {
+    await connection.beginTransaction();
+
+    // Get the current status of the unit
+    const [unitRows] = await connection.execute(
+      `SELECT isUnitStatus FROM Laundry_Unit WHERE id = ?`,
+      [id]
+    );
+
+    const currentStatus = unitRows[0]?.isUnitStatus;
+
+    // If the unit is currently in maintenance (status 3), we can't update it
+    if (currentStatus === 3) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: "Unit is currently in maintenance and cannot be updated.",
+      });
+    }
+
+    // If the new status is the same as the current status, no need to update
+    if (currentStatus === isUnitStatus) {
+      await connection.rollback();
+      return res.status(200).json({
+        success: false,
+        message: "Unit status is already the same.",
+      });
+    }
+
+    // Update the unit status
+    await connection.execute(
+      `UPDATE Laundry_Unit
+       SET isUnitStatus = ?
+       WHERE id = ?`,
+      [isUnitStatus, id]
+    );
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Laundry unit status updated successfully.",
+    });
+  } catch (error) {
+    // Rollback in case of error
+    await connection.rollback();
+    res.status(500).json({
+      success: false,
+      message: "Error updating laundry unit status.",
+      error,
+    });
+  }
+};
+
 export const handleUpdateProgressInqueueAndAtStore = async (
   req,
   res,

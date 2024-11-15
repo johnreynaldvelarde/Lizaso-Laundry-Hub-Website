@@ -625,6 +625,23 @@ export const viewAdminBasedUser = {
   },
 };
 
+export const getListUserByStore = {
+  getAdminBasedUser: async (id, params) => {
+    try {
+      const response = await axiosPrivate.get(
+        `/usermanage/${id}/get-user-list`,
+        {
+          params,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching:", error);
+      throw error;
+    }
+  },
+};
+
 //#CUSTOMER MANAGEMENT SECTION
 export const getCustomerList = {
   viewCustomerList: async (id) => {
