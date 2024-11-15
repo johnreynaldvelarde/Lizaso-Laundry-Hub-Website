@@ -1558,3 +1558,58 @@ export const handleUpdateChangeStore = async (req, res, connection) => {
     connection.release();
   }
 };
+
+export const handleUpdateServiceRequestCancelByCustomer = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Service_Request
+      SET request_status = 'Canceled'
+      WHERE id = ?;
+    `;
+
+    const [result] = await connection.execute(updateQuery, [id]);
+
+    if (result.affectedRows === 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Failed to update request status." });
+    }
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Request status updated to canceled.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error updating service request status:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the request.",
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+// Log notification
+// const notificationType = NotificationStatus.CANCELED;
+// const notificationDescription =
+//   NotificationDescriptions[notificationType]();
+
+// await logNotification(
+//   connection,
+//   null,
+//   customer_id,
+//   notificationType,
+//   notificationDescription
+// );

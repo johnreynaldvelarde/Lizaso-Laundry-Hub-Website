@@ -448,6 +448,23 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
       return res.json({ success: false, message: "Username already exists." });
     }
 
+    const getRoleQuery = `
+      SELECT role_name 
+      FROM Roles_Permissions 
+      WHERE id = ?
+    `;
+    const [roleResult] = await connection.query(getRoleQuery, [
+      role_permissions_id,
+    ]);
+
+    if (roleResult.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Role not found." });
+    }
+
+    const role_name = roleResult[0].role_name;
+
     const updateQuery = `
       UPDATE User_Account 
       SET 
@@ -459,6 +476,7 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
         first_name = ?,
         middle_name = ?,
         last_name = ?,
+        user_type = ?,
         isStatus = ?
       WHERE id = ?
     `;
@@ -472,6 +490,7 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
       first_name,
       middle_name,
       last_name,
+      role_name,
       isStatus,
       id,
     ];

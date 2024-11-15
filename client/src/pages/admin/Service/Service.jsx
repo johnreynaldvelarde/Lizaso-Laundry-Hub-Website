@@ -9,7 +9,10 @@ const Service = () => {
   return (
     <Box sx={{ pt: "100px", pb: "20px", px: "20px" }}>
       {userDetails?.roleName === "Administrator" ? (
-        <SectionAdminServiceManagement storeId={userDetails.storeId} />
+        <SectionAdminServiceManagement
+          storeId={userDetails.storeId}
+          userDetails={userDetails}
+        />
       ) : userDetails?.roleName === "Manager" ||
         userDetails?.roleName === "Store Staff" ? (
         <SectionAdminServiceManagement

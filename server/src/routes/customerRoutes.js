@@ -16,6 +16,7 @@ import {
   handleUpdateCustomerProfile,
   handleUpdateNotificationCustomerClearAll,
   handleUpdateResetPassword,
+  handleUpdateServiceRequestCancelByCustomer,
 } from "../services/user/customer.js";
 import { handleCheckCustomerDetails } from "../services/useCheck.js";
 import {
@@ -247,6 +248,17 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateChangeStore(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/update-request-cancel",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestCancelByCustomer(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

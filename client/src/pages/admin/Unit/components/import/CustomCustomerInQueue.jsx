@@ -324,6 +324,7 @@ const CustomCustomerInQueue = ({ customers, loading, refreshData }) => {
           open={isOpen}
           onClose={closePopup}
           inqueueID={popupData}
+          refreshData={refreshData}
         />
       )}
 
