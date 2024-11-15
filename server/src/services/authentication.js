@@ -29,7 +29,7 @@ export const handleLoginMobile = async (req, res, db) => {
       [username]
     );
 
-    if (users.length === 0) {
+    if (users.length === 0 || users[0].isArchive === 1) {
       await db.rollback();
       return res.status(200).json({
         success: false,
