@@ -5,3 +5,28 @@
 refreshData
 Administrator
 
+const { activity_id, activity_username, activity_roleName } = req.body;
+
+import { ActionDescriptions, ActionTypes } from "../../helpers/activityLog.js";
+import { logActivity } from "../useExtraSystem.js";
+
+activity_id: userDetails.userId,
+activity_username: userDetails.username,
+activity_roleName: userDetails.roleName,
+
+activity_id, activity_username, activity_roleName,
+
+
+  const actionType = ActionTypes.USER_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].ADD_USER(
+      activity_username,
+      username
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );

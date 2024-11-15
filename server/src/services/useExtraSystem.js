@@ -13,8 +13,8 @@ export const logActivity = async (
 ) => {
   try {
     await connection.execute(
-      "INSERT INTO Activity_Log (user_id, user_type, action_type, action_description, timestamp) VALUES (?, ?, ?, ?, ?)",
-      [userId, userType, actionType, actionDescription, currentTimestamp]
+      "INSERT INTO Activity_Log (user_id, user_type, action_type, action_description, timestamp) VALUES (?, ?, ?, ?, NOW())",
+      [userId, userType, actionType, actionDescription]
     );
   } catch (error) {
     console.error("Error logging activity:", error);
@@ -51,35 +51,3 @@ export const logNotification = async (
     console.error("Error logging notification:", error);
   }
 };
-
-// export const logNotification = async (
-//   connection,
-//   storeId,
-//   userId,
-//   notification_type,
-//   notification_description
-// ) => {
-//   const query = `
-//       INSERT INTO Notifications (store_id, user_id, notification_type, notification_description, status, created_at, read_at)
-//       VALUES (?, ?, ?, ?, ?, ?, ?)
-//     `;
-
-//   await connection.beginTransaction();
-
-//   try {
-//     await connection.execute(query, [
-//       storeId,
-//       userId,
-//       notification_type,
-//       notification_description,
-//       "Unread",
-//       currentTimestamp,
-//       null,
-//     ]);
-
-//     await connection.commit();
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error logging notification:", error);
-//   }
-// };

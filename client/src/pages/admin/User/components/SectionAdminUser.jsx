@@ -330,8 +330,13 @@ const SectionAdminUser = () => {
 
   const handleDeleteUser = async (id) => {
     if (id) {
+      const activityData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
+      };
       try {
-        const response = await updateRemoveUser.putRemoveUser(id);
+        const response = await updateRemoveUser.putRemoveUser(id, activityData);
         if (response.success) {
           handleRefreshData();
           toast.success(response.message);

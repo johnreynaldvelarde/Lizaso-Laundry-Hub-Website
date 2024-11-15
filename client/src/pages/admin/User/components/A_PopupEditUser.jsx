@@ -34,6 +34,7 @@ const A_PopupEditUser = ({
   const [firstname, setFirstname] = useState("");
   const [middlename, setMiddlename] = useState("");
   const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
   const [number, setNumber] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -51,6 +52,7 @@ const A_PopupEditUser = ({
       setFirstname(userData.first_name || "");
       setMiddlename(userData.middle_name || "");
       setLastname(userData.last_name || "");
+      setEmail(userData.email || "");
       setNumber(userData.mobile_number || "");
       setSelectedStore(userData.store_id || "");
       setSelectedRole(matchingRole ? matchingRole.id : "");
@@ -73,39 +75,44 @@ const A_PopupEditUser = ({
   const validateFields = () => {
     const newErrors = {};
 
-    const fields = {
-      username: "Username is required",
-      firstname: "Firstname is required",
-      lastname: "Lastname is required",
-      number: "Mobile number is required",
-      selectedRole: "Role is required",
-      selectedStatus: "Status is required",
-      selectedStore: "Store is required",
-    };
+    if (!number) {
+      newErrors.number = "Phone number is required";
+    } else if (!/^\d+$/.test(number)) {
+      newErrors.number = "Phone number must contain only numbers";
+    } else if (number.length < 10) {
+      newErrors.number = "Phone number must be at least 10 digits";
+    }
 
-    for (const field in fields) {
-      let value;
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Email must be a valid format";
+    }
 
-      // Use if-else to determine which value to check
-      if (field === "selectedStatus") {
-        value = selectedStatus;
-      } else if (field === "selectedRole") {
-        value = selectedRole;
-      } else if (field === "username") {
-        value = username;
-      } else if (field === "firstname") {
-        value = firstname;
-      } else if (field === "lastname") {
-        value = lastname;
-      } else if (field === "number") {
-        value = number;
-      } else if (field === "selectedStore") {
-        value = selectedStore;
-      }
+    if (!username) {
+      newErrors.username = "Username is required";
+    } else if (username.length < 5) {
+      newErrors.username = "Username must be at least 5 characters long";
+    } else if (/\s/.test(username)) {
+      newErrors.username = "Username cannot contain spaces";
+    }
 
-      if (value === undefined || value === null || value === "") {
-        newErrors[field] = fields[field];
-      }
+    if (!firstname) {
+      newErrors.firstname = "First name is required";
+    }
+
+    if (!lastname) {
+      newErrors.lastname = "Last name is required";
+    }
+
+    if (!selectedRole) {
+      newErrors.selectedRole = "Role is required";
+    }
+
+    if (selectedStatus === null || selectedStatus === undefined) {
+      newErrors.selectedStatus = "Status is required";
+    }
+
+    if (!selectedStore) {
+      newErrors.selectedStore = "Store is required";
     }
 
     return newErrors;
@@ -120,6 +127,7 @@ const A_PopupEditUser = ({
       lastname: setLastname,
       middlename: setMiddlename,
       number: setNumber,
+      email: setEmail,
       selectedRole: setSelectedRole,
       selectedStatus: setSelectedStatus,
       selectedStore: setSelectedStore,
@@ -144,10 +152,14 @@ const A_PopupEditUser = ({
       setLoading(true);
 
       const userData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
         store_id: selectedStore,
         role_permissions_id: selectedRole,
         username: username,
         mobile_number: number,
+        email: email,
         first_name: firstname,
         middle_name: middlename,
         last_name: lastname,
@@ -211,7 +223,7 @@ const A_PopupEditUser = ({
       <CustomPopHeaderTitle
         title={"Edit User Details"}
         subtitle={"Provide the details for the new user below"}
-        onClose={onClose}
+        onClose={handleDialogClose}
       />
 
       <DialogContent>
@@ -303,6 +315,7 @@ const A_PopupEditUser = ({
             }}
           />
         </Box>
+
         {/* Mobile Number */}
         <TextField
           margin="dense"
@@ -321,6 +334,37 @@ const A_PopupEditUser = ({
           }}
           inputProps={{
             inputMode: "numeric",
+          }}
+          sx={{
+            mb: 2,
+            "& .MuiOutlinedInput-root": {
+              "&.Mui-focused fieldset": {
+                borderColor: COLORS.secondary,
+              },
+            },
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: COLORS.secondary,
+            },
+          }}
+        />
+        {/* Email */}
+        <TextField
+          margin="dense"
+          label="Email"
+          type="email"
+          fullWidth
+          variant="outlined"
+          value={email}
+          error={Boolean(errors.email)}
+          helperText={errors.email}
+          onChange={(e) => {
+            const { value } = e.target;
+            handleInputChange("email")({
+              target: { value: value.replace(/[^a-zA-Z0-9@._-]/g, "") },
+            });
+          }}
+          inputProps={{
+            inputMode: "email",
           }}
           sx={{
             mb: 2,

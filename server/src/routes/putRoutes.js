@@ -15,9 +15,7 @@ import {
 import {
   handleUpdateAdminBasedUser,
   handleUpdatePermissions,
-  handleUpdateRemoveRole,
   handleUpdateRemoveUser,
-  handleUpdateRenameRole,
 } from "../services/admin/useUser.js";
 import {
   handleRemoveItem,
@@ -214,17 +212,6 @@ router.put(
   })
 );
 
-router.put(
-  "/usermanage/:id/update-rename-role",
-  withDatabaseConnection(async (req, res, connection) => {
-    try {
-      await handleUpdateRenameRole(req, res, connection);
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  })
-);
-
 // #For user
 router.put(
   "/usermanage/:id/update-admin-based-user",
@@ -253,17 +240,6 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateRemoveUser(req, res, connection);
-    } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  })
-);
-
-router.put(
-  "/usermanage/:id/update-remove-role",
-  withDatabaseConnection(async (req, res, connection) => {
-    try {
-      await handleUpdateRemoveRole(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

@@ -1,3 +1,5 @@
+import { ActionDescriptions, ActionTypes } from "../../helpers/activityLog.js";
+import { logActivity } from "../useExtraSystem.js";
 import { generatePasswordSalt, hashPassword } from "../../helpers/auth.js";
 
 // POST
@@ -41,6 +43,11 @@ export const handleSetRolesPermissions = async (req, res, connection) => {
       permissions.can_delete,
     ]);
 
+    const actionType = ActionTypes.AUTHENTICATION;
+    const actionDescription = ActionDescriptions[actionType].LOGIN(username);
+
+    // await logActivity(connection, user.id, roleName, actionType, actionDescription);
+
     await connection.commit();
 
     res.json({
@@ -62,6 +69,9 @@ export const handleSetRolesPermissions = async (req, res, connection) => {
 // POST
 export const handleAdminBasedSetNewUser = async (req, res, connection) => {
   const {
+    activity_id,
+    activity_username,
+    activity_roleName,
     store_id,
     role_permissions_id,
     username,
@@ -140,6 +150,20 @@ export const handleAdminBasedSetNewUser = async (req, res, connection) => {
       hashedPassword,
       passwordSalt,
     ]);
+
+    const actionType = ActionTypes.USER_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].ADD_USER(
+      activity_username,
+      username
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
 
     await connection.commit();
 
@@ -394,68 +418,17 @@ export const handleGetBasedUser = async (req, res, connection) => {
 };
 
 // PUT UPDATE
-export const handleUpdateRenameRole = async (req, res, connection) => {
-  const { id } = req.params;
-  const { role_name } = req.body;
-
-  try {
-    await connection.beginTransaction();
-
-    const checkQuery = `
-     SELECT COUNT(*) AS count
-     FROM Roles_Permissions
-     WHERE role_name = ? AND id != ? AND isArchive = 0;
-   `;
-
-    const [checkResult] = await connection.execute(checkQuery, [role_name, id]);
-
-    if (checkResult[0].count > 0) {
-      await connection.rollback();
-      return res.json({
-        success: false,
-        message: "Role name already exists for a different role.",
-      });
-    }
-
-    const updateQuery = `
-      UPDATE Roles_Permissions
-      SET role_name = ?
-      WHERE id = ? AND isArchive = 0;
-    `;
-
-    const values = [role_name, id];
-    const [result] = await connection.execute(updateQuery, values);
-
-    if (result.affectedRows > 0) {
-      await connection.commit();
-      return res
-        .status(200)
-        .json({ success: true, message: "Role name updated successfully." });
-    } else {
-      await connection.rollback();
-      return res.status(404).json({
-        success: false,
-        message: "Role not found or already archived.",
-      });
-    }
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error updating role name:", error);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while updating the role name." });
-  } finally {
-    if (connection) connection.release();
-  }
-};
-
 export const handleUpdateAdminBasedUser = async (req, res, connection) => {
   const { id } = req.params;
   const {
+    activity_id,
+    activity_username,
+    activity_roleName,
     store_id,
     role_permissions_id,
     username,
     mobile_number,
+    email,
     first_name,
     middle_name,
     last_name,
@@ -481,6 +454,7 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
         store_id = ?,
         role_permissions_id = ?,
         username = ?,
+        email = ?,
         mobile_number = ?,
         first_name = ?,
         middle_name = ?,
@@ -493,6 +467,7 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
       store_id,
       role_permissions_id,
       username,
+      email,
       mobile_number,
       first_name,
       middle_name,
@@ -502,6 +477,21 @@ export const handleUpdateAdminBasedUser = async (req, res, connection) => {
     ];
 
     await connection.query(updateQuery, params);
+
+    const actionType = ActionTypes.USER_MANAGEMENT;
+    const actionDescription = ActionDescriptions[actionType].UPDATE_USER(
+      activity_username,
+      username
+    );
+
+    await logActivity(
+      connection,
+      activity_id,
+      activity_roleName,
+      actionType,
+      actionDescription
+    );
+
     await connection.commit();
 
     res
@@ -571,26 +561,49 @@ export const handleUpdatePermissions = async (req, res, connection) => {
 // #REMOVE UPDATE
 export const handleUpdateRemoveUser = async (req, res, connection) => {
   const { id } = req.params;
+  const { activity_id, activity_username, activity_roleName } = req.body;
 
   try {
     await connection.beginTransaction();
 
-    const updateQuery = `
-      UPDATE User_Account 
-      SET isArchive = 1 
-      WHERE id = ?
-    `;
+    const getUsernameQuery = `SELECT username FROM User_Account WHERE id = ?`;
+    const [userResult] = await connection.query(getUsernameQuery, [id]);
 
-    const [result] = await connection.query(updateQuery, [id]);
+    if (userResult.length > 0) {
+      const username = userResult[0].username;
 
-    if (result.affectedRows > 0) {
-      await connection.commit();
-      res
-        .status(200)
-        .json({ success: true, message: "User removed successfully." });
+      const updateQuery = `
+        UPDATE User_Account 
+        SET isArchive = 1 
+        WHERE id = ?
+      `;
+      const [result] = await connection.query(updateQuery, [id]);
+
+      if (result.affectedRows > 0) {
+        const actionType = ActionTypes.USER_MANAGEMENT;
+        const actionDescription = ActionDescriptions[actionType].DELETE_USER(
+          activity_username,
+          username
+        );
+
+        await logActivity(
+          connection,
+          activity_id,
+          activity_roleName,
+          actionType,
+          actionDescription
+        );
+
+        await connection.commit();
+        res
+          .status(200)
+          .json({ success: true, message: "User removed successfully." });
+      } else {
+        await connection.rollback();
+        res.status(404).json({ success: false, message: "User not found." });
+      }
     } else {
-      await connection.rollback();
-      res.status(404).json({ success: false, message: "User not found." });
+      throw new Error("User not found.");
     }
   } catch (error) {
     await connection.rollback();
@@ -602,99 +615,3 @@ export const handleUpdateRemoveUser = async (req, res, connection) => {
     if (connection) connection.release();
   }
 };
-
-export const handleUpdateRemoveRole = async (req, res, connection) => {
-  const { id } = req.params;
-
-  try {
-    await connection.beginTransaction();
-
-    const checkQuery = `
-    SELECT *
-    FROM User_Account
-    WHERE role_permissions_id = ? AND isArchive = 0
-  `;
-
-    const [existData] = await connection.query(checkQuery, [id]);
-
-    if (existData.length > 0) {
-      return res.json({
-        success: false,
-        message: "The role is in use by an active user account.",
-      });
-    }
-
-    const updateQuery = `
-      UPDATE Roles_Permissions 
-      SET isArchive = 1 
-      WHERE id = ?
-    `;
-
-    const [result] = await connection.query(updateQuery, [id]);
-
-    if (result.affectedRows > 0) {
-      await connection.commit();
-      res
-        .status(200)
-        .json({ success: true, message: "Role removed successfully." });
-    } else {
-      await connection.rollback();
-      res.status(404).json({ success: false, message: "Role not found." });
-    }
-  } catch (error) {
-    await connection.rollback();
-    console.error("Error removing user:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while removing the user." });
-  } finally {
-    if (connection) connection.release();
-  }
-};
-
-// export const handleDeleteRole = async (req, res, connection) => {
-//   const { id } = req.params;
-
-//   try {
-//     await connection.beginTransaction();
-
-//     const userCountQuery = `
-//       SELECT COUNT(*) as user_count
-//       FROM User_Account
-//       WHERE role_permissions_id = ? AND isArchive = 0
-//     `;
-//     const [userCountResults] = await connection.execute(userCountQuery, [id]);
-
-//     const { user_count } = userCountResults[0];
-
-//     if (user_count === 0) {
-//       const updateQuery = `
-//         UPDATE Roles_Permissions
-//         SET isArchive = 1
-//         WHERE id = ? AND isArchive = 0
-//       `;
-//       await connection.execute(updateQuery, [id]);
-
-//       await connection.commit();
-//       1;
-//       return res.status(200).json({
-//         success: true,
-//         message: `Role with id ${id} was successfully archived.`,
-//       });
-//     } else {
-//       return res.status(400).json({
-//         success: false,
-//         message: `Role with id ${id} cannot be archived because there are users associated with it.`,
-//       });
-//     }
-//   } catch (error) {
-//     await connection.rollback();
-//     console.error("Error archiving role:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while trying to archive the role.",
-//     });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// };

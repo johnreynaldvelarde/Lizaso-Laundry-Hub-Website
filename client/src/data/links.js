@@ -45,20 +45,20 @@ export const links = [
     url: "/main/schedule",
   },
   {
-    name: "Store Management",
-    icon: React.createElement(Storefront, {
-      weight: "duotone",
-      size: iconSize,
-    }),
-    url: "/main/store",
-  },
-  {
     name: "Inventory",
     icon: React.createElement(ArchiveBox, {
       weight: "duotone",
       size: iconSize,
     }),
     url: "/main/inventory",
+  },
+  {
+    name: "Store Management",
+    icon: React.createElement(Storefront, {
+      weight: "duotone",
+      size: iconSize,
+    }),
+    url: "/main/store",
   },
   {
     name: "User Management",

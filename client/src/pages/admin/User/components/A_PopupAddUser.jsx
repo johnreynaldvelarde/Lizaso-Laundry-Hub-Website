@@ -30,7 +30,7 @@ const A_PopupAddUser = ({
 }) => {
   const { userDetails } = useAuth();
   const [username, setUsername] = useState("");
-  const [defaultPassword, setDefaultPassword] = useState("lizaso12345");
+  const [defaultPassword, setDefaultPassword] = useState("@Lizaso12345");
   const [firstname, setFirstname] = useState("");
   const [middlename, setMiddlename] = useState("");
   const [lastname, setLastname] = useState("");
@@ -50,44 +50,65 @@ const A_PopupAddUser = ({
   const validateFields = () => {
     const newErrors = {};
 
-    const fields = {
-      username: "Username is required",
-      defaultPassword: "Password is required",
-      firstname: "Firstname is required",
-      lastname: "Lastname is required",
-      number: "Mobile number is required",
-      selectedRole: "Role is required",
-      selectedStatus: "Status is required",
-      selectedStore: "Store is required",
-    };
+    if (!defaultPassword) {
+      newErrors.defaultPassword = "Password is required";
+    } else if (defaultPassword.length < 8) {
+      newErrors.defaultPassword = "Password must be at least 8 characters long";
+    } else if (!/[A-Z]/.test(defaultPassword)) {
+      newErrors.defaultPassword =
+        "Password must contain at least one uppercase letter";
+    } else if (!/[a-z]/.test(defaultPassword)) {
+      newErrors.defaultPassword =
+        "Password must contain at least one lowercase letter";
+    } else if (!/[0-9]/.test(defaultPassword)) {
+      newErrors.defaultPassword = "Password must contain at least one number";
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(defaultPassword)) {
+      newErrors.defaultPassword =
+        "Password must contain at least one special character";
+    }
 
-    for (const field in fields) {
-      let value;
+    if (!number) {
+      newErrors.number = "Phone number is required";
+    } else if (!/^\d+$/.test(number)) {
+      newErrors.number = "Phone number must contain only numbers";
+    } else if (number.length < 10) {
+      newErrors.number = "Phone number must be at least 10 digits";
+    }
 
-      // Use if-else to determine which value to check
-      if (field === "selectedStatus") {
-        value = selectedStatus;
-      } else if (field === "selectedRole") {
-        value = selectedRole;
-      } else if (field === "username") {
-        value = username;
-      } else if (field === "defaultPassword") {
-        value = defaultPassword;
-      } else if (field === "firstname") {
-        value = firstname;
-      } else if (field === "lastname") {
-        value = lastname;
-      } else if (field === "number") {
-        value = number;
-      } else if (field === "email") {
-        value = email;
-      } else if (field === "selectedStore") {
-        value = selectedStore;
-      }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Email must be a valid format";
+    }
 
-      if (value === undefined || value === null || value === "") {
-        newErrors[field] = fields[field];
-      }
+    if (!username) {
+      newErrors.username = "Username is required";
+    } else if (username.length < 5) {
+      newErrors.username = "Username must be at least 5 characters long";
+    } else if (/\s/.test(username)) {
+      newErrors.username = "Username cannot contain spaces";
+    }
+
+    if (!firstname) {
+      newErrors.firstname = "First name is required";
+    }
+
+    if (!lastname) {
+      newErrors.lastname = "Last name is required";
+    }
+
+    if (!selectedRole) {
+      newErrors.selectedRole = "Role is required";
+    }
+
+    if (
+      selectedStatus === null ||
+      selectedStatus === undefined ||
+      selectedStatus === ""
+    ) {
+      newErrors.selectedStatus = "Status is required";
+    }
+
+    if (!selectedStore) {
+      newErrors.selectedStore = "Store is required";
     }
 
     return newErrors;
@@ -128,6 +149,9 @@ const A_PopupAddUser = ({
       setLoading(true);
 
       const userData = {
+        activity_id: userDetails.userId,
+        activity_username: userDetails.username,
+        activity_roleName: userDetails.roleName,
         store_id: selectedStore,
         role_permissions_id: selectedRole,
         username: username,
@@ -199,7 +223,7 @@ const A_PopupAddUser = ({
       <CustomPopHeaderTitle
         title={"Add New User"}
         subtitle={" Provide the details for the new user below"}
-        onClose={onClose}
+        onClose={handleDialogClose}
       />
 
       <DialogContent>
@@ -487,7 +511,7 @@ const A_PopupAddUser = ({
       {/* Footer */}
       <CustomPopFooterButton
         label={"Creater User"}
-        onClose={onClose}
+        onClose={handleDialogClose}
         onSubmit={handleCreateUser}
         loading={loading}
       />
