@@ -19,6 +19,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import useRegisterForm from "../../hooks/useRegisterForm";
 import CustomPopHeaderTitle from "./CustomPopHeaderTitle";
 import { COLORS } from "../../constants/color";
+import usePopup from "../../hooks/common/usePopup";
+import PopupTermsAndCondition from "./PopupTermsAndConditon";
 
 const PopupCreateAccount = ({
   showCreateAccountPopup,
@@ -51,6 +53,8 @@ const PopupCreateAccount = ({
     handleRegister,
     loading,
   } = useRegisterForm(showCreateAccountPopup, setShowCreateAccountPopup);
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
+
 
   return (
     <Dialog
@@ -257,6 +261,7 @@ const PopupCreateAccount = ({
                 href="#"
                 className=" hover:underline"
                 style={{ color: COLORS.secondary }}
+                onClick={() => openPopup("termsConditon")}
               >
                 terms and conditions
               </a>
@@ -275,6 +280,9 @@ const PopupCreateAccount = ({
           </div>
         </form>
       </DialogContent>
+       {isOpen && popupType === "termsConditon" && (
+        <PopupTermsAndCondition open={isOpen} onClose={closePopup} />
+      )}
     </Dialog>
   );
 };
