@@ -13,6 +13,7 @@ const Sidebar = ({ window, sideBarWidth, mobileOpen, handleDrawerToggle }) => {
     (link) =>
       link.name !== "Configuration" &&
       link.name !== "Archived" &&
+      link.name !== "Settings" &&
       (link.name !== "Store Management" ||
         userDetails?.roleName === "Administrator")
   );
