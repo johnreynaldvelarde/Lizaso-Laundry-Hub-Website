@@ -6,6 +6,7 @@ import {
   handleSetMessagesSenderIsStaff,
   handleUpdateServiceRequestBackToPending,
   handleUpdateServiceRequestFinishPickup,
+  handleUpdateServiceRequestFinishTheDelivery,
   handleUpdateServiceRequestReadyDeliveryToOngoing,
   handleUpdateServiceRequestUsingQrCode,
 } from "../../services/user/staff.js";
@@ -289,6 +290,18 @@ router.put(
 );
 
 //# DELIVERY SECTION
+router.put(
+  "/staff/:id/update-request-finish-delivery",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateServiceRequestFinishTheDelivery(req, res, connection);
+    } catch (error) {
+      console.error("Error retrieving service request:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
 router.put(
   "/staff/:id/update-request-proceed-delivery",
   withDatabaseConnection(async (req, res, connection) => {
