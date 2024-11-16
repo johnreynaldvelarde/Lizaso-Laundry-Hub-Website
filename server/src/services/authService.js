@@ -35,6 +35,15 @@ export const handleLogin = async (req, res, db) => {
       [username]
     );
 
+    
+    if (userAccountResults[0].isStatus === 0 ) {
+      await db.rollback();
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     if (userAccountResults.length > 0) {
       user = userAccountResults[0];
       const [secResults] = await db.query(

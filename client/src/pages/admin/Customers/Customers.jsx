@@ -11,7 +11,8 @@ const Customers = () => {
     <Box sx={{ pt: "100px", pb: "20px", px: "20px" }}>
       {userDetails?.roleName === "Administrator" ? (
         <SectionAdminCustomers storeId={userDetails.storeId} />
-      ) : userDetails?.roleName === "Manager" ? (
+      ) : userDetails?.roleName === "Manager" ||
+      userDetails?.roleName === "Store Staff" ? (
         <SectionUserCustomers storeId={userDetails.storeId} />
       ) : (
         <AccessDenied />
