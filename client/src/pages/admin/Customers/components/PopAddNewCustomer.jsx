@@ -291,8 +291,8 @@ const PopAddNewCustomer = ({ open, onClose, refreshData }) => {
     >
       {/* Header */}
       <CustomPopHeaderTitle
-        title={"Add New Store"}
-        subtitle={"Provide the details for the new store below"}
+        title={"Add New Customer"}
+        subtitle={"Provide the details for the new customer below"}
         onClose={onClose}
       />
 

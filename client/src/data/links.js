@@ -61,14 +61,14 @@ export const links = [
     url: "/main/store",
   },
   {
-    name: "User Management",
-    icon: React.createElement(Users, { weight: "duotone", size: iconSize }),
-    url: "/main/all-user",
-  },
-  {
     name: "View Customers",
     icon: React.createElement(User, { weight: "duotone", size: iconSize }),
     url: "/main/customers",
+  },
+  {
+    name: "User Management",
+    icon: React.createElement(Users, { weight: "duotone", size: iconSize }),
+    url: "/main/all-user",
   },
   {
     name: "Inbox",

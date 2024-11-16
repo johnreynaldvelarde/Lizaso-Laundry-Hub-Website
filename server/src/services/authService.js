@@ -154,8 +154,8 @@ export const handleRegister = async (req, res, db) => {
 
     // Insert customer into Customers table
     const [customerResult] = await db.query(
-      `INSERT INTO Customer (id, c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, date_created)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      `INSERT INTO Customer (id, c_firstname, c_middlename, c_lastname, c_username, c_number, c_email, isAgreement, isStatus, date_created)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())`,
       [
         newCustomerId,
         c_firstname,

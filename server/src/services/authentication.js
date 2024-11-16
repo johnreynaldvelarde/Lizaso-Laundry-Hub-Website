@@ -168,8 +168,8 @@ export const handleRegisterCustomer = async (req, res, db) => {
         lastname,
         "Customer",
         isAgreement,
-        false,
-        0,
+        true,
+        1,
         false,
       ]
     );
