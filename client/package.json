@@ -25,6 +25,7 @@
     "leaflet": "^1.9.4",
     "lottie-react": "^2.4.0",
     "material-react-table": "^2.13.1",
+    "moment-timezone": "^0.5.46",
     "nprogress": "^0.2.0",
     "qrcode.react": "^4.0.1",
     "react": "^18.3.1",
