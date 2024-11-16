@@ -265,6 +265,7 @@ export const handleGetRolesPermissions = async (req, res, connection) => {
 export const handleGetStoresBasedAdmin = async (req, res, connection) => {
   const { id } = req.params; // user id
 
+
   try {
     await connection.beginTransaction();
     const userQuery = `
@@ -308,6 +309,8 @@ export const handleGetStoresBasedAdmin = async (req, res, connection) => {
         FROM Stores s
         WHERE s.isArchive = 0
       `;
+
+      console.log(allStoresQuery);
 
       const [allStoresResults] = await connection.execute(allStoresQuery);
 
@@ -377,9 +380,8 @@ export const handleGetBasedUser = async (req, res, connection) => {
         ua.last_name,
         ua.isOnline,
         CASE
-            WHEN ua.isStatus = 0 THEN 'Active'
-            WHEN ua.isStatus = 1 THEN 'Deactivated'
-            WHEN ua.isStatus = 2 THEN 'Pending'
+            WHEN ua.isStatus = 1 THEN 'Active'
+            WHEN ua.isStatus = 0 THEN 'Deactivated'
             ELSE 'Unknown'
         END AS isStatus,
         ua.isArchive,

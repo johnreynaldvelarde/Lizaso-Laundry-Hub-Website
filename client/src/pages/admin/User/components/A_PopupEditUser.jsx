@@ -58,9 +58,9 @@ const A_PopupEditUser = ({
       setSelectedRole(matchingRole ? matchingRole.id : "");
       setSelectedStatus(
         userData.isStatus === "Active"
-          ? 0
-          : userData.isStatus === "Deactivated"
           ? 1
+          : userData.isStatus === "Deactivated"
+          ? 0
           : null
       );
     } else {
