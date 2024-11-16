@@ -45,6 +45,19 @@ export const links = [
     url: "/main/schedule",
   },
   {
+    name: "View Customers",
+    icon: React.createElement(User, { weight: "duotone", size: iconSize }),
+    url: "/main/customers",
+  },
+  {
+    name: "Inbox",
+    icon: React.createElement(ChatsCircle, {
+      weight: "duotone",
+      size: iconSize,
+    }),
+    url: "/main/inbox",
+  },
+  {
     name: "Inventory",
     icon: React.createElement(ArchiveBox, {
       weight: "duotone",
@@ -61,22 +74,9 @@ export const links = [
     url: "/main/store",
   },
   {
-    name: "View Customers",
-    icon: React.createElement(User, { weight: "duotone", size: iconSize }),
-    url: "/main/customers",
-  },
-  {
     name: "User Management",
     icon: React.createElement(Users, { weight: "duotone", size: iconSize }),
     url: "/main/all-user",
-  },
-  {
-    name: "Inbox",
-    icon: React.createElement(ChatsCircle, {
-      weight: "duotone",
-      size: iconSize,
-    }),
-    url: "/main/inbox",
   },
   {
     name: "Reviews",

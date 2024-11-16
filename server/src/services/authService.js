@@ -36,11 +36,19 @@ export const handleLogin = async (req, res, db) => {
     );
 
     
-    if (userAccountResults[0].isStatus === 0 ) {
+    if (userAccountResults.length === 0 || userAccountResults[0].isStatus === 0 ) {
       await db.rollback();
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+
+    if (userAccountResults[0].user_type === 'Delivery Staff') {
+      await db.rollback();
+      return res.status(404).json({
+        success: false,
+        message: "User account is not available on the website",
       });
     }
 
