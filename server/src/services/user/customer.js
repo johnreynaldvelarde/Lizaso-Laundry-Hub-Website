@@ -1650,3 +1650,41 @@ export const handleUpdateEmailForVerification = async (
     connection.release();
   }
 };
+
+export const handleUpdateAccountVerified = async (req, res, connection) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE User_Account
+      SET isVerifiedEmail = 1
+      WHERE id = ? AND user_type = 'Customer';
+    `;
+
+    const [rows] = await connection.execute(updateQuery, [id]);
+
+    if (rows.affectedRows === 0) {
+      return res
+        .status(200)
+        .json({ message: "User not found or not a customer." });
+    }
+
+    await connection.commit();
+
+    res.status(200).json({
+      success: true,
+      message: "Your account is verified successfully!",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res
+      .status(500)
+      .json({ message: "Error updating email verification status." });
+  } finally {
+    // Release the connection
+    connection.release();
+  }
+};
