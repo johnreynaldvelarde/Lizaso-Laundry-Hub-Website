@@ -28,11 +28,4 @@ router.post(
   })
 );
 
-// router.post(
-//   "customers/:id/check-customer-details",
-//   withDatabaseConnection(async (req, res, connection) => {
-//     await handleCheckCustomerDetails(req, res, connection);
-//   })
-// );
-
 export default router;

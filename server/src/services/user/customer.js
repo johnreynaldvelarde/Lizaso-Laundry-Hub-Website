@@ -1601,15 +1601,52 @@ export const handleUpdateServiceRequestCancelByCustomer = async (
   }
 };
 
-// Log notification
-// const notificationType = NotificationStatus.CANCELED;
-// const notificationDescription =
-//   NotificationDescriptions[notificationType]();
+// Update for verification
+export const handleUpdateEmailForVerification = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+  const { email } = req.body;
 
-// await logNotification(
-//   connection,
-//   null,
-//   customer_id,
-//   notificationType,
-//   notificationDescription
-// );
+  try {
+    const emailCheckQuery = `
+      SELECT COUNT(*) AS count
+      FROM User_Account
+      WHERE email = ? AND id != ?;
+    `;
+    const [emailCheckRows] = await connection.execute(emailCheckQuery, [
+      email,
+      id,
+    ]);
+
+    if (emailCheckRows[0].count > 0) {
+      return res
+        .status(200)
+        .json({ message: "Email is already taken by another user." });
+    }
+
+    await connection.beginTransaction();
+
+    const updateEmailQuery = `
+      UPDATE User_Account
+      SET email = ?
+      WHERE id = ?;
+    `;
+
+    await connection.execute(updateEmailQuery, [email, id]);
+
+    await connection.commit();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Email updated successfully!" });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ message: "Error updating email" });
+  } finally {
+    connection.release();
+  }
+};

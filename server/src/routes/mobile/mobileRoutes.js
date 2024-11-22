@@ -25,6 +25,7 @@ import {
   handleGetNotificationCustomer,
   handleGetStoreList,
   handleUpdateCustomerBasicInformationMobile,
+  handleUpdateEmailForVerification,
 } from "../../services/user/customer.js";
 import {
   handleGetInbox,
@@ -180,6 +181,17 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateCustomerBasicInformationMobile(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/update-email-for-verified",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateEmailForVerification(req, res, connection);
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }
