@@ -1,4 +1,4 @@
-import { io } from "../../socket/socket.js";
+import { io, userSockets } from "../../socket/socket.js";
 import { haversineDistance } from "../../helpers/distanceComputing.js";
 import { logNotification } from "../useExtraSystem.js";
 import {
@@ -370,12 +370,21 @@ export const handleUpdateServiceRequestCancel = async (
       notificationDescription
     );
 
-    io.emit("sendNotificationToUser", {
-      userId: customer_id,
-      message: "Your service request has been canceled.",
-    });
-
     await connection.commit();
+
+    for (const userId in userSockets) {
+      const userSocket = userSockets[userId];
+
+      if (
+        userSocket.userId === customer_id &&
+        userSocket.userType == "Customer"
+      ) {
+        io.to(userSocket.socketId).emit("notificationsModule", {
+          title: notificationType,
+          message: notificationDescription,
+        });
+      }
+    }
 
     res.status(200).json({
       success: true,

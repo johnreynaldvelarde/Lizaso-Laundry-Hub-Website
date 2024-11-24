@@ -18,18 +18,18 @@ const PaymentHistory = lazy(() =>
 );
 
 const MainCustomer = () => {
-  // useEffect(() => {
-  //   // Show a toast every 5 seconds
-  //   const intervalId = setInterval(() => {
-  //     showNotification({
-  //       message: "This is an automatic notification.",
-  //       type: "info",
-  //     });
-  //   }, 5000);
+  useEffect(() => {
+    // Show a toast every 5 seconds
+    const intervalId = setInterval(() => {
+      showNotification({
+        message: "This is an automatic notification.",
+        type: "info",
+      });
+    }, 5000);
 
-  //   // Clear the interval on component unmount
-  //   return () => clearInterval(intervalId);
-  // }, []);
+    // Clear the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">

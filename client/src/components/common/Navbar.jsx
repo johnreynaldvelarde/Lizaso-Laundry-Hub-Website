@@ -31,7 +31,6 @@ import { FaRegBell } from "react-icons/fa";
 import A_DropNotifications from "./A_DropNotifications";
 import A_DropMessage from "./A_DropMessage";
 import useNavbarData from "../../hooks/common/useNavbarData";
-import useSocket from "../../hooks/common/useSocket";
 
 const Navbar = ({ sideBarWidth, handleDrawerToggle }) => {
   const { userDetails, fetchUserDetails, accessToken } = useAuth();

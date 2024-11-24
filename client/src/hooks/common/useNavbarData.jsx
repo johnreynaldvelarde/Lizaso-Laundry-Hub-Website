@@ -3,6 +3,7 @@ import useFetchData from "./useFetchData";
 import { getNotificationsList } from "../../services/api/customerApi";
 import useSocket from "./useSocket";
 import { getListAdminUserNotifications } from "../../services/api/getApi";
+import showNotification from "../../utils/showNotification";
 
 const useNavbarData = ({ userDetails }) => {
   const { socket } = useSocket();
@@ -35,20 +36,22 @@ const useNavbarData = ({ userDetails }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.emit("register", userDetails.userId);
+      socket.emit("register", {
+        userId: userDetails.userId,
+        storeId: userDetails.storeId,
+        userType: userDetails.roleName,
+      });
 
-      // socket.on("registerSuccess", (data) => {
-      //   console.log("Server response:", data.message);
-      // });
-
-      socket.on("serviceRequestByCustomer", (data) => {
-        // console.log("Service Request Success: ", data);
+      socket.on("notificationsModule", (data) => {
         fetchNotificationsData();
+        showNotification({
+          message: data.message,
+          title: data.title,
+        });
       });
 
       return () => {
-        socket.off("serviceRequestByCustomer");
-        // socket.off("registerSuccess");
+        socket.off("notificationsModule");
       };
     }
   }, [socket, userDetails.userId]);
@@ -57,3 +60,9 @@ const useNavbarData = ({ userDetails }) => {
 };
 
 export default useNavbarData;
+
+// socket.on("registerSuccess", (data) => {
+//   console.log("Server response:", data.message);
+// });
+
+// socket.off("registerSuccess");

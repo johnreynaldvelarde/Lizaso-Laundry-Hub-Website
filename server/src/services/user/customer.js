@@ -154,10 +154,24 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     //   console.error(`Socket ID for user ${1} not found`);
     // }
 
-    io.to(userSockets[1]).emit("serviceRequestByCustomer", {
-      title: notificationType,
-      message: notificationDescription,
-    });
+    // io.to(.emit("notificationsModule", {
+    //   title: notificationType,
+    //   message: notificationDescription,
+    // });
+
+    for (const userId in userSockets) {
+      const userSocket = userSockets[userId];
+
+      if (
+        userSocket.storeId === store_id &&
+        userSocket.userType !== "Customer"
+      ) {
+        io.to(userSocket.socketId).emit("notificationsModule", {
+          title: notificationType,
+          message: notificationDescription,
+        });
+      }
+    }
 
     res.status(201).json({
       success: true,
