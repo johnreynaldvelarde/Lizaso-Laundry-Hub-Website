@@ -1,3 +1,4 @@
+import { io, userSockets } from "../../socket/socket.js";
 import QRCode from "qrcode";
 import { generateTrackingCode } from "../../helpers/generateCode.js";
 import { progress } from "../../helpers/_progress.js";
@@ -14,7 +15,7 @@ import {
 
 // #POST
 export const handleSetCustomerServiceRequest = async (req, res, connection) => {
-  const { id } = req.params; // Customer ID
+  const { id } = req.params;
   const {
     store_id,
     service_type_id,
@@ -89,15 +90,12 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       payment_method,
     ]);
 
-    // Get the ID of the newly created service request
     const newRequestId = result.insertId;
 
-    // Generate a unique QR code based on the service request ID
-    const qrCodeData = `SR-${newRequestId}-${trackingCode}`; // Unique string for QR code
+    const qrCodeData = `SR-${newRequestId}-${trackingCode}`;
 
     const qrCodeString = await QRCode.toDataURL(qrCodeData);
 
-    // Update the Service_Request table with the generated QR code
     const updateQuery = `
       UPDATE Service_Request 
       SET qr_code = ?, qr_code_generated = 1
@@ -106,7 +104,6 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
 
     await connection.execute(updateQuery, [qrCodeData, newRequestId]);
 
-    // Insert initial progress entry into Service_Progress table
     const progressQuery = `
       INSERT INTO Service_Progress (
           service_request_id,
@@ -145,6 +142,22 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
     );
 
     await connection.commit();
+
+    // if (userSockets[1]) {
+    //   io.to(userSockets[1]).emit("serviceRequestSuccess", {
+    //     message: "Service request created successfully!",
+    //     service_request_id: newRequestId,
+    //     qr_code: qrCodeData,
+    //     queue_number: queueNumber,
+    //   });
+    // } else {
+    //   console.error(`Socket ID for user ${1} not found`);
+    // }
+
+    io.to(userSockets[1]).emit("serviceRequestByCustomer", {
+      title: notificationType,
+      message: notificationDescription,
+    });
 
     res.status(201).json({
       success: true,

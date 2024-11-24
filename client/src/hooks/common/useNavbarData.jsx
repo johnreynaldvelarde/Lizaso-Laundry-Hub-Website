@@ -8,12 +8,11 @@ const useNavbarData = ({ userDetails }) => {
   const { socket } = useSocket();
   const [loading, setLoading] = useState(true);
   const { data: notifications, fetchData: fetchNotifications } = useFetchData();
-  const { data: message, fetchData: fetchMessage } = useFetchData();
 
   const fetchNotificationsData = useCallback(async () => {
     if (!userDetails || !userDetails.roleName) {
       console.warn("userDetails not populated yet.");
-      return; // Exit if userDetails isn't available yet
+      return;
     }
 
     setLoading(true);
@@ -23,11 +22,6 @@ const useNavbarData = ({ userDetails }) => {
     const fetchFn = isCustomer
       ? getNotificationsList.getNotifications
       : getListAdminUserNotifications.getAdminUserNotifications;
-
-    // console.log("Role:", userDetails.roleName);
-    // console.log("Is customer:", isCustomer);
-    // console.log("Using fetch function:", fetchFn.name);
-    // console.log("Using ID:", id);
 
     await fetchNotifications(fetchFn, id);
 
@@ -41,17 +35,20 @@ const useNavbarData = ({ userDetails }) => {
 
   useEffect(() => {
     if (socket) {
-      // Register the user with their userId
       socket.emit("register", userDetails.userId);
 
-      // Listen for notifications
-      socket.on("newNotification", (notification) => {
-        console.log("Received newNotification:", notification);
-        // Handle the notification (e.g., update state or UI)
+      // socket.on("registerSuccess", (data) => {
+      //   console.log("Server response:", data.message);
+      // });
+
+      socket.on("serviceRequestByCustomer", (data) => {
+        // console.log("Service Request Success: ", data);
+        fetchNotificationsData();
       });
 
       return () => {
-        socket.off("newNotification"); // Cleanup the listener on unmount
+        socket.off("serviceRequestByCustomer");
+        // socket.off("registerSuccess");
       };
     }
   }, [socket, userDetails.userId]);
@@ -60,36 +57,3 @@ const useNavbarData = ({ userDetails }) => {
 };
 
 export default useNavbarData;
-
-// import React, { useCallback, useState } from "react";
-// import useFetchData from "./useFetchData";
-// import { getNotificationsList } from "../../services/api/customerApi";
-
-// const useNavbarData = ({ userDetails }) => {
-//   const [loading, setLoading] = useState(true);
-
-//   const { data: notifications, fetchData: fetchNotifications } = useFetchData();
-//   const { data: message, fetchData: fetchMessage } = useFetchData();
-
-//   const fetchNotificationsData = useCallback(async () => {
-//     setLoading(true);
-
-//     const id =
-//       userDetails.roleName === "Customer"
-//         ? userDetails.userId
-//         : userDetails.storeId;
-
-//     await fetchNotifications(getNotificationsList.getNotifications, id);
-
-//     setLoading(false);
-//   }, [
-//     fetchNotifications,
-//     userDetails.roleName,
-//     userDetails.userId,
-//     userDetails.storeId,
-//   ]);
-
-//   return { loading, fetchNotificationsData, notifications };
-// };
-
-// export default useNavbarData;
