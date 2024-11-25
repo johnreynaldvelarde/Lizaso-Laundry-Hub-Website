@@ -25,6 +25,8 @@ import {
   handleGetNotificationCustomer,
   handleGetStoreList,
   handleUpdateAccountVerified,
+  handleUpdateClearAllNotificationsByCustomer,
+  handleUpdateClearOneByOneNotificationsByCustomer,
   handleUpdateCustomerBasicInformationMobile,
   handleUpdateEmailForVerification,
 } from "../../services/user/customer.js";
@@ -204,6 +206,32 @@ router.put(
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateAccountVerified(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/clear-all-notifications",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateClearAllNotificationsByCustomer(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/customers/:id/clear-one-by-on-notifications",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateClearOneByOneNotificationsByCustomer(
+        req,
+        res,
+        connection
+      );
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
     }

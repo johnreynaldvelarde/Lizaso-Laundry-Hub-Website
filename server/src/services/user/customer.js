@@ -143,22 +143,6 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
 
     await connection.commit();
 
-    // if (userSockets[1]) {
-    //   io.to(userSockets[1]).emit("serviceRequestSuccess", {
-    //     message: "Service request created successfully!",
-    //     service_request_id: newRequestId,
-    //     qr_code: qrCodeData,
-    //     queue_number: queueNumber,
-    //   });
-    // } else {
-    //   console.error(`Socket ID for user ${1} not found`);
-    // }
-
-    // io.to(.emit("notificationsModule", {
-    //   title: notificationType,
-    //   message: notificationDescription,
-    // });
-
     for (const userId in userSockets) {
       const userSocket = userSockets[userId];
 
@@ -1121,7 +1105,7 @@ export const handleGetNotificationCustomer = async (req, res, connection) => {
         n.created_at,
         n.read_at
       FROM Notifications n
-      WHERE n.user_id = ?
+      WHERE n.user_id = ? AND n.status = 'Unread'
       ORDER BY n.created_at DESC
     `;
 
@@ -1712,6 +1696,98 @@ export const handleUpdateAccountVerified = async (req, res, connection) => {
       .json({ message: "Error updating email verification status." });
   } finally {
     // Release the connection
+    connection.release();
+  }
+};
+
+export const handleUpdateClearAllNotificationsByCustomer = async (
+  req,
+  res,
+  connection
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Notifications
+      SET status = 'Read', read_at = NOW()
+      WHERE user_id = ? AND status != 'Archived';
+    `;
+
+    const [rows] = await connection.execute(updateQuery, [id]);
+
+    await connection.commit();
+
+    for (const userId in userSockets) {
+      const userSocket = userSockets[userId];
+
+      if (userSocket.userId === id && userSocket.userType == "Customer") {
+        io.to(userSocket.socketId).emit("notificationsModuleForCustomer", {});
+      }
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "All notifications marked as read" });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ error: "Error updating notifications" });
+  } finally {
+    connection.release();
+  }
+};
+
+export const handleUpdateClearOneByOneNotificationsByCustomer = async (
+  req,
+  res,
+  connection,
+  io,
+  userSockets
+) => {
+  const { id } = req.params;
+
+  try {
+    await connection.beginTransaction();
+
+    const updateQuery = `
+      UPDATE Notifications
+      SET status = 'Read', read_at = NOW()
+      WHERE id = ? AND status != 'Archived';
+    `;
+
+    const [result] = await connection.execute(updateQuery, [id]);
+
+    if (result.affectedRows === 0) {
+      await connection.rollback();
+      return res
+        .status(404)
+        .json({ error: "Notification not found or already updated." });
+    }
+
+    await connection.commit();
+
+    for (const userId in userSockets) {
+      const userSocket = userSockets[userId];
+
+      if (userSocket && userSocket.userType === "Customer") {
+        io.to(userSocket.socketId).emit("notificationsModuleForCustomer", {
+          notificationId: id,
+          status: "Read",
+        });
+      }
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "Notification marked as read." });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Database operation error:", error);
+    res.status(500).json({ error: "Error updating notification." });
+  } finally {
     connection.release();
   }
 };
