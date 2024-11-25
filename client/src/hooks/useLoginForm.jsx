@@ -8,12 +8,12 @@ import toast from "react-hot-toast";
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const { userDetails, fetchUserDetails, setAccessToken } = useAuth();
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [loginUsername, setLoginUsername] = useState("rose16");
-  const [loginPassword, setLoginPassword] = useState("@Secret12345");
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {

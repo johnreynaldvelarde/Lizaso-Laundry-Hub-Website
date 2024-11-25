@@ -1,6 +1,6 @@
 export const NotificationStatus = {
   RETURN_TO_PENDING: "Pending Pickup",
-  PENDING_PICKUP: "Pending Pickup",
+  PENDING_PICKUP_SENT_TO_STAFF: "Request By Customer",
   ONGOING_PICKUP: "Ongoing Pickup",
   COMPLETED_PICKUP: "Completed Pickup",
   AT_STORE: "At Store",
@@ -21,7 +21,7 @@ export const NotificationStatus = {
 export const NotificationDescriptions = {
   // FOR STAFF TO SEE
 
-  [NotificationStatus.PENDING_PICKUP]: (userName, serviceType) =>
+  [NotificationStatus.PENDING_PICKUP_SENT_TO_STAFF]: (userName, serviceType) =>
     `A ${serviceType} service has been requested by ${userName}, but the clothes are still awaiting pickup.`,
 
   // FOR CUSTOMER TO SEE

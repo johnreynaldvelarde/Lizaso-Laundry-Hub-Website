@@ -2,21 +2,50 @@ import React, { useState, useEffect } from "react";
 import { COLORS } from "../../constants/color";
 import email_verified from "../../assets/images/email_verified.jpg";
 import backgroundImage from "../../assets/images/forget-password-background_1.jpg";
-import { isEmailExist } from "../../services/api/authClient";
+import {
+  isEmailExist,
+  updateAccountIsVerified,
+} from "../../services/api/authClient";
 import toast from "react-hot-toast";
 import emailjs from "emailjs-com";
 import useAuth from "../../contexts/AuthContext";
 import { ArrowLeft } from "@phosphor-icons/react";
+import usePopup from "../../hooks/common/usePopup";
+import PopupChangeEmail from "./PopupChangeEmail";
+import { checkCustomerDetails } from "../../services/api/checkApi";
+import { useNavigate } from "react-router-dom";
+import {
+  generateRandomCode,
+  sendVerificationEmail,
+} from "../../utils/emailUtils";
 
 const VerifiedAccount = () => {
-  const { userDetails } = useAuth();
-  const [email, setEmail] = useState(userDetails.email || "");
+  const { userDetails, fetchUserDetails, accessToken } = useAuth();
+  const [email, setEmail] = useState("");
   const [code, setCode] = useState(["", "", "", ""]);
   const [generatedCode, setGeneratedCode] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isResendLoading, setIsResendLoading] = useState(false);
   const [isResendDisabled, setIsResendDisabled] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [timer, setTimer] = useState(60);
+  const { isOpen, popupType, openPopup, closePopup, popupData } = usePopup();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userDetails?.email) {
+      setEmail(userDetails.email);
+    }
+  }, [userDetails?.email]);
+
+  useEffect(() => {
+    if (email) {
+      const newCode = generateRandomCode();
+      setGeneratedCode(newCode);
+      //sendVerificationEmail(email, newCode);
+    }
+  }, [email]);
 
   useEffect(() => {
     if (timer > 0 && isResendDisabled) {
@@ -41,28 +70,7 @@ const VerifiedAccount = () => {
     }
   };
 
-  const sendCodeToEmail = async () => {
-    const newCode = Math.floor(1000 + Math.random() * 9000).toString(); // Generate 4-digit code
-    setGeneratedCode(newCode);
-    setIsResendLoading(true);
-
-    try {
-      //   // Simulate API call to send email
-      //   await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-      //     to_email: email,
-      //     verification_code: newCode,
-      //   });
-      toast.success("Verification code sent to your email!");
-      setIsResendDisabled(true);
-      setTimer(60);
-    } catch (error) {
-      toast.error("Failed to send the code. Please try again.");
-    } finally {
-      setIsResendLoading(false);
-    }
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const enteredCode = code.join("");
     if (enteredCode.length !== 4) {
       toast.error("Please enter the complete 4-digit code.");
@@ -71,23 +79,64 @@ const VerifiedAccount = () => {
 
     if (enteredCode === generatedCode) {
       toast.success("Account verified successfully!");
+      setLoading(true);
+
+      try {
+        const response = await updateAccountIsVerified.putAccountIsVerified(
+          userDetails.userId
+        );
+        if (response.success) {
+          const details = await checkCustomerDetails.getCheckCustomerDetails(
+            userDetails.userId
+          );
+          const { storeIdIsNull, addressIdIsNull, isVerified } = details.data;
+          if (details.success !== false) {
+            if (!isVerified) {
+              navigate("/verified-account");
+            } else if (storeIdIsNull || addressIdIsNull) {
+              navigate("/complete-details");
+            } else {
+              navigate("/customer-page");
+            }
+          } else {
+            toast.error("Failed to check customer details.");
+          }
+        } else {
+          console.log(response.message);
+        }
+      } catch (error) {
+        console.error("Error during login or fetching user details:", error);
+        toast.error("An error occurred while verifying the account.");
+      } finally {
+        setLoading(false);
+      }
     } else {
       toast.error("Invalid verification code.");
     }
   };
 
   const handleResendCode = () => {
-    if (!isResendDisabled) {
-      sendCodeToEmail();
-    } else {
-      toast.error("Please wait for the timer to expire.");
-    }
+    if (isResendDisabled) return;
+    setIsResendLoading(true);
+    const newCode = generateRandomCode();
+    setGeneratedCode(newCode);
+    sendVerificationEmail(email, newCode)
+      .then(() => {
+        toast.success("A new verification code has been sent to your email.");
+      })
+      .catch((error) => {
+        toast.error(
+          "There was an issue resending the verification code. Please try again later."
+        );
+      })
+      .finally(() => {
+        setIsResendDisabled(true);
+        setIsResendLoading(false);
+      });
   };
 
-  const handleChangeEmail = () => {
-    setEmail("");
-    setCode(["", "", "", ""]);
-    setGeneratedCode(null);
+  const handleRefreshData = async () => {
+    await fetchUserDetails(accessToken);
   };
 
   return (
@@ -122,7 +171,7 @@ const VerifiedAccount = () => {
             className="font-bold text-center"
             style={{ color: COLORS.secondary }}
           >
-            {userDetails.email}
+            {email}
           </p>
 
           <div className="flex justify-center mt-4 space-x-5">
@@ -142,8 +191,13 @@ const VerifiedAccount = () => {
           <button
             onClick={handleSubmit}
             className="font-semibold mt-6 px-6 py-2 text-white bg-green-500 rounded hover:bg-green-600 transition-all w-full"
+            disabled={loading} // Disable the button while loading
           >
-            Verify Account
+            {loading ? (
+              <div className="w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin mx-auto"></div>
+            ) : (
+              "Verify Account"
+            )}
           </button>
 
           <div className="flex justify-between mt-4">
@@ -161,7 +215,7 @@ const VerifiedAccount = () => {
             </button>
 
             <button
-              onClick={handleChangeEmail}
+              onClick={() => openPopup("changeEmail")}
               disabled={isResendDisabled}
               className="text-sm font-semibold"
               style={{
@@ -177,7 +231,7 @@ const VerifiedAccount = () => {
           <div className="flex justify-center mt-4">
             <button
               onClick={() => (window.location.href = "/")}
-              className="px-6 py-2 text-sm font-semibold transition-all"
+              className="px-6 py-2 text-sm font-normal transition-all"
               style={{
                 color: COLORS.primary,
               }}
@@ -192,6 +246,15 @@ const VerifiedAccount = () => {
           </div>
         </div>
       </div>
+      {isOpen && popupType === "changeEmail" && (
+        <PopupChangeEmail
+          open={isOpen}
+          onClose={closePopup}
+          data_email={email}
+          userDetails={userDetails}
+          refreshData={handleRefreshData}
+        />
+      )}
     </div>
   );
 };

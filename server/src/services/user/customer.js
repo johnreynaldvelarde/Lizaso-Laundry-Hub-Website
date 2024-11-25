@@ -127,7 +127,7 @@ export const handleSetCustomerServiceRequest = async (req, res, connection) => {
       ]);
     }
 
-    const notificationType = NotificationStatus.PENDING_PICKUP;
+    const notificationType = NotificationStatus.PENDING_PICKUP_SENT_TO_STAFF;
     const notificationDescription = NotificationDescriptions[notificationType](
       customer_name,
       service_name
