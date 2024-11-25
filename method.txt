@@ -146,3 +146,20 @@ import {
     }
 
 notificationsModuleForCustomer
+
+
+
+// store staff
+  for (const userId in userSockets) {
+      const userSocket = userSockets[userId];
+
+      if (
+        userSocket.storeId === store_id &&
+        userSocket.userType !== "Customer"
+      ) {
+        io.to(userSocket.socketId).emit("notificationsModule", {
+          title: notificationType,
+          message: notificationDescription,
+        });
+      }
+    }

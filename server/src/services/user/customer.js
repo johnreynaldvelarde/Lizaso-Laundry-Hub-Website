@@ -1720,13 +1720,13 @@ export const handleUpdateClearAllNotificationsByCustomer = async (
 
     await connection.commit();
 
-    for (const userId in userSockets) {
-      const userSocket = userSockets[userId];
+    // for (const userId in userSockets) {
+    //   const userSocket = userSockets[userId];
 
-      if (userSocket.userId === id && userSocket.userType == "Customer") {
-        io.to(userSocket.socketId).emit("notificationsModuleForCustomer", {});
-      }
-    }
+    //   if (userSocket.userId === id && userSocket.userType == "Customer") {
+    //     io.to(userSocket.socketId).emit("notificationsModuleForCustomer", {});
+    //   }
+    // }
 
     res
       .status(200)
@@ -1752,6 +1752,22 @@ export const handleUpdateClearOneByOneNotificationsByCustomer = async (
   try {
     await connection.beginTransaction();
 
+    const fetchUserIdQuery = `
+      SELECT user_id 
+      FROM Notifications 
+      WHERE id = ? AND status != 'Archived';
+    `;
+    const [rows] = await connection.execute(fetchUserIdQuery, [id]);
+
+    if (rows.length === 0) {
+      await connection.rollback();
+      return res
+        .status(200)
+        .json({ error: "Notification not found or already updated." });
+    }
+
+    const customerId = rows[0].user_id;
+
     const updateQuery = `
       UPDATE Notifications
       SET status = 'Read', read_at = NOW()
@@ -1769,16 +1785,21 @@ export const handleUpdateClearOneByOneNotificationsByCustomer = async (
 
     await connection.commit();
 
-    for (const userId in userSockets) {
-      const userSocket = userSockets[userId];
+    // for (const userId in userSockets) {
+    //   const userSocket = userSockets[userId];
 
-      if (userSocket && userSocket.userType === "Customer") {
-        io.to(userSocket.socketId).emit("notificationsModuleForCustomer", {
-          notificationId: id,
-          status: "Read",
-        });
-      }
-    }
+    //   console.log(userSocket);
+
+    //   if (
+    //     userSocket.userId === customerId &&
+    //     userSocket.userType === "Customer"
+    //   ) {
+    //     io.to(userSocket.socketId).emit("notificationsModuleForCustomer", {
+    //       notificationId: id,
+    //       status: "Read",
+    //     });
+    //   }
+    // }
 
     res
       .status(200)

@@ -5,38 +5,23 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
 const useSocket = (userDetails) => {
   const [socket, setSocket] = useState(null);
-  const [notifications, setNotifications] = useState([]); // Store notifications
-  const [error, setError] = useState(null); // Handle socket errors
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // if (!userDetails?.userId || !userDetails?.storeId) {
-    //   return;
-    // }
-
+    if (!userDetails) return;
     const newSocket = io(SOCKET_URL, {
       transports: ["websocket"],
     });
     setSocket(newSocket);
 
     newSocket.on("connect", () => {
-      // if (userDetails?.userId && userDetails?.storeId) {
-      //   newSocket.emit("register", {
-      //     userId: userDetails.userId,
-      //     storeId: userDetails.storeId,
-      //     userType: userDetails.roleName,
-      //   });
-      //   console.log("1");
-      // } else {
-      //   console.log("2");
-      // }
-      // if (userDetails?.userId && userDetails?.storeId) {
-      //   newSocket.emit("register", {
-      //     userId: userDetails.userId,
-      //     storeId: userDetails.storeId,
-      //     userType: userDetails.user_type,
-      //   });
-      //   console.log("User registered with socket");
-      // }
+      if (userDetails?.userId && userDetails?.storeId) {
+        newSocket.emit("register", {
+          userId: userDetails.userId,
+          storeId: userDetails.storeId,
+          userType: userDetails.roleName,
+        });
+      }
     });
 
     newSocket.on("connect_error", (error) => {
@@ -45,11 +30,13 @@ const useSocket = (userDetails) => {
     });
 
     return () => {
+      newSocket.off("connect");
+      newSocket.off("connect_error");
       newSocket.disconnect();
     };
   }, [userDetails]);
 
-  return { socket, notifications, error };
+  return { socket, error };
 };
 
 export default useSocket;

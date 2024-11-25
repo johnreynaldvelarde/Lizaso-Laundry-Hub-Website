@@ -10,10 +10,10 @@ export const NotificationStatus = {
   LAUNDRY_COMPLETED_CUSTOMER: "Laundry Completed",
   READY_FOR_DELIVERY_CUSTOMER: "Ready for Delivery",
   READY_FOR_DELIVERY_STAFF: "Ready for Delivery",
-  OUT_FOR_DELIVERY_CUSTOMER: "Out for Delivery",
+  OUT_FOR_DELIVERY_CUSTOMER: "Your clothes are out for delivery",
   OUT_FOR_DELIVERY_STAFF: "Out for Delivery",
   ATTEMPTED_DELIVERY_CUSTOMER: "Attempted Delivery",
-  COMPLETED_DELIVERY_CUSTOMER: "Completed Delivery",
+  COMPLETED_DELIVERY_CUSTOMER: "Your delivery has been completed.",
   COMPLETED_DELIVERY_STAFF: "Completed Delivery",
   CANCELED: "Canceled",
 };
@@ -65,11 +65,14 @@ export const NotificationDescriptions = {
   [NotificationStatus.READY_FOR_DELIVERY_STAFF]: (customerName) =>
     `${customerName}'s clothes are ready to be delivered back to them.`,
 
-  [NotificationStatus.OUT_FOR_DELIVERY_STAFF]: (customerName) =>
-    `The delivery staff is on the way to deliver clothes to ${customerName}.`,
+  [NotificationStatus.OUT_FOR_DELIVERY_CUSTOMER]: () =>
+    `The delivery staff is en route to deliver your clothes.`,
 
   [NotificationStatus.COMPLETED_DELIVERY_STAFF]: (customerName) =>
     `Delivery completed for ${customerName}. Payment has been confirmed.`,
+
+  [NotificationStatus.COMPLETED_DELIVERY_CUSTOMER]: () =>
+    `Your delivery has been successfully completed.`,
 
   [NotificationStatus.CANCELED]: () =>
     `Your service request have been canceled.`,

@@ -6,13 +6,12 @@ import { getListAdminUserNotifications } from "../../services/api/getApi";
 import showNotification from "../../utils/showNotification";
 
 const useNavbarData = ({ userDetails }) => {
-  const { socket } = useSocket();
+  const { socket } = useSocket(userDetails);
   const [loading, setLoading] = useState(true);
   const { data: notifications, fetchData: fetchNotifications } = useFetchData();
 
   const fetchNotificationsData = useCallback(async () => {
     if (!userDetails || !userDetails.roleName) {
-      console.warn("userDetails not populated yet.");
       return;
     }
 
@@ -36,13 +35,15 @@ const useNavbarData = ({ userDetails }) => {
 
   useEffect(() => {
     if (socket) {
-      socket.emit("register", {
-        userId: userDetails.userId,
-        storeId: userDetails.storeId,
-        userType: userDetails.roleName,
+      socket.on("notificationsModule", (data) => {
+        fetchNotificationsData();
+        showNotification({
+          message: data.message,
+          title: data.title,
+        });
       });
 
-      socket.on("notificationsModule", (data) => {
+      socket.on("notificationsModuleForCustomer", (data) => {
         fetchNotificationsData();
         showNotification({
           message: data.message,
@@ -60,6 +61,12 @@ const useNavbarData = ({ userDetails }) => {
 };
 
 export default useNavbarData;
+
+// socket.emit("register", {
+//   userId: userDetails.userId,
+//   storeId: userDetails.storeId,
+//   userType: userDetails.roleName,
+// });
 
 // socket.on("registerSuccess", (data) => {
 //   console.log("Server response:", data.message);

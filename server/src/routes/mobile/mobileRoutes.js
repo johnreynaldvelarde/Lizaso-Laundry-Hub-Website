@@ -4,6 +4,7 @@ import {
   handleGetLaundryPickup,
   handleGetNotificationStaff,
   handleSetMessagesSenderIsStaff,
+  handleUpdateClearAllNotificationsByStaff,
   handleUpdateServiceRequestBackToPending,
   handleUpdateServiceRequestFinishPickup,
   handleUpdateServiceRequestFinishTheDelivery,
@@ -224,7 +225,33 @@ router.put(
 );
 
 router.put(
+  "/staff/:id/clear-all-notifications",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateClearAllNotificationsByStaff(req, res, connection);
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
   "/customers/:id/clear-one-by-on-notifications",
+  withDatabaseConnection(async (req, res, connection) => {
+    try {
+      await handleUpdateClearOneByOneNotificationsByCustomer(
+        req,
+        res,
+        connection
+      );
+    } catch (error) {
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  })
+);
+
+router.put(
+  "/staff/:id/clear-one-by-on-notifications",
   withDatabaseConnection(async (req, res, connection) => {
     try {
       await handleUpdateClearOneByOneNotificationsByCustomer(
