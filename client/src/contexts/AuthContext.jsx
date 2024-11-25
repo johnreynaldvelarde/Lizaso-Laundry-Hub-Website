@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from "react";
 import { axiosPublic, axiosPrivate } from "../api/axios";
+import useSocket from "../hooks/common/useSocket";
 
 const AuthContext = createContext();
 
@@ -145,6 +146,10 @@ export const AuthProvider = ({ children }) => {
 
     checkAccessToken();
   }, [accessToken]);
+
+  if (userDetails) {
+    const { socket, error } = useSocket(userDetails);
+  }
 
   const value = {
     accessToken,

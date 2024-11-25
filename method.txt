@@ -67,3 +67,82 @@ activity_id, activity_username, activity_roleName,
       setSelectedStatus("");
     }
   }, [getData]);
+
+
+
+
+
+
+
+
+  // FOR NOTIFICATIONS
+
+  import { io, userSockets } from "../../socket/socket.js";
+import { logNotification } from "../useExtraSystem.js";
+import {
+  NotificationDescriptions,
+  NotificationStatus,
+} from "../../helpers/notificationLog.js";
+
+
+    const getCustomerIdQuery = `
+      SELECT customer_id 
+      FROM Service_Request 
+      WHERE id = ?
+    `;
+    const [customerRows] = await connection.execute(getCustomerIdQuery, [id]);
+
+    if (customerRows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found." });
+    }
+
+    const { customer_id } = customerRows[0];
+
+
+    // GET ASSIGN PICKUP STAFF
+    const getFullNameQuery = `
+      SELECT CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) AS full_name
+      FROM User_Account
+      WHERE id = ?
+    `;
+    const [userRows] = await connection.execute(getFullNameQuery, [user_id]);
+
+    if (userRows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const { full_name } = userRows[0];
+
+
+        // Log notification
+    const notificationType = NotificationStatus.CANCELED;
+    const notificationDescription =
+    NotificationDescriptions[notificationType]();
+
+    await logNotification(
+      connection,
+      null,
+      customer_id,
+      notificationType,
+      notificationDescription
+    );
+
+     for (const userId in userSockets) {
+      const userSocket = userSockets[userId];
+
+      if (
+        userSocket.userId === customer_id &&
+        userSocket.userType == "Customer"
+      ) {
+        io.to(userSocket.socketId).emit("notificationsModule", {
+          title: notificationType,
+          message: notificationDescription,
+        });
+      }
+    }
+
+notificationsModuleForCustomer
