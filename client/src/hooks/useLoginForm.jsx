@@ -8,8 +8,8 @@ import toast from "react-hot-toast";
 const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
   const { userDetails, fetchUserDetails, setAccessToken } = useAuth();
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [loginUsername, setLoginUsername] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
+  const [loginUsername, setLoginUsername] = useState("rose16");
+  const [loginPassword, setLoginPassword] = useState("@Secret12345");
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isVisible, setIsVisible] = useState(false);
@@ -47,14 +47,16 @@ const useLoginForm = (setLoginShowPopup, showLoginPopup) => {
         setLoginPassword("");
 
         if (userType === "Customer") {
-          const customerDetails =
-            await checkCustomerDetails.getCheckCustomerDetails(userId);
+          const details = await checkCustomerDetails.getCheckCustomerDetails(
+            userId
+          );
 
-          if (customerDetails.success !== false) {
-            if (
-              customerDetails.storeIdIsNull ||
-              customerDetails.addressIsNull
-            ) {
+          const { storeIdIsNull, addressIdIsNull, isVerified } = details.data;
+
+          if (details.success !== false) {
+            if (!isVerified) {
+              navigate("/verified-account");
+            } else if (storeIdIsNull || addressIdIsNull) {
               navigate("/complete-details");
             } else {
               navigate("/customer-page");
