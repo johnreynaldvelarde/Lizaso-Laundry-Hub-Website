@@ -1060,8 +1060,7 @@ export const handleUpdateServiceRequestUsingQrCode = async (
 
     // Log notification for completed pickup
     let notificationType = NotificationStatus.COMPLETED_PICKUP;
-    let notificationDescription =
-      NotificationDescriptions[notificationType](full_name);
+    let notificationDescription = NotificationDescriptions[notificationType]();
 
     // Log notification for completed delivery to customer
     if (isDelivery) {
