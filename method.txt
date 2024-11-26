@@ -163,3 +163,38 @@ notificationsModuleForCustomer
         });
       }
     }
+
+
+     const getCustomerIdQuery = `
+      SELECT customer_id, user_id 
+      FROM Service_Request 
+      WHERE id = ?
+    `;
+    const [customerRows] = await connection.execute(getCustomerIdQuery, [id]);
+
+    if (customerRows.length === 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "Request not found." });
+    }
+
+    const { customer_id, user_id } = serviceRequestRows[0];
+
+    const getUserFullNameQuery = `
+      SELECT 
+        CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) AS fullname 
+      FROM User_Account 
+      WHERE id = ?
+    `;
+
+    const [userRows] = await connection.execute(getUserFullNameQuery, [
+      user_id,
+    ]);
+
+    const userFullName = userRows.length > 0 ? userRows[0].fullname : null;
+
+    if (!userFullName) {
+      return res
+        .status(200)
+        .json({ success: false, message: "User not found." });
+    }

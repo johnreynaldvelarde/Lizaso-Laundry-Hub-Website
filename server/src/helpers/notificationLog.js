@@ -1,29 +1,25 @@
 export const NotificationStatus = {
   RETURN_TO_PENDING: "Pending Pickup",
-  PENDING_PICKUP_SENT_TO_STAFF: "Request By Customer",
   ONGOING_PICKUP: "Ongoing Pickup",
   COMPLETED_PICKUP: "Completed Pickup",
   AT_STORE: "At Store",
   IN_QUEUE: "In Queue",
   IN_LAUNDRY: "In Laundry",
-  LAUNDRY_COMPLETED: "Laundry Completed",
-  LAUNDRY_COMPLETED_CUSTOMER: "Laundry Completed",
+  LAUNDRY_COMPLETED_CUSTOMER: "Your Laundry is Completed",
   READY_FOR_DELIVERY_CUSTOMER: "Ready for Delivery",
-  READY_FOR_DELIVERY_STAFF: "Ready for Delivery",
-  OUT_FOR_DELIVERY_CUSTOMER: "Your clothes are out for delivery",
-  OUT_FOR_DELIVERY_STAFF: "Out for Delivery",
+  OUT_FOR_DELIVERY_CUSTOMER: "Out for Delivery",
+  COMPLETED_DELIVERY_CUSTOMER: "Completed Delivery",
   ATTEMPTED_DELIVERY_CUSTOMER: "Attempted Delivery",
-  COMPLETED_DELIVERY_CUSTOMER: "Your delivery has been completed.",
-  COMPLETED_DELIVERY_STAFF: "Completed Delivery",
   CANCELED: "Canceled",
+
+  // For Staff
+  PENDING_PICKUP_SENT_TO_STAFF: "Request By Customer",
+  READY_FOR_DELIVERY_STAFF: "Delivery Ready for Staff",
+  OUT_FOR_DELIVERY_STAFF: "Staff Delivering",
+  COMPLETED_DELIVERY_STAFF: "Staff Completed Delivery",
 };
 
 export const NotificationDescriptions = {
-  // FOR STAFF TO SEE
-
-  [NotificationStatus.PENDING_PICKUP_SENT_TO_STAFF]: (userName, serviceType) =>
-    `A ${serviceType} service has been requested by ${userName}, but the clothes are still awaiting pickup.`,
-
   // FOR CUSTOMER TO SEE
   [NotificationStatus.RETURN_TO_PENDING]: (userName) =>
     `Your service request has been returned to pending status by ${userName}, the pickup staff. Please await further updates.`,
@@ -58,22 +54,16 @@ export const NotificationDescriptions = {
   [NotificationStatus.ATTEMPTED_DELIVERY_CUSTOMER]: (userName) =>
     `The delivery staff, ${userName}, attempted to deliver your clothes, but the delivery was unsuccessful.`,
 
+  [NotificationStatus.CANCELED]: () =>
+    `Your service request have been canceled.`,
+
   // FOR STAFF TO SEE
-  [NotificationStatus.LAUNDRY_COMPLETED]: (customerName) =>
-    `Laundry process completed for ${customerName}'s clothes.`,
+  [NotificationStatus.PENDING_PICKUP_SENT_TO_STAFF]: (userName, serviceType) =>
+    `A ${serviceType} service has been requested by ${userName}, but the clothes are still awaiting pickup.`,
 
   [NotificationStatus.READY_FOR_DELIVERY_STAFF]: (customerName) =>
     `${customerName}'s clothes are ready to be delivered back to them.`,
 
-  [NotificationStatus.OUT_FOR_DELIVERY_CUSTOMER]: () =>
-    `The delivery staff is en route to deliver your clothes.`,
-
   [NotificationStatus.COMPLETED_DELIVERY_STAFF]: (customerName) =>
     `Delivery completed for ${customerName}. Payment has been confirmed.`,
-
-  [NotificationStatus.COMPLETED_DELIVERY_CUSTOMER]: () =>
-    `Your delivery has been successfully completed.`,
-
-  [NotificationStatus.CANCELED]: () =>
-    `Your service request have been canceled.`,
 };

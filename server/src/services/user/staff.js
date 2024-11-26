@@ -704,7 +704,7 @@ export const handleUpdateServiceRequestReadyDeliveryToOngoing = async (
     await connection.beginTransaction();
 
     const getCustomerIdQuery = `
-      SELECT customer_id 
+      SELECT customer_id, user_id 
       FROM Service_Request 
       WHERE id = ?
     `;
@@ -712,11 +712,30 @@ export const handleUpdateServiceRequestReadyDeliveryToOngoing = async (
 
     if (customerRows.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json({ success: false, message: "Request not found." });
     }
 
-    const { customer_id } = customerRows[0];
+    const { customer_id, user_id } = customerRows[0];
+
+    const getUserFullNameQuery = `
+      SELECT 
+        CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) AS fullname 
+      FROM User_Account 
+      WHERE id = ?
+    `;
+
+    const [userRows] = await connection.execute(getUserFullNameQuery, [
+      user_id,
+    ]);
+
+    const userFullName = userRows.length > 0 ? userRows[0].fullname : null;
+
+    if (!userFullName) {
+      return res
+        .status(200)
+        .json({ success: false, message: "User not found." });
+    }
 
     const updateQuery = `
       UPDATE Service_Request
@@ -735,7 +754,7 @@ export const handleUpdateServiceRequestReadyDeliveryToOngoing = async (
 
     const notificationType = NotificationStatus.OUT_FOR_DELIVERY_CUSTOMER;
     const notificationDescription =
-      NotificationDescriptions[notificationType]();
+      NotificationDescriptions[notificationType](userFullName);
 
     await logNotification(
       connection,
@@ -788,19 +807,38 @@ export const handleUpdateServiceRequestFinishTheDelivery = async (
     await connection.beginTransaction();
 
     const getCustomerIdQuery = `
-      SELECT customer_id 
-      FROM Service_Request 
-      WHERE id = ?
-    `;
+    SELECT customer_id, user_id 
+    FROM Service_Request 
+    WHERE id = ?
+  `;
     const [customerRows] = await connection.execute(getCustomerIdQuery, [id]);
 
     if (customerRows.length === 0) {
       return res
-        .status(404)
+        .status(200)
         .json({ success: false, message: "Request not found." });
     }
 
-    const { customer_id } = customerRows[0];
+    const { customer_id, user_id } = customerRows[0];
+
+    const getUserFullNameQuery = `
+    SELECT 
+      CONCAT(first_name, ' ', IFNULL(middle_name, ''), ' ', last_name) AS fullname 
+    FROM User_Account 
+    WHERE id = ?
+  `;
+
+    const [userRows] = await connection.execute(getUserFullNameQuery, [
+      user_id,
+    ]);
+
+    const userFullName = userRows.length > 0 ? userRows[0].fullname : null;
+
+    if (!userFullName) {
+      return res
+        .status(200)
+        .json({ success: false, message: "User not found." });
+    }
 
     const updateQuery = `
       UPDATE Service_Request
@@ -846,7 +884,7 @@ export const handleUpdateServiceRequestFinishTheDelivery = async (
 
     const notificationType = NotificationStatus.COMPLETED_DELIVERY_CUSTOMER;
     const notificationDescription =
-      NotificationDescriptions[notificationType]();
+      NotificationDescriptions[notificationType](userFullName);
 
     await logNotification(
       connection,
